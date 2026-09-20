@@ -1,5 +1,27 @@
 # MoE project handoff
 
+LATEST COMPLETE (2026-09-20): returned to COMPLETE MoE proofs / paper perdd.md.
+Read `docs/mainline_paper_integration_20260920.md` and current paper sections03,
+05,08,09 FIRST. Complete-request composition proof and trusted-base table now
+lead the method/evidence narrative. Transfer/checking chronology preserved in
+appendices; convolutional negative results and closed SoPlex limits visible.
+No changed algorithm/threshold/cohort; no real proposal or new empirical run.
+
+Main tables: `python -I -S scripts/rebuild_moe_main_tables.py --check`;
+21rows/four committed reviews, grades and denominators retained. It reconstructs
+recorded results, not SAFE proofs. Three tests/nine mutations +five portable
+regressions PASS. Unchanged fresh analytic demo:3/3 all-tie obligations checked.
+Relocated real input98:9/9 positive, exact same0.1772745 conditional minimum,
+32.976s isolated check, no model/solver. Local root recorded in integration doc.
+Paper quickstart now has fresh-demo, portable-proof and table-rebuild paths.
+
+NEXT: use this integrated narrative and reviewer workflow, not historical
+arithmetic NEXT entries below. Real artifacts still need PI-managed distribution
+and clean-install validation; high-accuracy/cross-family route-changing strict
+gain remains OPEN. No extra samples, renewed elimination or larger admission
+caps are implied. New research must identify complete blocking output obligations
+and a bounded hypothesis before a new protocol. Finite SoPlex study CLOSED.
+
 LATEST COMPLETE (2026-09-20): detached original-four SoPlex run FINISHED/ARCHIVED.
 Read `docs/soplex_finite_real_v2_results.md`, summary and full review FIRST.
 Executionf47a6eed5,4/4 one-call jobs,all exact input readbacks passed.4LIMIT

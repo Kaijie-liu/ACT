@@ -23,6 +23,10 @@ relationship ablation, the executable external comparison and independent
 proofs. Chronological development, training incidents and earlier failed gates
 are supporting material, not the main argument. Existing claims/evidence
 indices remain provenance aids; they are not substitutes for these sections.
-The second model family and a fully packaged empirical reviewer artifact are
-unfinished. A [no-download source-defined proof demo](artifact_quickstart.md)
-now provides a minimal new-run and independent-check workflow.
+The second (convolutional) family is evaluated: it does not establish additional
+route-changing certificates. A fully distributable empirical reviewer artifact
+is still unfinished. The [reviewer workflow](artifact_quickstart.md) separates
+a no-download fresh proof demo, a portable real conditional proof, and
+[main outcome tables](results/main_tables.md) rebuilt from committed reviews.
+The [transfer/evidence chronology](appendices/transfer_evidence_history.md)
+preserves historical failures outside the main narrative.

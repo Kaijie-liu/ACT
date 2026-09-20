@@ -188,167 +188,83 @@ the represented output center in the HZ lowering. A structural audit checks
 the evidence chain; it is not presented as an independent re-execution of a
 SAFE solve.
 
-## Scoped reuse and a first independently checked bound
+## Independently checkable complete-request evidence
 
-An opt-in post-comparison implementation exports positive per-property facts
-from already computed guarded Tier-1 output intervals. A pair guard implies
-membership of each selected expert, so two facts for the same property extend
-to that pair domain and imply a mixture lower bound equal to their minimum.
-Facts bind the concrete request/model/domain/property, router frame, policy
-and expert identity. The auditor reconstructs them from source intervals.
-Partial MILP results are not reused. This version trusts the underlying HZ
-propagation and verifies the reuse implication; it does not independently
-establish the propagated interval endpoints.
+The production solver and the independent evidence path have different trust
+contracts. Production scoped facts are extracted from guarded interval bounds,
+bind model/input/property/expert/frame/domain identities, and transfer only
+along membership-to-pair containment. Partial MILP searches are not positive
+facts. The separate rational path reconstructs the justification for each
+required fact or weighted bound from its supplied source.
 
-Separately, a finite-box LP checker evaluates signed dual multipliers and their
-stationarity residual with exact rational arithmetic. Residuals are minimized
-on the finite input box instead of being discarded as numerical zero. Float
-coefficients denote exact binary rationals. The checker does not call a solver
-and does not trust a primal objective. On the explicit guarded control
-x0>=1/2, x1=1/4, 0<=x<=1, it checks the x0+x1 lower bound as exactly 3/4.
-It is not a MILP proof-tree checker or a validation of network-to-LP lowering.
-The two-expert, three-class reuse control remains SAFE while reducing F0
-property solves from two to one; both packages pass structural re-audit.
-These are analytic implementation controls, not real-model speedup evidence.
+For a finite-box LP
+\(\min c^\top z+d\) subject to \(Az\le b, Ez=h, l\le z\le u\),
+a proposal supplies multipliers \(y\le0\) and free \(v\). Defining
+\(r=c-A^\top y-E^\top v\), the standard-library checker evaluates
 
-The next export check uses an actual trained bal010 router at index 3000 and
-2/255, retaining its clean top-2 guard {4,5}. The exported LP relaxes one
-binary among 3,075 factors. An independent scalar checker verifies every
-source-HZ constraint, factor box and exact objective combination and checks a
-score4-score0 lower bound of approximately 9.4850718858 as an exact rational.
-This extends the checker beyond hand-written LP controls. Its guarantee still
-starts at the stored HZ: it does not independently validate network propagation
-or certify the complete MoE output. No positive result is required by the
-registered export query; the margin was fixed before its evaluation.
+\[
+ L=d+b^\top y+h^\top v+\sum_j\min(r_jl_j,r_ju_j)
+\]
 
-The next separately frozen control covers every required output obligation
-of that same seed0/index3000 request. All28 route queries finish, yielding
-pairs{2,4} and{4,5}; the checker inventories18 pair/classification obligations.
-It rechecks36 sparse LP exports/duals, including27 expert properties,six
-disagreement endpoints and three weighted output properties. Fifteen obligations
-have positive checked membership facts on both experts and are discharged by
-scoped reuse. Three residual F0 LP lower bounds remain negative, so the complete
-request is UNKNOWN. No missing obligation is treated as a positive result.
+in exact rational arithmetic. This is a valid lower bound for every feasible
+point: multiply inequalities by nonpositive multipliers, use equalities, and
+minimize the remaining residual coordinatewise over the finite box. No
+approximately zero residual is discarded. Solver status and a reported
+objective are proposals, not proof authority; optimality is unnecessary for a
+valid sign-sufficient bound. This checker is not a MILP search-tree verifier.
 
-This infrastructure control uses the universal normalized-weight range[0,1]
-and rationally checked disagreement endpoints, not the production sigmoid-range
-configuration. It establishes downstream checking for an entire supplied
-request inventory but NOT a positive complete-network certificate. Network-to-HZ,
-guard lowering,route exclusions and the F0 outer-HZ construction/floating
-coefficients remain trusted. Exact rational LP checking cannot retroactively
-prove those upstream transformations. See `request_lp_results.md` and its
-hash-bound36-proof recheck for the explicit remaining trusted base.
+The proof producer starts **before floating F0 construction**, with the stored
+shared expert HZs. Stored float coefficients denote exact binary rationals.
+Property projection recomputes \(u=q^\top E_b+c\) and
+\(d=q^\top(E_a-E_b)\) in rational arithmetic on the same factor frame.
+Checked gate and disagreement ranges bind the same request, pair and property.
+An additional variable \(w\) and the four rational McCormick inequalities
+enclose \(w=\lambda d\); corner products provide finite bounds. The checker
+reconstructs these coefficients from sources instead of calling the floating
+producer. Binary factors explicitly relaxed to continuous boxes yield an outer
+enclosure, not exact nonlinear or integer optimization.
 
-A separately frozen order-only follow-up closes those three residuals without
-an unchecked numerical sigmoid endpoint. For ordered pair(a,b),let m=r_a-r_b.
-A checked lower bound on m implies lambda_a>=1/2 when nonnegative; a checked
-lower bound on -m implies lambda_a<=1/2 when nonnegative. Both statements
-follow from sigmoid monotonicity and sigmoid(0)=1/2,including ties. Unknown
-signs retain the corresponding universal endpoint. Only dyadic endpoints are
-used; no floating transcendental evaluation justifies the range.
+The request inventory is derived from the declared expert/class counts,
+properties and all tie-legal pairs. Each obligation needs either two checked
+positive scoped facts or a checked positive residual bound. Coverage and
+source bindings are checked even when facts are reused. The
+[complete-request composition proposition](03_path_conditioned_method.md#complete-request-composition-theorem)
+then applies, subject to the trusted components below. Missing evidence, a
+nonpositive checked bound and an expired check are different incomplete states;
+none is promoted to a complete positive result.
 
-In the same old request,the checked upper bound for r2-r4 is about-3.11463,
-so lambda2 lies in[0,1/2]. Five new LP queries(two order bounds,three residual
-outputs) give residual lower bounds2.60544,1.55273,4.10960. Rechecking all41
-stored exports/duals establishes positive downstream evidence for all18
-obligations,with minimum aggregated bound about.183047. This is explicitly
-conditional on the same trusted upstream and F0 lowering,not a proof of the
-native network implementation or an additional performance benchmark. The
-R1 universal-weight UNKNOWN remains intact. See `request_lp_order_results.md`.
+| Component | Independent rational path checks | Still assumed |
+|---|---|---|
+| Request and source identity | Pinned statement, property, pair and source bindings | Supplied source corresponds to the intended network/input |
+| Reachable representation | Stored constraints and shared-factor consistency | Network-to-HZ soundness, guard lowering |
+| Route inventory | Complete declared partition and required obligations | Truth of upstream route-infeasibility exclusions |
+| Weighted lowering | Exact property projections, ranges, McCormick rows and objective | Real selected-softmax semantics of the model |
+| Lower bounds and reuse | Exact dual/residual arithmetic and domain-scoped aggregation | Correct checker/interpreter execution |
+| Deployment | No such proof | Preprocessing, floating kernels and dispatch equivalence |
 
-### Checking construction before the floating F0 boundary
+Independent checker and statement identities must be pinned outside the bundle.
+A hash confirms identity, not the mathematical correctness of a trusted source.
+The real input 98 proof is portable: isolated checking needs no checkpoint,
+dataset, historical directory or solver. Its bundle rejects missing properties,
+source substitution and changed properties even when transport hashes are
+recomputed but the external statement is unchanged. A fresh source-defined
+three-expert all-tie control additionally exercises the standard verifier and
+independent proof generator; it is not trained-model coverage evidence.
+See [the reviewer workflow](../artifact_quickstart.md).
 
-The next, separately frozen R3 control removes one assumption rather than
-refining the same margin again. It starts with the stored shared expert HZ
-before floating F0 projection. Interpreting its coefficients as exact binary
-rationals, it forms `u=q E_b+c` and `d=q(E_a-E_b)` by rational arithmetic on
-the same factor vector. It appends lambda and w directly, uses the unchanged
-checked R2 ranges, and constructs four rational McCormick inequalities for
-`w=lambda*d`. Finite w bounds come from the four rational corner products;
-binary factors are explicitly relaxed to their continuous boxes. There is no
-floating center/radius recoding between these objects and the LP.
+The generic optional mode uses a single request budget for source capture,
+proposal, construction, serialization, checking and aggregation. Immutable
+partial evidence may survive an exhausted proposal reserve, but no unchecked
+or missing obligation is discharged. Caches change parsing cost only if source
+identity, exact checks and scope validation are retained. These engineering
+controls do not relax production optimal-status acceptance, nor establish
+additional positive coverage: the 20-input convolutional evidence experiment
+returns no complete positive requests.
 
-A separate checker, importing neither the builder nor a solver, reconstructs
-the factor constraints, projections, objective, variable bounds and product
-planes, and then checks the proposed LP dual. The request aggregator checks
-the range sources, identical shared-HZ identities, scopes and full obligation
-inventory. On the frozen request all18 obligations remain positive:15 reused
-facts and3 residual LPs, with residual bounds about2.60544,1.55273,4.10960.
-The aggregate minimum remains about.183047. The trusted base now excludes
-`F0_outer_HZ_construction_and_floating_coefficients`; network/input-to-HZ,
-guard lowering and route infeasibility exclusions remain assumptions.
-This is an exactly checked outer-relaxation construction and conditional
-request proof, not exact linearization of MoE or a native floating-point proof.
-The R1 UNKNOWN and R2 result are retained. Source:
-`act/pipeline/moe/results/request_lp_rational_review_20260914_r3.json`.
-
-The convolutional all-obligation control uses a deliberately weaker, separately
-identified boundary: supplied floating F0 HZ→continuous LP→exact dual/residual
-check. It independently reconstructs scoped interval projections, checks each
-of nine output obligations and accounts for all six candidate pairs, while
-trusting the upstream exclusions. Input98 closes through eight LP proofs and
-one interval fact (minimum0.1772745); input16 leaves two nonpositive LP bounds
-and remains UNKNOWN. It does not inherit the pre-F0 rational construction
-guarantee described above. A complete conditional request is therefore
-distinguished from a positive single-property control, a production SAFE,
-and an independently proved network execution. Source:
-`act/pipeline/moe/results/conv_request_sign_lp_review_20260915_r1.json`.
-
-A subsequent, separately frozen study makes the pre-F0 boundary explicit for
-the convolutional input98 as well. Fresh ordered shared expert outputs are
-projected in exact rational arithmetic; checked router order gives lambda1 in
-[1/2,1], and two checked support bounds per residual establish its disagreement
-rectangle. An independent construction checker verifies the same-factor
-projections, all four McCormick planes, finite variable bounds and LP dual
-evidence. All nine properties remain positive (eight residuals and one scoped
-interval fact; minimum0.1772745). Floating F0 construction is removed from the
-trusted base for this request; network/source binding, guard lowering and route
-exclusions remain assumptions. This does not upgrade the old production
-TIMEOUT or certify deployed floating-point execution. Source:
-`act/pipeline/moe/results/conv_pre_f0_review_20260915_r2.json`.
-
-The same completed proof was subsequently packaged independently of server
-paths. Content-addressed array storage preserves the original logical-file
-hashes while reducing428.19MB of proof dependencies to a7.18MB bundle including
-the checker. After copying outside the checkout, Python `-I -S` reproduced all
-nine checked obligations without model, dataset, historical directory or solver
-reads. Removed obligations, substituted sources and changed properties were
-rejected even after transport hashes were recomputed; damaged content was also
-rejected. This makes a real conditional proof portable, not its upstream
-network construction independently verified. Evidence:
-`docs/portable_conv_proof_v1_review.json`.
-
-### A request-parametric conditional evidence contract
-
-The subsequent optional evidence interface derives E, C, all legal pairs and
-explicit linear properties from the request, rather than naming a particular
-input or clean route. For every feasible pair/property it requires either two
-scope-bound positive membership facts or a checked pre-F0 rational LP bound.
-An exhaustive pair partition is checked, but the truth of excluded-route
-infeasibility remains an upstream assumption; unresolved routes never imply
-complete safety. The checker also reconstructs property projections, HZ-to-LP
-export, checked range bindings, McCormick constraints and exact rational dual
-bounds. Missing evidence and checked nonpositive bounds are distinct UNKNOWN
-states, neither a counterexample.
-
-Under sound network/input-to-HZ and ordered-source binding, correct guards and
-route exclusions, complete positive obligations imply the requested properties
-for all tie-legal selected-softmax top-2 outputs on the represented box. This
-is the uniform meaning of CHECKED_CONDITIONAL. It does not independently prove
-the upstream network transformation or deployed floating-point execution.
-The independently pinned portable checker and statement identities are also
-part of the checking contract. Production HZ-policy acceptance and CROWN
-numerical filters remain separate evidence grades. Controls cover changing
-dimensions, all-tied multi-pair models, partial reuse, semantic mutations and
-deadline failures, but are not evidence of new real-model coverage. Sources:
-`docs/general_evidence_v1.md`, `docs/general_evidence_v1_controls.json`.
-
-A subsequent optional engineering revision distinguishes exhaustion of a
-proposal's checking reserve from exhaustion of the whole request deadline.
-Only the former returns committed partial evidence to the unchanged checker;
-it cannot promote an uncommitted or missing obligation. True deadline expiry,
-invalid evidence and incomplete isolated checking remain failures. Analytic
-multi-pair and portable partial-proof controls cover this handoff, but it has
-not been used to replace any frozen real-request result or establish a speedup.
-The stored-proof cost profile and controls are recorded separately in
-`docs/evidence_handoff_v1.md`.
+The [historical checking sequence](../appendices/independent_checking_history.md)
+retains supplied-F0 controls and their stronger trust assumptions separately
+from pre-F0 rational reconstruction. The
+[closed feasible-point diagnostics](../appendices/arithmetic_diagnostic_limits.md)
+supply no checked upper witness and do not turn nonpositive lower bounds into
+proved relaxation obstructions. Main guarantees are stated per complete
+request, not per checked JSON or isolated positive LP.

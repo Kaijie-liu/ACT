@@ -1,4 +1,43 @@
-# Minimal reviewer workflow (source-defined model)
+# Reviewer workflows and their evidence boundaries
+
+There are three different entry points. None silently substitutes a toy result
+or a reconstructed table for an empirical complete-network proof.
+
+| Workflow | Needs trained weights/data? | Establishes |
+|---|---|---|
+| Fresh source-defined request below | No | Executable tie-complete weighted proof control |
+| Copy/check the input98 bundle | No, once bundle is supplied | Stored real request, conditional on upstream lowering |
+| Rebuild committed outcome tables | No | Archived result arithmetic and source identity, not bound truth |
+
+## Rebuild the main tables
+
+From any directory, without site packages or numerical dependencies:
+
+```sh
+python -I -S /path/to/ACT/scripts/rebuild_moe_main_tables.py
+python -I -S /path/to/ACT/scripts/rebuild_moe_main_tables.py --check
+```
+
+The first prints [the main tables](results/main_tables.md); the second rejects
+a stale committed rendering. Four committed reviews supply the separate
+confirmation, external, convolutional and evidence-mode cohorts. Denominators,
+state/grade distinctions, paired count deltas and terminal inventories are
+checked. No embedded server paths are followed. This reconstructs recorded
+results, not their original model computations or independent SAFE proofs.
+
+## Check a stored real complete request
+
+Copy the entire input98 portable directory and retain the statement/bundle
+hashes independently. The command and original portability tests are in
+[the portable-proof result](../docs/portable_conv_proof_v1_results.md).
+The checker uses `python -I -S`, forbids model/solver imports, outside reads,
+subprocesses and network access, and checks all nine necessary properties.
+It does not regenerate the upstream HZ. The bundle is currently a local
+7.18MB artifact, **not distributed by this Git checkout**; access is needed
+before this workflow is reproducible by an external reviewer. Publication of
+weights, inputs or bundles remains a PI-managed decision.
+
+## Generate a fresh source-defined request
 
 This workflow needs no private checkpoint, dataset, server address or download.
 The model and input are specified in source: three affine experts with margins

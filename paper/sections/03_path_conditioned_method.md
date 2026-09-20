@@ -253,6 +253,44 @@ post-run audits are outside the direct verification request. The confirmation
 and component ablations evaluate different questions and retain separate
 cohorts, accounting and frozen results.
 
+## Complete-request composition theorem
+
+The unit of proof is a route/property obligation, not a positive solver call.
+Let the finite registered output properties be
+\(p_\ell(v)=q_\ell^\top v+c_\ell\), and let \(\widehat{\mathcal S}\)
+cover every tie-legal route on \(X\). For each pair \(S=\{a,b\}\) and row
+\(\ell\), require either (i) two valid membership-domain facts for this row,
+or (ii) a valid lower bound over an outer enclosure of the joint guarded
+relation \((u(x),d(x),\lambda(x))\). All identities and domains must refer to
+the same request; every obligation must be present, including ties.
+
+**Proposition (conditional complete-output proof).** If each such obligation
+has a strictly positive valid lower bound, then
+\(p_\ell(F_S(x))>0\) for every \(x\in X\), every legal \(S\) at that
+input and every registered \(\ell\), provided upstream route coverage and
+relational enclosures are sound.
+
+**Proof.** Fix an input, one legal pair and one row. Coverage includes that
+pair. In case(i), membership-domain containment makes both expert bounds
+applicable at this same input. Nonnegative normalized weights preserve the
+row, including its constant term, with lower bound at least the smaller
+expert bound. In case(ii), the concrete shared-factor assignment, true gate
+and product \(w=\lambda d\) satisfy the enclosure; hence the enclosure's
+valid lower bound also bounds \(u+w=p_\ell(F_S(x))\). Both cases give a
+positive value. The choice of input, pair and property was arbitrary, so the
+claim holds for every permitted execution. Taking a minimum over the finite
+obligation inventory yields a positive complete-request bound. ∎
+
+Scheduling and reuse change how bounds are obtained, not this acceptance
+rule. A missing row, unresolved route or expired check cannot discharge an
+obligation. Nor does a checked nonpositive lower bound establish a violating
+input: a separate feasible-point upper bound concerns the relaxation, while
+network UNSAFE still requires a full-model witness. For rational evidence the
+proposition is conditional on trusted network-to-HZ, guard lowering and route
+exclusions. For production HZ-policy results, validity of numerical bounds is
+also governed by the frozen acceptance policy. The theorem is not a proof of
+arbitrary solver floating-point error or deployed execution equivalence.
+
 ## Verdict discipline and backend composition
 
 The staged analysis exposes four terminal states. `SAFE` requires every legal

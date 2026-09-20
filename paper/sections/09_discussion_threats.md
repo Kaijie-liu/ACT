@@ -33,10 +33,11 @@ never inspected in any form. The earlier 30-input study is not pooled into the
 
 The higher-accuracy AdvMoE checkpoint and its failed strict pilot are not a
 substitute for positive high-accuracy certificates. A second, convolutional
-family needs a separately fixed architecture, training recipe, checkpoint
-selection and comparison protocol. It must retain unsuccessful models and
-verification requests rather than selecting only easy instances. That work is
-not completed by the present same-family experiments.
+family has now been evaluated with a separately fixed architecture, training
+recipe, checkpoint selection and comparison protocol. Its 30-input comparison
+produces no HZ-policy SAFE, and its 20-input general evidence study produces no
+complete positive proof. These are explicit limits on cross-family transfer,
+not pending experiments or a reason to select easier replacement models.
 
 ## Baselines, costs and fairness
 
@@ -110,6 +111,6 @@ The central conclusion is that route invariance is not necessary for proving
 the output property, and retaining route/input/expert relationships can support
 complete results beyond that premise. Whether the more expensive relational
 path is worthwhile depends on the task, numerical contract and alternative
-backend. Establishing its reach on a second family and reducing upstream proof
-trust are substantive next steps, not reasons to erase the current scoped
-positive and negative results.
+backend. Establishing positive certificate gains on the second family and
+reducing upstream proof trust remain substantive open problems, not reasons to
+erase the current scoped positive and negative results.

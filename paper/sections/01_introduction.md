@@ -71,7 +71,11 @@ Transferring a frozen fresh-generation procedure to the three ACT-only external
 cases leaves unresolved obligations in all three. These results delimit the
 current proof pipeline rather than retrospectively invalidating the original
 policy-accepted results. Network-to-HZ propagation, guard lowering and route
-exclusions remain explicit trusted assumptions.
+exclusions remain explicit trusted assumptions. A later convolutional control
+also yields a complete portable conditional proof, but the separate 30-input
+comparison produces no HZ-policy SAFE and the 20-input general evidence mode
+produces no complete positive request. Postselected proof feasibility therefore
+does not establish transferable certificate coverage.
 
 The contributions are a relation-preserving organization of complete weighted
 MoE obligations, property-directed weighted verification with scoped fact

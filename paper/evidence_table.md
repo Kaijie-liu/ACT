@@ -1,5 +1,15 @@
 # Claims-to-Evidence Registry
 
+Current synthesis (2026-09-20): see [primary evaluation](sections/08_evaluation.md),
+[rebuilt outcome tables](results/main_tables.md) and
+[complete-request composition](sections/03_path_conditioned_method.md#complete-request-composition-theorem).
+The first-family confirmation is positive; the convolutional and general
+evidence-mode cohorts have no additional complete certificates. Portable input98
+is a conditional single-pair proof, not new route-changing coverage. The finite
+four-LP diagnostic is closed with zero checked feasible upper witnesses.
+Chronological entries below retain their original scope and are not current
+instructions to reopen completed studies.
+
 Repository evidence baseline: `7ef324e18`.
 Statuses are `CONFIRMATORY`, `FOLLOW_UP`, `ENGINEERING`, `MECHANISM`, `PARTIAL`,
 `AUDITED CASE SERIES`, `OFFICIAL-CONSTRUCTION CENSUS`, `RUNNING`, or `PENDING`.
