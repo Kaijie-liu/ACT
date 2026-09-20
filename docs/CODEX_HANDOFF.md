@@ -1,5 +1,36 @@
 # MoE project handoff
 
+Latest execution (2026-09-20): the user authorized the four frozen modular
+diagnostics; execution and archival review are COMPLETE. Read
+`docs/modular_diagnostic_v1_execution_results.md` FIRST, then its JSON archive,
+`docs/modular_diagnostic_v1_execution_review.json` and review controls.
+Executed once at clean pushed HEAD `ab4a70728241c9d34c6a813b909e50064274d20c`.
+**4/4 LIMIT, zero complete original-LP checks, zero checked feasible U.**
+Fresh structural review: 1980 artifacts, PASS/0 issues; four post-run control
+tests PASS. No extra solve, retry, alternate basis, cap/time increase or changed
+acceptance rule. Frozen readiness records below remain historical, not current
+instructions to repeat integration or launch.
+
+All four basis structures and assembled-system hashes match the previous
+primitive run. Every stop is the shared 20,000,000-operation cap (observed
+20,000,001), before any complete reconstructed vector. CRT merged80/77/49/49
+primes, with modulus2400/2310/1470/1470bits; recorded field products <=60bits.
+No4096-bit cap or request timeout was reached. This removes the observed old
+large-row-product stop in this execution, but does NOT produce a feasible point
+or establish solution bit size, LP infeasibility or network UNSAFE. Zero exact
+residual rejections means no complete candidate reached that check.
+
+Provided-LP publication clocks total95.460309s; batch141.006109s includes
+post-terminal audits45.543369s. Preflight3.926427s, final-summary audit45.409580s,
+archive47.829198s and fresh review48.022604s are separately recorded. Unreached
+package/check costs remain null, not zero. Historical network/HZ/F0 generation
+was not rerun or charged; these are not complete MoE request timings.
+
+NEXT: frozen execution scope is closed. Use saved journals to characterize
+repeated finite-field work and incomplete reconstruction before proposing a
+separate arithmetic change. No automatic rerun, expansion, increased caps or
+claim that all128 primes would succeed. No production acceptance change.
+
 Latest readiness (2026-09-20): unified-budget modular supervision and a
 separate real-diagnostic freeze are COMPLETE, **NOT EXECUTED**. Read
 `docs/modular_diagnostic_v1_readiness.md` FIRST, then
