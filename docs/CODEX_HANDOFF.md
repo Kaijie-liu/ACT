@@ -1,5 +1,27 @@
 # MoE project handoff
 
+LATEST COMPLETE (2026-09-20): detached original-four SoPlex run FINISHED/ARCHIVED.
+Read `docs/soplex_finite_real_v2_results.md`, summary and full review FIRST.
+Executionf47a6eed5,4/4 one-call jobs,all exact input readbacks passed.4LIMIT
+at candidate admission (`rational token length`),0checked feasibleU; **no job
+entered original-LP feasibility checking**. Native processes returned0/reported
+optimality, but those reports are NOT accepted proof. Serialized >4096bit
+coordinates92/157/641/362; maximum integer decimal digits13748/14843/19290/18303.
+Lexical-only saved-output diagnosis, not exact feasibility or minimum-bit proof.
+
+Request times10.781/10.481/44.813/17.812s; total83.887s, batch83.928s,
+guardian84.876s, postterminal audit4.924s. Nested costs not summed twice.
+AuditPASS0,128artifact hashes rechecked; raw candidates retained,0additional
+queries during archive. Old V1 pre-job interruption remains separate.
+V2 raw `completion.json`=AUDITED; no queue left to resume. Do not relaunch.
+
+Finite study CLOSED under unchanged scientific limits. Do not raise bit caps,
+repair/reconstruct points, extend budgets or resume custom arithmetic without
+a new scoped decision. No LP obstruction/networkSAFE/UNSAFE established here.
+NEXT perAdvice/dd.md: integrate these explicit limits with core MoE method/
+evidence narrative; prioritize complete output proof capability, not further
+auxiliary elimination loops. High-accuracy/cross-family strict gain still open.
+
 LATEST V2 READINESS (2026-09-20): user authorized continuation with new detached
 execution identity. `docs/soplex_detached_v2.md`, protocol/freeze/controls/readiness
 are READY:7/7 lifecycle/science-identity controls PASS,0native/real LP queries.
