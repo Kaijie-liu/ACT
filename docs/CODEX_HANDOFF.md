@@ -1,5 +1,20 @@
 # MoE project handoff
 
+LATEST PREPARATION (2026-09-20): compensated source prefix READY, not run real.
+Read `docs/source_enclosure_v1.md` and freeze. Separate rational source states
+check input enclosure, exact per-row affine error generators, exact ReLU
+range/graph, and shared/private factor maps. Actual old pair guards may be
+attached only by whole-factor-box redundancy.11 new tests+2lifecycle PASS;
+moved synthetic proof needs no source history and6 semantic mutations reject.
+No production/frozen-HZ changes or old LP certificate reuse.
+After commit/push: act-py312 `python -m source_enclosure.run`, then
+`python -m source_enclosure.review data/moe/results/source_enclosure_conv98_20260920_v1`.
+One300s saved-source control, same conv98 experts1/2, ONLY first Conv+ReLU
+prefixes and joint map;0solver/forward/checkpoint calls. Seven steps must check.
+Even success is not classification/full-network SAFE; later expert layers,
+weighted obligations and graph/native correspondence remain unclosed. Archive
+either outcome before deciding a subsequent full-trace capability scope.
+
 LATEST COMPLETE (2026-09-20): expert/guard local upstream audit COMPLETED.
 Read `docs/upstream_source_v1_results.md` and review first. Frozen0f8af0fa0
 executed once, stored-source total3.7283s, separate moved check1.5478s,
