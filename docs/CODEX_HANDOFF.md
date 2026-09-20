@@ -1,5 +1,29 @@
 # MoE project handoff
 
+LATEST PREPARATION (2026-09-20): complete scoped-range pipeline READY.
+Read `docs/range_pipeline_v1.md`, controls and freeze. Both arms regenerate
+input/compensated prefix/remaining experts/join/ALL9 output LPs from frozen
+captured source bytes. Range-on attempts ONLY layer6 rows0,1 in experts1,2:
+at most8 range calls capped3s, both signed duals independently checked, otherwise
+explicit fallback. Range-off has no range calls. Both use the same batched
+source parsing; all source/constraint/row checks remain. No old LP dual reuse.
+
+6new controls +50regressions PASS;3 main-table tests/rebuild PASS unchanged.
+Synthetic complete two-arm proof, moved-I-S check after original removal,
+4semantic mutations, partial/exception/deadline and forged-terminal controls
+pass. Real source metadata64x512 checked, but no real range query at freeze.
+One300s budget EACH: build100, output proposals120, seal5, check remainder,
+publication2; all source propagation included, historical captures excluded.
+Old all9 attempt remains0positive/7nonpositive/2missing. No high-accuracy,
+route-changing, native-float or speedup claim follows from synthetic controls.
+
+After preparation commit/push, run ONCE `python -m range_pipeline.run`, then
+`python -m range_pipeline.review data/moe/results/range_pipeline_conv98_20260920_v1`.
+Fixed off-then-on, same conv98, no row/limit/solver tuning or retries. Archive
+either result with all9 obligations, new source identity, range facts/fallbacks
+and complete costs. This is the distinct finite comparison already prepared,
+not a reopening of old full_bounds, gate, SoPlex or arithmetic protocols.
+
 LATEST IMPLEMENTATION (2026-09-20): scoped NEW-source ranges/control interface.
 Read `docs/source_ranges_v1.md` and `docs/source_ranges_v1_controls.json`. Optional `source_ranges`
 checks signed dual evidence for both f and-f, bound to source/request/domain/

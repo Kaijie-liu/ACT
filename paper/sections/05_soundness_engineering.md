@@ -328,8 +328,15 @@ including the changed RHS; a zero-width range does not drop that relation.
 ReLU activation decisions then use checked bounds. Rows without evidence keep
 the generator-box range, while invalid facts reject. This supports scoped
 range consumption, not an empirical claim that tighter source propagation has
-solved the convolutional request: complete-trace integration and budgeted real
-range proposals remain separate work.
+solved the convolutional request. A separately controlled complete-trace
+pipeline now generates these optional facts under the same source-to-output
+budget, regenerates every downstream matrix and checks all fresh output
+obligations. Its batched affine implementation shares source parsing, not
+acceptance decisions; exact differentials retain every row and constraint.
+Missing two-sided evidence falls back, and invalid evidence rejects. Synthetic
+complete-request controls establish lifecycle and transport behavior, not
+trained-model effectiveness. The finite real comparison is separately frozen
+in [the range-pipeline protocol](../../docs/range_pipeline_v1.md).
 
 Independent checker and statement identities must be pinned outside the bundle.
 A hash confirms identity, not the mathematical correctness of a trusted source.
