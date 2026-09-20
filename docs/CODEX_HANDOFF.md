@@ -1,5 +1,31 @@
 # MoE project handoff
 
+LATEST COMPLETE (2026-09-20): property-directed finite comparison CLOSED.
+Read `docs/property_ranges_v1_results.md`, review, analysis and archive receipt.
+Frozen606cf2947 ran both arms once: prefix158.4005s, property185.7265s,
+each below300s. Both8range/9output calls; all4two-sided ranges check tighter.
+Prefix0positive/9nonpositive/0missing; property0positive/8nonpositive/1missing.
+Competitor7's16s native limit produced no usable multiplier; no retry.
+Both complete source/output-construction checks and separate moved audits
+PASS0 (70.0641s/68.5693s). No new complete positive request.
+
+Property rows:expert1[10,30],expert2[17,31]. All four initially unstable;
+expert2row17 becomes active. Prefix instead makes expert1row1 inactive.
+Both end with1618binaries and24462continuous factors, but different sources.
+All8common recorded lower bounds improve7.4554..11.3268; none crosses zero.
+The effect is on checked recorded bounds, not LP optima or complete coverage.
+Two experts' full pre-query source/score inventories agree; no missing snapshot.
+Raw `data/moe/results/property_ranges_conv98_20260920_v1` and all failures
+preserved.81frozen code/doc/control hashes and13captured artifacts unchanged.
+74regressions +4new saved-analysis +3old-analysis +3main-table tests PASS84.
+
+This closes the requested execution/audit/archive. No automatic new range,
+gate, query, time, row or same-request search. Future work requires a separately
+scoped decision about the remaining complete-output gap; this result alone
+does not separate weighted-product/earlier-source causes. High-accuracy,
+cross-family route-changing strict positivity remains OPEN;conv98 is single
+route67.06%. Main tables/native-float/production claims unchanged. No job pending.
+
 LATEST PREPARATION (2026-09-20): property-directed row comparison FROZEN,
 NOT EXECUTED. Read `docs/property_ranges_v1.md`, freeze and controls. Same
 conv98/pair1,2/model/represented2/255; new prefix vs property arms each retain

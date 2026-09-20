@@ -313,12 +313,16 @@ ReLU violations. The analysis motivates property-directed range selection,
 not a new safety or unique-root-cause claim. Full records and limitations:
 `docs/range_diagnosis_v1_results.md`.
 
-A separate property-directed row-selection control is now frozen, not yet
-executed. Both arms retain two hidden rows per expert, eight maximum range
-queries and the same300s complete-request budget; all nine output obligations
-are regenerated. Only the selected row set changes, with exact scores based on
-pre-query ranges and all classifier margins. This preparation has no measured
-effect to add to the result tables (`docs/property_ranges_v1.md`).
+A separate frozen property-directed control now selects two hidden rows per
+expert using pre-query ranges and all classifier margins. Each arm makes eight
+range and nine output queries within300s. The eight common checked bounds
+improve7.4554–11.3268 versus fresh prefix selection, yet remain nonpositive;
+competitor7 has no usable candidate in the property arm. Both retain1618 binary
+factors; complete costs are158.4005s versus185.7265s. Moved independent checks
+and terminal audits pass, but neither arm proves the complete request. This
+single-input result supports a row-selection effect on recorded bounds, not
+an exact-optimum gap, complete coverage gain or speedup. All raw failures and
+main results are retained (`docs/property_ranges_v1_results.md`).
 
 In a separately frozen development comparison, fresh evidence generation,
 packaging and checking on input 98 completed in 185.317 seconds; matched V2

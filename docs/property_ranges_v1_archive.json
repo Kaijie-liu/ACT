@@ -1,0 +1,103 @@
+{
+  "schema": "PROPERTY_RANGE_EXECUTION_ARCHIVE_V1",
+  "execution_head": "606cf2947f69b629a034d9805c2ff07c185fbef0",
+  "execution_root": "data/moe/results/property_ranges_conv98_20260920_v1",
+  "freeze_sha256": "f335341192e98c615487872354af13d4ab39a5d1d76a54cfe1b79cd26cdd8ec5",
+  "execution_receipt_sha256": "37fff2ddd0bb5dfeb3446e06d61a0c862fc293c7149aaf278bf63caa101dff95",
+  "batch_terminal_sha256": "cb2d708435633a9f376f060c231e2b41036ca5aa345f6c55167148e5f2715fd8",
+  "raw_review_sha256": "e7acab1e4fdf7f51890dcbfef141727779d6fb1c595d5c46263438c3e62c33f4",
+  "archived_review_sha256": "0b90c33a8c11d5bbadf2c386812c0189ac78a323a0ea0d1e94dafccfdd112760",
+  "archive_encoding": "Same JSON values as raw review; committed text adds one trailing newline; hashes intentionally distinct.",
+  "derived_analysis_sha256": "a5e127b476b59b7d10e61f4920f8ed2b98ac113a53edeb7cbe05a808fa3591df",
+  "report_sha256": "670c9486ec9e2c866a59f54eb4e0dae51a991ec4c95ff7f9c4638441b132d98b",
+  "status": "BOTH_ARMS_EXECUTED_ONCE_AND_INDEPENDENTLY_RECHECKED",
+  "audit": {
+    "status": "PASS",
+    "issues": [],
+    "isolated_moved_checks": 2,
+    "complete_prequery_expert_comparisons": 2,
+    "missing_prequery_snapshots": 0,
+    "source_prefix_transitions_per_arm": 7,
+    "remaining_expert_transitions_per_arm": 16,
+    "route_exclusions_per_arm": 5,
+    "required_outputs_per_arm": 9
+  },
+  "arms": [
+    {
+      "arm": "prefix",
+      "status": "UNKNOWN_NONPOSITIVE_BOUNDS",
+      "budget_seconds": 300,
+      "total_seconds": 158.40054215677083,
+      "native_range_calls": 8,
+      "native_output_calls": 9,
+      "accepted_range_facts": 4,
+      "checked_positive": 0,
+      "checked_nonpositive": 9,
+      "missing_bound_candidates": 0,
+      "terminal_sha256": "5551ccea4a02287c559aa0f8bdb77eee17b73484de3cd190dd9f95bedddb134a",
+      "proof_manifest_sha256": "3786eb72fcce4e83588d2f119680613035fec79e25e05bce0efba93ae7cb9f59",
+      "proof_bytes": 155513468,
+      "source_sha256": "cdc671b5ba8bf1bb8b10b288169247bb86ed0c9cc99b9221a66577682c16496a",
+      "independent_review_seconds": 70.06406539492309
+    },
+    {
+      "arm": "property",
+      "status": "UNKNOWN_MISSING_BOUND_EVIDENCE",
+      "budget_seconds": 300,
+      "total_seconds": 185.72654755413532,
+      "native_range_calls": 8,
+      "native_output_calls": 9,
+      "accepted_range_facts": 4,
+      "checked_positive": 0,
+      "checked_nonpositive": 8,
+      "missing_bound_candidates": 1,
+      "terminal_sha256": "704a4a328f90a8025efb148c0424082f1f625025602bda89e38d75bfc963c9ab",
+      "proof_manifest_sha256": "cc76faf839f1e15436b5dc92671b18349efeb05685321d686abe9d15e0c714c3",
+      "proof_bytes": 154943765,
+      "source_sha256": "01bd25ce6b9a3d8cbdba79443be30c33cdc00f55972e879cd13d28f611857c38",
+      "independent_review_seconds": 68.5693383552134
+    }
+  ],
+  "total_real_native_calls": 34,
+  "real_execution_retries": 0,
+  "additional_rows": 0,
+  "additional_time_seconds": 0,
+  "complete_positive_requests": 0,
+  "available_common_bound_count": 8,
+  "paired_bound_improvement_min": 7.455435074920916,
+  "paired_bound_improvement_max": 11.326839471377495,
+  "lost_available_competitors": [
+    7
+  ],
+  "property_extra_seconds": 27.326005397364497,
+  "lost_candidate": {
+    "competitor": 7,
+    "native_status": 1,
+    "native_limit_seconds": 16,
+    "native_observed_seconds": 16.09576251730323,
+    "message": "Time limit reached; no usable multiplier candidate; no exact LP impossibility or model-unsafe conclusion."
+  },
+  "verification": {
+    "source_selection_and_prior_diagnostic_tests": 74,
+    "new_saved_analysis_tests": 4,
+    "earlier_saved_analysis_tests": 3,
+    "main_table_tests": 3,
+    "total_tests_passed": 84,
+    "main_table_rebuild": "PASS_UNCHANGED",
+    "frozen_source_hashes_unchanged": 81,
+    "frozen_artifact_hashes_unchanged": 13,
+    "reporting_script_hashes": {
+      "scripts/analyze_property_ranges.py": "f0e42d21ffddf06fa72b864a6c753d46b0819c8f26883450eb2ae3c804abb88a",
+      "scripts/test_analyze_property_ranges.py": "730fc1c3d838830c2adf09aac98900340e1a1a35fa156441adba7b0dbdd405d6"
+    }
+  },
+  "network_forward_calls": 0,
+  "checkpoint_loads": 0,
+  "old_LP_certificates_used": 0,
+  "new_solver_calls_for_analysis": 0,
+  "exact_primal_feasibility_or_LP_optimality_checked": false,
+  "production_verdict_changed": false,
+  "deployed_floating_point_proof": false,
+  "interpretation": "Recorded lower-bound improvement without a complete positive request. Same source dimensions do not imply identical bounds. Single fixed-order observed request; no speedup/population or high-accuracy/route-changing claim.",
+  "next": "Finite protocol closed. No automatic row, query, time, gate or same-request search extension."
+}
