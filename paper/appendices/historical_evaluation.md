@@ -1,5 +1,13 @@
 # Historical evaluation, registered gates and component studies
 
+Current reading qualification (2026-09-21): passages below retain historical
+experiment descriptions, not current proof-strength claims. Every historical
+HZ `SAFE`, "certificate" or "certified set" count denotes frozen-policy
+acceptance, NOT a source-complete requested-real-box certificate. CROWN sets
+denote numerical filters. Counts, failed gates and chronology are unchanged.
+See [the current proof boundary](../README.md#current-proof-boundary) and
+[review response](../../docs/external_ai_review_response_20260921.md).
+
 The evaluation asks whether route conditioning expands the verifiable domain,
 which component provides that expansion, and whether the same analysis layer
 survives changes in router geometry, gate semantics, and expert scale. We keep

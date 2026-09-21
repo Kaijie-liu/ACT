@@ -47,7 +47,7 @@ a guarded scalar gate range through McCormick envelopes.
 
 The regime establishes mechanism evidence rather than scale by itself. The
 independent cohort shows candidate reduction, conditional binary-width
-separation, guard-dependent coverage, and route-changing certificates. Lazy
+separation, guard-dependent coverage, and route-changing HZ-policy SAFE results. Lazy
 no-good-cut enumeration and support-derived big-M tightening extend the same
 semantics beyond exhaustive \(E=8\) proposals. The completed synthetic
 \(E=4\ldots64\) study is worst-case/controlled scaling evidence, not natural
@@ -70,7 +70,7 @@ designed to keep that expert backend and its budget identical. A route-
 invariance baseline can invoke it only after proving a single route; Route A
 can cover every feasible route and aggregate only after every corresponding
 property is established. At verification scale, this change alone accounts
-for 56 additional solved samples and all 36 route-changing certificates. The
+for 56 additional solved samples and all 36 route-changing HZ-policy SAFE results. The
 official-scale B3 table completes the external numerical-conformance check. Its
 positive backward-CROWN margins preserve the coverage shape but are not
 promoted to formal SAFE because the backend is not outward rounded.

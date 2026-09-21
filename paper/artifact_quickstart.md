@@ -1,5 +1,10 @@
 # Reviewer workflows and their evidence boundaries
 
+Readiness update (2026-09-21): see the [local artifact inventory and isolated
+relocation check](../docs/reviewer_artifact_readiness_20260921.md). It verifies
+existing supplied-HZ evidence only. No fresh installation, public/anonymous
+distribution, or empirical model rerun has been completed by that check.
+
 There are three different entry points. None silently substitutes a toy result
 or a reconstructed table for an empirical complete-network proof.
 

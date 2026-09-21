@@ -3,18 +3,27 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import subprocess
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT/'docs/external_ai_review_manifest_20260921.json'
 DOCUMENTS = ('docs/EXTERNAL_AI_REVIEW.md', 'docs/EXTERNAL_AI_REVIEW_PROMPT.md')
+BASELINE = '806443470b3eeda3e601510ea8a6fc71570f96bf'
 
 
 def verify_record(record):
     p = (ROOT/record['path']).resolve()
     if not p.is_relative_to(ROOT) or not p.is_file():
         raise ValueError('missing/outside review material')
-    b = p.read_bytes()
+    # This manifest is a historical snapshot, not a ban on later manuscript
+    # revisions. Check its original Git objects; current files are separately
+    # hash-bound by review_revision_inventory_20260921_r2.json.
+    try:
+        b = subprocess.check_output(['git', 'show', f'{BASELINE}:{record["path"]}'],
+                                    cwd=ROOT, stderr=subprocess.DEVNULL)
+    except subprocess.CalledProcessError as exc:
+        raise ValueError('missing baseline review material') from exc
     if len(b) != record['bytes'] or hashlib.sha256(b).hexdigest() != record['sha256']:
         raise ValueError('review baseline drift')
 

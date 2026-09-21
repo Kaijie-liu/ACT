@@ -36,11 +36,29 @@ preserves historical failures outside the main narrative.
 
 The [main-table source-applicability audit](../docs/main_table_source_applicability_20260921.md)
 finds exact inward-containment gaps in saved input materialization and frozen
-input-HZ reconstruction, including all 23 primary gains. Main-table SAFE is
-therefore an empirical frozen-policy outcome, not a source-complete real-box
-certificate. The comparison and historical counts are preserved; downstream
+input-HZ reconstruction, including all 23 primary gains. Independently, the
+solver policy has no checked error bound covering arbitrary native bound
+errors, and downstream source conversion has not been independently established
+for those historical runs. Main-table SAFE denotes an empirical frozen-policy
+outcome, not a source-complete real-box certificate; the input audit supplies
+a concrete additional obstruction, not the sole reason for this distinction.
+The comparison and historical counts are preserved; downstream
 source validity cannot be inferred from a tiny local error or a positive old
 margin. This qualification also governs historical claim-index terminology.
+
+The [composed-input addendum](../docs/main_table_input_composition_20260921.md)
+directly checks both requested sets against the reconstructed input formula.
+All 100 inputs have uncovered requested coordinates AND outward excess:
+the sets are not nested. Common code is a shared risk, not evidence that
+every other historical input has the same defect. Correcting construction
+could change route coverage and outcomes; this revision does not predict or
+relabel such a counterfactual run.
+
+The [AI review response](../docs/external_ai_review_response_20260921.md)
+distinguishes accepted findings from overextended causal/scale interpretations.
+Its revision inventory covers every manuscript Markdown file, including
+unchanged historical appendices; the old review manifest remains a frozen
+snapshot and is checked against its recorded Git baseline, not rewritten.
 
 The positive portable input98 proof is conditional on its stored expert HZ.
 The later declared-source path checks a complete new enclosure but has no

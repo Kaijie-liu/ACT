@@ -86,7 +86,7 @@ claim about modern production-scale sparse MoEs.
 3. A guarded-support mechanism and a retained-affine-margin refinement, with
    explicit fallback rules that preserve soundness under solver limits.
 4. An independent verification-scale evaluation of candidate reduction,
-   structural width separation, route-changing certificates, F0 attribution,
+   structural width separation, route-changing HZ-policy SAFE results, F0 attribution,
    and guard-aware paired coverage.
 5. A tie-inclusive implication counterexample and a sound eta-shifted compiler,
    plus a partial primary-source artifact survey whose retrieval limitations are
@@ -260,11 +260,11 @@ structural consequence of decomposition when multiple experts are feasible. It
 is not a monolithic runtime comparison: a true monolithic router-dispatch-expert
 solver has not yet been executed.
 
-### Route-changing certificates and the immutable endpoint
+### Route-changing policy acceptances and the immutable endpoint
 
-The route-boundary experiment certified 36/100 samples as `SAFE` despite failure
+The route-boundary experiment accepted 36/100 samples as HZ-policy `SAFE` despite failure
 of the exact route-invariance precondition (36.0%; Wilson 95% interval
-27.3%--45.8%). Five certificates came from Tier 1 gate elimination and 31 from
+27.3%--45.8%). Five acceptances came from Tier 1 gate elimination and 31 from
 F0. The denominator is the full predeclared route-boundary cohort; this is a
 route-boundary certification yield, not natural-input prevalence.
 
@@ -281,7 +281,7 @@ failures, but they remain in the original denominator.
 Two additional balanced checkpoints were trained under the unchanged recipe,
 retained without outcome selection, and evaluated on the same independently
 frozen 40-image cohort. Both model audits report zero issues and replay every
-UNSAFE witness. Route-changing certificates replicate on both models (13/40
+UNSAFE witness. Route-changing HZ-policy SAFE results occur on both models (13/40
 and 6/40), as does conditional binary-width separation (median 0.352 for both;
 p90 0.477 and 0.447). Candidate reduction relative to ordinary zonotope is
 model-dependent: 6/32 (18.75%) for seed 1 and 14/18 (77.78%) for seed 2, so
@@ -290,7 +290,7 @@ only one crosses the registered 20% threshold. Overall solved coverage is
 
 The full registered conjunction therefore passes on neither model and does not
 support seed-robust wording for the entire result bundle. The narrower claims
-that route-changing certificates exist beyond seed 0 and that conditioning
+that route-changing policy acceptances occur beyond seed 0 and that conditioning
 separates binary width are supported on 2/2 retained replications. Pooled rows
 are descriptive only and cannot mask the per-model null conditions.
 
@@ -311,7 +311,7 @@ endpoint remains immutable.
 ### F0 incremental contribution
 
 Tier 1 left 60 semantic-incompleteness rows. F0 resolved 43/60 (71.7%): 31
-additional safe certificates and 12 concrete full-model unsafe witnesses. Its
+additional HZ-policy SAFE results and 12 concrete full-model unsafe witnesses. Its
 paired runtime overhead had median 28.1 seconds, IQR 7.4--63.5, and p90 115.1
 seconds. This result establishes F0 as a core second tier, but does not establish
 an end-to-end speedup.

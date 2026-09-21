@@ -59,13 +59,25 @@ and the McCormick outer relaxation imply the original routed property. The
 second asks whether a concrete solver execution supplies a trustworthy lower
 bound for that reduction. Passing the first layer does not validate the second.
 
-For the registered HZ/HiGHS path, ACT consumes a support lower bound only after
-optimal status, the frozen feasibility and integrality tolerances, an explicit
-absolute-plus-relative correction, and `nextafter` toward the unsafe direction.
-A primal incumbent is never substituted for a proof bound. These checks form a
-fail-closed policy for the pinned backend; they are not a universal proof about
-arbitrary native floating-point solver implementations. A result that does not
-satisfy the registered policy is `UNKNOWN_NUMERICAL`.
+For the registered HZ/HiGHS path, ACT requires optimal status and a finite
+solver bound, then applies an absolute-plus-relative correction and `nextafter`
+toward the unsafe direction. Candidate feasibility/integrality checks use
+policy fields of 1e-7; the inspected support/minimum calls do not explicitly
+pass these fields as native HiGHS tolerances. A primal incumbent is never
+substituted for a mixed-integer proof bound. The correction is
+1e-9 + 1e-9 times the largest magnitude among its supplied bound/center terms.
+No independently verified propagation from constraint, dual and arithmetic
+errors establishes that this correction covers native solver-bound error.
+Acceptance is a frozen numerical policy, not such a proof; neither optimal
+status nor the `nextafter` step closes that gap. Missing required acceptance
+conditions cannot establish SAFE.
+
+The absolute correction constant (1e-9), candidate tolerance (1e-7), maximum
+observed input-coordinate gap (about 2.8e-17), and minimum recorded acceptance
+among the 21 F0 gains (about 0.0236) are different quantities. Their numerical
+ordering is not an error-propagation argument or a severity ranking. Larger
+slack alone would not establish soundness, and a large old output margin does
+not cover unexamined inputs or potentially missing route obligations.
 
 There is a separate, upstream obligation even before solving. In the frozen
 main-table entry, materializing a clipped epsilon box and then computing an
@@ -80,6 +92,29 @@ Even a proof about that input HZ would still require downstream propagation,
 guard and weighted-output containment. Historical HZ-policy acceptance is
 therefore not a source-complete real-network certificate. See the
 [scope and gain ledger](../../docs/main_table_source_applicability_20260921.md).
+
+The [composed-input addendum](../../docs/main_table_input_composition_20260921.md)
+directly finds failed requested-set containment on 100/100 inputs, under both
+radius interpretations. It also finds outward excess on 100/100: the requested
+and reconstructed sets are not nested, rather than one being a strict subset.
+Shared production constructors make this a risk for other callers too; other
+historical cohorts have not received this per-input/version audit. We do not
+infer that every unaudited acceptance exhibits a measured inward gap.
+The frozen radius-pruning threshold also drops positive radii at or below
+1e-12, although none are dropped in this cohort. That separate risk is not
+the same mechanism as the float32 frontend ULP control. Any future repair
+must distinguish legitimate zero-radius axes from collapsed positive radii;
+this manuscript revision changes neither constructor nor acceptance policy.
+
+Scoped interval reuse checks exact arithmetic from the supplied endpoints and
+reconstructs the source facts from Tier 1 records. It does not independently
+prove that those endpoints contain the guarded expert outputs. Thus the
+181 reused rows in the main gain ledger are bound, checked arithmetic records
+conditional on upstream intervals, not 181 independently re-proved network
+bounds. Reused-row counts describe execution, not per-case causality: even
+one skipped obligation can be decisive. The 21 F0 gains' recorded reuse
+fractions range from 1/18 to 20/27; neither a small nor a large fraction
+isolates reuse from scheduling or solver cost without a matched intervention.
 
 The installed CROWN/auto_LiRPA path is treated more conservatively. It has no
 outward-rounding contract in this artifact, so even a finite positive lower

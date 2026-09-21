@@ -1,0 +1,73 @@
+{
+  "checks": [
+    {
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "-I",
+        "-S",
+        "/data1/Kane/MOE/ACT/scripts/test_review_handoff.py"
+      ],
+      "returncode": 0,
+      "seconds": 0.20121879503130913,
+      "source_sha256": "08b3fd660c1415be893fe3a4a4263a70d121d7c3d37b2f4f36c4c0c6383f6c92",
+      "stderr": "....\n----------------------------------------------------------------------\nRan 4 tests in 0.143s\n\nOK\n",
+      "stdout": "",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "-I",
+        "-S",
+        "/data1/Kane/MOE/ACT/scripts/test_moe_main_source.py"
+      ],
+      "returncode": 0,
+      "seconds": 0.06406906619668007,
+      "source_sha256": "61c60dae0f498cf07d3e28d348d9501846354d76ef65df9ee02a86093e168dee",
+      "stderr": "..............\n----------------------------------------------------------------------\nRan 14 tests in 0.010s\n\nOK\n",
+      "stdout": "",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "-I",
+        "-S",
+        "/data1/Kane/MOE/ACT/scripts/test_manuscript_source_contract.py"
+      ],
+      "returncode": 0,
+      "seconds": 0.04219945892691612,
+      "source_sha256": "7357f58ca57b0d80bd1d6ca9f0f2119c281466fc832d2effea5fbb190840d960",
+      "stderr": "......\n----------------------------------------------------------------------\nRan 6 tests in 0.003s\n\nOK\n",
+      "stdout": "",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "-I",
+        "-S",
+        "/data1/Kane/MOE/ACT/scripts/test_rebuild_moe_main_tables.py"
+      ],
+      "returncode": 1,
+      "seconds": 0.040100354701280594,
+      "source_sha256": "be0a47a996c93efa181239c4c38cfa2edb84bfc5a11983d5917f9004d1c63f78",
+      "stderr": "Traceback (most recent call last):\n  File \"/data1/Kane/MOE/ACT/scripts/test_rebuild_moe_main_tables.py\", line 6, in <module>\n    import rebuild_moe_main_tables as tables\nModuleNotFoundError: No module named 'rebuild_moe_main_tables'\n",
+      "stdout": "",
+      "timeout": false
+    }
+  ],
+  "meaning": "Arithmetic, identities, document consistency, fresh saved-only rereads; NOT independent network reproof.",
+  "new_model_forwards": 0,
+  "new_solver_calls": 0,
+  "new_source_propagations": 0,
+  "revision_inventory_sha256": "2e3163502a330d7c9b7f1628a73f77d6d0f59155f48f903e90eeaea961134ca2",
+  "schema": "REVIEW_RESPONSE_VALIDATION_V1",
+  "source_complete_positive_proof": false,
+  "status": "FAILED_RETAINED",
+  "third_party_mathematical_review": false
+}

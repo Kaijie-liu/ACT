@@ -1,5 +1,15 @@
 # Claims-to-Evidence Registry
 
+Scope update (2026-09-21 review response): historical HZ SAFE and certificate-
+yield terminology denotes frozen-policy outcomes, not independently proved
+requested-real-box certificates. CROWN positives remain numerical filters.
+Arithmetic checks of reused interval facts trust their upstream endpoints.
+The shared input-construction risk is broader than the per-input audit, but
+no unaudited cohort is declared to have a measured failure by extrapolation.
+See [current proof boundary](README.md#current-proof-boundary) and the
+[append-only composed-input audit](../docs/main_table_input_composition_20260921.md).
+Chronological entries retain their original experimental denominators/statuses.
+
 Current synthesis (2026-09-20): see [primary evaluation](sections/08_evaluation.md),
 [rebuilt outcome tables](results/main_tables.md) and
 [complete-request composition](sections/03_path_conditioned_method.md#complete-request-composition-theorem).

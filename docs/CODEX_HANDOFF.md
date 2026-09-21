@@ -1,5 +1,45 @@
 # MoE project handoff
 
+LATEST REVIEW RESPONSE (2026-09-21): PI supplied a separate AI review and
+authorized bounded revisions. Read `docs/external_ai_review_response_20260921.md`,
+`docs/main_table_input_composition_20260921.md/json`, and
+`docs/reviewer_artifact_readiness_20260921.md/json`. This is AI review plus
+author-side response, NOT completed human third-party mathematical review.
+
+Active manuscript/index terms now distinguish HZ-policy acceptances from
+source-complete certificates. Shared-constructor risk does not establish
+measured failure on every unaudited cohort/version. The numerical policy has
+no checked solver-error coverage derivation; raw1e-9/1e-7/input-gap/margin
+comparisons cannot supply one. A small reuse fraction does not prove scheduling
+causality. Old portable LPs already relaxed binaries: no two-axis strict
+weakening claim follows merely from the newer source/gate choices.
+
+New ADDENDUM, old ledger untouched:100 saved representatives, exact direct
+requested→H_formula containment fails100/100 for rational/binary64epsilon,
+257850/197704 inward coordinates. Outward excess also occurs100/100,50512
+coordinates in both interpretations: sets are NOT nested.23gain model–input
+pairs/21distinct inputs affected. Formula reconstruction, not recovered
+historical intermediate traces, missing-route witness or output counterexample.
+
+Existing7,181,520-byte conditional bundle copied outside checkout and rechecked
+with -I -S:9/9 unchanged positives,30.9191s local process. No proof regenerated.
+This does NOT close clean-install/release or newer source-complete positivity.
+All checkpoints/raw bundles stay local. No solve/forward/propagation/training,
+dependency change, numerical-policy change or external release/contact.
+STOP_INPUT98_FOLLOWUP remains. Next: PI-managed access and separately scoped
+clean-environment empirical reproduction, not another input98 optimization.
+
+`review_revision_inventory_20260921_r2.json` covers ALL current paper Markdown
+files and new response artifacts. The original52-file review manifest is
+preserved as a historical snapshot; tests read its pinned Git objects instead
+of requiring later manuscript revisions to equal the old manuscript. Current
+revision identities are checked separately. Main table and old results intact.
+The first validation receipt/inventory are retained: isolated -I prevented an
+unchanged sibling-import table TEST from loading. R2 invokes that test with
+-S (table rebuild remains -I -S); no assertion/acceptance rule was changed.
+
+HISTORICAL REVIEW HANDOFF (superseded by the response above):
+
 REVIEW HANDOFF (2026-09-21): PI will bring a separate AI reviewer.
 Start with `docs/EXTERNAL_AI_REVIEW_PROMPT.md`; detailed reading order,
 challenge questions, access limits, read-only commands and required report

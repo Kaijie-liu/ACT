@@ -175,7 +175,8 @@ where (m=r_a-r_b) is bounded under the pair guard. The F0 fallback uses this
 numeric gate range and one property-directed McCormick product. It encodes no
 exponentiation, division, or sigmoid segments. In the independent route-
 boundary cohort, F0 resolves 43 of 60 Tier-1 semantic incompleteness cases,
-including 31 additional certificates and 12 full-model-replayed violations.
+including 31 additional HZ-policy SAFE results and 12 full-model-replayed
+violations. These historical acceptances are not source-complete certificates.
 The alternate top-3 normalized-sigmoid execution exercises the general
 (|S|-1)-product implementation; it is mechanism evidence rather than a
 scalability result.

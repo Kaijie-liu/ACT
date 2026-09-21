@@ -27,7 +27,10 @@ uses the same exact router feasibility analysis as Route A. On applicable
 inputs, both methods invoke the identical downstream verifier with the same
 budget. This controls for expert-backend strength and isolates the cost of the
 route-invariance precondition. At verification scale Route A resolves 56
-additional samples and produces 36 route-changing certificates. The official-
+additional samples and produces 36 route-changing HZ-policy SAFE results.
+These are policy-accepted outcomes, not independently established real-box
+certificates; the historical cohort has not received the later per-input
+source-containment audit. The official-
 scale B3 run preserves the same comparison shape: Route A produces more
 positive numerical CROWN filters at four of five registered radii and on the
 route-boundary cohort. Because the installed backend is not outward rounded,

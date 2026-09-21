@@ -1,0 +1,163 @@
+{
+  "checks": [
+    {
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "-I",
+        "-S",
+        "/data1/Kane/MOE/ACT/scripts/test_review_handoff.py"
+      ],
+      "returncode": 0,
+      "seconds": 0.10864647477865219,
+      "source_sha256": "1be54ee702cba698184a47f8071b085c55a939b932177e4aba04403ecfd9a701",
+      "stderr": "....\n----------------------------------------------------------------------\nRan 4 tests in 0.073s\n\nOK\n",
+      "stdout": "",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "-I",
+        "-S",
+        "/data1/Kane/MOE/ACT/scripts/test_moe_main_source.py"
+      ],
+      "returncode": 0,
+      "seconds": 0.045538196340203285,
+      "source_sha256": "61c60dae0f498cf07d3e28d348d9501846354d76ef65df9ee02a86093e168dee",
+      "stderr": "..............\n----------------------------------------------------------------------\nRan 14 tests in 0.008s\n\nOK\n",
+      "stdout": "",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "-I",
+        "-S",
+        "/data1/Kane/MOE/ACT/scripts/test_manuscript_source_contract.py"
+      ],
+      "returncode": 0,
+      "seconds": 0.03675311431288719,
+      "source_sha256": "7357f58ca57b0d80bd1d6ca9f0f2119c281466fc832d2effea5fbb190840d960",
+      "stderr": "......\n----------------------------------------------------------------------\nRan 6 tests in 0.003s\n\nOK\n",
+      "stdout": "",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "-S",
+        "/data1/Kane/MOE/ACT/scripts/test_rebuild_moe_main_tables.py"
+      ],
+      "returncode": 0,
+      "seconds": 0.09233837947249413,
+      "source_sha256": "be0a47a996c93efa181239c4c38cfa2edb84bfc5a11983d5917f9004d1c63f78",
+      "stderr": "...\n----------------------------------------------------------------------\nRan 3 tests in 0.055s\n\nOK\n",
+      "stdout": "",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "-I",
+        "-S",
+        "/data1/Kane/MOE/ACT/scripts/test_moe_input_composition.py"
+      ],
+      "returncode": 0,
+      "seconds": 0.03840713016688824,
+      "source_sha256": "f3da80e0f57637e0a16d955ad6564c0f8087f98e28eaaba4d2554703bb0140c6",
+      "stderr": ".........\n----------------------------------------------------------------------\nRan 9 tests in 0.001s\n\nOK\n",
+      "stdout": "",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "-I",
+        "-S",
+        "/data1/Kane/MOE/ACT/scripts/test_review_revision.py"
+      ],
+      "returncode": 0,
+      "seconds": 0.05311588943004608,
+      "source_sha256": "e2891ebf5dc85db1e5f08454fa5778b18ab80d90fcd7953cbcea335d39aae64b",
+      "stderr": "........\n----------------------------------------------------------------------\nRan 8 tests in 0.018s\n\nOK\n",
+      "stdout": "",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "-I",
+        "-S",
+        "/data1/Kane/MOE/ACT/scripts/rebuild_moe_main_tables.py",
+        "--check"
+      ],
+      "returncode": 0,
+      "seconds": 0.029180513694882393,
+      "source_sha256": "aa8d4bbe54bc6825a6491f37ada2b6a4bf5241545e69ae31a6a76d004153f5cf",
+      "stderr": "",
+      "stdout": "PASS: main tables match committed evidence and accounting\n",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "-I",
+        "-S",
+        "/data1/Kane/MOE/ACT/scripts/build_review_revision_inventory.py",
+        "--check"
+      ],
+      "returncode": 0,
+      "seconds": 0.09793970175087452,
+      "source_sha256": "e7d6bb69cbc7344e34b013892d49ea9e1843d18f6b4847f118c828e237387352",
+      "stderr": "",
+      "stdout": "{\"current_manuscript_files\": 25, \"original_manifest_files\": 52, \"protected_materials\": 43, \"check\": true}\n",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "/data1/Kane/MOE/ACT/scripts/audit_moe_input_composition.py",
+        "--check"
+      ],
+      "returncode": 0,
+      "seconds": 2.6072131991386414,
+      "source_sha256": "0a6263ee47c030b94f0852d06feed1774914aad09358d29176d94aee0114a87d",
+      "stderr": "",
+      "stdout": "{\n  \"fresh_reread_matches\": true,\n  \"summary\": {\n    \"rational_epsilon\": {\n      \"inputs_with_inward_coordinates\": 100,\n      \"inward_coordinates\": 257850,\n      \"inward_coordinates_per_input_min\": 2111,\n      \"inward_coordinates_per_input_max\": 2986,\n      \"max_inward_gap_exact\": \"1/35888059530608640\",\n      \"inputs_with_outward_coordinates\": 100,\n      \"outward_coordinates\": 50512,\n      \"outward_coordinates_per_input_min\": 109,\n      \"outward_coordinates_per_input_max\": 964,\n      \"max_outward_gap_exact\": \"127/4593671619917905920\",\n      \"gain_model_input_pairs_with_coverage_loss\": 23,\n      \"distinct_gain_inputs_with_coverage_loss\": 21\n    },\n    \"binary64_epsilon\": {\n      \"inputs_with_inward_coordinates\": 100,\n      \"inward_coordinates\": 197704,\n      \"inward_coordinates_per_input_min\": 826,\n      \"inward_coordinates_per_input_max\": 2956,\n      \"max_inward_gap_exact\": \"1/36028797018963968\",\n      \"inputs_with_outward_coordinates\": 100,\n      \"outward_coordinates\": 50512,\n      \"outward_coordinates_per_input_min\": 109,\n      \"outward_coordinates_per_input_max\": 964,\n      \"max_outward_gap_exact\": \"1/36028797018963968\",\n      \"gain_model_input_pairs_with_coverage_loss\": 23,\n      \"distinct_gain_inputs_with_coverage_loss\": 21\n    }\n  }\n}\n",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "/data1/Kane/MOE/ACT/scripts/audit_moe_main_source.py",
+        "--check"
+      ],
+      "returncode": 0,
+      "seconds": 3.878434330224991,
+      "source_sha256": "1e5921dae189f60637f9759ae40b49f2bfbf0d5f6e3b417bd304e50a94239c13",
+      "stderr": "",
+      "stdout": "{\n  \"audit_status\": \"COMPLETED_WITH_SOURCE_CONTAINMENT_GAPS\",\n  \"seconds\": 3.5290119852870703,\n  \"fresh_reread_matches\": true,\n  \"packages\": 739,\n  \"summary\": {\n    \"requested_rational_to_box\": {\n      \"requests_with_inward_coordinates\": 100,\n      \"inward_coordinates\": 257850,\n      \"max_gap_exact\": \"1/35888059530608640\",\n      \"coordinate_count_min\": 2111,\n      \"coordinate_count_max\": 2986,\n      \"gain_requests_with_inward_coordinates\": 23\n    },\n    \"requested_binary64_to_box\": {\n      \"requests_with_inward_coordinates\": 100,\n      \"inward_coordinates\": 197704,\n      \"max_gap_exact\": \"1/36028797018963968\",\n      \"coordinate_count_min\": 826,\n      \"coordinate_count_max\": 2956,\n      \"gain_requests_with_inward_coordinates\": 23\n    },\n    \"box_to_hz_formula\": {\n      \"requests_with_inward_coordinates\": 98,\n      \"inward_coordinates\": 5736,\n      \"max_gap_exact\": \"1/72057594037927936\",\n      \"coordinate_count_min\": 0,\n      \"coordinate_count_max\": 207,\n      \"gain_requests_with_inward_coordinates\": 23\n    }\n  }\n}\n",
+      "timeout": false
+    }
+  ],
+  "meaning": "Arithmetic, identities, document consistency, fresh saved-only rereads; NOT independent network reproof.",
+  "new_model_forwards": 0,
+  "new_solver_calls": 0,
+  "new_source_propagations": 0,
+  "prior_attempt": "docs/review_response_validation_20260921.json",
+  "revision_inventory_sha256": "afbc96e85bf0dec15d6e379f5aaa55c7a07288b30218adab0b220b3bc4b1ec7c",
+  "schema": "REVIEW_RESPONSE_VALIDATION_V1",
+  "source_complete_positive_proof": false,
+  "status": "PASS",
+  "third_party_mathematical_review": false
+}

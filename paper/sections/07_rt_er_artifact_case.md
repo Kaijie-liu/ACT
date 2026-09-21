@@ -119,7 +119,7 @@ margin-to-gradient scale as an architectural property.
 On the independent verification-scale route-boundary cohort, the explicit
 route-invariance baseline and Route A use the same downstream backend and
 budget. Route invariance solves 12 of 100 inputs; staged route conditioning
-solves 68, a difference of 56 inputs. All 36 route-changing certificates are
+solves 68, a difference of 56 inputs. All 36 route-changing HZ-policy SAFE results are
 unique to Route A. The baseline is cheaper because it abandons 76 unstable
 inputs, so this is a coverage comparison rather than a speedup claim.
 
