@@ -14,10 +14,12 @@ def collect(executed=False, config_path=Path('configs/recent_moe/robust_experts_
         'robust_experts_cifar100_download_20260921_r1': 'TIMEOUT',
         'robust_experts_cifar100_download_20260921_r2': 'ERROR',
         'robust_experts_cifar100_download_20260921_r3': 'COMPLETED'}
-    if config_path.name == 'robust_experts_workflow_r2.json':
+    if config_path.name in {'robust_experts_workflow_r2.json', 'robust_experts_workflow_r3.json'}:
         expected['robust_experts_numpy_compat_install_20260921_r2'] = 'COMPLETED'
         expected['robust_experts_tifffile_compat_install_20260921_r2'] = 'COMPLETED'
         expected['robust_experts_config_controls_20260921_r2'] = 'COMPLETED'
+    if config_path.name == 'robust_experts_workflow_r3.json':
+        expected['robust_experts_apgd_mode_controls_20260921_r3'] = 'COMPLETED'
     records = []
     for name, status in expected.items():
         root = base / name

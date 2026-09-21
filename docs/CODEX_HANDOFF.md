@@ -1,5 +1,14 @@
 # MoE project handoff
 
+ROBUST EXPERTS REAL CONTROL / BN DIAGNOSTIC (2026-09-21):
+R2 native train/clean/PGD20/APGD20 completes13.16s, but independent saved-state
+audit rejects checkpoint equivalence:60 BN buffers changed after training.
+`docs/robust_experts_native_workflow_20260921.md` explains APGD root-mode restore;
+two miniature native controls reproduce/fix it without changing attack tensors.
+Separate R3 explicitly inherits wrapper mode from child; SAME600s/config, NEW
+source copy and run. R3 prepared, not yet executed at this entry. No paper RA,
+no exact full-state resume, no intermediate-layer certification claimed.
+
 ROBUST EXPERTS R1 FAILURE / R2 DEPENDENCY FREEZE (2026-09-21):
 R1 native workflow stopped BEFORE training in Lightning ModelCheckpoint: NumPy2
 removed np.Inf. Saved failure: `robust_experts_workflow_archive_20260921_r1.json`.

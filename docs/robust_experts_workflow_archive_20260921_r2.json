@@ -1,0 +1,175 @@
+{
+  "audit": "SAVED_DEPLOYMENT_RECORDS_PASS",
+  "records": [
+    {
+      "name": "robust_experts_workflow_deps_20260921_r1",
+      "status": "ERROR",
+      "receipt_sha256": "20adf312c808b98727415df2bf20dc21803f9f528646b051d9771a9a1510599f",
+      "execution_seconds": 1.3163759242743254,
+      "with_postflight_seconds": 1.3164725098758936
+    },
+    {
+      "name": "robust_experts_workflow_deps_20260921_r2",
+      "status": "COMPLETED",
+      "receipt_sha256": "f896e06465ffef57d9bde8034d8bcd089f01827e3239aea129f6a6d8bfc8bf75",
+      "execution_seconds": 11.783855801448226,
+      "with_postflight_seconds": 11.78396108187735
+    },
+    {
+      "name": "robust_experts_workflow_imports_20260921_r1",
+      "status": "COMPLETED",
+      "receipt_sha256": "a12be5fd5b02cfbca06e9b987dad66a06690314bbf4721085ab03682b9ce425d",
+      "execution_seconds": 2.71874494664371,
+      "with_postflight_seconds": 2.718846557661891
+    },
+    {
+      "name": "robust_experts_config_controls_20260921_r1",
+      "status": "COMPLETED",
+      "receipt_sha256": "9f2b93cbb19643ee3a39f3a82bf6690f9590c11d1b55006fce5ffcf0d873c16e",
+      "execution_seconds": 2.4187480062246323,
+      "with_postflight_seconds": 2.4188360553234816
+    },
+    {
+      "name": "robust_experts_cifar100_download_20260921_r1",
+      "status": "TIMEOUT",
+      "receipt_sha256": "a2f90595b3db8bd87068b8db999cc4d775023ed92f2c99150d7fa8f7e5288dc6",
+      "execution_seconds": 600.0103140268475,
+      "with_postflight_seconds": 600.0103880111128
+    },
+    {
+      "name": "robust_experts_cifar100_download_20260921_r2",
+      "status": "ERROR",
+      "receipt_sha256": "e56a163d9d77b9f3fcec4229b9ec7c6016901fda327befc8634ddf0d26316276",
+      "execution_seconds": 336.1181115321815,
+      "with_postflight_seconds": 336.11821297183633
+    },
+    {
+      "name": "robust_experts_cifar100_download_20260921_r3",
+      "status": "COMPLETED",
+      "receipt_sha256": "f85c01aab859719006f9698b55e3d6bc7d3555ae5aaae4fb5d91cf12df0ff3a6",
+      "execution_seconds": 330.1429840475321,
+      "with_postflight_seconds": 330.14307896979153
+    },
+    {
+      "name": "robust_experts_numpy_compat_install_20260921_r2",
+      "status": "COMPLETED",
+      "receipt_sha256": "55298294e36ebb619b095e9214a50c5c4bdb9bbb149dc1a08b2114d95c532d72",
+      "execution_seconds": 4.522030660882592,
+      "with_postflight_seconds": 4.522124137729406
+    },
+    {
+      "name": "robust_experts_tifffile_compat_install_20260921_r2",
+      "status": "COMPLETED",
+      "receipt_sha256": "748c9304cadf9f8448ae346ded778968ffea999f617dbac6677919afd34cab2e",
+      "execution_seconds": 0.5147358421236277,
+      "with_postflight_seconds": 0.5148372165858746
+    },
+    {
+      "name": "robust_experts_config_controls_20260921_r2",
+      "status": "COMPLETED",
+      "receipt_sha256": "73455a0b54672de52b1bde186caf88dbf680fda27cc1efda1cc2ead9de98ebfb",
+      "execution_seconds": 2.418047482147813,
+      "with_postflight_seconds": 2.4181455727666616
+    }
+  ],
+  "config_sha256": "d41c3c547d68915bf83fae2035aa4c03a88dbf998dbcd74628b894eb5676836f",
+  "execution_started_at_archive": true,
+  "compatibility": [
+    "Hydra1.3.2/Python3.12 vs author Hydra1.1",
+    "CPU Torch2.9.1/Lightning1.9.5",
+    "native swallowed data_dir assigned after construction",
+    "all remote logging disabled; local CSV/checkpoint only",
+    "R2 only: NumPy1.26.4/OpenCV4.11/tifffile2024.8.30 for original Lightning np.Inf; frozen R1 retained; no model or attack changes"
+  ],
+  "frozen_math": "native E4/k1/layer4 ConvMoE, SGD.1/momentum.9/wd5e-4, PGD7 eps.03137 alpha.00784313725",
+  "data": {
+    "status": "PUBLIC_DATA_INTEGRITY_PASS",
+    "reused_range_files_sha256": {
+      "/data1/Kane/MOE/baseline_data/robust_experts_20260921_r2/part00": "085c6f0416ae6c8e84a0cb43fd0a05d894dc6bc14d30380cbc643f5a392c43d6",
+      "/data1/Kane/MOE/baseline_data/robust_experts_20260921_r2/part01": "3107d4183f1d92f11d78e0c3daf74c27f3d134c83148074f8716a4df12f3f61b",
+      "/data1/Kane/MOE/baseline_data/robust_experts_20260921_r2/part02": "fdc083427d4fdf27fbf8ce694559c3e3189e49ba65523ae774da745743ebc7a0",
+      "/data1/Kane/MOE/baseline_data/robust_experts_20260921_r2/part03": "150fd616f362a7da46c8f8ce97a992eaef9bc3e50d0635d22113ff4402a04090",
+      "/data1/Kane/MOE/baseline_data/robust_experts_20260921_r2/part04": "16efdf83ef293cf162606919e53bc105269df79bc9f75bac187b87c84500d116",
+      "/data1/Kane/MOE/baseline_data/robust_experts_20260921_r3/part05": "849a7547175b3b937430628a098a851d520589ba99c34165e011da923e81f2b0",
+      "/data1/Kane/MOE/baseline_data/robust_experts_20260921_r2/part06": "6cbf79fd2b8879d8dc714ecde3a5e57a9b7266c52abc8505b5410148599b530e",
+      "/data1/Kane/MOE/baseline_data/robust_experts_20260921_r2/part07": "a923040c8d6e31d07c344ab6358a6e52c55ccfdeef783409cf321878e4f31f42"
+    },
+    "published_torchvision_md5": "eb9058c3a382ffc7106e4002c42a8d85",
+    "archive_sha256": "85cd44d02ba6437773c5bbd22e183051d648de2e7d6b014e1ef29b855ba677a7",
+    "files": {
+      "train": "735e79b04f092ca3d2e6d07f368c0a7d70d48c48d28865950cc24454cf45129b",
+      "test": "4b67687d9933c4db8f0831104447f15b93774f4f464bd0516f0f0f2ac83b7864",
+      "meta": "a5d4786345c961390f865e93b434dbd5c6904ce880667e0cb888c97d449f28b9"
+    },
+    "seconds": 330.0821485798806
+  },
+  "scope": "isolated source/dependency/data controls; not paper accuracy or certification",
+  "formal_SAFE": false,
+  "setup_failure_attribution": "R1 dependency pin was our nonexistent ClearML2.0.4 choice, NOT author-code failure; R2 uses published1.18.0",
+  "terminal": {
+    "status": "NATIVE_WORKFLOW_CONTROL_PASS",
+    "accepted": true,
+    "execution_seconds": 13.148976804688573,
+    "with_postflight_seconds": 13.159665251150727,
+    "formal_SAFE": false
+  },
+  "result": {
+    "status": "NATIVE_WORKFLOW_CONTROL_PASS",
+    "config_sha256": "d41c3c547d68915bf83fae2035aa4c03a88dbf998dbcd74628b894eb5676836f",
+    "global_steps": 1,
+    "changed_parameter_tensors": 74,
+    "test_calls": [
+      {
+        "call": 0,
+        "seconds": 1.7010505888611078,
+        "metrics": [
+          {
+            "test/acc": 0.0,
+            "test/loss": 5.910276889801025,
+            "test/aux_loss": -0.07111883163452148,
+            "test/main_loss": 5.981395721435547
+          }
+        ]
+      },
+      {
+        "call": 1,
+        "seconds": 2.5054819248616695,
+        "metrics": [
+          {
+            "attack/pgd/acc": 0.0,
+            "attack/pgd/loss": 7.446523666381836,
+            "attack/pgd/aux_loss": -0.15577107667922974,
+            "attack/pgd/main_loss": 7.602294921875
+          }
+        ]
+      },
+      {
+        "call": 2,
+        "seconds": 1.592065030708909,
+        "metrics": [
+          {
+            "attack/apgd/acc": 0.0,
+            "attack/apgd/loss": 5.5780439376831055,
+            "attack/apgd/aux_loss": -0.010102450847625732,
+            "attack/apgd/main_loss": 5.588146209716797
+          }
+        ]
+      }
+    ],
+    "order": [
+      "clean",
+      "PGD20",
+      "APGD20"
+    ],
+    "prediction_state_reload_exact": true,
+    "state_sha256": "ff6985f717132a81828575da9b96fe61f30e5371ddff6a3298efb5aa23c7777e",
+    "setup_seconds": 2.1928712651133537,
+    "native_workflow_save_seconds": 10.23977286554873,
+    "worker_total_seconds": 12.43264457397163,
+    "evidence_grade": "TRAIN_ATTACK_DEPLOYMENT_CONTROL",
+    "formal_SAFE": false,
+    "scope": "one train/validation/test batch and native PGD20/APGD20 batches, NOT paper training/accuracy or exact resume"
+  },
+  "execution_receipt_sha256": "1a5f4a6f3c75dd04bbaebe83af17758d7ddf5d7f3563733fe1edde1776a6a0bc",
+  "stderr_tail": null
+}
