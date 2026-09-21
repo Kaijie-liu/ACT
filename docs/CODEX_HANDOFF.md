@@ -1,5 +1,25 @@
 # MoE project handoff
 
+LATEST EXECUTED BASELINE STAGE (2026-09-21): read
+`docs/author_baselines_status_20260921.md` and its evidence links.
+Dual RS completed-epoch2/fresh-process replay PASS, allstate exact; outer12.877s
+including postflight. Final90epoch recipe is frozen,47,302train/8,719test rows,
+12h bounded supervision, finalepoch selection. NOT started at this archive entry;
+use `scripts/launch_dual_rs_frozen_training.py` only on clean frozen branch.
+Cert scientific recipe fixed but trained-weight execution still gated.
+
+MetaMoE original complete-model R2 returns UNSAFE_REPLAYED on frozen CIFARidx0
+(label3,prediction5); source32 and snapshot64 agree on prediction. Independent
+original-module in-box replay passes. No sample substitution, no new positive.
+New top1 API and9 semantic controls remain HZ-policy conditional, not strict.
+
+Full-size original RoME and Robust Experts intake controls PASS:24 and5 actual
+gate calls, bitwise output/input-gradient equality. Multi-layer domain lowering
+remains explicitly UNSUPPORTED; never freeze clean histories or normalize away
+Robust Experts' +1e-5. Dedicated CPU venv and original source preservation
+audited. Public RoME CIFAR MAX weight downloaded outside Git, trained loading
+is next. Old Dual RS R1 failure re-audit still matches; paper tables unchanged.
+
 BASELINE SUPERVISION CONTROLS FROZEN (2026-09-21):
 `dual_rs_epoch_control_r1.json` freezes native train/test/scheduler for2 epochs
 on first256 eligible train/test rows and a fresh-process epoch2 replay. SAME

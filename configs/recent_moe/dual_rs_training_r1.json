@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "protocol": "dual_rs_log_domain_author_recipe_training_r1",
+  "mode": "training",
+  "parent_config": "configs/recent_moe/dual_rs_training_control_r2.json",
+  "parent_config_sha256": "d5e6141b57d043b2830a55660b24270fde046348fef86c75dfe948773b8bafa1",
+  "step_control_archive": "docs/dual_rs_training_control_archive_20260921_r2.json",
+  "step_control_archive_sha256": "dfa690d8d44ccf119185088dc20bd46a20f69574da2c39447d5c7101824e3bc9",
+  "epochs": 90,
+  "prefix_count": null,
+  "train_count": 47302,
+  "test_count": 8719,
+  "test_label_table": "/data1/Kane/MOE/baselines/recent_moe_20260921/dual_rs/data/sigma_label/map10e4/0.250_0.500_1.000_test.npy",
+  "total_seconds": 43200,
+  "output_root": "/data1/Kane/MOE/baseline_runs/dual_rs_selector_training_20260921_r1",
+  "execution_files": {
+    "scripts/dual_rs_epoch_pipeline.py": "04323428759d59c1285ff70fd74c12cae8fe25c3d540b3de3600af74e6ddccd8",
+    "scripts/audit_dual_rs_epochs.py": "f29a25ac28dacee59c1971b04c5069c1556b649b0479fa3269e5d7ca659e8e29",
+    "scripts/dual_rs_training_control_r2.py": "f06808fdb70cb1f094aaa55b12fa907ecaa2d958c26ccca736ae3bbc14b375c2",
+    "scripts/dual_rs_training_state.py": "36ddce918c956c1277c26e980a6e9165c17142f9f6cbb8f3b0cfb16bca718c78",
+    "scripts/audit_dual_rs_training_control.py": "eecb66a0ad595fd8d1b32b9a1c196ace9722d3ef4510f44c0c57be65ae6c5665",
+    "scripts/launch_dual_rs_frozen_training.py": "145c16ff2d078187548b1667bbc48d6e091af26ac4034128886848a16f936d38"
+  },
+  "selection": "ALL author eligible max-radius-nonzero train/test rows; native train shuffle and test order",
+  "checkpoint_selection": "epoch90 only, regardless of accuracy or future certification",
+  "resume": "no automatic retry; complete-epoch state available for separately authorized continuation",
+  "failure_rule": "stop, retain all partials, no retry or altered gate",
+  "train_indices_sha256": "80583d0c9ed2e66d4a27a37d89387c9a1ba7ec6c638a60fa868db41eae6e66c6",
+  "test_indices_sha256": "60c9fbbed8381101c35cd8e3f09ba9b5dc2062f5a094ebb4ade6d880adf26e2a",
+  "launch_root": "/data1/Kane/MOE/baseline_runs/dual_rs_selector_training_launch_20260921_r1",
+  "epoch_control_archive": "docs/dual_rs_epoch_control_archive_20260921_r1.json",
+  "epoch_control_archive_sha256": "36f93bde89c07b4623f5c2c50be0612df946679db3ae0f724d186b0556fed982",
+  "certification_after_training": {
+    "status": "SCIENTIFIC_RECIPE_FIXED_NOT_AUTOMATICALLY_LAUNCHED",
+    "test_indices": [
+      0,
+      1
+    ],
+    "selection": "raw test prefix, no clean-correct/certificate filter",
+    "selector_checkpoint": "training/epoch090.pt after saved-state audit",
+    "noise_selector": 1.0,
+    "sigma_candidates": [
+      0.25,
+      0.5,
+      1.0
+    ],
+    "N0_each_stage": 100,
+    "N_each_stage": 10000,
+    "alpha_each_stage": 0.0005,
+    "confidence_scope": "per-input two-stage failure probability <= .001 by union bound",
+    "radius": "minimum of selector and chosen classifier L2 radii, zero on abstention",
+    "certification_precision": "native CUDA autocast; must bind implementation before launch",
+    "not_directly_comparable_to": "deterministic HZ-policy L_inf results"
+  }
+}

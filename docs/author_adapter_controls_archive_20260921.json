@@ -1,0 +1,339 @@
+{
+  "audit": "PASS",
+  "scope": "source/record and control checks; not paper replication or domain proofs",
+  "original_robust_source_unchanged": true,
+  "compatibility_patch_sha256": "649270eac6cb2fce8a93e1d761050663ff5de2804e0be0fc231208a082031256",
+  "cpu_environment": {
+    "/data1/Kane/MOE/envs/moe-author-cpu-py312-20260921/bin/python": {
+      "binary_sha256": "3662f23758ced1fbeefff88a4f73dd8107f290f784dc13a1311ee6e7202cef21",
+      "environment": {
+        "version": "3.12.12 | packaged by conda-forge | (main, Oct 22 2025, 23:25:55) [GCC 14.3.0]",
+        "prefix": "/data1/Kane/MOE/envs/moe-author-cpu-py312-20260921",
+        "packages": [
+          [
+            "Jinja2",
+            "3.1.6"
+          ],
+          [
+            "MarkupSafe",
+            "3.0.3"
+          ],
+          [
+            "PyYAML",
+            "6.0.3"
+          ],
+          [
+            "anyio",
+            "4.15.1"
+          ],
+          [
+            "certifi",
+            "2026.7.22"
+          ],
+          [
+            "click",
+            "8.5.0"
+          ],
+          [
+            "cloudpickle",
+            "3.1.2"
+          ],
+          [
+            "colorama",
+            "0.4.6"
+          ],
+          [
+            "einops",
+            "0.8.1"
+          ],
+          [
+            "filelock",
+            "3.32.3"
+          ],
+          [
+            "fsspec",
+            "2026.7.0"
+          ],
+          [
+            "h11",
+            "0.16.0"
+          ],
+          [
+            "hf-xet",
+            "1.6.0"
+          ],
+          [
+            "highspy",
+            "1.12.0"
+          ],
+          [
+            "httpcore",
+            "1.0.9"
+          ],
+          [
+            "httpx",
+            "0.28.1"
+          ],
+          [
+            "huggingface_hub",
+            "1.32.0"
+          ],
+          [
+            "idna",
+            "3.20"
+          ],
+          [
+            "joblib",
+            "1.6.0"
+          ],
+          [
+            "mpmath",
+            "1.3.0"
+          ],
+          [
+            "networkx",
+            "3.6.1"
+          ],
+          [
+            "numpy",
+            "2.5.2"
+          ],
+          [
+            "packaging",
+            "26.3"
+          ],
+          [
+            "pandas",
+            "2.3.3"
+          ],
+          [
+            "pillow",
+            "12.3.0"
+          ],
+          [
+            "pip",
+            "25.0.1"
+          ],
+          [
+            "psutil",
+            "7.2.0"
+          ],
+          [
+            "python-dateutil",
+            "2.9.0.post0"
+          ],
+          [
+            "pytz",
+            "2026.3.post1"
+          ],
+          [
+            "safetensors",
+            "0.8.0"
+          ],
+          [
+            "scikit-learn",
+            "1.7.2"
+          ],
+          [
+            "scipy",
+            "1.16.1"
+          ],
+          [
+            "setuptools",
+            "78.1.0"
+          ],
+          [
+            "six",
+            "1.17.0"
+          ],
+          [
+            "sympy",
+            "1.14.0"
+          ],
+          [
+            "threadpoolctl",
+            "3.7.0"
+          ],
+          [
+            "timm",
+            "1.0.15"
+          ],
+          [
+            "torch",
+            "2.9.1+cpu"
+          ],
+          [
+            "torchvision",
+            "0.24.1+cpu"
+          ],
+          [
+            "tqdm",
+            "4.67.1"
+          ],
+          [
+            "typing_extensions",
+            "4.16.0"
+          ],
+          [
+            "tzdata",
+            "2026.4"
+          ]
+        ]
+      }
+    }
+  },
+  "controls": [
+    {
+      "attempt": "robust_experts_arch_compat_20260921_r1",
+      "status": "ERROR",
+      "result": null,
+      "execution_seconds": 1.4664185717701912,
+      "total_with_postflight_seconds": 1.4665252305567265,
+      "record_hashes": {
+        "/data1/Kane/MOE/baseline_runs/robust_experts_arch_compat_20260921_r1/receipt.json": "083744b62c9f26635988a4cca593b312467b21833bc04a4bb2238de9b37fee48",
+        "/data1/Kane/MOE/baseline_runs/robust_experts_arch_compat_20260921_r1/stderr.txt": "ad7dde08c4fcf792cbdecffddd206678f7a8a6fd836108c3d02fa6721a5d9659",
+        "/data1/Kane/MOE/baseline_runs/robust_experts_arch_compat_20260921_r1/stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "attempt": "robust_experts_arch_compat_20260921_r2",
+      "status": "COMPLETED",
+      "result": {
+        "project": "robust_experts",
+        "python": "3.12.12 | packaged by conda-forge | (main, Oct 22 2025, 23:25:55) [GCC 14.3.0]",
+        "torch": "2.9.1+cpu",
+        "seed": 20260921,
+        "device": "cpu",
+        "dtype": "float32",
+        "trained_checkpoint": false,
+        "dataset_loaded": false,
+        "grade": "AUTHOR_MODEL_INIT_SMOKE",
+        "architecture": "author ResNet18 ConvMoE, layer4, E=4 k=2 GAP-FC",
+        "parameters": 36394168,
+        "logits_shape": [
+          2,
+          100
+        ],
+        "finite_forward": true,
+        "finite_input_gradient": true,
+        "input_gradient_l1": 1.7210477590560913
+      },
+      "execution_seconds": 1.6169147063046694,
+      "total_with_postflight_seconds": 1.6169884335249662,
+      "record_hashes": {
+        "/data1/Kane/MOE/baseline_runs/robust_experts_arch_compat_20260921_r2/receipt.json": "b58f3986772faac62dc52956cfef0cd2ef1ab0e55a0ef4031d47dabf1cec74f9",
+        "/data1/Kane/MOE/baseline_runs/robust_experts_arch_compat_20260921_r2/stderr.txt": "6ac53f2d84aee34e3de9a96256ad214d4c3b191fcba94a6455ba2ba5375f9b3a",
+        "/data1/Kane/MOE/baseline_runs/robust_experts_arch_compat_20260921_r2/stdout.txt": "0bed5f94f4dc6a959396525b57b512cf3eb2090a5d80176365b7ba6604555242"
+      }
+    },
+    {
+      "attempt": "robust_experts_intake_20260921_r1",
+      "status": "COMPLETED",
+      "result": {
+        "family": "robust_experts",
+        "status": "CONTROL_PASS",
+        "full_forward_bitwise_equal": true,
+        "input_gradient_bitwise_equal": true,
+        "source_mutation_rejected": true,
+        "train_mode_rejected": true,
+        "parameters": 36394168,
+        "trained_checkpoint": false,
+        "box_verification": {
+          "status": "UNSUPPORTED",
+          "evidence_grade": "NONE",
+          "source_complete": false,
+          "reason": "dependent multilayer route/backbone lowering is not implemented",
+          "family": "robust_experts",
+          "clean_trace_is_not_domain_coverage": true
+        },
+        "scope": "original full-size architecture intake/trace; not training, accuracy or certification",
+        "gate_calls": 5,
+        "gate_layers": [
+          "model.layer4.0.conv1.gate",
+          "model.layer4.0.conv2.gate",
+          "model.layer4.0.downsample.0.gate",
+          "model.layer4.1.conv1.gate",
+          "model.layer4.1.conv2.gate"
+        ],
+        "mechanisms": [
+          "intermediate_topk; native scores/(selected_sum+1e-5)"
+        ],
+        "source_inventory_bound_in_stdout": true
+      },
+      "execution_seconds": 1.818916741758585,
+      "total_with_postflight_seconds": 1.819003652781248,
+      "record_hashes": {
+        "/data1/Kane/MOE/baseline_runs/robust_experts_intake_20260921_r1/receipt.json": "435ccdde54b1f4f36f4ac5f692f9a061a5e19c9aaff27472fd17c4af0c50dff2",
+        "/data1/Kane/MOE/baseline_runs/robust_experts_intake_20260921_r1/stderr.txt": "6ac53f2d84aee34e3de9a96256ad214d4c3b191fcba94a6455ba2ba5375f9b3a",
+        "/data1/Kane/MOE/baseline_runs/robust_experts_intake_20260921_r1/stdout.txt": "c0db04025faff97c1a17ff57ba3af1af3c838097777384ffb8338eb2375e36f1"
+      }
+    },
+    {
+      "attempt": "rome_intake_20260921_r1",
+      "status": "COMPLETED",
+      "result": {
+        "family": "rome",
+        "status": "CONTROL_PASS",
+        "full_forward_bitwise_equal": true,
+        "input_gradient_bitwise_equal": true,
+        "source_mutation_rejected": true,
+        "train_mode_rejected": true,
+        "parameters": 145547434,
+        "trained_checkpoint": false,
+        "box_verification": {
+          "status": "UNSUPPORTED",
+          "evidence_grade": "NONE",
+          "source_complete": false,
+          "reason": "dependent multilayer route/backbone lowering is not implemented",
+          "family": "rome",
+          "clean_trace_is_not_domain_coverage": true
+        },
+        "scope": "original full-size architecture intake/trace; not training, accuracy or certification",
+        "gate_calls": 24,
+        "gate_layers": [
+          "blocks.0.attn.qkv_adapter",
+          "blocks.0.attn.proj_adapter",
+          "blocks.1.attn.qkv_adapter",
+          "blocks.1.attn.proj_adapter",
+          "blocks.2.attn.qkv_adapter",
+          "blocks.2.attn.proj_adapter",
+          "blocks.3.attn.qkv_adapter",
+          "blocks.3.attn.proj_adapter",
+          "blocks.4.attn.qkv_adapter",
+          "blocks.4.attn.proj_adapter",
+          "blocks.5.attn.qkv_adapter",
+          "blocks.5.attn.proj_adapter",
+          "blocks.6.attn.qkv_adapter",
+          "blocks.6.attn.proj_adapter",
+          "blocks.7.attn.qkv_adapter",
+          "blocks.7.attn.proj_adapter",
+          "blocks.8.attn.qkv_adapter",
+          "blocks.8.attn.proj_adapter",
+          "blocks.9.attn.qkv_adapter",
+          "blocks.9.attn.proj_adapter",
+          "blocks.10.attn.qkv_adapter",
+          "blocks.10.attn.proj_adapter",
+          "blocks.11.attn.qkv_adapter",
+          "blocks.11.attn.proj_adapter"
+        ],
+        "mechanisms": [
+          "dense_all_expert_lora; local/global gate; native float32 softmax"
+        ],
+        "source_inventory_bound_in_stdout": true
+      },
+      "execution_seconds": 2.8745803721249104,
+      "total_with_postflight_seconds": 2.8799680527299643,
+      "record_hashes": {
+        "/data1/Kane/MOE/baseline_runs/rome_intake_20260921_r1/receipt.json": "7391f18f71b2b865034f9c88f85159cda58203e6a6a1f2e81ae5fec1993f0f5f",
+        "/data1/Kane/MOE/baseline_runs/rome_intake_20260921_r1/stderr.txt": "cb05878a37609f00bf51daf7b8a7074818341f743d7bcf4ff0f574b3f8fd3f24",
+        "/data1/Kane/MOE/baseline_runs/rome_intake_20260921_r1/stdout.txt": "3b75d44280adcae1ef0e44a6a1840c348687ec2bbe1ddea770d311caa88f26b7"
+      }
+    }
+  ],
+  "retained_setup_failure": {
+    "operation": "offline conda clone",
+    "reason": "required package archives absent",
+    "partial_directory": "/data1/Kane/MOE/envs/moe-author-adapters-py312-20260921",
+    "replaced_by_separate_fresh_venv_not_modified_in_place": true
+  }
+}
