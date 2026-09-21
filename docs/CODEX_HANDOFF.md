@@ -1,5 +1,28 @@
 # MoE project handoff
 
+LATEST DUAL RS AUTHORIZED DEPLOYMENT (2026-09-21): isolated Blackwell environment
+installed (Python3.11/Torch2.11+cu130; compatibility stack, not author's exact
+Python3.9 stack). Pip check and original classifier-certification,
+sigma-certification and training help all PASS. Two public CIFAR base models
+downloaded; HF ViT revision63acc43b bound to published LFS hash. Restricted
+tensor-only loading and original DiffusionRobustModel GPU forward PASS on test
+index0, seed1, sigma{.25,.5,1}, batch1. Outer4.010s, peak allocated0.816GiB.
+NO sigma-estimator checkpoint, training or Monte Carlo certification yet.
+8 setup/probe receipts and unchanged older environments archived in
+`docs/dual_rs_author_install_20260921.json`; see
+`docs/dual_rs_author_deployment_20260921.md`. All jobs here have ended.
+Next bounded implementation: author's sigma-estimator one-step training and
+save/reload control with provided map10e4 labels, isolated data/output paths and
+limited workers. Freeze recipe/final-epoch choice and supervision before90epoch
+training; do not pick checkpoint by certification. Native code declares resume
+but does not implement restore/scheduler state; any resumable wrapper needs
+explicit checks before relying on it. Full two-stage certification still must
+retain N0=100/N=10000 and per-stage alpha=.0005 under the separate protocol.
+MetaMoE MNIST conversion issue stays open; RoME/Robust Experts etc. remain on
+their recorded later queues. These successes do not mean all6 author baselines
+or ACT same-task comparisons completed. 26 controls + unchanged paper tables
+PASS, both new archives saved-only reread match. No automatic long job started.
+
 LATEST METAMOE REAL CONTROL RESULT (2026-09-21): R2 executed frozen0d842e060.
 CIFAR-RT index0: BACKEND_POSITIVE (native safe-incomplete; all9 margins),
 backend3.026s, outer5.174s. This is the AUTHOR ONNX/decimal-VNNLIB result, not

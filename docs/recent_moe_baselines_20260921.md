@@ -19,6 +19,9 @@
 CIFAR专家index0全部9条性质得到ONNX/VNNLIB后端正结果。MNIST在原模型到导出的
 零输入一致性门拒绝，未求界。两条完整MoE/论文表格/ACT同任务比较仍未完成。
 不能把这个组件正结果升级成source-complete证书。
+随后[Dual RS隔离部署](dual_rs_author_deployment_20260921.md)完成新环境、三个原生CLI、
+公开diffusion/ViT权重获取与真实输入三sigma原生前向；不是随机初始化控制。
+sigma-estimator权重仍缺，未训练、未执行双阶段Monte Carlo认证；其余四项未因此自动完成。
 
 ## 先更正两个重要的旧判断
 
@@ -91,7 +94,8 @@ v3 Table2写68.34%；其余10格一致。不得改阈值消除差异。
 原始 ResNet110 estimator 架构 CPU 前向和输入梯度通过，但为随机初始化、未含 normalization
 wrapper，无新认证结果。认证 CLI 在当前 ACT 环境缺 `statsmodels`。
 
-部署还需：独立环境、diffusion/classifier权重、实际 estimator checkpoint 或冻结训练。
+首批来源控制时尚需独立环境、diffusion/classifier权重及实际estimator。
+本次授权后前两项与预训练组件前向已完成；仍需实际 estimator checkpoint 或冻结训练。
 README虽列 `logs/`，当前克隆并不等于已有训练权重。发现 `core.py` 的 `predict()` 引用
 未导入的 `binom_test`（文件导入的是 `binomtest`）；只有实际涉及的入口才作单独兼容修复，
 不把此静态问题冒充已经解释所有认证失败。
