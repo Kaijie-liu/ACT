@@ -50,11 +50,26 @@ resume control and a separately bound training recipe.
 
 ## Evidence
 
+Executed R3 at fc4e53d1a:13.2093s including postflight, one finite native update,
+all three test stages complete. Separate independent audit confirms all147
+state tensors identical to training-end last.ckpt,74 finite SGD momentum buffers,
+and both PolyLR child epoch positions1. No new full-network proof is claimed.
+
+The initial independent checker rejected the composite scheduler because it
+looked for last_epoch on the chain root. This was OUR schema assumption, not a
+native execution fault: the author's PolyLR subclasses ChainedScheduler and
+stores positions in two children. Frozen v1 remains unchanged; v2 checks both
+positions, initial recipe values and current LR agreement before reusing all
+tensor/optimizer checks. Three controls reject wrong child position, missing
+child, wrong horizon/LR and changed tensors. The actual R3 execution is not rerun.
+
 - `robust_experts_workflow_archive_20260921_r1.json`: preserved initial failure.
 - `robust_experts_workflow_archive_20260921_r2.json`: native deployment completion.
 - `robust_experts_saved_state_audit_20260921_r2.json`: strict mismatch and60 fields.
 - `tests/test_robust_experts_apgd_mode.py`: actual native attack mode controls.
 - `configs/recent_moe/robust_experts_workflow_r3.json`: separately frozen variant.
+- `robust_experts_workflow_archive_20260921_r3.json`: completed eval-mode variant.
+- `robust_experts_saved_state_audit_20260921_r3.json`: strict saved-state equality.
 
 This work does not implement complete intermediate-route HZ lowering. Original
 model execution intake remains distinct from whole-domain verification support.

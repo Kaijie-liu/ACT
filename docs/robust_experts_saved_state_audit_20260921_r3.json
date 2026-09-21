@@ -1,0 +1,65 @@
+{
+  "audit": "SAVED_TENSORS_AND_CHAINED_STATE_PASS",
+  "accepted": true,
+  "prediction_tensors": 147,
+  "optimizer_parameter_indices": 87,
+  "finite_momentum_buffers": 74,
+  "epoch": 0,
+  "global_step": 1,
+  "scheduler_last_epoch": 1,
+  "checkpoint_prediction_equal": true,
+  "full_training_resume_proven": false,
+  "formal_SAFE": false,
+  "scope": "saved finite tensors, SGD state indices, scheduler position and prediction-state equality only",
+  "scheduler_schema": "author_PolyLR_ChainedScheduler",
+  "scheduler_state": {
+    "T_max": 1,
+    "exponent": 0.9,
+    "_last_lr": [
+      0.0
+    ],
+    "_schedulers": [
+      {
+        "start_factor": 0.01,
+        "end_factor": 1,
+        "total_iters": 0,
+        "base_lrs": [
+          0.1
+        ],
+        "last_epoch": 1,
+        "_step_count": 2,
+        "_is_initial": false,
+        "_get_lr_called_within_step": false,
+        "_last_lr": [
+          0.001
+        ]
+      },
+      {
+        "base_lrs": [
+          0.1
+        ],
+        "last_epoch": 1,
+        "_step_count": 2,
+        "_is_initial": false,
+        "_get_lr_called_within_step": false,
+        "_last_lr": [
+          0.0
+        ],
+        "lr_lambdas": [
+          {}
+        ]
+      }
+    ]
+  },
+  "v1_rejection": "our auditor assumed top-level last_epoch; both child positions equal1",
+  "files": {
+    "configs/recent_moe/robust_experts_workflow_r3.json": "b01a6d11d528b1725dfdd32dce12ef1f0bf1e765a57d3af6830dad9a49c169d5",
+    "/data1/Kane/MOE/baseline_runs/robust_experts_workflow_20260921_r3/result.json": "0c177ce757659476dbaaa6495f354953958a2ccc317c66418e32144a12a87766",
+    "/data1/Kane/MOE/baseline_runs/robust_experts_workflow_20260921_r3/checkpoints/last.ckpt": "6084dc7eef439f8bb17c9f0aef6edb1d2a246f34a6d50811fa8c9c853d0a4f1b",
+    "/data1/Kane/MOE/baseline_runs/robust_experts_workflow_20260921_r3/trained_state.pt": "ba1dfc15b74ed291c299f33244b730b785b362877481db6270ddc80af67631d7",
+    "/data1/Kane/MOE/baseline_runs/robust_experts_workflow_20260921_r3/terminal.json": "122dc2563bf00f14ce2d6034f37f58b4942a400daa3bc16441f58a844caf3ec7",
+    "/data1/Kane/MOE/baseline_runs/robust_experts_workflow_20260921_r3/receipt.json": "26b7b237395b6afa86fb95c0cc0ac4d42faf41f4f36f4ce197e3c9b663023e22"
+  },
+  "native_checkpoint_hash_first_bound_by_this_audit": true,
+  "checker_source_sha256": "cd9276bb56859b0d0f8bb2e635bb2dfee3bff846f825ccf891ad5e9a90e98cbd"
+}

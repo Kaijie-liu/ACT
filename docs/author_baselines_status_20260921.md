@@ -1,5 +1,26 @@
 # Author baseline deployment and ACT intake: execution ledger
 
+## Latest consolidated state (supersedes historical preparation below)
+
+| Work | Deployment / executed control | Current ACT original-semantics support | Next uncompleted gate |
+|---|---|---|---|
+| Dual RS |Both exact resume controls PASS; frozen90epoch training running (epoch51 saved at this update); real certification runner/6 controls prepared|Separate statistical L2 path, not deterministic MoE HZ SAFE|Finalepoch90 audit, final-weight binding, then frozen2-input certification|
+| MetaMoE |Original full public CIFAR checkpoint loaded; frozenindex0 full-model counterexample independently replayed|NEW original class-separated top1 box entry,9 semantic controls; conditional HZ policy|MNIST ONNX/source mismatch and full author-table / paired experiment|
+| RoME |Public trained checkpoint strict prediction load; native standardAA control and independent replay complete|Original dense multilayer routing forward/gradient intake; whole-box UNSUPPORTED|Three-norm paper-scale evaluation and complete dependent-history lowering|
+| Robust Experts |Real native train/clean/PGD20/APGD20 R2 completes but BN state drifts; separate eval-mode R3 completes13.21s with147/147 checkpoint tensors preserved|Original intermediate MoE execution intake; whole-box UNSUPPORTED|Full-state continuation control, long-training recipe and multi-layer HZ lowering|
+| J-TLAT |Pinned author repository README-only|No runnable author implementation substituted|Public code/weights or PI-mediated artifact access|
+| Feature Noise |Paper studied; author implementation not identified|No invented implementation counted as deployment|Identify experiment source and freeze task|
+
+Robust Experts source-corrected R3 is explicitly NOT byte-identical native R2.
+Independent saved-only audit checks147 tensors,74 finite SGD buffers and both
+PolyLR child epoch positions. The first checker incorrectly assumed a top-level
+last_epoch; its frozen code remains, a separate v2 parser checks the actual
+ChainedScheduler schema with mutation controls. This is our checker-format fix,
+not a new run, changed result or relaxed equality gate. Full training continuation
+is still unproven. See [workflow and failure analysis](robust_experts_native_workflow_20260921.md),
+[R3 execution](robust_experts_workflow_archive_20260921_r3.json) and
+[independent state audit](robust_experts_saved_state_audit_20260921_r3.json).
+
 Latest execution update: Dual RS90epoch training is RUNNING, launched from
 826e8e94b after both real resume controls passed. Fresh run directory:
 `/data1/Kane/MOE/baseline_runs/dual_rs_selector_training_20260921_r1`.
@@ -121,7 +142,7 @@ compatibility stack, not a claim of identical author environment.
 | Dual RS |90epoch training running; certification execution recipe/6 controls now passed, actual final-weight binding and real two-stage pilot pending; then paper-scale replication|
 | MetaMoE author-table reproduction |MNIST conversion/source adapter control; router and expert tables; matched complete-request comparison|
 | RoME |Standard AutoAttack deployment control and independent replay completed; paper-scale evaluation still separate; no multi-layer HZ lowering yet|
-| Robust Experts |Execute separately frozen native single-batch workflow; then full training/attack protocol; no paper-trained weights or multi-layer HZ lowering yet|
+| Robust Experts |R2 native workflow and R3 eval-mode variant completed; full-state continuation control then separately frozen long training/attack protocol; no paper-trained weights or multi-layer HZ lowering yet|
 | J-TLAT |Pinned author checkout still README-only; no runnable implementation to deploy|
 | Feature Noise |Author experiment implementation not identified; do not substitute an invented implementation|
 

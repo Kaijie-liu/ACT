@@ -1,5 +1,21 @@
 # MoE project handoff
 
+LATEST BASELINE HANDOFF (2026-09-21):
+Robust Experts R3 is EXECUTED,13.209s with postflight;147/147 training-end vs
+post-evaluation state tensors equal,74 finite SGD momentum buffers. R2 native
+completion and60-buffer drift are both preserved. Read consolidated table in
+`docs/author_baselines_status_20260921.md` and Robust workflow analysis.
+Independent auditor v1's root-last_epoch assumption was OUR schema bug; separate
+v2 checks both native PolyLR child positions and retains all tensor checks.
+No full optimizer-continuation / paper RA / intermediate-route box proof claim.
+
+Dual RS training still live, epoch51 saved at this entry (check current files).
+Do not edit training/certification bound files. After epoch090 and final audit
+ONLY: prepare_dual_rs_certification.py --bind-landed, inspect resulting new
+manifest, commit/push that freeze, then execute its two-input certification.
+No automatic certification or Git writes were installed. RoME actual AA and
+MetaMoE original-top1 controls are archived, not paper-table replication.
+
 ROBUST EXPERTS REAL CONTROL / BN DIAGNOSTIC (2026-09-21):
 R2 native train/clean/PGD20/APGD20 completes13.16s, but independent saved-state
 audit rejects checkpoint equivalence:60 BN buffers changed after training.
