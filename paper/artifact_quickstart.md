@@ -1,5 +1,28 @@
 # Reviewer workflows and their evidence boundaries
 
+## New table-only review kit
+
+The [condensed review paper](review_main.tex) and
+[independent review form](../docs/SUBMISSION_REVIEW.md) now have an explicit
+local export workflow. With the existing Python environment and a **new**
+output directory whose parent exists:
+
+```sh
+python -I -S /path/to/ACT/scripts/render_submission_tables.py --check
+python -I -S /path/to/ACT/scripts/build_submission_review_kit.py --output /NEW/KIT
+python -I -S /NEW/KIT/scripts/check_submission_review_kit.py --manifest-sha256 HASH_PRINTED_BY_EXPORT
+```
+
+For an external transfer, communicate that manifest hash independently. The
+kit is local review preparation, not a public or anonymously sanitized release.
+It contains archived reviews rather than raw model/input/proof objects and
+returns only `ARCHIVED_ACCOUNTING_ONLY`. Running it in a relocated directory
+with `-I -S` is not a clean installation or trained-model experiment.
+This adds a compact paper/accounting handoff; it does not repeat generation
+of the old real proof or change its trust boundary.
+
+## Existing proof workflows
+
 Readiness update (2026-09-21): see the [local artifact inventory and isolated
 relocation check](../docs/reviewer_artifact_readiness_20260921.md). It verifies
 existing supplied-HZ evidence only. No fresh installation, public/anonymous

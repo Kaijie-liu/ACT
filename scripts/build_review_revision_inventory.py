@@ -6,9 +6,9 @@ from pathlib import Path
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-START = '282e0507b94ac2f6105096e43ea7c0f7a0d38bc5'
+START = '3877c90b95f88a9be8ab1ab796d97543a12fbb36'
 OLD = ROOT/'docs/external_ai_review_manifest_20260921.json'
-OUTPUT = ROOT/'docs/review_revision_inventory_20260921_r2.json'
+OUTPUT = ROOT/'docs/review_revision_inventory_20260921_r5.json'
 EXTRAS = (
     'docs/CODEX_HANDOFF.md', 'docs/EXTERNAL_AI_REVIEW.md', 'docs/EXTERNAL_AI_REVIEW_PROMPT.md',
     'docs/external_ai_review_response_20260921.md',
@@ -19,6 +19,13 @@ EXTRAS = (
     'scripts/build_review_revision_inventory.py', 'scripts/test_review_revision.py',
     'scripts/validate_review_response.py',
     'docs/review_revision_inventory_20260921.json', 'docs/review_response_validation_20260921.json',
+    'docs/review_revision_inventory_20260921_r2.json', 'docs/review_response_validation_20260921_r2.json',
+    'docs/review_revision_inventory_20260921_r3.json', 'docs/submission_review_validation_20260921_r1.json',
+    'docs/review_revision_inventory_20260921_r4.json', 'docs/submission_review_validation_20260921_r2.json',
+    'docs/SUBMISSION_REVIEW.md', 'docs/submission_references_20260921.md',
+    'scripts/render_submission_tables.py', 'scripts/build_submission_review_kit.py',
+    'scripts/check_submission_review_kit.py', 'scripts/test_submission_review.py',
+    'scripts/validate_submission_review.py',
 )
 
 
@@ -50,7 +57,8 @@ def build():
     # No implementation/experimental configuration changes anywhere under act.
     if subprocess.check_output(['git', 'diff', START, '--', 'act'], cwd=ROOT):
         raise ValueError('ACT implementation/config/results changed')
-    papers = [record(p) for p in sorted((ROOT/'paper').rglob('*.md'))]
+    papers = [record(p) for p in sorted((ROOT/'paper').rglob('*'))
+              if p.is_file() and p.suffix in ('.md', '.tex')]
     return {'schema': 'REVIEW_REVISION_INVENTORY_V1', 'starting_head': START,
             'historical_manifest': record(OLD), 'historical_scientific_baseline': old['scientific_baseline_commit'],
             'old_manifest_files_verified_from_git': old['file_count'],
@@ -61,7 +69,7 @@ def build():
             'act_changes': False, 'third_party_human_review_completed': False,
             'source_complete_positive_claim': False, 'input98_followup': 'STOP_INPUT98_FOLLOWUP',
             'external_release_performed': False,
-            'validation_receipt': 'docs/review_response_validation_20260921_r2.json',
+            'validation_receipt': 'docs/submission_review_validation_20260921_r3.json',
             'validation_receipt_note': 'Post-inventory execution receipt, intentionally not self-hashed here.'}
 
 

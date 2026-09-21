@@ -1,5 +1,35 @@
 # MoE project handoff
 
+LATEST SUBMISSION PREPARATION (2026-09-21): PI asked to improve the work for
+software-engineering submission. Read `paper/review_main.tex` and
+`docs/SUBMISSION_REVIEW.md` first for the condensed argument and human-review
+questions. This is a venue-neutral technical draft, not a venue decision or
+completed human review. Main tables are generated from unchanged committed
+reviews; 23 policy gains are NOT upgraded to source-complete certificates.
+External 13/11 positives with different grades, cost disadvantage, convolutional
+zero positives and nonnested input-source findings remain in the main body.
+
+`render_submission_tables.py` and the table-only review-kit export/checker
+provide a relocated standard-library accounting workflow. No raw tensors,
+weights or real proof bundle are included, and no new bound is generated.
+Kit PASS means captured identities/accounting, not raw-run or network reproof.
+R5 inventory covers all current Markdown AND LaTeX, preserving R2 and all
+older receipts. R3 and `submission_review_validation_20260921_r1.json` retain
+the first attempt: all controls/accounting passed, two overfull PDF text lines
+failed the layout gate. R4 reflows those sentences; no gate relaxation.
+R4's successful validation is retained. R5 additionally clarifies output
+noncompletion versus successful source checking and explicitly states the
+requested radius; `submission_review_validation_20260921_r3.json` records
+the final execution. No historical table or experimental conclusion changed.
+
+The compact bibliography has targeted primary-source checks, not exhaustive
+novelty review. AI-use disclosure is a draft requiring human confirmation;
+no final author sign-off is asserted. Still pending: human expert review,
+PI-managed access/rights and venue choice, clean-install empirical reproduction,
+and same-source positive proof research if separately scoped. No contacts,
+dependency installation, release or model/solver run is authorized by this
+preparation. STOP_INPUT98_FOLLOWUP and sealed experiments remain closed.
+
 LATEST REVIEW RESPONSE (2026-09-21): PI supplied a separate AI review and
 authorized bounded revisions. Read `docs/external_ai_review_response_20260921.md`,
 `docs/main_table_input_composition_20260921.md/json`, and

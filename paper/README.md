@@ -1,5 +1,14 @@
 # Manuscript reading order
 
+The new [condensed technical-review paper](review_main.tex) is a single,
+compilable entry point with the complete conditional composition rule, four
+research questions, generated main comparison tables, the external cost
+challenge, and source-contract limitations in the body. It is venue-neutral,
+not an official submission template. The [review form and reproduction map](../docs/SUBMISSION_REVIEW.md)
+provide a bounded independent-reader workflow; human review and empirical
+clean-environment reproduction are not claimed complete. The longer sections
+below remain the detailed companion, not deleted historical evidence.
+
 This is a research manuscript draft, not a submission-ready venue-formatted
 artifact and not an acceptance guarantee. Main narrative:
 
@@ -56,9 +65,20 @@ relabel such a counterfactual run.
 
 The [AI review response](../docs/external_ai_review_response_20260921.md)
 distinguishes accepted findings from overextended causal/scale interpretations.
-Its revision inventory covers every manuscript Markdown file, including
+Its historical R2 revision inventory covers every then-current manuscript Markdown file, including
 unchanged historical appendices; the old review manifest remains a frozen
 snapshot and is checked against its recorded Git baseline, not rewritten.
+The later R5 inventory covers current Markdown and LaTeX files, including the
+new short manuscript and its generated tables; both older inventories are
+preserved unchanged. R3 and its first validation are also retained: all
+arithmetic/control checks passed, but two overfull text lines failed the new
+PDF layout gate; R4 reflows those sentences without weakening that gate.
+R4's successful validation is preserved; R5 clarifies that it is positive
+output completion, not source checking, that failed, and states the requested
+radius explicitly. The protected experiment results and table are unchanged.
+Short-paper tables are rebuilt from the same four
+committed reviews as the unchanged historical main table, not copied from a
+new run or substituted for empirical reproduction.
 
 The positive portable input98 proof is conditional on its stored expert HZ.
 The later declared-source path checks a complete new enclosure but has no

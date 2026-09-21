@@ -1,0 +1,267 @@
+{
+  "clean_install_or_empirical_rerun": false,
+  "export": {
+    "files": 20,
+    "manifest_sha256": "5ebea701c74fb1e0aa780c5bc9eb0d69da2465df9e19edeb2225a61ac98d6ef9",
+    "output": "/data1/Kane/MOE/submission-review-20260921-r3/kit",
+    "total_bytes": 1264736
+  },
+  "human_review_completed": false,
+  "input98_followup": "STOP_INPUT98_FOLLOWUP",
+  "new_model_forwards": 0,
+  "new_output_bounds": 0,
+  "new_solver_calls": 0,
+  "new_source_propagations": 0,
+  "pdf": {
+    "bytes": 205640,
+    "path": "/data1/Kane/MOE/submission-review-20260921-r3/pdf/review_main.pdf",
+    "sha256": "d72935fdeb0c6ec32859fcb5768c0a1f8f5c531b27fd4618a565fee0750dfcaa"
+  },
+  "public_or_anonymous_release": false,
+  "records": [
+    {
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "-I",
+        "-S",
+        "/data1/Kane/MOE/ACT/scripts/test_submission_review.py"
+      ],
+      "cwd": "/data1/Kane/MOE/ACT",
+      "returncode": 0,
+      "seconds": 0.16527793370187283,
+      "stderr": "..........\n----------------------------------------------------------------------\nRan 10 tests in 0.128s\n\nOK\n",
+      "stdout": "",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "-I",
+        "-S",
+        "/data1/Kane/MOE/ACT/scripts/test_review_handoff.py"
+      ],
+      "cwd": "/data1/Kane/MOE/ACT",
+      "returncode": 0,
+      "seconds": 0.10363508947193623,
+      "stderr": "....\n----------------------------------------------------------------------\nRan 4 tests in 0.069s\n\nOK\n",
+      "stdout": "",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "-I",
+        "-S",
+        "/data1/Kane/MOE/ACT/scripts/test_moe_main_source.py"
+      ],
+      "cwd": "/data1/Kane/MOE/ACT",
+      "returncode": 0,
+      "seconds": 0.0426449291408062,
+      "stderr": "..............\n----------------------------------------------------------------------\nRan 14 tests in 0.006s\n\nOK\n",
+      "stdout": "",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "-I",
+        "-S",
+        "/data1/Kane/MOE/ACT/scripts/test_manuscript_source_contract.py"
+      ],
+      "cwd": "/data1/Kane/MOE/ACT",
+      "returncode": 0,
+      "seconds": 0.03640870749950409,
+      "stderr": "......\n----------------------------------------------------------------------\nRan 6 tests in 0.003s\n\nOK\n",
+      "stdout": "",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "-I",
+        "-S",
+        "/data1/Kane/MOE/ACT/scripts/test_moe_input_composition.py"
+      ],
+      "cwd": "/data1/Kane/MOE/ACT",
+      "returncode": 0,
+      "seconds": 0.03632165305316448,
+      "stderr": ".........\n----------------------------------------------------------------------\nRan 9 tests in 0.001s\n\nOK\n",
+      "stdout": "",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "-I",
+        "-S",
+        "/data1/Kane/MOE/ACT/scripts/test_review_revision.py"
+      ],
+      "cwd": "/data1/Kane/MOE/ACT",
+      "returncode": 0,
+      "seconds": 0.047901058569550514,
+      "stderr": "........\n----------------------------------------------------------------------\nRan 8 tests in 0.014s\n\nOK\n",
+      "stdout": "",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "-S",
+        "/data1/Kane/MOE/ACT/scripts/test_rebuild_moe_main_tables.py"
+      ],
+      "cwd": "/data1/Kane/MOE/ACT",
+      "returncode": 0,
+      "seconds": 0.08218744024634361,
+      "stderr": "...\n----------------------------------------------------------------------\nRan 3 tests in 0.047s\n\nOK\n",
+      "stdout": "",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "-I",
+        "-S",
+        "/data1/Kane/MOE/ACT/scripts/rebuild_moe_main_tables.py",
+        "--check"
+      ],
+      "cwd": "/data1/Kane/MOE/ACT",
+      "returncode": 0,
+      "seconds": 0.02840457856655121,
+      "stderr": "",
+      "stdout": "PASS: main tables match committed evidence and accounting\n",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "-I",
+        "-S",
+        "/data1/Kane/MOE/ACT/scripts/render_submission_tables.py",
+        "--check"
+      ],
+      "cwd": "/data1/Kane/MOE/ACT",
+      "returncode": 0,
+      "seconds": 0.028397507965564728,
+      "stderr": "",
+      "stdout": "PASS: review-paper tables reproduce the archived accounting\n",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "-I",
+        "-S",
+        "/data1/Kane/MOE/ACT/scripts/build_review_revision_inventory.py",
+        "--check"
+      ],
+      "cwd": "/data1/Kane/MOE/ACT",
+      "returncode": 0,
+      "seconds": 0.09560905955731869,
+      "stderr": "",
+      "stdout": "{\"current_manuscript_files\": 27, \"original_manifest_files\": 52, \"protected_materials\": 43, \"check\": true}\n",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "-I",
+        "-S",
+        "/data1/Kane/MOE/ACT/scripts/build_submission_review_kit.py",
+        "--output",
+        "/data1/Kane/MOE/submission-review-20260921-r3/kit"
+      ],
+      "cwd": "/data1/Kane/MOE/ACT",
+      "returncode": 0,
+      "seconds": 0.028873873874545097,
+      "stderr": "",
+      "stdout": "{\"files\": 20, \"manifest_sha256\": \"5ebea701c74fb1e0aa780c5bc9eb0d69da2465df9e19edeb2225a61ac98d6ef9\", \"output\": \"/data1/Kane/MOE/submission-review-20260921-r3/kit\", \"total_bytes\": 1264736}\n",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "-I",
+        "-S",
+        "/data1/Kane/MOE/submission-review-20260921-r3/relocated-kit/scripts/check_submission_review_kit.py",
+        "--manifest-sha256",
+        "5ebea701c74fb1e0aa780c5bc9eb0d69da2465df9e19edeb2225a61ac98d6ef9"
+      ],
+      "cwd": "/data1/Kane/MOE/submission-review-20260921-r3",
+      "returncode": 0,
+      "seconds": 0.034464024007320404,
+      "stderr": "",
+      "stdout": "{\"bytes\": 1264736, \"evidence_grade\": \"ARCHIVED_ACCOUNTING_ONLY\", \"files\": 20, \"limitations\": {\"clean_environment_empirical_rerun\": false, \"human_review_completed\": false, \"independent_network_reproof\": false, \"new_model_forwards\": 0, \"new_solver_calls\": 0, \"public_or_anonymous_release\": false, \"raw_models_inputs_or_proofs_bundled\": false}, \"manifest_sha256\": \"5ebea701c74fb1e0aa780c5bc9eb0d69da2465df9e19edeb2225a61ac98d6ef9\", \"meaning\": \"Captured-file integrity and archived accounting only; no independent network reproof.\", \"seconds\": 0.012776587158441544, \"status\": \"PASS\", \"table_rows\": 21}\n",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/kaijieliu/.TinyTeX/bin/x86_64-linux/pdflatex",
+        "-no-shell-escape",
+        "-halt-on-error",
+        "-interaction=nonstopmode",
+        "-output-directory",
+        "/data1/Kane/MOE/submission-review-20260921-r3/pdf",
+        "review_main.tex"
+      ],
+      "cwd": "/data1/Kane/MOE/submission-review-20260921-r3/relocated-kit/paper",
+      "returncode": 0,
+      "seconds": 0.13162770122289658,
+      "stderr": "",
+      "stdout": "This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex)\nentering extended mode\n(./review_main.tex\nLaTeX2e <2026-06-01>\nL3 programming layer <2026-07-20>\n(/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/base/article.cls\nDocument Class: article 2025/01/22 v1.4n Standard LaTeX document class\n(/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/base/size11.clo)) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/geometry/geometry.sty (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/graphics/keyval.sty) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/generic/iftex/ifvtex.sty (/home/kaijieliu/.TinyTeX/texmf-dist/tex/generic/iftex/iftex.sty))) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/amsmath/amsmath.sty\nFor additional information on amsmath, use the `?' option.\n(/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/amsmath/amstext.sty (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/amsmath/amsgen.sty)) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/amsmath/amsbsy.sty) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/amsmath/amsopn.sty)) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/amsfonts/amssymb.sty (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/amsfonts/amsfonts.sty)) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/amscls/amsthm.sty) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/booktabs/booktabs.sty) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/hyperref/hyperref.sty (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/generic/pdfescape/pdfescape.sty (/home/kaijieliu/.TinyTeX/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty (/home/kaijieliu/.TinyTeX/texmf-dist/tex/generic/infwarerr/infwarerr.sty))) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/hycolor/hycolor.sty) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/hyperref/nameref.sty (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/refcount/refcount.sty) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/kvoptions/kvoptions.sty))) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/etoolbox/etoolbox.sty) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/generic/stringenc/stringenc.sty) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/hyperref/pd1enc.def) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/generic/intcalc/intcalc.sty) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/hyperref/puenc.def) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/url/url.sty) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/generic/bitset/bitset.sty (/home/kaijieliu/.TinyTeX/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty))) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/hyperref/hpdftex.def (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty (/home/kaijieliu/.TinyTeX/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty))) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def)\nNo file review_main.aux.\n*geometry* driver: auto-detecting\n*geometry* detected driver: pdftex\n(/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/amsfonts/umsa.fd) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/amsfonts/umsb.fd) [1{/home/kaijieliu/.TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2]\n\nLaTeX Warning: Reference `eq:target' on page 3 undefined on input line 135.\n\n\nLaTeX Warning: Reference `prop:complete' on page 3 undefined on input line 183.\n\n[3] (./results/submission_tables.tex)\n\nLaTeX Warning: Reference `sec:contracts' on page 4 undefined on input line 250.\n\n[4]\n\nLaTeX Warning: Reference `tab:confirmation' on page 5 undefined on input line 255.\n\n[5]\n\nLaTeX Warning: Reference `tab:external' on page 6 undefined on input line 291.\n\n\nLaTeX Warning: Reference `sec:contracts' on page 6 undefined on input line 318.\n\n\nLaTeX Warning: Citation `hz' on page 6 undefined on input line 323.\n\n\nLaTeX Warning: Citation `dnnv' on page 6 undefined on input line 325.\n\n\nLaTeX Warning: Citation `metamoe' on page 6 undefined on input line 327.\n\n\nLaTeX Warning: Citation `crown' on page 6 undefined on input line 332.\n\n\nLaTeX Warning: Citation `clip' on page 6 undefined on input line 334.\n\n\nLaTeX Warning: Citation `fastcert' on page 6 undefined on input line 338.\n\n\nLaTeX Warning: Citation `conflicts' on page 6 undefined on input line 340.\n\n\nLaTeX Warning: Citation `torchlean' on page 6 undefined on input line 343.\n\n[6]\n\nLaTeX Warning: Reference `prop:complete' on page 7 undefined on input line 356.\n\n[7] [8] (/data1/Kane/MOE/submission-review-20260921-r3/pdf/review_main.aux)\n\nLaTeX Warning: There were undefined references.\n\n\nLaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.\n\n\nPackage rerunfilecheck Warning: File `review_main.out' has changed.\n(rerunfilecheck)                Rerun to get outlines right\n(rerunfilecheck)                or use package `bookmark'.\n\n )</home/kaijieliu/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></home/kaijieliu/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></home/kaijieliu/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></home/kaijieliu/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></home/kaijieliu/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></home/kaijieliu/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></home/kaijieliu/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></home/kaijieliu/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></home/kaijieliu/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></home/kaijieliu/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></home/kaijieliu/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></home/kaijieliu/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></home/kaijieliu/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></home/kaijieliu/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>\nOutput written on /data1/Kane/MOE/submission-review-20260921-r3/pdf/review_main.pdf (8 pages, 204813 bytes).\nTranscript written on /data1/Kane/MOE/submission-review-20260921-r3/pdf/review_main.log.\n",
+      "timeout": false
+    },
+    {
+      "command": [
+        "/home/kaijieliu/.TinyTeX/bin/x86_64-linux/pdflatex",
+        "-no-shell-escape",
+        "-halt-on-error",
+        "-interaction=nonstopmode",
+        "-output-directory",
+        "/data1/Kane/MOE/submission-review-20260921-r3/pdf",
+        "review_main.tex"
+      ],
+      "cwd": "/data1/Kane/MOE/submission-review-20260921-r3/relocated-kit/paper",
+      "returncode": 0,
+      "seconds": 0.1332786027342081,
+      "stderr": "",
+      "stdout": "This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex)\nentering extended mode\n(./review_main.tex\nLaTeX2e <2026-06-01>\nL3 programming layer <2026-07-20>\n(/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/base/article.cls\nDocument Class: article 2025/01/22 v1.4n Standard LaTeX document class\n(/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/base/size11.clo)) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/geometry/geometry.sty (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/graphics/keyval.sty) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/generic/iftex/ifvtex.sty (/home/kaijieliu/.TinyTeX/texmf-dist/tex/generic/iftex/iftex.sty))) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/amsmath/amsmath.sty\nFor additional information on amsmath, use the `?' option.\n(/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/amsmath/amstext.sty (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/amsmath/amsgen.sty)) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/amsmath/amsbsy.sty) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/amsmath/amsopn.sty)) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/amsfonts/amssymb.sty (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/amsfonts/amsfonts.sty)) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/amscls/amsthm.sty) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/booktabs/booktabs.sty) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/hyperref/hyperref.sty (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/generic/pdfescape/pdfescape.sty (/home/kaijieliu/.TinyTeX/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty (/home/kaijieliu/.TinyTeX/texmf-dist/tex/generic/infwarerr/infwarerr.sty))) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/hycolor/hycolor.sty) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/hyperref/nameref.sty (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/refcount/refcount.sty) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/kvoptions/kvoptions.sty))) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/etoolbox/etoolbox.sty) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/generic/stringenc/stringenc.sty) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/hyperref/pd1enc.def) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/generic/intcalc/intcalc.sty) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/hyperref/puenc.def) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/url/url.sty) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/generic/bitset/bitset.sty (/home/kaijieliu/.TinyTeX/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty))) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/hyperref/hpdftex.def (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty (/home/kaijieliu/.TinyTeX/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty))) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def) (/data1/Kane/MOE/submission-review-20260921-r3/pdf/review_main.aux)\n*geometry* driver: auto-detecting\n*geometry* detected driver: pdftex\n(/data1/Kane/MOE/submission-review-20260921-r3/pdf/review_main.out) (/data1/Kane/MOE/submission-review-20260921-r3/pdf/review_main.out) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/amsfonts/umsa.fd) (/home/kaijieliu/.TinyTeX/texmf-dist/tex/latex/amsfonts/umsb.fd) [1{/home/kaijieliu/.TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] [3] (./results/submission_tables.tex) [4] [5] [6] [7] [8] (/data1/Kane/MOE/submission-review-20260921-r3/pdf/review_main.aux) )</home/kaijieliu/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></home/kaijieliu/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></home/kaijieliu/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></home/kaijieliu/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></home/kaijieliu/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></home/kaijieliu/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></home/kaijieliu/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></home/kaijieliu/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></home/kaijieliu/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></home/kaijieliu/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></home/kaijieliu/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></home/kaijieliu/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></home/kaijieliu/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></home/kaijieliu/.TinyTeX/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>\nOutput written on /data1/Kane/MOE/submission-review-20260921-r3/pdf/review_main.pdf (8 pages, 205640 bytes).\nTranscript written on /data1/Kane/MOE/submission-review-20260921-r3/pdf/review_main.log.\n",
+      "timeout": false
+    }
+  ],
+  "relocated_check": {
+    "bytes": 1264736,
+    "evidence_grade": "ARCHIVED_ACCOUNTING_ONLY",
+    "files": 20,
+    "limitations": {
+      "clean_environment_empirical_rerun": false,
+      "human_review_completed": false,
+      "independent_network_reproof": false,
+      "new_model_forwards": 0,
+      "new_solver_calls": 0,
+      "public_or_anonymous_release": false,
+      "raw_models_inputs_or_proofs_bundled": false
+    },
+    "manifest_sha256": "5ebea701c74fb1e0aa780c5bc9eb0d69da2465df9e19edeb2225a61ac98d6ef9",
+    "meaning": "Captured-file integrity and archived accounting only; no independent network reproof.",
+    "seconds": 0.012776587158441544,
+    "status": "PASS",
+    "table_rows": 21
+  },
+  "revision_inventory_sha256": "6c3c37711f4c384cdd3b94c1bce8b4dab66dff2ccc0d137fee379a6efe4402bc",
+  "schema": "SUBMISSION_REVIEW_VALIDATION_V1",
+  "starting_head": "3877c90b95f88a9be8ab1ab796d97543a12fbb36",
+  "status": "PASS",
+  "work": "/data1/Kane/MOE/submission-review-20260921-r3"
+}

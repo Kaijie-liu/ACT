@@ -15,8 +15,9 @@ def read(path):
 
 class Revision(unittest.TestCase):
     def test_complete_manuscript_and_response_identity(self):
-        inv = read('docs/review_revision_inventory_20260921_r2.json')
-        actual = {str(p.relative_to(ROOT)) for p in (ROOT/'paper').rglob('*.md')}
+        inv = read('docs/review_revision_inventory_20260921_r5.json')
+        actual = {str(p.relative_to(ROOT)) for p in (ROOT/'paper').rglob('*')
+                  if p.is_file() and p.suffix in ('.md', '.tex')}
         self.assertEqual(actual, {r['path'] for r in inv['current_manuscript']})
         for r in inv['current_manuscript']+inv['current_response_materials']+inv['protected_unchanged_scientific_materials']:
             data = (ROOT/r['path']).read_bytes()
@@ -96,9 +97,10 @@ class Revision(unittest.TestCase):
             self.assertFalse(r[k])
 
     def test_response_and_manuscript_local_links(self):
-        inv = read('docs/review_revision_inventory_20260921_r2.json')
+        inv = read('docs/review_revision_inventory_20260921_r5.json')
         paths = [r['path'] for r in inv['current_response_materials'] if r['path'].endswith('.md')]
-        paths += [r['path'] for r in inv['current_manuscript'] if not r['path'].startswith('paper/appendices/')]
+        paths += [r['path'] for r in inv['current_manuscript'] if r['path'].endswith('.md')
+                  and not r['path'].startswith('paper/appendices/')]
         # Only Markdown links; plain-text historical path mentions aren't access claims.
         for name in paths:
             p = ROOT/name

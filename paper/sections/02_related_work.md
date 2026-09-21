@@ -108,10 +108,10 @@ output is semantically sound only with a positive tie margin and remains too
 loose in our CROWN cohort. These negative controls prevent us from treating all
 guard representations as equivalent.
 
-Monolithic MILP is the direct exact-encoding baseline for verification-scale
-models. It uses the same support-derived bounds as the decomposed encoding. Its
-role is to test simultaneous binary width and runtime, not to stand in for a
-published MoE verifier. For official-scale ResNet experts, CROWN is the primary
+Monolithic F0/MILP joins the same branch outer relaxations used by the
+decomposed weighted path. It is not an exact encoding of the original softmax.
+Its role is to compare obligation organization and finite-budget outcomes,
+not to stand in for every published MoE verifier. For official-scale ResNet experts, CROWN is the primary
 commodity backend and HZ/MILP is limited to an explicitly labelled exactness
 reference subset.
 
@@ -134,6 +134,16 @@ and executable audit semantics across output-level, affine official-scale, and
 deep shared-path regimes.
 
 ## What we do not claim
+
+The condensed manuscript also distinguishes within-request scoped facts from
+[FastCert's cross-query intermediate templates](https://arxiv.org/abs/2608.19351)
+and [learned-conflict inheritance under query refinement](https://arxiv.org/abs/2603.12232).
+Constraint retention is not new in general: [Clip-and-Verify](https://proceedings.neurips.cc/paper_files/paper/2025/hash/ffa977364ab7046c803da0e04dbb2832-Abstract-Conference.html)
+uses linear constraints in a modern BaB backend. The completed plain-CROWN
+experiment does not measure that entire method family. Our same-task evidence
+is complementarity with an ACT-fronted static weighted path, not a claim of
+generic external-tool superiority. See the [targeted reference checks](../../docs/submission_references_20260921.md)
+for scope and remaining full-paper/metadata review work.
 
 We do not claim a universal verifier, a dominance result over CROWN, or a
 formal prevalence estimate for papers without complete source-native survey
