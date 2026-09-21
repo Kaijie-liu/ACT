@@ -1,5 +1,16 @@
 # MoE project handoff
 
+AUTHORIZED BASELINE EXTENSION (2026-09-21): PI now asks to close deployment,
+semantic adapters, supervision and freeze stages, including original MetaMoE,
+RoME and Robust Experts inputs. See `docs/author_baselines_extension_20260921.md`.
+Dual RS log-domain default consistency variant passes normal loss/gradient,
+extreme-logit and gradcheck controls;39 total tests PASS. R2 freezes the SAME
+256 inputs/recipe/300s with unchanged exact resume gate; NOT executed at this
+preparation entry. R1 remains failed. No90epoch launch before real R2 passes.
+Important source contracts: MetaMoE zero-pads other class blocks and performs
+score/score even at top1; RoME LoRA uses dense all-expert weights, not top2;
+Robust Experts retains +1e-5 in gate normalization. Do not simplify these away.
+
 LATEST DUAL RS TRAINING CONTROL RESULT (2026-09-21):
 `docs/dual_rs_training_control_archive_20260921_r1.json` is the saved-only
 audited FAILURE. Update1 finite(loss1.86918;335 parameter tensors changed),
