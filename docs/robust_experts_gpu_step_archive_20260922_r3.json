@@ -1,0 +1,79 @@
+{
+  "audit": "INDEPENDENT_SAVED_GPU_STEP_REVIEW_PASS",
+  "rows": [
+    {
+      "arm": "dense",
+      "result": {
+        "status": "NATIVE_GPU_FULL_BATCH_STEP_PASS",
+        "arm": "dense",
+        "config_sha256": "9663ca4a5fa4552ab883b2b871bc154831e55551797238d058ec696e4cb8c747",
+        "batch_observations": [
+          {
+            "batch": 0,
+            "size": 640,
+            "device": "cuda:0"
+          }
+        ],
+        "steps": 1,
+        "changed_parameter_tensors": 62,
+        "state_tensors": 122,
+        "checkpoint_sha256": "9449b76d6d10c2bd95f287bb5a9098a337dee36e8563e91fdee11781e6303c78",
+        "peak_allocated_bytes": 3239273472,
+        "seconds": 8.930916838347912,
+        "long_training": false,
+        "exact_gpu_resume": false,
+        "scope": "native full-batch PGD7/SGD and saved state; no accuracy or certification"
+      },
+      "finite_momentum_buffers": 62,
+      "execution_seconds": 10.084425743669271,
+      "with_postflight_seconds": 10.084503570571542,
+      "saved_hashes": {
+        "/data1/Kane/MOE/baseline_runs/robust_experts_gpu_step_20260922_r3/dense/full_step.ckpt": "9449b76d6d10c2bd95f287bb5a9098a337dee36e8563e91fdee11781e6303c78",
+        "/data1/Kane/MOE/baseline_runs/robust_experts_gpu_step_20260922_r3/dense/result.json": "e6aa7f6cce763f27603811423153417db15d1cbf135bf293dd1290f1c4495d28",
+        "/data1/Kane/MOE/baseline_runs/robust_experts_gpu_step_20260922_r3/dense/receipt.json": "32a94efd209c18d24cb5b6da6a84d356f2b89ac5abdd9c30b98ad96d5442db79",
+        "/data1/Kane/MOE/baseline_runs/robust_experts_gpu_step_20260922_r3/dense/prepared.json": "fa5306220b97e06cc5893cd0b54c34a19e4a445ae3d53a1463a39ae501e7c2e9"
+      }
+    },
+    {
+      "arm": "convmoe",
+      "result": {
+        "status": "NATIVE_GPU_FULL_BATCH_STEP_PASS",
+        "arm": "convmoe",
+        "config_sha256": "9663ca4a5fa4552ab883b2b871bc154831e55551797238d058ec696e4cb8c747",
+        "batch_observations": [
+          {
+            "batch": 0,
+            "size": 640,
+            "device": "cuda:0"
+          }
+        ],
+        "steps": 1,
+        "changed_parameter_tensors": 86,
+        "state_tensors": 147,
+        "checkpoint_sha256": "9d53a04cc97755eea1748d79c1eb484ab0521e64b8d671022e975a2f2068d5e7",
+        "peak_allocated_bytes": 4472167424,
+        "seconds": 11.175583552569151,
+        "long_training": false,
+        "exact_gpu_resume": false,
+        "scope": "native full-batch PGD7/SGD and saved state; no accuracy or certification"
+      },
+      "finite_momentum_buffers": 86,
+      "execution_seconds": 12.348563365638256,
+      "with_postflight_seconds": 12.348644908517599,
+      "saved_hashes": {
+        "/data1/Kane/MOE/baseline_runs/robust_experts_gpu_step_20260922_r3/convmoe/full_step.ckpt": "9d53a04cc97755eea1748d79c1eb484ab0521e64b8d671022e975a2f2068d5e7",
+        "/data1/Kane/MOE/baseline_runs/robust_experts_gpu_step_20260922_r3/convmoe/result.json": "5ecaffccfa08bf814020781da7aa5bd67176c83ec2f7c2ead0bec5272e2e039b",
+        "/data1/Kane/MOE/baseline_runs/robust_experts_gpu_step_20260922_r3/convmoe/receipt.json": "886da9cc88ca98056fa492055bfacce47941bb4bac11617d1f524472cf51f10d",
+        "/data1/Kane/MOE/baseline_runs/robust_experts_gpu_step_20260922_r3/convmoe/prepared.json": "604dacbcdea946fce45fe763a579b3c4a2f6927841a5505ef98df9d16bac58b1"
+      }
+    }
+  ],
+  "config_sha256": "9663ca4a5fa4552ab883b2b871bc154831e55551797238d058ec696e4cb8c747",
+  "summary_sha256": "7663bf059396bf8ddf151bbc9c036d2632d5417549439464e2ea9425e1ec1951",
+  "separate_audit_seconds": 1.3698623441159725,
+  "full_GPU_batch_update_save": true,
+  "full_training": false,
+  "exact_GPU_resume": false,
+  "formal_SAFE": false,
+  "trust": "checks stored state and frozen native execution records; does not rerun update"
+}

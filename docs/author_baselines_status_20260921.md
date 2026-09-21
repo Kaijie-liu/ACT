@@ -2,6 +2,15 @@
 
 ## Latest consolidated state (supersedes historical preparation below)
 
+**2026-09-22 authoritative update:** [six-work execution matrix](author_baselines_execution_20260922.md).
+Dual RS final training+two-input certification and Robust Experts exact CPU
+continuation+both full-batch GPU step controls have now completed. MetaMoE native
+MNIST backend passes, but ACT shared-HZ capacity blocks the full-model smoke.
+The following older table and preparation prose are retained as historical
+snapshots; do not use their pending flags as current execution status.
+
+## Historical 2026-09-21 snapshot
+
 | Work | Deployment / executed control | Current ACT original-semantics support | Next uncompleted gate |
 |---|---|---|---|
 | Dual RS |Both exact resume controls PASS; frozen90epoch training running (epoch51 saved at this update); real certification runner/6 controls prepared|Separate statistical L2 path, not deterministic MoE HZ SAFE|Finalepoch90 audit, final-weight binding, then frozen2-input certification|

@@ -1,5 +1,17 @@
 # MoE project handoff
 
+LATEST SIX-WORK EXECUTION MATRIX / ROBUST GPU PASS (2026-09-22):
+Read `author_baselines_execution_20260922.md` before older baseline entries.
+Robust GPU R3 BOTH batch640/PGD7 updates+full-save PASS: dense10.0845s,ConvMoE
+12.3486s;122/147 finite state tensors,62/86 momentum buffers independently read.
+Long200epoch training is NOT launched/frozen as an execution; outer/recovery/
+final-eval controls remain. RoME12 finite requests still running; independent
+archive waiter writes OUTSIDE checkout to baseline_runs/rome_multinorm_archive_
+20260922_r1.json. Copy compact results only AFTER full roster replay audit; no
+automatic git writes. J-TLAT public repo README-only but paper claims anonymous
+supplement; OpenReview/API access blocked this check. Do not claim no artifact
+ever existed. Feature Noise v2/author page still no identified experiment repo.
+
 ROBUST GPU R2 IPC FAILURE / R3 FREEZE (2026-09-22):
 R2 training loader cannot deliver its first batch: AF_UNIX path exceeds OS limit.
 Only its own verified process group was stopped; this is an explicitly recorded

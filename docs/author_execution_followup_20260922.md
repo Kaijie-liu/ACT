@@ -173,3 +173,10 @@ connections for dataloader transfer while rejecting IP connections. A socket
 regression passes. Workers2, fullbatch640, attacks, precision, update count,
 resource gate and600s limit are unchanged. This is not a performance retry or
 evidence that a model/batch is too hard; no other tenant was interrupted.
+
+GPU R3 EXECUTED: both fullbatch640 native PGD7 updates pass, dense10.0845s /
+ConvMoE12.3486s incl postflight, peak3.017/4.165GiB. Independent saved-state
+audit checks122/147 finite tensors and62/86 finite SGD momenta. No long training
+or GPU-resume guarantee. Consolidated six-author deployment/comparison matrix:
+`author_baselines_execution_20260922.md`; it explicitly preserves missing
+paper-scale and ACT same-object comparison results.
