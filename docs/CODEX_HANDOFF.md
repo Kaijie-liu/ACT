@@ -1,5 +1,48 @@
 # MoE project handoff
 
+LATEST AUTHOR-BASELINE WORKLINE (2026-09-21): PI explicitly requested learning
+six recent MoE papers, concrete comparison design and deployment. Read
+`docs/recent_moe_baselines_20260921.md`,
+`docs/recent_moe_comparison_protocol_v1.md` and
+`docs/recent_moe_deployment_20260921_r2.json` (R1 is retained). This is a new scoped workline;
+STOP_INPUT98_FOLLOWUP, old holdouts, numerical gates and historical results stay closed.
+
+IMPORTANT CORRECTIONS: MetaMoE's full paper links the real author repository
+PMQ9/Mixture-of-Experts_Research (6aed3606...), including pretrained artifacts
+and verification runners. RoME (4c691cca...) now has code AND checkpoint links.
+Neither may still be described as author-code unavailable. Our historical
+MetaMoE-style baseline does not retroactively become an author-tool run.
+
+Six PDFs and five repos are local OUTSIDE ACT in baseline_runs/baselines
+`recent_moe_20260921`. Author ImageNet Table3 replay passed; independent CIFAR
+finetuned/Table3 recount matches, but CIFAR off-the-shelf radius0 is69.34 vs
+paper68.34 (author fig3a agrees with recount). The nonzero exit is retained.
+Figure replay also exposed missing CIFAR Multiscale TSV and local TeX package.
+RoME full CIFAR architecture, DualRS estimator and MetaMoE expert initialization
+forward/gradient controls pass; NOT pretrained accuracy or certification.
+Robust Experts full architecture fails on missing internal deeplabv3plus module.
+Four CLI probes retained: MetaMoE help passes, others lack dependencies.
+The added MetaMoE CIFAR-RT author expert checkpoint control passes restricted
+weights_only loading (7 reviewed types), CPU forward and input gradient.
+This uses real trained weights but random inputs, not accuracy/certification.
+
+No new training/certification or same-task comparison has completed. No installs
+were made. A question requesting dedicated isolated environment/dependency and
+public model/data-download permission was sent; explicit reply is still needed
+before dependency installation. Do not modify act-py312 or old environments.
+Priorities now: MetaMoE remaining-checkpoint loading/backend binding and actual
+component controls, then DualRS certification pipeline, then RoME AA/weights,
+Robust Experts compatibility. J-TLAT README-only and unidentified Feature Noise
+author experiment code remain separate access/source blockers. PI handles contact.
+
+Deploy receipts are bounded CPU-only startup checks, not benchmark budgets or
+proof audits; preflight is timed, postflight separately accounted. All failed
+attempts preserved. The source/claim boundaries of the submission draft still apply.
+Validation: `docs/recent_moe_baseline_validation_20260921.json` records 10
+control tests, archive reconstruction/R1 preservation and unchanged historical
+table accounting. R2 has 15 deployment attempts (6 COMPLETED, 9 ERROR), not
+15 completed scientific experiments or any new benchmark win.
+
 LATEST SUBMISSION PREPARATION (2026-09-21): PI asked to improve the work for
 software-engineering submission. Read `paper/review_main.tex` and
 `docs/SUBMISSION_REVIEW.md` first for the condensed argument and human-review

@@ -19,10 +19,12 @@ evaluate theorem applicability per input, expose the choice of constants
 provider, and keep empirical constants diagnostic-only. This is an artifact-
 centered comparison, not a claim that static routing is intrinsically invalid.
 
-MetaMoE motivates a route-invariance style of composition: first establish one
-route throughout the perturbation region, then verify the selected expert. No
-executable artifact was available in our audit, so our baseline is explicitly
-a `MetaMoE-style reimplementation`. Its applicability is definition-level and
+MetaMoE studies disjoint-class hard top-1 composition: establish one route
+throughout the perturbation region, then verify the selected expert. The
+2026-09-21 follow-up located its author repository, pretrained artifacts and
+alpha-beta-CROWN runners at `PMQ9/Mixture-of-Experts_Research`; author-tool
+comparison is pending, not unavailable. Our already-run historical baseline
+remains explicitly a `MetaMoE-style reimplementation`. Its applicability is definition-level and
 uses the same exact router feasibility analysis as Route A. On applicable
 inputs, both methods invoke the identical downstream verifier with the same
 budget. This controls for expert-backend strength and isolates the cost of the
@@ -42,6 +44,20 @@ the state of certification artifacts, not silently omitted numerical
 baselines. Our survey distinguishes author code, reimplementations, analytical
 claims, and unavailable artifacts; it does not compare runtimes across those
 categories.
+
+The newer MoE-specific baseline workline is documented in
+`docs/recent_moe_baselines_20260921.md` and its separate comparison protocol.
+Dual Randomized Smoothing (ICLR 2026) provides statistical L2 certificates for
+a smoothed router/classifier, including a multiple-expert experiment; this is
+not a certificate for the unsmoothed weighted top-2 function. RoME (ECCV 2026)
+now publishes training/evaluation code and checkpoint links for multi-threat
+robustness of low-rank experts. J-TLAT studies joint router/expert video attacks,
+Robust Experts studies adversarially trained intermediate CNN MoE layers, and
+Feature Noise studies iso-parameter noise robustness in modular computations.
+Their empirical robustness measures are not per-input formal SAFE rates.
+These works must be compared at the appropriate task/guarantee level; no fresh
+author-method accuracy or same-task competitive result is established by the
+current source deployment and initialization controls.
 
 ## Empirically robust and large sparse MoE
 

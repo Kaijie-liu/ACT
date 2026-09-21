@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "date": "2026-09-21",
+  "starting_act_head": "06e0b25fed0a301b2cec238fa060a2b7fb357aaa",
+  "branch": "feat/moe-route-verification",
+  "scope": "author-baseline literature, comparison design and bounded deployment controls",
+  "validation_interpreter": "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+  "controls": {
+    "command": "TMPDIR=/data1/Kane/MOE/baseline_runs/recent_moe_20260921/tmp /data1/Kane/miniconda3/envs/act-py312/bin/python -m unittest discover -s tests -p 'test_recent_moe*.py' -v",
+    "tests_run": 10,
+    "result": "PASS",
+    "covered": [
+      "successful child and non-overwriting attempt directory",
+      "child exception retained",
+      "deadline with partial stdout retained",
+      "invalid deadline rejected",
+      "strict radius and abstention accounting",
+      "extra oracle columns rejected as expert columns",
+      "row-count mismatch rejected",
+      "nonfinite saved inputs rejected",
+      "checkpoint outside pinned artifact path rejected before loading",
+      "checkpoint hash mismatch rejected before loading"
+    ]
+  },
+  "archived_results": {
+    "current": "docs/recent_moe_deployment_20260921_r2.json",
+    "preserved_previous": "docs/recent_moe_deployment_20260921.json",
+    "rebuild_from_local_receipts_and_sources": "PASS",
+    "previous_14_attempts_unchanged": true,
+    "total_attempts": 15,
+    "completed": 6,
+    "error": 9,
+    "author_repositories_clean": true,
+    "source_repositories_and_raw_arrays_committed": false
+  },
+  "historical_tables": {
+    "command": "/data1/Kane/miniconda3/envs/act-py312/bin/python scripts/render_submission_tables.py --check",
+    "result": "PASS",
+    "message": "review-paper tables reproduce the archived accounting"
+  },
+  "patch_whitespace_check": "PASS",
+  "dependencies_installed": false,
+  "gpu_jobs_started": false,
+  "fresh_training_or_certification_completed": false,
+  "same_task_comparison_completed": false,
+  "limitations": [
+    "These controls are not independent reproofs of neural-network certificates.",
+    "Author Table3 replay uses saved results, not newly certified inputs.",
+    "The restricted trained-checkpoint control uses random inputs, not an accuracy dataset.",
+    "The CIFAR off-the-shelf radius-zero discrepancy remains unresolved.",
+    "Deployment receipt postflight is separately charged, not inside the child execution deadline.",
+    "Dedicated dependency installation still requires explicit authorization."
+  ]
+}
