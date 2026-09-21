@@ -1,0 +1,246 @@
+{
+  "schema": "dual_rs_certification_archive_v1",
+  "execution_commit": "0687fb6e6",
+  "config_sha256": "cf30794ec20c525b46227811f7162325fb2703494afcc8319cf195b5dc8d287a",
+  "audit": {
+    "status": "COUNT_IDENTITY_AUDIT_PASS",
+    "config_sha256": "cf30794ec20c525b46227811f7162325fb2703494afcc8319cf195b5dc8d287a",
+    "rows": [
+      {
+        "index": 0,
+        "label": 3,
+        "selected_sigma": 0.5,
+        "prediction": 3,
+        "radius_l2": 0.8304935215242373,
+        "correct": true,
+        "correct_radius_l2": 0.8304935215242373,
+        "grade": "PROBABILISTIC_RS_NATIVE_NUMERICAL",
+        "deterministic_formal_SAFE": false,
+        "input_seconds": 18.55567329749465
+      },
+      {
+        "index": 1,
+        "label": 8,
+        "selected_sigma": 1.0,
+        "prediction": 8,
+        "radius_l2": 1.106061455351514,
+        "correct": true,
+        "correct_radius_l2": 1.106061455351514,
+        "grade": "PROBABILISTIC_RS_NATIVE_NUMERICAL",
+        "deterministic_formal_SAFE": false,
+        "input_seconds": 17.887067332863808
+      }
+    ],
+    "files": {
+      "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00000_selector_counts1.json": "1562b465933893542fcfab5a2c69d4bd18f7711ad1339e7e9bff2ab80637542f",
+      "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00000_selector_counts2.json": "f6be43a6d910b0179ddd52dd37c1a1887e5350434a47a72b3c097c101312cb35",
+      "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00000_selector.json": "d835ec2dad17e8289a9a059987060ad08190b74dc95419c8780ff0b3a3467499",
+      "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00000_classifier_counts1.json": "9625e0b137c4720873e8fe754240d9e1788e37a7ed98d80dc22ce81e326cffa1",
+      "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00000_classifier_counts2.json": "114d6a3525ea24bbcd448c4db476bca3294b9fa646512fc32a32e2441968bff4",
+      "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00000_classifier.json": "7e9ee6fd05f2fc49ff5daf074bf9d8fff6d4f5e61129d168c84f9070dc2e5131",
+      "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00000.json": "93b12b253b6d20e93478d7e5c83ffda83c088f1478790250b73d57456bdc87a4",
+      "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00001_selector_counts1.json": "ae4d8b80459728ff07518a7c88726f37bdb2b667058de1a4791a1e811f1d3dbb",
+      "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00001_selector_counts2.json": "4dc06bded95af2c43cb13ca88d7b05ac100cf8c3001d77ebbab03066372f2550",
+      "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00001_selector.json": "19f6efe80e3c3a09dc659a914be38b0ba3173d8274e306f4ff3830dcfd59c512",
+      "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00001_classifier_counts1.json": "d094023761828917531d858c05e7d3de7420f235d64e6cfd5dd5afe9d3a9b185",
+      "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00001_classifier_counts2.json": "7f8732877cb0c6e8716727d6b808a636eb5830324e419fec49ee8e9809bca4f5",
+      "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00001_classifier.json": "9467f36c312dbd078506d6df2fa6a33c670e49ff81aa8de589a1461b40adc4fa",
+      "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00001.json": "1b736e6edd0bc50fa12a629f30d216a4c003cc23d88436752985db010fd771f5"
+    },
+    "audit_seconds": 2.164787346497178,
+    "confidence": "per-input <=0.001 total stage failure probability; for BOTH pilot inputs <=0.002 by union bound",
+    "trust": [
+      "native models/noise implementation",
+      "numerical probability tails",
+      "Monte Carlo randomness"
+    ],
+    "not_checked": "full-domain numerical soundness or deterministic routed-model equivalence",
+    "scope": "fresh two-input deployment pilot, not paper-scale certified accuracy"
+  },
+  "outer_terminal": {
+    "status": "CERTIFICATION_PILOT_AUDITED",
+    "accepted": true,
+    "partial_evidence_preserved": false,
+    "execution_seconds": 43.67971524782479,
+    "total_with_postflight_seconds": 43.719031212851405,
+    "postflight_in_execution_budget": false,
+    "deterministic_formal_SAFE": false
+  },
+  "worker_complete": {
+    "status": "COMPLETED",
+    "worker_seconds": 40.144437620416284,
+    "indices": [
+      0,
+      1
+    ],
+    "peak_allocated_bytes": 1189760512,
+    "peak_reserved_bytes": 1266679808
+  },
+  "saved_reaudit": {
+    "path": "/data1/Kane/MOE/baseline_runs/dual_rs_certification_saved_reaudit_20260922.json",
+    "sha256": "b98c98447f491185f5f794b9e3fc469d4cb0cbe4a70c1030f5d199873eef6c0d"
+  },
+  "stages": {
+    "input00000_selector": {
+      "selected_class": 1,
+      "nA": 9785,
+      "p_lower": 0.9733049184994031,
+      "prediction": 1,
+      "radius_l2": 1.9317516774502348,
+      "index": 0,
+      "stage": "selector",
+      "classes": 3,
+      "sigma": 1.0,
+      "seed": 202609210,
+      "timestep": 2809,
+      "selection_counts": [
+        1,
+        99,
+        0
+      ],
+      "estimation_counts": [
+        208,
+        9785,
+        7
+      ],
+      "stage_seconds": 9.5458041485399
+    },
+    "input00000_classifier": {
+      "selected_class": 3,
+      "nA": 9586,
+      "p_lower": 0.951641975500073,
+      "prediction": 3,
+      "radius_l2": 0.8304935215242373,
+      "index": 0,
+      "stage": "classifier",
+      "classes": 10,
+      "sigma": 0.5,
+      "seed": 202609211,
+      "timestep": 1984,
+      "selection_counts": [
+        0,
+        0,
+        1,
+        94,
+        0,
+        5,
+        0,
+        0,
+        0,
+        0
+      ],
+      "estimation_counts": [
+        44,
+        6,
+        24,
+        9586,
+        13,
+        286,
+        16,
+        3,
+        22,
+        0
+      ],
+      "stage_seconds": 9.006302854046226
+    },
+    "input00001_selector": {
+      "selected_class": 2,
+      "nA": 10000,
+      "p_lower": 0.999240198549462,
+      "prediction": 2,
+      "radius_l2": 3.170913682899454,
+      "index": 1,
+      "stage": "selector",
+      "classes": 3,
+      "sigma": 1.0,
+      "seed": 202609212,
+      "timestep": 2809,
+      "selection_counts": [
+        0,
+        0,
+        100
+      ],
+      "estimation_counts": [
+        0,
+        0,
+        10000
+      ],
+      "stage_seconds": 8.864095577970147
+    },
+    "input00001_classifier": {
+      "selected_class": 8,
+      "nA": 8768,
+      "p_lower": 0.8656500397324718,
+      "prediction": 8,
+      "radius_l2": 1.106061455351514,
+      "index": 1,
+      "stage": "classifier",
+      "classes": 10,
+      "sigma": 1.0,
+      "seed": 202609213,
+      "timestep": 2809,
+      "selection_counts": [
+        1,
+        12,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        86,
+        1
+      ],
+      "estimation_counts": [
+        101,
+        714,
+        0,
+        19,
+        6,
+        4,
+        1,
+        0,
+        8768,
+        387
+      ],
+      "stage_seconds": 9.021740045398474
+    }
+  },
+  "record_hashes": {
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/worker_complete.json": "776536cfd7d23560c5bd9dd37489266ae616f19ea6cdf0ab232175c13b14324b",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00001_selector_counts2.json": "4dc06bded95af2c43cb13ca88d7b05ac100cf8c3001d77ebbab03066372f2550",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00001.json": "1b736e6edd0bc50fa12a629f30d216a4c003cc23d88436752985db010fd771f5",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00000_classifier_started.json": "ebc3948d9c800715997a7b13bc0e4aa0058979ca7c8ea34e1a3348e9db3541c6",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00000_classifier_counts1.json": "9625e0b137c4720873e8fe754240d9e1788e37a7ed98d80dc22ce81e326cffa1",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00001_classifier.json": "9467f36c312dbd078506d6df2fa6a33c670e49ff81aa8de589a1461b40adc4fa",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/worker_finished.json": "6620490c3082db3c87f0f7a046bc4a66211646addd33b597ec30cd707d9610a9",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/prepared.json": "588b265294c15a09a5d0ca842d286f1fe8688ddadae04fd706a557df4b1cd3e5",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00000_selector_started.json": "d0984e808366719e1bed0ec91c0ff5f5155f43a116d3fccb2edf69e2d480ac19",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00000_selector_counts2.json": "f6be43a6d910b0179ddd52dd37c1a1887e5350434a47a72b3c097c101312cb35",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/inner_terminal.json": "5dbc4258f5d9d097742cb9a9c003a82db4541d36edb0818ee3cc177fa8cca23d",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00001_selector_started.json": "2a382ca9ea104397a5c509d030d975a1bd54339db56f5f7d9fa4ea3fd04c5b5b",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00000_classifier.json": "7e9ee6fd05f2fc49ff5daf074bf9d8fff6d4f5e61129d168c84f9070dc2e5131",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00000_selector_counts1.json": "1562b465933893542fcfab5a2c69d4bd18f7711ad1339e7e9bff2ab80637542f",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/worker.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00001_selector.json": "19f6efe80e3c3a09dc659a914be38b0ba3173d8274e306f4ff3830dcfd59c512",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/receipt.json": "7f52337c57f5f132f30c491f7502a7af56bd9f9080691dd04fc22057d681470f",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00000_selector.json": "d835ec2dad17e8289a9a059987060ad08190b74dc95419c8780ff0b3a3467499",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00001_classifier_counts1.json": "d094023761828917531d858c05e7d3de7420f235d64e6cfd5dd5afe9d3a9b185",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00001_selector_counts1.json": "ae4d8b80459728ff07518a7c88726f37bdb2b667058de1a4791a1e811f1d3dbb",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/audit.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/audit.json": "96981d68beb9131dadebaa17b8ab7d4c5de128da4f7c073e988ab9d7bd5e81d9",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/worker.stderr": "dd1f7083cbafd5a1e1f07992ec0942af5dcf7971daaeaa0428bd77d811293650",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/audit.stdout": "c3f26570effe5b5466412111343f965444343c6a6e8522387a14885355efa71b",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00000_classifier_counts2.json": "114d6a3525ea24bbcd448c4db476bca3294b9fa646512fc32a32e2441968bff4",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00001_classifier_counts2.json": "7f8732877cb0c6e8716727d6b808a636eb5830324e419fec49ee8e9809bca4f5",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/audit_finished.json": "3feac14989f268d677ffdabe77d5c664f4cb863102c5fd37eb0d5452fe859fd9",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00000.json": "93b12b253b6d20e93478d7e5c83ffda83c088f1478790250b73d57456bdc87a4",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/outer_terminal.json": "bb8bf4955e189deb3348fa687322b8fb3e25e87b81c41a31066ac3fadcede8af",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1/input00001_classifier_started.json": "ba82f8cec2c63ed7031d0a3926f4bf76ebc61b45449d45b3268a6512c12fb5bc"
+  },
+  "grade": "PROBABILISTIC_RS_NATIVE_NUMERICAL",
+  "deterministic_formal_SAFE": false,
+  "paper_accuracy_estimate": false
+}

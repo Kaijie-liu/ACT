@@ -1,0 +1,146 @@
+{
+  "audit": "PASS",
+  "config_sha256": "23d8929e37b19d52125e12a68763819aec5263d1c634342dd03fec458a86d636",
+  "requests": [
+    {
+      "id": "cifar10_rt_index0",
+      "status": "BACKEND_POSITIVE",
+      "outer_seconds": 7.029688557609916,
+      "postflight_total_seconds": 7.0297801196575165,
+      "receipt_sha256": "8f7699fbd441bc7c46ed81a3b9f4b2dea64db5c9a487ac6793f1ee6e56ca33d7",
+      "phases": [
+        {
+          "phase": "preflight_started",
+          "elapsed_seconds": 5.6803226470947266e-05
+        },
+        {
+          "phase": "model_loaded",
+          "elapsed_seconds": 1.3725915160030127
+        },
+        {
+          "phase": "data_loaded",
+          "elapsed_seconds": 2.921727517619729
+        },
+        {
+          "phase": "onnx_export_and_conformance_complete",
+          "elapsed_seconds": 2.973611321300268
+        },
+        {
+          "phase": "backend_started",
+          "elapsed_seconds": 2.993226347491145
+        },
+        {
+          "phase": "backend_finished",
+          "elapsed_seconds": 6.591128915548325
+        }
+      ],
+      "worker_seconds": 6.591470027342439,
+      "prepared": {
+        "input_sha256": "f628a6dbc2e99fd4b354e0f0b259cd0a55e4fd46c2b1fd7c525041e31a4991b5",
+        "label": 3,
+        "clean_prediction": 3,
+        "original_logits": [
+          [
+            -0.5740523934364319,
+            -1.077438473701477,
+            -1.092905044555664,
+            1.2362563610076904,
+            -1.624027967453003,
+            0.7173599600791931,
+            -1.0190229415893555,
+            -1.3370842933654785,
+            -1.1177771091461182,
+            -1.2108875513076782
+          ]
+        ],
+        "mean": [
+          0.49139968910217285,
+          0.4821584191894531,
+          0.44653092010498047
+        ],
+        "std": [
+          0.2470322410602002,
+          0.24348513156455537,
+          0.26158785261491585
+        ],
+        "onnx_sha256": "834983127b1f3d339f19dbda6ab3321d4a2d07454324de185dd320a85fe96344",
+        "vnnlib_sha256": "57d8a10c09081b1ce92331387dd3e4d84b2727b85430c1d30f45693fad39d5dd",
+        "config_sha256": "6fd821bbf3859a3fe788939b2e55a40f3422555d71966c7f0e634ea6a3c764a9",
+        "property_rows": 9,
+        "export_info": {
+          "source_bn_count": 4,
+          "onnx_bn_count": 4,
+          "node_types": [
+            "Conv",
+            "BatchNormalization",
+            "Relu",
+            "AveragePool",
+            "Conv",
+            "BatchNormalization",
+            "Relu",
+            "AveragePool",
+            "Conv",
+            "BatchNormalization",
+            "Relu",
+            "AveragePool",
+            "Conv",
+            "BatchNormalization",
+            "Relu",
+            "Constant",
+            "Constant",
+            "Unsqueeze",
+            "Unsqueeze",
+            "Concat",
+            "Reshape",
+            "Gemm",
+            "Relu",
+            "Gemm"
+          ],
+          "constant_folding": false,
+          "onnx_simplification": false
+        },
+        "conformance_errors": [
+          4.291534423828125e-06,
+          7.271766662597656e-06,
+          8.106231689453125e-06
+        ],
+        "vnnlib_inward_decimal_coordinates": {
+          "lower": 1533,
+          "upper": 1514
+        },
+        "epsilon_space": "author normalized input, not raw pixels",
+        "guarantee_object": "serialized ONNX plus decimal VNNLIB; upstream equivalence unproved"
+      },
+      "backend_status": "safe-incomplete",
+      "backend_wall_seconds": 3.5978694427758455,
+      "backend_stdout_sha256": "9e3c1b0b9974ff772bed9f5a03da968661fe735ede3915e359d49ad25ebba392",
+      "backend_stderr_sha256": "52facd6680315d31d5bfe5d0adad6045d9540fa523964446329201b415cf4212"
+    },
+    {
+      "id": "mnist_rt_index0",
+      "status": "ERROR",
+      "outer_seconds": 1.767504557967186,
+      "postflight_total_seconds": 1.7675773315131664,
+      "receipt_sha256": "fc8d0863e7cebd2bb63105cd4de51cb8f29dfb2bd4dda8af65d504b1641a6a34",
+      "phases": [
+        {
+          "phase": "preflight_started",
+          "elapsed_seconds": 0.00026703067123889923
+        },
+        {
+          "phase": "model_loaded",
+          "elapsed_seconds": 1.328400967642665
+        },
+        {
+          "phase": "data_loaded",
+          "elapsed_seconds": 1.3401271384209394
+        }
+      ],
+      "worker_seconds": 1.3665798977017403,
+      "error": "ValueError('original-to-ONNX numerical conformance failed: 0.00016701221466064453')"
+    }
+  ],
+  "scope": "saved identities, complete property grammar, native status and cost accounting",
+  "independent_bound_or_network_reproof": false,
+  "full_dynamic_moe_verification": false
+}

@@ -1,5 +1,13 @@
 # MoE project handoff
 
+DUAL RS REAL CERTIFICATION COMPLETE (2026-09-22):
+Read dual_rs_certification_archive_20260922_r1.json. Both frozen inputs correct,
+composed statistical L2 radii0.8304935215/1.1060614554;43.72s including postflight;
+independent count audit agrees. Not deterministic SAFE or paper-scale accuracy.
+MetaMoE unfused R3 still fails MNIST1e-4 gate (error1.67e-4), archived untouched.
+Separate R4 native PyTorch Customized loader is frozen, not yet executed here;
+same source checkpoint/spec/backend/settings, no ONNX, exact wrapper probes.
+
 AUTHOR EXECUTION FOLLOW-UP FREEZE (2026-09-22):
 Read `docs/author_execution_followup_20260922.md`. Dual RS90epoch training has
 LANDED; final weights now bound in dual_rs_certification_execution_r1.json.

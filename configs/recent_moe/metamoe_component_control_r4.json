@@ -1,0 +1,110 @@
+{
+  "schema": 1,
+  "protocol": "metamoe_native_pytorch_component_control_r4",
+  "author_repo": "/data1/Kane/MOE/baselines/recent_moe_20260921/metamoe",
+  "author_commit": "6aed3606e4b226e18e1c9d249485d99bb453f488",
+  "backend_repo": "/data1/Kane/MOE/baselines/recent_moe_20260921/metamoe_abcrown",
+  "backend_commit": "58bb93f4886eea7cd1a3dfeb303695f20f61473b",
+  "lirpa_commit": "28da3d0148ce320142f4a50b485ac71bca7acc3b",
+  "onnx2pytorch_commit": "8447c42c3192dad383e5598edc74dddac5706ee2",
+  "python": "/data1/Kane/MOE/envs/metamoe-author-cpu-20260921-r2/bin/python",
+  "data_root": "/data1/Kane/MOE/baseline_data/metamoe_20260921",
+  "data_manifest_sha256": "881f445adcc7bfdcfde9b31d3ede2925f6cad9f3efd7d814cd63cbd52a9aae7c",
+  "environment_inventory": "/data1/Kane/MOE/baseline_runs/metamoe_install_20260921_r2/new_environment_frozen.json",
+  "environment_inventory_sha256": "c59ab6db341cd9eb0e4f83cacd2ed47ba17c070e3bb53f99ee832e4d629fc50f",
+  "output_root": "/data1/Kane/MOE/baseline_runs/metamoe_component_20260922_r4",
+  "seed": 100,
+  "seed_source": "unchanged author backend default; paper states 42",
+  "epsilon_numerator": 2,
+  "epsilon_denominator": 255,
+  "epsilon_space": "author per-dataset normalized tensor, clipped to [-10,10]",
+  "solver_seconds": 300,
+  "outer_seconds": 360,
+  "outer_includes": "startup, identities/data/model load, export, probe, spec, backend and terminal",
+  "installation_cost_separate": true,
+  "conformance_tolerance": 0.0001,
+  "execution_files": {
+    "scripts/metamoe_component_control.py": "5595bf58d980046f4ead1321c8721f981ca8899834b57dc3b5bea6668e6b2238",
+    "scripts/recent_moe_deployment.py": "77b9893dc6142f284c6f4cf20511e0ca3709efb4844d3f91b995baf947b393bf",
+    "scripts/recent_moe_env_inventory.py": "fa20dffe8137312ee98bda98db0064c4d3615b5f9dbf5ca1e37a522ac0e3d859",
+    "scripts/freeze_metamoe_component_control.py": "2ef4b129cb8b274aa11d39f540d890c0a5cf4eabfc1833466037cdc4a7098ace",
+    "configs/recent_moe/metamoe_cpu_requirements_20260921.txt": "4460ecba3e6eeff560176fef83b6fcdfd845261ea8b4db8d4bc97cd6f91221b4",
+    "scripts/metamoe_unfolded_export.py": "b094bdf5b4569407d5aab6b581d5ce115e1399d6401441c94c2da3bc537fd533",
+    "scripts/metamoe_component_unfolded_r3.py": "f57eb3eb4ff48ca4eef623df47732dcda26b25c26ba487f3667d5706fbf280df",
+    "scripts/freeze_metamoe_unfolded_r3.py": "652501d681602d09297ee9f444ebb74cbbc555488775f0176ea1fa1fc9166793",
+    "scripts/audit_metamoe_component_control.py": "b55b9571ec2784cc120633da81f0539124a3bcc01d0d72508fd8c94ca8ab2b9c",
+    "tests/test_metamoe_unfolded_export.py": "2387dc33cbf0d3237bd82e7695925479ac242e6ba9f5fbf0f600734142874584",
+    "scripts/metamoe_native_model.py": "29bc6d8ccaa0ddd25d2c5da28a73b725c35cc13d3d96bbc8d06a6c93f262450b",
+    "scripts/metamoe_component_native_r4.py": "fda39c1875b095be9544346e9a29a4823f87938bcc574d78cd5df3f82ac4ea45",
+    "scripts/freeze_metamoe_native_r4.py": "55ceade16b36b5fabd48c7ddfc686e0098aa88695aebdb304f9990f9e95c1879",
+    "scripts/audit_metamoe_native_r4.py": "9e1ddd94964d3811e9a54f18e366273f40534154d331a0b2804a4a298fe940b5"
+  },
+  "requests": [
+    {
+      "id": "cifar10_rt_index0",
+      "dataset": "CIFAR10",
+      "dataset_index": 0,
+      "checkpoint": "paper/artifacts/E_0_CNN_AT/cifar10_ultra_verifiable_cnn_best_RT_eps0.031.pth",
+      "checkpoint_sha256": "e256e3a423cc0112a29e5e802e35bacfcf70ef90d3c4bba6c890b7b6eadfa9ae"
+    },
+    {
+      "id": "mnist_rt_index0",
+      "dataset": "MNIST",
+      "dataset_index": 0,
+      "checkpoint": "paper/artifacts/E_1_CNN_AT/mnist_ultra_verifiable_cnn_best_RT_eps0.031.pth",
+      "checkpoint_sha256": "e4d32a028646cbb5efbb959ffe2ca97f194cd540d685c1d91a3d85437097432d"
+    }
+  ],
+  "scope": "same CIFAR/MNIST index0 component deployment, NOT original exporter or full MoE comparison",
+  "stop_rule": "ERROR stops remaining requests; timeout retained; no replacement/retry",
+  "guarantee": "native backend report for exported decimal problem; no source-complete/native-float claim",
+  "parent_config_sha256": "23d8929e37b19d52125e12a68763819aec5263d1c634342dd03fec458a86d636",
+  "source_package_direct_urls": {
+    "onnx2pytorch": {
+      "url": "https://github.com/Verified-Intelligence/onnx2pytorch.git",
+      "vcs_info": {
+        "commit_id": "8447c42c3192dad383e5598edc74dddac5706ee2",
+        "requested_revision": "8447c42c3192dad383e5598edc74dddac5706ee2",
+        "vcs": "git"
+      }
+    },
+    "auto-LiRPA": {
+      "url": "https://github.com/Verified-Intelligence/auto_LiRPA.git",
+      "vcs_info": {
+        "commit_id": "28da3d0148ce320142f4a50b485ac71bca7acc3b",
+        "requested_revision": "28da3d0148ce320142f4a50b485ac71bca7acc3b",
+        "vcs": "git"
+      }
+    }
+  },
+  "compatibility_change": "Native backend Customized loader; no ONNX or BN folding; exact wrapper-removal probes",
+  "compatibility_controls": {
+    "pool_controls": [
+      {
+        "padding": 0,
+        "count_include_pad": 0,
+        "exact_probe_match": true
+      },
+      {
+        "padding": 0,
+        "count_include_pad": 1,
+        "exact_probe_match": true
+      },
+      {
+        "padding": 1,
+        "count_include_pad": 0,
+        "exact_probe_match": true
+      },
+      {
+        "padding": 1,
+        "count_include_pad": 1,
+        "exact_probe_match": true
+      }
+    ],
+    "old_failed_graph_conversion_max_error": 4.76837158203125e-07,
+    "scope": "finite compatibility probes, not full-domain equivalence or a certificate"
+  },
+  "compatibility_receipt_sha256": "55e7e6ca64501f3c27d2cbae26f2c28da005a6f5f4b7bc60810130c72caeaf50",
+  "parent_config": "configs/recent_moe/metamoe_component_control_r3.json",
+  "export_contract": "NO_EXPORT; same original float32 checkpoint module and unchanged backend settings"
+}

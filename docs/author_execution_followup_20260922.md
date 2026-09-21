@@ -30,6 +30,23 @@ equivalence or a deployed-float guarantee. The execution freeze is
 
 ## Other work lines
 
+## Executed outcomes and next conversion freeze
+
+Dual RS real pilot completed in43.6797s (43.7190s with source postflight).
+Both raw inputs classified correctly; selected sigma.5/1 and composed L2
+radii0.8304935215/1.1060614554. Independent saved-count audit agrees.
+See `dual_rs_certification_archive_20260922_r1.json`; this is statistical,
+native-numerical smoothed-function evidence, NOT deterministic HZ SAFE or CRA.
+
+MetaMoE R3: CIFAR BACKEND_POSITIVE, MNIST ERROR. Even WITHOUT folded BN,
+the original1e-4 gate fails at1.6701221466e-4. No tolerance change or erased
+failure: `metamoe_component_control_review_20260922_r3.json`.
+R4 now freezes the pinned author's backend `Customized` PYTORCH loader, bypassing
+ONNX entirely. Same original float32 component checkpoint, spec, backend,
+settings, two inputs and budgets. Wrapper-removal probes must be exactly equal.
+This is a named front-end adaptation, not a claim to have fixed or reproduced
+the author's original exporter. No extra backend parameters are searched.
+
 Robust Experts: exact complete-state training continuation must precede a long
 training freeze; R3 one-batch workflow alone is not this control.
 RoME: three-norm empirical evaluation remains separate from ACT full-domain
