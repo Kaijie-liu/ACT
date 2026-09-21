@@ -124,3 +124,34 @@ RoME: three-norm empirical evaluation remains separate from ACT full-domain
 support. Full-size compiler or forward compatibility is never certification.
 All six author reproductions and ACT comparisons require separate status
 columns; unavailable code and incompatible guarantees cannot be numeric wins.
+
+## R2 outcome and bounded representation diagnosis
+
+R2 removes the functional-ReLU intake error and both arms independently replay
+CIFAR0's center violation. Author MNIST0 again BACKEND_POSITIVE. ACT MNIST0
+fails because no joint HZ reaches the router output. A separately supervised90s
+propagation-only diagnostic (NO candidate/property solve) completes2.26s:
+the first router ReLU,20480 outputs, triggers `sparse_relu_size_limit` under
+the existing64,000,000 affine-cell guard. All later layers lack the shared HZ.
+`metamoe_hz_intake_diagnostic_20260922_r1.json` preserves per-layer evidence.
+This is a precise representation-capacity blocker, NOT a completed negative
+bound or proof that the model is unsafe. No cap increase, model reduction,
+budget extension, sample change or formal cohort execution is performed.
+
+## Robust Experts GPU deployment gate
+
+A dedicated writable overlay inherits the existing Blackwell CUDA stack
+READ-ONLY; base package inventory is unchanged before/after installation.
+Torch2.11/cu130, Lightning1.9.5, NumPy1.26.4 and the named R3 compatibility
+dependencies pass pip check. This is not the original author environment and
+not a self-contained copied CUDA installation; inventory binds the inheritance.
+No dependency was installed/upgraded in act-py312 or the CUDA base.
+
+`robust_experts_gpu_step_r1.json` freezes600s each for dense and ConvMoE E4/k2:
+batch640, native PGD7/SGD, one actual update, native full checkpoint save/reload;
+no smaller-batch fallback, no evaluation/accuracy claim, no long training.
+The200epoch scheduling horizon remains, max_steps=1 bounds this deployment
+control. The resource gate requires48GiB currently free and caps own Torch
+allocation at40% of total GPU memory; no other tenant is interrupted.
+CPU recipe controls verify these invariants before execution. Exact GPU
+continuation is NOT implied by successful one-step serialization.

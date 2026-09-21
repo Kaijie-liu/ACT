@@ -1,5 +1,17 @@
 # MoE project handoff
 
+META R2 ACT CAPACITY BLOCK / GPU STEP CONTROL FREEZE (2026-09-22):
+R2 both CIFAR arms replay the same original-model counterexample; author MNIST
+BACKEND_POSITIVE; ACT MNIST remains ERROR because its joint HZ is dropped.
+90s no-solver diagnostic completes2.26s: FIRST router ReLU20480 outputs triggers
+sparse_relu_size_limit at unchanged64M affine-cell cap. No negative property
+bound or formal comparison inferred. Do NOT launch new Meta cohort; formal gate
+still fails. Six ReLU/semantic controls passed; old failures untouched.
+Robust Experts dedicated GPU dependency overlay now pip-checks, CUDA base unchanged.
+Frozen600s/arm fullbatch640 native PGD7 update/save controls for BOTH dense and
+E4/k2 paper architectures;48GiB free gate/40% own memory cap. NOT yet launched at
+this freeze; no long training. RoME batch remains live, final archive pending.
+
 META FULL-MODEL R1 FAILURE / R2 INTAKE FREEZE (2026-09-22):
 R1 old-input smoke preserved: ACT CIFAR UNSAFE (independent original replay),
 author CIFAR TIMEOUT; author MNIST BACKEND_POSITIVE; ACT MNIST ERROR on functional

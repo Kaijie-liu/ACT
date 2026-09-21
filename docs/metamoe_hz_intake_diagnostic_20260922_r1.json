@@ -1,0 +1,168 @@
+{
+  "audit": "SAVED_DIAGNOSTIC_RECORD_REVIEW_PASS",
+  "source": "/data1/Kane/MOE/baseline_runs/metamoe_hz_intake_diagnostic_20260922_r1",
+  "source_hashes": {
+    "/data1/Kane/MOE/baseline_runs/metamoe_hz_intake_diagnostic_20260922_r1/diagnostic.json": "3dc3f111a01a19fb2b8b4ea9c17da544139a22e3be2c37af5c68f9421fb19de8",
+    "/data1/Kane/MOE/baseline_runs/metamoe_hz_intake_diagnostic_20260922_r1/receipt.json": "2ca3d293e290596e6bfd3327b20524f88e554c15133e8295c38149c0510ba47f",
+    "/data1/Kane/MOE/baseline_runs/metamoe_hz_intake_diagnostic_20260922_r1/stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/data1/Kane/MOE/baseline_runs/metamoe_hz_intake_diagnostic_20260922_r1/stdout.txt": "8d2976e7bd0cd8faf6154be552532f3be2e038debbe42fdf09237700ab3fbc9d"
+  },
+  "result": {
+    "config_sha256": "68205c534017c375810d6c6159b6554f81b476368a307dbf02621664c8322d04",
+    "events": [
+      {
+        "id": 0,
+        "kind": "INPUT",
+        "outputs": 3072,
+        "drop": null,
+        "sparse": {
+          "n_cont": 3072,
+          "n_bin": 0,
+          "n_out": 3072
+        },
+        "dense_retained": false
+      },
+      {
+        "id": 1,
+        "kind": "INPUT_SPEC",
+        "outputs": 3072,
+        "drop": null,
+        "sparse": {
+          "n_cont": 3072,
+          "n_bin": 0,
+          "n_out": 3072
+        },
+        "dense_retained": false
+      },
+      {
+        "id": 2,
+        "kind": "CONV2D",
+        "outputs": 20480,
+        "drop": null,
+        "sparse": {
+          "n_cont": 3072,
+          "n_bin": 0,
+          "n_out": 20480
+        },
+        "dense_retained": false
+      },
+      {
+        "id": 3,
+        "kind": "RELU",
+        "outputs": 20480,
+        "drop": "sparse_relu_size_limit",
+        "sparse": null,
+        "dense_retained": false
+      },
+      {
+        "id": 4,
+        "kind": "AVGPOOL2D",
+        "outputs": 5120,
+        "drop": null,
+        "sparse": null,
+        "dense_retained": false
+      },
+      {
+        "id": 5,
+        "kind": "CONV2D",
+        "outputs": 7168,
+        "drop": null,
+        "sparse": null,
+        "dense_retained": false
+      },
+      {
+        "id": 6,
+        "kind": "RELU",
+        "outputs": 7168,
+        "drop": null,
+        "sparse": null,
+        "dense_retained": false
+      },
+      {
+        "id": 7,
+        "kind": "AVGPOOL2D",
+        "outputs": 1792,
+        "drop": null,
+        "sparse": null,
+        "dense_retained": false
+      },
+      {
+        "id": 8,
+        "kind": "CONV2D",
+        "outputs": 2560,
+        "drop": null,
+        "sparse": null,
+        "dense_retained": false
+      },
+      {
+        "id": 9,
+        "kind": "RELU",
+        "outputs": 2560,
+        "drop": null,
+        "sparse": null,
+        "dense_retained": false
+      },
+      {
+        "id": 10,
+        "kind": "AVGPOOL2D",
+        "outputs": 640,
+        "drop": null,
+        "sparse": null,
+        "dense_retained": false
+      },
+      {
+        "id": 11,
+        "kind": "CONV2D",
+        "outputs": 896,
+        "drop": null,
+        "sparse": null,
+        "dense_retained": false
+      },
+      {
+        "id": 12,
+        "kind": "RELU",
+        "outputs": 896,
+        "drop": null,
+        "sparse": null,
+        "dense_retained": false
+      },
+      {
+        "id": 13,
+        "kind": "RESHAPE",
+        "outputs": 896,
+        "drop": null,
+        "sparse": null,
+        "dense_retained": false
+      },
+      {
+        "id": 14,
+        "kind": "DENSE",
+        "outputs": 2,
+        "drop": null,
+        "sparse": null,
+        "dense_retained": false
+      },
+      {
+        "id": 15,
+        "kind": "ASSERT",
+        "outputs": 2,
+        "drop": null,
+        "sparse": null,
+        "dense_retained": false
+      }
+    ],
+    "output_error": "HybridzTF did not retain an HZ at the component output",
+    "sparse_affine_cell_cap": 64000000,
+    "seconds": 2.263108640909195,
+    "new_solver_queries": 0,
+    "scope": "old MNIST0 representation diagnostic; no bound/feasibility solve"
+  },
+  "total_with_postflight_seconds": 2.972017914056778,
+  "conclusion": "current ACT representation cap drops shared HZ at first router ReLU; formal paired execution blocked",
+  "NOT_concluded": [
+    "negative property bound",
+    "model unsafe",
+    "author comparison won",
+    "capacity repair completed"
+  ]
+}
