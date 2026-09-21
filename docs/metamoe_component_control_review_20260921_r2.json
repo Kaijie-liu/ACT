@@ -1,0 +1,114 @@
+{
+  "audit": "PASS",
+  "config_sha256": "dc9babb706225e1bebcf7ce0f5505a1c1cea2e6e51d92c3d3401a4a7a04ef6ff",
+  "requests": [
+    {
+      "id": "cifar10_rt_index0",
+      "status": "BACKEND_POSITIVE",
+      "outer_seconds": 5.173634734004736,
+      "postflight_total_seconds": 5.173725867643952,
+      "receipt_sha256": "d1c4da4324f59c43d39aa7eb3dc293c72ce0a9f1057ff610af454a68ef26f3cb",
+      "phases": [
+        {
+          "phase": "preflight_started",
+          "elapsed_seconds": 5.383975803852081e-05
+        },
+        {
+          "phase": "model_loaded",
+          "elapsed_seconds": 1.2630558386445045
+        },
+        {
+          "phase": "data_loaded",
+          "elapsed_seconds": 1.7160891685634851
+        },
+        {
+          "phase": "onnx_export_and_conformance_complete",
+          "elapsed_seconds": 1.7606887612491846
+        },
+        {
+          "phase": "backend_started",
+          "elapsed_seconds": 1.7787832636386156
+        },
+        {
+          "phase": "backend_finished",
+          "elapsed_seconds": 4.804352503269911
+        }
+      ],
+      "worker_seconds": 4.80469780229032,
+      "prepared": {
+        "input_sha256": "f628a6dbc2e99fd4b354e0f0b259cd0a55e4fd46c2b1fd7c525041e31a4991b5",
+        "label": 3,
+        "clean_prediction": 3,
+        "original_logits": [
+          [
+            -0.5740523934364319,
+            -1.077438473701477,
+            -1.092905044555664,
+            1.2362563610076904,
+            -1.624027967453003,
+            0.7173599600791931,
+            -1.0190229415893555,
+            -1.3370842933654785,
+            -1.1177771091461182,
+            -1.2108875513076782
+          ]
+        ],
+        "mean": [
+          0.49139968910217285,
+          0.4821584191894531,
+          0.44653092010498047
+        ],
+        "std": [
+          0.2470322410602002,
+          0.24348513156455537,
+          0.26158785261491585
+        ],
+        "onnx_sha256": "26b8b2a53aeefba68c16d505a71c6b3e0e707ae3dde8877d7d9e7d29fcb6a8b9",
+        "vnnlib_sha256": "57d8a10c09081b1ce92331387dd3e4d84b2727b85430c1d30f45693fad39d5dd",
+        "config_sha256": "f13bf473b5f3993e2967af54c6ac040b966bca92ca54560bf6338fa5f3239c5a",
+        "property_rows": 9,
+        "conformance_errors": [
+          5.841255187988281e-06,
+          8.58306884765625e-06,
+          8.821487426757812e-06
+        ],
+        "vnnlib_inward_decimal_coordinates": {
+          "lower": 1533,
+          "upper": 1514
+        },
+        "epsilon_space": "author normalized input, not raw pixels",
+        "guarantee_object": "serialized ONNX plus decimal VNNLIB; upstream equivalence unproved"
+      },
+      "backend_status": "safe-incomplete",
+      "backend_wall_seconds": 3.0255378428846598,
+      "backend_stdout_sha256": "45aadc305e3530c1329b00c84ce8176e41a41fa430326c493cd63a1eb6832f3d",
+      "backend_stderr_sha256": "52facd6680315d31d5bfe5d0adad6045d9540fa523964446329201b415cf4212"
+    },
+    {
+      "id": "mnist_rt_index0",
+      "status": "ERROR",
+      "outer_seconds": 1.6666914243251085,
+      "postflight_total_seconds": 1.6667887829244137,
+      "receipt_sha256": "0645b8406e41030b5116ff52d6fbdcb646a81931aae6025a88178c349509044e",
+      "phases": [
+        {
+          "phase": "preflight_started",
+          "elapsed_seconds": 5.2440911531448364e-05
+        },
+        {
+          "phase": "model_loaded",
+          "elapsed_seconds": 1.2566344644874334
+        },
+        {
+          "phase": "data_loaded",
+          "elapsed_seconds": 1.2672864738851786
+        }
+      ],
+      "worker_seconds": 1.3067201636731625,
+      "error": "ValueError('original-to-ONNX numerical conformance failed: 0.00027930736541748047')"
+    }
+  ],
+  "scope": "saved identities, complete property grammar, native status and cost accounting",
+  "independent_bound_or_network_reproof": false,
+  "full_dynamic_moe_verification": false
+}

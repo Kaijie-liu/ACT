@@ -1,5 +1,22 @@
 # MoE project handoff
 
+LATEST METAMOE REAL CONTROL RESULT (2026-09-21): R2 executed frozen0d842e060.
+CIFAR-RT index0: BACKEND_POSITIVE (native safe-incomplete; all9 margins),
+backend3.026s, outer5.174s. This is the AUTHOR ONNX/decimal-VNNLIB result, not
+full MoE/source-complete certification, and not paper-table reproduction.
+MNIST-RT index0: ERROR before bounds; pre-registered zero probe differs2.793e-4,
+above unchanged1e-4 tolerance. Bounded saved-input diagnosis: original32 vs
+folded32 error2.804e-4, folded32 vs ONNX2.489e-6; double recomputation3.209e-13
+on that probe. Supports folding arithmetic as main observed discrepancy, not
+full-domain equivalence. No dtype fallback, solver retry or threshold change.
+R1 and R2 failure/positive records retained; both saved-record audits PASS.
+See `docs/metamoe_component_control_review_20260921_r2.json` and
+`docs/metamoe_author_control_archive_20260921_r2.json`. Old five environments
+and R1 environment remain unchanged. This closes the bounded two-component
+attempt, NOT the author full pipeline. Next baseline work: separate Dual RS
+dependency/weight staging; MetaMoE needs separately versioned source-conversion
+work before any MNIST/full-MoE table. Do not claim all six baselines deployed.
+
 LATEST METAMOE COMPATIBILITY REVISION (2026-09-21): R1 froze at c058caf2f,
 then CIFAR failed BEFORE any bounds: original pinned onnx2pytorch cannot parse
 AveragePool.count_include_pad. MNIST was NOT_STARTED_AFTER_ERROR. Keep R1,
