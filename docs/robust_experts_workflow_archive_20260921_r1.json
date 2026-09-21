@@ -1,0 +1,97 @@
+{
+  "audit": "SAVED_DEPLOYMENT_RECORDS_PASS",
+  "records": [
+    {
+      "name": "robust_experts_workflow_deps_20260921_r1",
+      "status": "ERROR",
+      "receipt_sha256": "20adf312c808b98727415df2bf20dc21803f9f528646b051d9771a9a1510599f",
+      "execution_seconds": 1.3163759242743254,
+      "with_postflight_seconds": 1.3164725098758936
+    },
+    {
+      "name": "robust_experts_workflow_deps_20260921_r2",
+      "status": "COMPLETED",
+      "receipt_sha256": "f896e06465ffef57d9bde8034d8bcd089f01827e3239aea129f6a6d8bfc8bf75",
+      "execution_seconds": 11.783855801448226,
+      "with_postflight_seconds": 11.78396108187735
+    },
+    {
+      "name": "robust_experts_workflow_imports_20260921_r1",
+      "status": "COMPLETED",
+      "receipt_sha256": "a12be5fd5b02cfbca06e9b987dad66a06690314bbf4721085ab03682b9ce425d",
+      "execution_seconds": 2.71874494664371,
+      "with_postflight_seconds": 2.718846557661891
+    },
+    {
+      "name": "robust_experts_config_controls_20260921_r1",
+      "status": "COMPLETED",
+      "receipt_sha256": "9f2b93cbb19643ee3a39f3a82bf6690f9590c11d1b55006fce5ffcf0d873c16e",
+      "execution_seconds": 2.4187480062246323,
+      "with_postflight_seconds": 2.4188360553234816
+    },
+    {
+      "name": "robust_experts_cifar100_download_20260921_r1",
+      "status": "TIMEOUT",
+      "receipt_sha256": "a2f90595b3db8bd87068b8db999cc4d775023ed92f2c99150d7fa8f7e5288dc6",
+      "execution_seconds": 600.0103140268475,
+      "with_postflight_seconds": 600.0103880111128
+    },
+    {
+      "name": "robust_experts_cifar100_download_20260921_r2",
+      "status": "ERROR",
+      "receipt_sha256": "e56a163d9d77b9f3fcec4229b9ec7c6016901fda327befc8634ddf0d26316276",
+      "execution_seconds": 336.1181115321815,
+      "with_postflight_seconds": 336.11821297183633
+    },
+    {
+      "name": "robust_experts_cifar100_download_20260921_r3",
+      "status": "COMPLETED",
+      "receipt_sha256": "f85c01aab859719006f9698b55e3d6bc7d3555ae5aaae4fb5d91cf12df0ff3a6",
+      "execution_seconds": 330.1429840475321,
+      "with_postflight_seconds": 330.14307896979153
+    }
+  ],
+  "config_sha256": "4bebc9261515414cfb7f5d939a92b5a8ac19cf70622383bbbae4bed95763033f",
+  "execution_started_at_archive": true,
+  "compatibility": [
+    "Hydra1.3.2/Python3.12 vs author Hydra1.1",
+    "CPU Torch2.9.1/Lightning1.9.5",
+    "native swallowed data_dir assigned after construction",
+    "all remote logging disabled; local CSV/checkpoint only"
+  ],
+  "frozen_math": "native E4/k1/layer4 ConvMoE, SGD.1/momentum.9/wd5e-4, PGD7 eps.03137 alpha.00784313725",
+  "data": {
+    "status": "PUBLIC_DATA_INTEGRITY_PASS",
+    "reused_range_files_sha256": {
+      "/data1/Kane/MOE/baseline_data/robust_experts_20260921_r2/part00": "085c6f0416ae6c8e84a0cb43fd0a05d894dc6bc14d30380cbc643f5a392c43d6",
+      "/data1/Kane/MOE/baseline_data/robust_experts_20260921_r2/part01": "3107d4183f1d92f11d78e0c3daf74c27f3d134c83148074f8716a4df12f3f61b",
+      "/data1/Kane/MOE/baseline_data/robust_experts_20260921_r2/part02": "fdc083427d4fdf27fbf8ce694559c3e3189e49ba65523ae774da745743ebc7a0",
+      "/data1/Kane/MOE/baseline_data/robust_experts_20260921_r2/part03": "150fd616f362a7da46c8f8ce97a992eaef9bc3e50d0635d22113ff4402a04090",
+      "/data1/Kane/MOE/baseline_data/robust_experts_20260921_r2/part04": "16efdf83ef293cf162606919e53bc105269df79bc9f75bac187b87c84500d116",
+      "/data1/Kane/MOE/baseline_data/robust_experts_20260921_r3/part05": "849a7547175b3b937430628a098a851d520589ba99c34165e011da923e81f2b0",
+      "/data1/Kane/MOE/baseline_data/robust_experts_20260921_r2/part06": "6cbf79fd2b8879d8dc714ecde3a5e57a9b7266c52abc8505b5410148599b530e",
+      "/data1/Kane/MOE/baseline_data/robust_experts_20260921_r2/part07": "a923040c8d6e31d07c344ab6358a6e52c55ccfdeef783409cf321878e4f31f42"
+    },
+    "published_torchvision_md5": "eb9058c3a382ffc7106e4002c42a8d85",
+    "archive_sha256": "85cd44d02ba6437773c5bbd22e183051d648de2e7d6b014e1ef29b855ba677a7",
+    "files": {
+      "train": "735e79b04f092ca3d2e6d07f368c0a7d70d48c48d28865950cc24454cf45129b",
+      "test": "4b67687d9933c4db8f0831104447f15b93774f4f464bd0516f0f0f2ac83b7864",
+      "meta": "a5d4786345c961390f865e93b434dbd5c6904ce880667e0cb888c97d449f28b9"
+    },
+    "seconds": 330.0821485798806
+  },
+  "scope": "isolated source/dependency/data controls; not paper accuracy or certification",
+  "formal_SAFE": false,
+  "setup_failure_attribution": "R1 dependency pin was our nonexistent ClearML2.0.4 choice, NOT author-code failure; R2 uses published1.18.0",
+  "terminal": {
+    "status": "ERROR",
+    "accepted": false,
+    "execution_seconds": 3.0642956774681807,
+    "with_postflight_seconds": 3.0757110565900803,
+    "formal_SAFE": false
+  },
+  "result": null,
+  "execution_receipt_sha256": "9d0743320f10941022d1a3e243eeada63238f4fdb3b13b51fb4cb15b77a245fd",
+  "stderr_tail": "python3.12/site-packages/pl_bolts/models/self_supervised/amdim/amdim_module.py:92: UnderReviewWarning: The feature FeatureMapContrastiveTask is currently marked under review. The compatibility with other Lightning projects is not guaranteed and API may change at any time. The API and functionality may change without warning in future releases. More details: https://lightning-bolts.readthedocs.io/en/latest/stability.html\n  contrastive_task: Union[FeatureMapContrastiveTask] = FeatureMapContrastiveTask(\"01, 02, 11\"),\n/data1/Kane/MOE/envs/robust-experts-workflow-cpu-20260921/lib/python3.12/site-packages/pl_bolts/losses/self_supervised_learning.py:228: UnderReviewWarning: The feature AmdimNCELoss is currently marked under review. The compatibility with other Lightning projects is not guaranteed and API may change at any time. The API and functionality may change without warning in future releases. More details: https://lightning-bolts.readthedocs.io/en/latest/stability.html\n  self.nce_loss = AmdimNCELoss(tclip)\nGlobal seed set to 12345\nTraceback (most recent call last):\n  File \"/data1/Kane/MOE/envs/robust-experts-workflow-cpu-20260921/lib/python3.12/site-packages/hydra/_internal/instantiate/_instantiate2.py\", line 92, in _call_target\n    return _target_(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/MOE/envs/robust-experts-workflow-cpu-20260921/lib/python3.12/site-packages/pytorch_lightning/callbacks/model_checkpoint.py\", line 242, in __init__\n    self.__init_monitor_mode(mode)\n  File \"/data1/Kane/MOE/envs/robust-experts-workflow-cpu-20260921/lib/python3.12/site-packages/pytorch_lightning/callbacks/model_checkpoint.py\", line 446, in __init_monitor_mode\n    torch_inf = torch.tensor(np.Inf)\n                             ^^^^^^\n  File \"/data1/Kane/MOE/envs/robust-experts-workflow-cpu-20260921/lib/python3.12/site-packages/numpy/__init__.py\", line 763, in __getattr__\n    raise AttributeError(\nAttributeError: `np.Inf` was removed in the NumPy 2.0 release. Use `np.inf` instead.\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/data1/Kane/MOE/ACT/scripts/robust_experts_workflow_control.py\", line 175, in <module>\n    worker(cfg, a.config)\n  File \"/data1/Kane/MOE/ACT/scripts/robust_experts_workflow_control.py\", line 145, in worker\n    native.run(cfg)\n  File \"/data1/Kane/MOE/baselines/robust_experts_compat_20260921_r1/src/run.py\", line 51, in run\n    attack_models, checkpoint_path, datamodule, model, trainer = _setup(config)\n                                                                 ^^^^^^^^^^^^^^\n  File \"/data1/Kane/MOE/ACT/scripts/robust_experts_workflow_control.py\", line 103, in located_setup\n    result = original_setup(configured)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/MOE/baselines/robust_experts_compat_20260921_r1/src/run.py\", line 140, in _setup\n    callbacks.append(hydra.utils.instantiate(cb_conf))\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/MOE/envs/robust-experts-workflow-cpu-20260921/lib/python3.12/site-packages/hydra/_internal/instantiate/_instantiate2.py\", line 226, in instantiate\n    return instantiate_node(\n           ^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/MOE/envs/robust-experts-workflow-cpu-20260921/lib/python3.12/site-packages/hydra/_internal/instantiate/_instantiate2.py\", line 347, in instantiate_node\n    return _call_target(_target_, partial, args, kwargs, full_key)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/MOE/envs/robust-experts-workflow-cpu-20260921/lib/python3.12/site-packages/hydra/_internal/instantiate/_instantiate2.py\", line 97, in _call_target\n    raise InstantiationException(msg) from e\nhydra.errors.InstantiationException: Error in call to target 'pytorch_lightning.callbacks.model_checkpoint.ModelCheckpoint':\nAttributeError('`np.Inf` was removed in the NumPy 2.0 release. Use `np.inf` instead.')\nfull_key: callbacks.checkpoint\n"
+}

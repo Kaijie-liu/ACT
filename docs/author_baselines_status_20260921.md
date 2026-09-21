@@ -96,6 +96,14 @@ through normalized output-layer F0 with an incorrect semantic label.
 
 ## Remaining gates — NOT marked complete
 
+R1 native Robust Experts workflow has now FAILED before training because
+Lightning1.9 ModelCheckpoint references np.Inf, absent in NumPy2. The failure
+is archived unchanged. Separate R2 environment pins NumPy1.26.4/OpenCV4.11/
+tifffile2024.8.30; pip check and both controls pass. R2 retains the identical
+worker, author model/attack/transform settings and600s budget. Its new execution
+config is frozen before launch; no outcome-dependent changes to the model.
+[R1 failure archive](robust_experts_workflow_archive_20260921_r1.json).
+
 Robust Experts now also has a dedicated workflow environment, passing native
 Lightning/Hydra/attack imports and two configuration/terminal controls. Public
 CIFAR100 is integrity checked; serial timeout and range-connection failure are

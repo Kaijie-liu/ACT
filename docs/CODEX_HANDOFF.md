@@ -1,5 +1,15 @@
 # MoE project handoff
 
+ROBUST EXPERTS R1 FAILURE / R2 DEPENDENCY FREEZE (2026-09-21):
+R1 native workflow stopped BEFORE training in Lightning ModelCheckpoint: NumPy2
+removed np.Inf. Saved failure: `robust_experts_workflow_archive_20260921_r1.json`.
+R2 uses a SEPARATE copied environment with NumPy1.26.4, OpenCV4.11 and
+tifffile2024.8.30; pip check and both native config/terminal controls PASS.
+Same frozen worker, model/attack settings and600s budget, new output directory;
+R1 environment/results unchanged. Config `robust_experts_workflow_r2.json`
+is prepared, NOT executed at this entry. Do not call this paper reproduction.
+Dual RS90epoch training is still live; do not edit any bound training/cert files.
+
 ROBUST EXPERTS REAL WORKFLOW FROZEN (2026-09-21):
 `configs/recent_moe/robust_experts_workflow_r1.json` binds actual public CIFAR100
 files, isolated CPU dependency inventory, native composed config and exact

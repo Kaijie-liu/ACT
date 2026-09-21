@@ -5,7 +5,7 @@ from pathlib import Path
 from recent_moe_deployment import sha256
 
 
-def collect(executed=False):
+def collect(executed=False, config_path=Path('configs/recent_moe/robust_experts_workflow_r1.json')):
     base = Path('/data1/Kane/MOE/baseline_runs')
     expected = {'robust_experts_workflow_deps_20260921_r1': 'ERROR',
         'robust_experts_workflow_deps_20260921_r2': 'COMPLETED',
@@ -14,6 +14,10 @@ def collect(executed=False):
         'robust_experts_cifar100_download_20260921_r1': 'TIMEOUT',
         'robust_experts_cifar100_download_20260921_r2': 'ERROR',
         'robust_experts_cifar100_download_20260921_r3': 'COMPLETED'}
+    if config_path.name == 'robust_experts_workflow_r2.json':
+        expected['robust_experts_numpy_compat_install_20260921_r2'] = 'COMPLETED'
+        expected['robust_experts_tifffile_compat_install_20260921_r2'] = 'COMPLETED'
+        expected['robust_experts_config_controls_20260921_r2'] = 'COMPLETED'
     records = []
     for name, status in expected.items():
         root = base / name
@@ -26,7 +30,7 @@ def collect(executed=False):
         records.append({'name': name, 'status': status, 'receipt_sha256': sha256(root/'receipt.json'),
             'execution_seconds': receipt['execution_including_preflight_seconds'],
             'with_postflight_seconds': receipt['total_with_postflight_seconds']})
-    path = Path('configs/recent_moe/robust_experts_workflow_r1.json')
+    path = config_path
     config = json.loads(path.read_text())
     for file, h in config['files'].items():
         if sha256(file) != h:
@@ -67,10 +71,11 @@ def collect(executed=False):
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--executed', action='store_true')
+    p.add_argument('--config', type=Path, default=Path('configs/recent_moe/robust_experts_workflow_r1.json'))
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--check', action='store_true')
     a = p.parse_args()
-    value = collect(a.executed)
+    value = collect(a.executed, a.config)
     if a.check:
         if json.loads(a.output.read_text()) != value:
             raise ValueError('archive differs')
