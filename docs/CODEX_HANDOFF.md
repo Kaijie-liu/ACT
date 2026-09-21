@@ -1,5 +1,15 @@
 # MoE project handoff
 
+DUAL RS TRAIN STEP CONTROL PREPARATION (2026-09-21):
+`docs/dual_rs_training_control_20260921.md` and
+`configs/recent_moe/dual_rs_training_control_r1.json` freeze a native one-update
+then fresh-process continuation control. Author batch256 means TWO updates on
+128 originals x2 noise copies, not one update on256 independent originals.
+Bind full model/AdamW/scheduler/RNG/pending batch/cursor, exact equality gate.
+33 controls and unchanged paper-table accounting PASS. Real control has NOT
+run at this preparation entry. One300s outer deadline for reference/resume/audit;
+no long training or certification launched. Freeze future recipe only after PASS.
+
 LATEST DUAL RS AUTHORIZED DEPLOYMENT (2026-09-21): isolated Blackwell environment
 installed (Python3.11/Torch2.11+cu130; compatibility stack, not author's exact
 Python3.9 stack). Pip check and original classifier-certification,
