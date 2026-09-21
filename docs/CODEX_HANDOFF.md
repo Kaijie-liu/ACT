@@ -1,5 +1,13 @@
 # MoE project handoff
 
+DUAL RS REAL STEP CONTROL BLOCKED (2026-09-21): R1 frozen8fa8d4e34.
+Native update1 and tensor-only save succeed; continuous update2 has nonfinite
+gradients, rejected BEFORE AdamW. Resume/audit NOT_STARTED; no long protocol
+accepted. See `docs/dual_rs_training_control_20260921.md`.
+One separately frozen NO-UPDATE replay of this failure is pending; it compares
+loss-space gradients on the same saved logits, not a hyperparameter search.
+Do not silently lower LR, change samples/loss, or claim restore PASS.
+
 DUAL RS TRAIN STEP CONTROL PREPARATION (2026-09-21):
 `docs/dual_rs_training_control_20260921.md` and
 `configs/recent_moe/dual_rs_training_control_r1.json` freeze a native one-update

@@ -40,3 +40,18 @@ CPU toy的milestone控制不是在真实模型上跑30epoch。旧论文表格重
 作者`--resume`未实现，且原始checkpoint缺scheduler/RNG；本控制的two-chunk schema
 不冒充完整长训练恢复器。长训练需另行实现epoch监督、终态审计与执行身份。
 本次控制输出在仓库外，原始张量不提交Git。
+
+## R1 实际失败（执行冻结8fa8d4e34）
+
+第一步原生训练及保存完成：loss1.8691837584，gradient L2=56.4901123，
+335个参数张量发生更新；256/256输入经过实际增强后不同于原始ToTensor。
+但连续执行第二步时检测到非有限梯度，在AdamW更新**之前**停止。
+外层执行5.011s，含postflight5.051s；resume/audit均NOT_STARTED。
+`after_step1.pt`及错误日志保留，不能把第一步成功当成恢复控制通过。
+**长训练和认证的可执行冻结被此门阻止。** 不降低LR、不改样本、不静默改损失。
+
+另行固定[失败诊断](../configs/recent_moe/dual_rs_failed_step_diagnostic_r1.json)：
+仅从保存的一步状态重现第二步前向/反向；强制pre-hook禁止任何AdamW更新，
+记录logits、概率零值及非有限梯度；对同一组保存logits分别检查softCE与consistency
+的输出空间梯度，并用float64作诊断参照。这不是double训练修复，也不是第二次控制尝试。
+单独300s目录、错误即停，保留R1；是否修改兼容路径需根据诊断另行定版。
