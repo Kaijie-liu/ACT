@@ -58,3 +58,22 @@ R1 outputs. One exact configuration-difference test confirms the only changed
 field. The eight deadline/exception/identity controls remain unchanged.
 Commit the new R2 configuration before execution. No long training launch is
 implied by either control.
+
+## R2 pass and separate long-training freeze
+
+R2 completed at8b6f06b12: dense20.402s, ConvMoE27.464s including startup, native
+updates, final-weight evaluation and in-budget saved audit. Fresh independent
+saved review passes; both train and evaluation CSV files remain. See
+`robust_experts_pipeline_archive_20260922_r2.json`. No short metric is presented
+as trained-model RA. One further control verifies that production configuration
+has200epochs and NO short-control batch/step limits, preserving the scientific
+recipe and stage-isolated logging.
+
+`robust_experts_paper_training_execution_r1.json` is a NEW long execution
+identity: native full train/val, final200epoch checkpoint, full10k clean/PGD20/
+APGD20 and saved audit,24h total per architecture, dense then ConvMoE. A failed
+arm stops the sequence; no automatic retries or restarts. Launch requires clean
+committed branch,48GiB free GPU and128GiB disk. Source/environment identities are
+checked again in each subprocess. The detached launcher writes only outside
+the checkout; no automatic Git commit/push. Results require separate final
+archive after the terminal exists. A freeze/launch record is NOT completion.

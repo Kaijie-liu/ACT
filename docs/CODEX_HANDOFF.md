@@ -1,5 +1,15 @@
 # MoE project handoff
 
+ROBUST LONG EXECUTION FREEZE AFTER FULL WORKFLOW PASS (2026-09-22):
+R2 stage-isolated native short pipelines PASS20.402/27.464s, independent saved
+review and retained CSVs pass;8 outer controls +1 isolation +1 fullrecipe test.
+New paper_training_execution_r1 fixes200epochs/full data/final-only selection,
+10k clean+PGD20+APGD20,24h/architecture,dense thenConvMoE. No auto retry/resume.
+Commit/push before detached launcher. Check baseline_runs/robust_experts_paper_
+launch_20260922_r1/launch.json for ACTUAL start; no completion claimed here.
+Bound worker/config files must remain unchanged while live. Outputs outside
+checkout, no automatic Git writes. RoME final archive still separately pending.
+
 ROBUST WORKFLOW R1 PASS WITH LOGGING GAP / R2 FREEZE (2026-09-22):
 Both fullbatch two-update workflows complete final clean/PGD20/APGD20 and
 saved audit; independent saved review archived. R1 native CSV evaluation

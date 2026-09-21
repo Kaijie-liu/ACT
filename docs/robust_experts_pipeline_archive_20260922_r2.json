@@ -1,0 +1,211 @@
+{
+  "audit": "INDEPENDENT_SAVED_WORKFLOW_REVIEW_PASS",
+  "config_sha256": "d329d8138a2a100fede433670589e8864de172ef04deb02ff6ddb36be2fbbcc8",
+  "summary_sha256": "eda6534a108ea0803adb1e3387901b6ef049a2e4b0d4a9221a8a5743b22b2694",
+  "rows": [
+    {
+      "arm": "dense",
+      "terminal": {
+        "accepted": true,
+        "status": "CONTROL_PIPELINE_AUDITED",
+        "config_sha256": "d329d8138a2a100fede433670589e8864de172ef04deb02ff6ddb36be2fbbcc8",
+        "arm": "dense",
+        "error": null,
+        "execution_seconds": 20.401608737185597,
+        "with_postflight_seconds": 20.401701413094997,
+        "audit_in_execution_budget": true,
+        "automatic_resume": false,
+        "formal_SAFE": false
+      },
+      "epochs": 2,
+      "global_step": 2,
+      "checkpoint_sha256": "0122320686e219cc5d4d234f3896751acf54c631fd0374a9530b9d24de9f8232",
+      "stage_seconds": {
+        "train": 9.278850829228759,
+        "evaluate": 9.806479623541236,
+        "audit": 1.287468807771802
+      },
+      "evaluations": [
+        {
+          "kind": "clean",
+          "examples": 640,
+          "batches": 1,
+          "metrics": [
+            {
+              "test/acc": 0.012500000186264515,
+              "test/loss": 4.646125316619873,
+              "test/aux_loss": 0.0,
+              "test/main_loss": 4.646125316619873
+            }
+          ],
+          "state_digest": "a33b874ebc3490c50494996ad3f46a3cedb5bd26c3144cb1cd3269329bfd8062",
+          "checkpoint_sha256": "0122320686e219cc5d4d234f3896751acf54c631fd0374a9530b9d24de9f8232",
+          "seconds": 1.8767328131943941
+        },
+        {
+          "kind": "PGD20",
+          "examples": 256,
+          "batches": 1,
+          "metrics": [
+            {
+              "attack/pgd/acc": 0.0,
+              "attack/pgd/loss": 6.650272369384766,
+              "attack/pgd/aux_loss": 0.0,
+              "attack/pgd/main_loss": 6.650272369384766
+            }
+          ],
+          "state_digest": "a33b874ebc3490c50494996ad3f46a3cedb5bd26c3144cb1cd3269329bfd8062",
+          "checkpoint_sha256": "0122320686e219cc5d4d234f3896751acf54c631fd0374a9530b9d24de9f8232",
+          "seconds": 2.253524988889694
+        },
+        {
+          "kind": "APGD20",
+          "examples": 256,
+          "batches": 1,
+          "metrics": [
+            {
+              "attack/apgd/acc": 0.0,
+              "attack/apgd/loss": 4.648065090179443,
+              "attack/apgd/aux_loss": 0.0,
+              "attack/apgd/main_loss": 4.648065090179443
+            }
+          ],
+          "state_digest": "a33b874ebc3490c50494996ad3f46a3cedb5bd26c3144cb1cd3269329bfd8062",
+          "checkpoint_sha256": "0122320686e219cc5d4d234f3896751acf54c631fd0374a9530b9d24de9f8232",
+          "seconds": 1.6876493599265814
+        }
+      ],
+      "stage_metrics_preserved": true,
+      "CSV_train_log_overwrite_observed": false,
+      "saved_hashes": {
+        "/data1/Kane/MOE/baseline_runs/robust_experts_pipeline_20260922_r2_control/dense/train.json": "5016970b09dc6efdd08f786b258d760f88a9d85d00886db47df6fe597c1221cb",
+        "/data1/Kane/MOE/baseline_runs/robust_experts_pipeline_20260922_r2_control/dense/evaluate.json": "06fad2c1fa17a7e483e1706a3f05b6f8290b61c0f46bf30b206ec48bae48879f",
+        "/data1/Kane/MOE/baseline_runs/robust_experts_pipeline_20260922_r2_control/dense/audit.json": "456b9653790ba2c952c45d85259943deeb42672b1440d2c64a5dce32753f0379",
+        "/data1/Kane/MOE/baseline_runs/robust_experts_pipeline_20260922_r2_control/dense/prepared.json": "f8e22829304fe97bb779e4f6338ad2f007d886558e0d5d6f2905a9dd6a1189c1",
+        "/data1/Kane/MOE/baseline_runs/robust_experts_pipeline_20260922_r2_control/dense/receipt.json": "ca5e4e24f71f75abe0e5a179eb295ffa93ca0bf664f2150e2a1dc08149ca4687",
+        "/data1/Kane/MOE/baseline_runs/robust_experts_pipeline_20260922_r2_control/dense/terminal.json": "b3509d965013953e077f70a3ee9bc26bf77e2232fc12341153ccf8803e93cfa2"
+      }
+    },
+    {
+      "arm": "convmoe",
+      "terminal": {
+        "accepted": true,
+        "status": "CONTROL_PIPELINE_AUDITED",
+        "config_sha256": "d329d8138a2a100fede433670589e8864de172ef04deb02ff6ddb36be2fbbcc8",
+        "arm": "convmoe",
+        "error": null,
+        "execution_seconds": 27.46429916471243,
+        "with_postflight_seconds": 27.46437441930175,
+        "audit_in_execution_budget": true,
+        "automatic_resume": false,
+        "formal_SAFE": false
+      },
+      "epochs": 2,
+      "global_step": 2,
+      "checkpoint_sha256": "972000504d4d78bce0e28f2d92195217593314d37250129e9323d2d242261672",
+      "stage_seconds": {
+        "train": 12.740878844633698,
+        "evaluate": 13.008166318759322,
+        "audit": 1.6532198712229729
+      },
+      "evaluations": [
+        {
+          "kind": "clean",
+          "examples": 640,
+          "batches": 1,
+          "metrics": [
+            {
+              "test/acc": 0.01406249962747097,
+              "test/loss": 4.649288654327393,
+              "test/aux_loss": -0.05875047296285629,
+              "test/main_loss": 4.708039283752441
+            }
+          ],
+          "state_digest": "11714bf6bab6fbb445cddda71e7dbef87de6942bdb7747aa147d282704671c35",
+          "checkpoint_sha256": "972000504d4d78bce0e28f2d92195217593314d37250129e9323d2d242261672",
+          "seconds": 2.489229276776314
+        },
+        {
+          "kind": "PGD20",
+          "examples": 256,
+          "batches": 1,
+          "metrics": [
+            {
+              "attack/pgd/acc": 0.0,
+              "attack/pgd/loss": 6.280234336853027,
+              "attack/pgd/aux_loss": -0.06315124034881592,
+              "attack/pgd/main_loss": 6.343385696411133
+            }
+          ],
+          "state_digest": "11714bf6bab6fbb445cddda71e7dbef87de6942bdb7747aa147d282704671c35",
+          "checkpoint_sha256": "972000504d4d78bce0e28f2d92195217593314d37250129e9323d2d242261672",
+          "seconds": 3.9778318852186203
+        },
+        {
+          "kind": "APGD20",
+          "examples": 256,
+          "batches": 1,
+          "metrics": [
+            {
+              "attack/apgd/acc": 0.0,
+              "attack/apgd/loss": 4.639441013336182,
+              "attack/apgd/aux_loss": -0.040145933628082275,
+              "attack/apgd/main_loss": 4.679586887359619
+            }
+          ],
+          "state_digest": "11714bf6bab6fbb445cddda71e7dbef87de6942bdb7747aa147d282704671c35",
+          "checkpoint_sha256": "972000504d4d78bce0e28f2d92195217593314d37250129e9323d2d242261672",
+          "seconds": 2.219782931730151
+        }
+      ],
+      "stage_metrics_preserved": true,
+      "CSV_train_log_overwrite_observed": false,
+      "saved_hashes": {
+        "/data1/Kane/MOE/baseline_runs/robust_experts_pipeline_20260922_r2_control/convmoe/train.json": "8acbf382a29eecf2077139b21f01eee045af8a671a67b2baf31c36a172f8f30f",
+        "/data1/Kane/MOE/baseline_runs/robust_experts_pipeline_20260922_r2_control/convmoe/evaluate.json": "c0f63ad0f556e36645a893427a4e1372e4978442c39095c39165723b6f64f911",
+        "/data1/Kane/MOE/baseline_runs/robust_experts_pipeline_20260922_r2_control/convmoe/audit.json": "7329348f5517e761ccb9c185c678afb807fb6f380ce0bf5f2c331257f2242855",
+        "/data1/Kane/MOE/baseline_runs/robust_experts_pipeline_20260922_r2_control/convmoe/prepared.json": "02b577d18d14d0c1fa466891267e9c5da1b7b293e5ef9edecded60fa28903881",
+        "/data1/Kane/MOE/baseline_runs/robust_experts_pipeline_20260922_r2_control/convmoe/receipt.json": "380881b1322a7acf897d798405321f6a2eeb4d1eb8a9a6bcbde12f039b162eba",
+        "/data1/Kane/MOE/baseline_runs/robust_experts_pipeline_20260922_r2_control/convmoe/terminal.json": "1d08f44a042021a166469679d91483502ad479d3750c1e4b4e73fa1167f98a14"
+      }
+    }
+  ],
+  "summary": {
+    "config_sha256": "d329d8138a2a100fede433670589e8864de172ef04deb02ff6ddb36be2fbbcc8",
+    "records": [
+      {
+        "accepted": true,
+        "status": "CONTROL_PIPELINE_AUDITED",
+        "config_sha256": "d329d8138a2a100fede433670589e8864de172ef04deb02ff6ddb36be2fbbcc8",
+        "arm": "dense",
+        "error": null,
+        "execution_seconds": 20.401608737185597,
+        "with_postflight_seconds": 20.401701413094997,
+        "audit_in_execution_budget": true,
+        "automatic_resume": false,
+        "formal_SAFE": false
+      },
+      {
+        "accepted": true,
+        "status": "CONTROL_PIPELINE_AUDITED",
+        "config_sha256": "d329d8138a2a100fede433670589e8864de172ef04deb02ff6ddb36be2fbbcc8",
+        "arm": "convmoe",
+        "error": null,
+        "execution_seconds": 27.46429916471243,
+        "with_postflight_seconds": 27.46437441930175,
+        "audit_in_execution_budget": true,
+        "automatic_resume": false,
+        "formal_SAFE": false
+      }
+    ],
+    "accepted": true,
+    "launch_guard_seconds_outside_arm_budgets": 0.16690264083445072,
+    "whole_launch_with_postflight_seconds": 48.05625872313976
+  },
+  "logging_preservation_pass": true,
+  "separate_audit_seconds": 1.3583630602806807,
+  "paper_scale_training": false,
+  "formal_SAFE": false,
+  "exact_gpu_resume": false,
+  "scope": "saved full-workflow control; metrics from limited batches are NOT paper accuracy estimates"
+}
