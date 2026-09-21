@@ -149,6 +149,29 @@ class OuterControlTests(unittest.TestCase):
             self.assertIn("after_step1.pt.partial", terminal["partial_files_retained"])
             self.assertFalse((root / "audit.json").exists())
 
+    def test_outer_timeout_cannot_be_promoted_by_success_files(self):
+        root, receipt = self.run_child("import time;time.sleep(10)", .2)
+        for phase in ["reference", "resume", "audit"]:
+            (root / f"{phase}_finished.json").write_text(json.dumps({"phase": phase, "returncode": 0}))
+        (root / "audit.json").write_text(json.dumps({"audit": "PASS"}))
+        self.assertEqual(summarize_terminal(root, receipt)["status"], "TIMEOUT")
+
+
+class NativeLossFailureControls(unittest.TestCase):
+    def test_kl_target_underflow_is_detectable_without_training(self):
+        import torch.nn.functional as F
+        counts = {}
+        for dtype in [torch.float32, torch.float64]:
+            logits = torch.tensor([[-150., 150., 0.], [-140., 140., 0.]], dtype=dtype, requires_grad=True)
+            parts = torch.chunk(logits, 2, 0)
+            target = sum(F.softmax(x, 1) for x in parts) / 2
+            loss = sum(F.kl_div(F.log_softmax(x, 1), target, reduction="sum") for x in parts) / 2
+            grad, = torch.autograd.grad(loss, logits)
+            self.assertTrue(torch.isfinite(loss))
+            counts[dtype] = int((~torch.isfinite(grad)).sum())
+        self.assertGreater(counts[torch.float32], 0)
+        self.assertEqual(counts[torch.float64], 0)
+
 
 if __name__ == "__main__":
     unittest.main()

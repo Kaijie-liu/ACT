@@ -1,5 +1,24 @@
 # MoE project handoff
 
+LATEST DUAL RS TRAINING CONTROL RESULT (2026-09-21):
+`docs/dual_rs_training_control_archive_20260921_r1.json` is the saved-only
+audited FAILURE. Update1 finite(loss1.86918;335 parameter tensors changed),
+atomic snapshot valid. Update2 finite logits/loss but nonfinite parameter grads,
+stopped before AdamW; resume and continuation audit NOT_STARTED.
+Fixed no-update replay frozen1c064a783: avg softmax1/384 exact zero; float32
+consistency6 nonfinite logit grads, softCE0; float64 diagnosis0. Saved-only CPU
+KL/entropy separation confirms KL target-backward numerical issue in this
+control, not a claim that all author's shuffled training runs fail.
+R1 and all partials remain. No long training/certification accepted or launched.
+Next proposed scoped task: log-domain, mathematically matched differentiable KL
+compatibility controls, then separately labeled R2 step/resume. Do not silently
+detach targets/clamp/lower LR/change sample or reuse R1 as success. Need explicit
+compatibility version; current native source/environment unchanged. See
+`docs/dual_rs_training_control_20260921.md`. Historical pending entries below
+are superseded by this recorded failed control and diagnosis.
+35 controls, saved-only archive reread, old environments/archives and unchanged
+paper tables PASS. All task jobs ended; no unattended long training is active.
+
 DUAL RS REAL STEP CONTROL BLOCKED (2026-09-21): R1 frozen8fa8d4e34.
 Native update1 and tensor-only save succeed; continuous update2 has nonfinite
 gradients, rejected BEFORE AdamW. Resume/audit NOT_STARTED; no long protocol

@@ -1,0 +1,222 @@
+{
+  "schema": 1,
+  "archive_audit": "PASS_FAILURE_PRESERVED",
+  "training_resume_control": "FAILED",
+  "long_training_recipe_accepted": false,
+  "fresh_certification_executed": false,
+  "source_commit": "6f83aeb7f47466b1dee6295baad8d59a8c94eceb",
+  "frozen_execution_commit": "8fa8d4e34",
+  "diagnostic_execution_commit": "1c064a783",
+  "source_and_record_hashes": {
+    "configs/recent_moe/dual_rs_training_control_r1.json": "3fc929454ffd516eaff884aaaa994a779e4c083d1b60cca30e0dac1db7f2ca18",
+    "configs/recent_moe/dual_rs_failed_step_diagnostic_r1.json": "e999e3baa47b285e66205d35f6194e8618c8a718503e891145c36f43eaf548e1",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r1/after_step1.json": "1e59597e5b16c4b7cb85d17019842ed64e97d84a36c35268a2c2ca6f6e332142",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r1/stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r1/stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r1/reference.stdout": "650b558b33150a4af14edfb784db48f159c7cac88dc7e612a8fde8fcdfd5c5cf",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r1/terminal.json": "b87cfa5ca6f7518c3e5db13f26e0cd3e6cea8726d152bfac7b9cd3d4c0d8677d",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r1/receipt.json": "f9da29244d7b8aaa15bfdca7e1598a16fdc55da661591a5e1e08b85852ff1802",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r1/reference.stderr": "2c0f7026456e7078b00ca722fce4b4fe4e488f20c5b855c37431483dffa6fe2c",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r1/reference_started.json": "d41dea8108ba5c3e96b75c23f96d5fe1af388c865e4da43cf25bb18274f016fc",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r1/outer_terminal.json": "8cc5d74e8ff4dde222aec4ad232fd176446b63a0a4c418c773950c19b31e72b3",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r1/reference_finished.json": "a0301296441b35d6c43757c55fbe065b1abc4650c72698d897c0a47aa2ffab46",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r1/after_step1.pt": "f2b80a0620eba4dbb9aa2a0a75c1cd9340c8c915eb620d1ed5cbb8ecd53d2202",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_failed_step_diagnostic_20260921_r1/stdout.txt": "7104f7dad7c8f5ac37abc93e4b04720c2804f40c132e40b45db78baac4b1a257",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_failed_step_diagnostic_20260921_r1/stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_failed_step_diagnostic_20260921_r1/diagnostic.json": "7104f7dad7c8f5ac37abc93e4b04720c2804f40c132e40b45db78baac4b1a257",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_failed_step_diagnostic_20260921_r1/receipt.json": "22cd638ca955f373e6260881659c6f47ded8abc3fcf4ee6895e064276dae9bbd",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_failed_step_diagnostic_20260921_r1/saved_logits.pt": "6e09e3a78c7cdf670b68ca03d51d1cbcca9307aefb01da0c39619cf0fb91526e"
+  },
+  "receipts": {
+    "control": {
+      "schema": 1,
+      "command": [
+        "/data1/Kane/MOE/envs/dual-rs-author-blackwell-20260921/bin/python",
+        "/data1/Kane/MOE/ACT/scripts/dual_rs_training_control.py",
+        "--config",
+        "/data1/Kane/MOE/ACT/configs/recent_moe/dual_rs_training_control_r1.json",
+        "--phase",
+        "manager"
+      ],
+      "cwd": "/data1/Kane/MOE/ACT",
+      "status": "ERROR",
+      "exit_code": 1,
+      "error": null,
+      "evidence_grade": "AUTHOR_TRAIN_STEP_RESUME_CONTROL",
+      "deadline_seconds": 300,
+      "execution_including_preflight_seconds": 5.011438773944974,
+      "total_with_postflight_seconds": 5.050511948764324,
+      "postflight_in_execution_budget": false,
+      "cpu_only": false,
+      "threads": 2,
+      "source_unchanged": true,
+      "command_file_sha256": {
+        "/data1/Kane/MOE/envs/rt-er-blackwell/bin/python3.11": "19b660d026d733a795fc95b4d888a28e8569e4be3f37201a720ff434dfecb558",
+        "/data1/Kane/MOE/ACT/scripts/dual_rs_training_control.py": "3f90e67f541f69a7f222284ef4d52e97273fff2292f10fbf750e1daaa6547240",
+        "/data1/Kane/MOE/ACT/configs/recent_moe/dual_rs_training_control_r1.json": "3fc929454ffd516eaff884aaaa994a779e4c083d1b60cca30e0dac1db7f2ca18"
+      },
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "claim": "Deployment receipt only; not a reproduced accuracy or a proof."
+    },
+    "diagnostic": {
+      "schema": 1,
+      "command": [
+        "/data1/Kane/MOE/envs/dual-rs-author-blackwell-20260921/bin/python",
+        "/data1/Kane/MOE/ACT/scripts/diagnose_dual_rs_training_failure.py",
+        "--config",
+        "/data1/Kane/MOE/ACT/configs/recent_moe/dual_rs_failed_step_diagnostic_r1.json",
+        "--worker"
+      ],
+      "cwd": "/data1/Kane/MOE/ACT",
+      "status": "COMPLETED",
+      "exit_code": 0,
+      "error": null,
+      "evidence_grade": "FAILED_STEP_DIAGNOSIS_NO_UPDATE",
+      "deadline_seconds": 300,
+      "execution_including_preflight_seconds": 3.562529208138585,
+      "total_with_postflight_seconds": 3.60709710046649,
+      "postflight_in_execution_budget": false,
+      "cpu_only": false,
+      "threads": 2,
+      "source_unchanged": true,
+      "command_file_sha256": {
+        "/data1/Kane/MOE/envs/rt-er-blackwell/bin/python3.11": "19b660d026d733a795fc95b4d888a28e8569e4be3f37201a720ff434dfecb558",
+        "/data1/Kane/MOE/ACT/scripts/diagnose_dual_rs_training_failure.py": "8dc6efd25bef945411d1809f869a426f65d8737f8e0c76c27eab138d25e10a6a",
+        "/data1/Kane/MOE/ACT/configs/recent_moe/dual_rs_failed_step_diagnostic_r1.json": "e999e3baa47b285e66205d35f6194e8618c8a718503e891145c36f43eaf548e1"
+      },
+      "stdout_sha256": "7104f7dad7c8f5ac37abc93e4b04720c2804f40c132e40b45db78baac4b1a257",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "claim": "Deployment receipt only; not a reproduced accuracy or a proof."
+    }
+  },
+  "outer_terminal": {
+    "status": "ERROR",
+    "stages": [
+      {
+        "phase": "reference",
+        "returncode": 1,
+        "wall_seconds": 4.895378738641739,
+        "status": "ERROR"
+      },
+      {
+        "phase": "resume",
+        "status": "NOT_STARTED"
+      },
+      {
+        "phase": "audit",
+        "status": "NOT_STARTED"
+      }
+    ],
+    "deadline_seconds": 300,
+    "execution_including_preflight_seconds": 5.011438773944974,
+    "total_with_postflight_seconds": 5.050511948764324,
+    "postflight_in_execution_budget": false,
+    "partial_files_retained": [
+      "after_step1.json",
+      "after_step1.pt",
+      "receipt.json",
+      "reference.stderr",
+      "reference.stdout",
+      "reference_finished.json",
+      "reference_started.json",
+      "stderr.txt",
+      "stdout.txt",
+      "terminal.json"
+    ],
+    "terminal_accounting_seconds": 0.00012560375034809113
+  },
+  "first_step": {
+    "binding": {
+      "config_sha256": "3fc929454ffd516eaff884aaaa994a779e4c083d1b60cca30e0dac1db7f2ca18",
+      "author_commit": "6f83aeb7f47466b1dee6295baad8d59a8c94eceb",
+      "loader_batch": 256,
+      "materialized_batch_sha256": "797b8d75e1c43e5f9a2887a8c0a37b181160ea02012109e2c91c0c9b486c84a8",
+      "train_indices_sha256": "599fa01ea26ae9fda049c5f82c940b4d08488c2acb38e330cdd57cb1cb32e8ae",
+      "denoiser_sha256": "5999f5e91fe5df511f58c562fb7c99416d07d1852f83716012e7e6a4d27ce6f6",
+      "environment_sha256": "b28631a2b21e94cc705ba5050661ffb69cdcb9d97320124c35cce97078b91494"
+    },
+    "file_sha256": "f2b80a0620eba4dbb9aa2a0a75c1cd9340c8c915eb620d1ed5cbb8ecd53d2202",
+    "logical_sha256": "a2ce2207ab93b795dfb858057c12d11a0c1c6d148b4919118a462570541814a1",
+    "metrics": {
+      "loss": 1.869183758433735,
+      "classification_loss": 1.4958021926861529,
+      "weighted_consistency_loss": 0.3733815657475821,
+      "effective_original_inputs": 128,
+      "noisy_batch": 256,
+      "input_sha256": "8a7aeb147ac0d7e216ff07f074cc393c9e43b60b7ff469bfe5db3b310dca9aa5",
+      "denoised_sha256": "0048fa6528df3d4f476ae7cd32e805f47b1d9a74193c2e2245da4f8dc1c33e54",
+      "output_sha256": "56004f9b8379d3982b10a699dcd36d5e6e9801f17c87ba0cc988bd097b647d35",
+      "gradients_sha256": "22e653960cd375be795f2417b520cbe7a8a1b4df8dad4b59d931b15873f32b10",
+      "gradient_l2": 56.4901123046875,
+      "changed_parameter_tensors": 335,
+      "seconds": 0.6955065950751305
+    },
+    "augmented_images_changed": 256,
+    "timestep": 2809
+  },
+  "first_snapshot_all_tensors_finite": true,
+  "first_snapshot_optimizer_states": 335,
+  "diagnostic": {
+    "native_loss_finite": true,
+    "native_loss": 4.287284355873172,
+    "logits_finite": true,
+    "logit_min": -145.93629455566406,
+    "logit_max": 169.5609130859375,
+    "average_softmax_zeros": 1,
+    "average_softmax_elements": 384,
+    "parameter_grad_nonfinite_elements": 1728525,
+    "parameter_grad_elements": 1730259,
+    "status": "DIAGNOSTIC_COMPLETED",
+    "diagnostic_config_sha256": "e999e3baa47b285e66205d35f6194e8618c8a718503e891145c36f43eaf548e1",
+    "parent_checkpoint_sha256": "f2b80a0620eba4dbb9aa2a0a75c1cd9340c8c915eb620d1ed5cbb8ecd53d2202",
+    "no_optimizer_update": true,
+    "saved_logits_sha256": "6e09e3a78c7cdf670b68ca03d51d1cbcca9307aefb01da0c39619cf0fb91526e",
+    "loss_space_comparison": {
+      "softce_float32": {
+        "loss_finite": true,
+        "loss": 3.3652497729093263,
+        "gradient_nonfinite_elements": 0,
+        "probability_zero_elements": 1
+      },
+      "consistency_float32": {
+        "loss_finite": true,
+        "loss": 0.9220345829638463,
+        "gradient_nonfinite_elements": 6,
+        "probability_zero_elements": 1
+      },
+      "consistency_float64": {
+        "loss_finite": true,
+        "loss": 0.9220345720890835,
+        "gradient_nonfinite_elements": 0,
+        "probability_zero_elements": 0
+      }
+    },
+    "worker_seconds": 2.370314946398139,
+    "scope": "fixed failed step and saved logits only; not a training repair or long-run conclusion"
+  },
+  "independent_saved_logit_cpu_derivatives": {
+    "kl_torch.float32": {
+      "value_finite": true,
+      "gradient_nonfinite": 6,
+      "average_probability_zeros": 1
+    },
+    "entropy_torch.float32": {
+      "value_finite": true,
+      "gradient_nonfinite": 0,
+      "average_probability_zeros": 1
+    },
+    "kl_torch.float64": {
+      "value_finite": true,
+      "gradient_nonfinite": 0,
+      "average_probability_zeros": 0
+    },
+    "entropy_torch.float64": {
+      "value_finite": true,
+      "gradient_nonfinite": 0,
+      "average_probability_zeros": 0
+    }
+  },
+  "scope": "fixed-prefix control under isolated compatibility environment; not failure of all author training runs",
+  "next_gate": "separately named numerically stable KL evaluation control; no silent dtype/LR/loss change"
+}
