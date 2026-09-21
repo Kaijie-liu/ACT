@@ -1,5 +1,14 @@
 # MoE project handoff
 
+ROBUST PAPER TRAINING ACTUALLY LAUNCHED (2026-09-22):
+At acd27d19f, config7731f7ae...67954d. Detached serial supervisor PID3530635;
+read docs/robust_experts_paper_training_launch_20260922_r1.json and SERVER logs.
+Dense epoch0 observed COMPLETE63 updates;200epoch result NOT yet available.
+Then ConvMoE only if dense train/full10k eval/audit succeeds.24h/arm; no retry/
+resume or automatic git. Do not edit bound workflow/source/environment files.
+All run files under baseline_runs/robust_experts_paper_training_20260922_r1;
+remaining work is monitor then independently archive final weights/evaluations.
+
 ROBUST LONG EXECUTION FREEZE AFTER FULL WORKFLOW PASS (2026-09-22):
 R2 stage-isolated native short pipelines PASS20.402/27.464s, independent saved
 review and retained CSVs pass;8 outer controls +1 isolation +1 fullrecipe test.

@@ -11,7 +11,7 @@
 |---|---|---|---|
 | Dual RS |90epoch selector落地；绑定最终权重后，原序输入0、1均正确，统计L2半径0.8304935215、1.1060614554；43.719s含postflight|未完成全测试认证曲线；这是命名的log-domain数值兼容变体|尚无同函数比赛；原生RS证明平滑函数，不是ACT确定性F，不能横比SAFE百分比|
 | MetaMoE |原生PyTorch作者后端绕过ONNX后，CIFAR/MNIST组件均正；完整20类smoke中，两臂均复放CIFAR0误分类，作者臂MNIST0正|尚未复跑全部router/expert表；旧ONNX不等价失败保留|R2正式执行门未过：ACT在router首层ReLU丢失共享HZ，触发64M容量限制。未冻结／启动新20输入比较|
-| Robust Experts |CPU续训、GPU640批量及完整短训练→最终权重→clean/PGD20/APGD20→审计均通过；日志阶段隔离通过|200epoch/lr.01完整执行配置已冻结，启动以单独launch记录为准；尚未训练完成|有原始语义接口及解析全历史控制，无已训练全尺寸全域成绩；不能用编译通过填认证栏|
+| Robust Experts |CPU续训、GPU640批量及完整短训练→最终权重→clean/PGD20/APGD20→审计均通过；日志阶段隔离通过|200epoch/lr.01执行已冻结并启动，dense后ConvMoE串行；尚未训练完成|有原始语义接口及解析全历史控制，无已训练全尺寸全域成绩；不能用编译通过填认证栏|
 | RoME |公开MAX权重严格加载440个预测状态；旧Linf攻击复放通过；新4输入×3范数固定控制已启动，最终状态以独立归档为准|不是全10k RA；s4/b6等代码默认与论文身份差异明确保留|原始连续多层LoRA混合仍不在ACT完整全域入口范围；不得替换成离散top-k|
 | J-TLAT |指定公开作者仓库本次仍只有README；论文称有匿名补充代码，尚未取得可执行包|未完成；不是“复现得零分”|未运行；不能用自编同名方法冒充作者工具|
 | Feature Noise |已读作者实验设计；v2论文与作者组页面仍未定位完整实验制品|未完成；TEAL/MiniMind链接只是依赖，不是本文完整实现|特征／文本噪声任务不等于像素L∞盒；尚无同对象协议或成绩|
@@ -65,9 +65,14 @@ native SGD/PolyLR/augmentation/PGD7，finalepoch200唯一模型选择。
 正式执行另行冻结24h/架构、串行、最终200epoch唯一模型选择，无隐式重试／GPU精确续训声明。
 剩余是**实际完整训练、全10k终评和最终归档**，不是再把这些监督器列为未实现。
 **没有把短控制checkpoint当成训练完成权重。**
+正式启动记录绑定执行commit `acd27d19f`、config SHA256
+`7731f7ae144b3816d28b0dde7ee59dfcb4fac90f2c73b6e47cd36ceeca67954d`。
+已观察dense真实首epoch完成63个更新；这不是最终成绩，终态和各epoch以服务器新目录为准。
+监督流程不自动Git写入；完成后的结果还需另行独立归档。
 证据：[CPU续训](robust_experts_resume_archive_20260922_r1.json)、
 [GPU独立存盘检查](robust_experts_gpu_step_archive_20260922_r3.json)、
 [完整短流程](robust_experts_pipeline_archive_20260922_r2.json)、
+[正式启动记录](robust_experts_paper_training_launch_20260922_r1.json)、
 [监督与长运行协议](robust_experts_training_supervision_20260922.md)、
 [科学配方](../configs/recent_moe/robust_experts_paper_training_recipe_r1.json)。
 
