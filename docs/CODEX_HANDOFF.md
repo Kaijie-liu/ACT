@@ -1,5 +1,28 @@
 # MoE project handoff
 
+BASELINE SUPERVISION CONTROLS FROZEN (2026-09-21):
+`dual_rs_epoch_control_r1.json` freezes native train/test/scheduler for2 epochs
+on first256 eligible train/test rows and a fresh-process epoch2 replay. SAME
+parent recipe/log-domain variant,300s shared outer deadline, exact state gate.
+50 CPU controls pass including complete-epoch state mutations and outer timeout
+precedence. Long90epoch run still blocked until this real epoch control passes.
+
+Full MetaMoE R1 failed before model load because ACT was absent from child
+sys.path. Saved-record failure audit is `metamoe_full_intake_archive_20260921_r1.json`.
+Do not erase it. R2 adds explicit import root and a NEW CPU-only Python3.12/
+Torch2.9.1+cpu author-adapter environment; all9 semantic controls pass there.
+Same original full checkpoint/index0/normalized2/255/300s, no method changes.
+R2 is NOT executed at this preparation entry.
+
+Robust Experts missing optional SyncBN import repaired ONLY in separate source
+copy `baselines/robust_experts_compat_20260921_r1`, patch stored in configs.
+No fake SyncBN, ordinary BatchNorm2d remains. Architecture smoke failed once
+for missing einops, then new CPU env full ResNet18 ConvMoE layer4/E4/k2 passes
+forward/input-gradient (36,394,168 parameters). Not pretrained or attack results.
+No existing environment or original author checkout changed. Initial offline
+conda clone lacked cached packages; abandoned partial directory retained; fresh
+venv succeeds and pip check passes. Inventory bound before real queries.
+
 DUAL RS R2 PASS / ORIGINAL METAMOE INTAKE PREPARATION (2026-09-21):
 `docs/dual_rs_training_control_archive_20260921_r2.json` binds successful real
 step/save/fresh-process restore at721dd80d3; all8 state components and next-step

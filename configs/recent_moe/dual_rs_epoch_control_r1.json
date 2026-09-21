@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "protocol": "dual_rs_completed_epoch_control_r1",
+  "mode": "epoch_control",
+  "parent_config": "configs/recent_moe/dual_rs_training_control_r2.json",
+  "parent_config_sha256": "d5e6141b57d043b2830a55660b24270fde046348fef86c75dfe948773b8bafa1",
+  "step_control_archive": "docs/dual_rs_training_control_archive_20260921_r2.json",
+  "step_control_archive_sha256": "dfa690d8d44ccf119185088dc20bd46a20f69574da2c39447d5c7101824e3bc9",
+  "epochs": 2,
+  "prefix_count": 256,
+  "train_count": 256,
+  "test_count": 256,
+  "test_label_table": "/data1/Kane/MOE/baselines/recent_moe_20260921/dual_rs/data/sigma_label/map10e4/0.250_0.500_1.000_test.npy",
+  "total_seconds": 300,
+  "output_root": "/data1/Kane/MOE/baseline_runs/dual_rs_epoch_control_20260921_r1",
+  "execution_files": {
+    "scripts/dual_rs_epoch_pipeline.py": "04323428759d59c1285ff70fd74c12cae8fe25c3d540b3de3600af74e6ddccd8",
+    "scripts/audit_dual_rs_epochs.py": "f29a25ac28dacee59c1971b04c5069c1556b649b0479fa3269e5d7ca659e8e29",
+    "scripts/dual_rs_training_control_r2.py": "f06808fdb70cb1f094aaa55b12fa907ecaa2d958c26ccca736ae3bbc14b375c2",
+    "scripts/dual_rs_training_state.py": "36ddce918c956c1277c26e980a6e9165c17142f9f6cbb8f3b0cfb16bca718c78",
+    "scripts/audit_dual_rs_training_control.py": "eecb66a0ad595fd8d1b32b9a1c196ace9722d3ef4510f44c0c57be65ae6c5665"
+  },
+  "selection": "first256 author max-radius-nonzero rows in each split; train shuffled per epoch, test ordered",
+  "checkpoint_selection": "completed epoch2; no best-accuracy/certification selection",
+  "resume": "fresh process from completed epoch1, then native train/test/scheduler epoch2",
+  "failure_rule": "stop, retain all partials, no retry or altered gate",
+  "train_indices_sha256": "599fa01ea26ae9fda049c5f82c940b4d08488c2acb38e330cdd57cb1cb32e8ae",
+  "test_indices_sha256": "691bbafea0dd999966c767326ce7b52e48d72bc35b369ac58dcfcb26738f65e5"
+}

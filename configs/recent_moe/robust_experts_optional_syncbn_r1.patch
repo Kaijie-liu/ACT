@@ -1,0 +1,60 @@
+diff --git a/src/models/nn/moe/layer.py b/src/models/nn/moe/layer.py
+index 7abd7f4..b0e091b 100644
+--- a/src/models/nn/moe/layer.py
++++ b/src/models/nn/moe/layer.py
+@@ -25,14 +25,20 @@ def _randomize_weights(module: nn.Conv2d):
+ 
+ 
+ def _initialize_weights(module):
+-    from src.models.nn.deeplabv3plus.sync_batchnorm import SynchronizedBatchNorm2d
++    try:
++        from src.models.nn.deeplabv3plus.sync_batchnorm import SynchronizedBatchNorm2d
++        sync_bn_types = (SynchronizedBatchNorm2d,)
++    except ModuleNotFoundError as exc:
++        if exc.name not in {"src.models.nn.deeplabv3plus", "src.models.nn.deeplabv3plus.sync_batchnorm"}:
++            raise
++        sync_bn_types = ()  # No fake SyncBN; ordinary BN-only architecture supported.
+ 
+     for m in module.modules():
+         if isinstance(m, nn.Conv2d):
+             # n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
+             # m.weight.data.normal_(0, math.sqrt(2. / n))
+             torch.nn.init.kaiming_normal_(m.weight)
+-        elif isinstance(m, SynchronizedBatchNorm2d):
++        elif isinstance(m, sync_bn_types):
+             m.weight.data.fill_(1)
+             m.bias.data.zero_()
+         elif isinstance(m, nn.BatchNorm2d):
+diff --git a/src/models/nn/moe/resnet_block_moe.py b/src/models/nn/moe/resnet_block_moe.py
+index ea42529..de98271 100644
+--- a/src/models/nn/moe/resnet_block_moe.py
++++ b/src/models/nn/moe/resnet_block_moe.py
+@@ -8,7 +8,13 @@ from torchvision.models.resnet import BasicBlock, Bottleneck
+ 
+ import src.models.nn.resnet
+ from src.models.nn import inject
+-from src.models.nn.deeplabv3plus.sync_batchnorm import SynchronizedBatchNorm2d
++try:
++    from src.models.nn.deeplabv3plus.sync_batchnorm import SynchronizedBatchNorm2d
++    _SYNC_BN_TYPES = (SynchronizedBatchNorm2d,)
++except ModuleNotFoundError as exc:
++    if exc.name not in {"src.models.nn.deeplabv3plus", "src.models.nn.deeplabv3plus.sync_batchnorm"}:
++        raise
++    _SYNC_BN_TYPES = ()  # No fake SyncBN; ordinary BN-only architecture supported.
+ from src.models.nn.inject import apply_to_modules
+ from src.models.nn.moe.gate.topk import TopKGate
+ from src.models.nn.moe.layer import MOELayer, PatchMOELayer
+@@ -41,7 +47,7 @@ def _initialize_weights(module):
+             # n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
+             # m.weight.data.normal_(0, math.sqrt(2. / n))
+             torch.nn.init.kaiming_normal_(m.weight)
+-        elif isinstance(m, SynchronizedBatchNorm2d):
++        elif isinstance(m, _SYNC_BN_TYPES):
+             m.weight.data.fill_(1)
+             m.bias.data.zero_()
+         elif isinstance(m, nn.BatchNorm2d):
+@@ -164,4 +170,3 @@ class ResNetResidualBlockMoE(MoEModel, src.models.nn.resnet.ResNet):
+ 
+     def replace(self, module: nn.Module, prefix: str, in_channels: int = None):
+         return super().replace(module, prefix, in_channels=module.conv1.in_channels)
+-
