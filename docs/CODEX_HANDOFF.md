@@ -1,5 +1,22 @@
 # MoE project handoff
 
+MULTILAYER HISTORY IMPLEMENTATION / CONTROL FREEZE (2026-09-21):
+Read `docs/multilayer_history_verifier.md`. New separate `multilayer.py` API
+compiles EVERY complete tie-legal route history with its actual intermediate
+inputs into a shared output+router HZ. Includes prefix-definedness for original
+Robust Experts STE, structural coverage audit, spawn supervisor/partial receipts.
+24 local semantic/audit/deadline controls PASS. HZ_POLICY_ACCEPTED is conditional,
+NOT source-complete floating proof. Joint HZ loss returns UNSUPPORTED (currently
+raw-epsilon weighted control); no independent-box substitution or claim that
+RoME dense adapters are discrete top-k. Old output-level protocols unchanged.
+Full-size Robust Experts initialized E4/k1/layer4 has a separately frozen two-
+probe compatibility protocol (300s); execution/archive pending this freeze.
+Analytic safe/unsafe/history-cap bundles are separately scripted; no trained
+full-size multicall certificate claim. No new training/holdout/backend search.
+Dual RS epoch090/terminal files observed this turn, but NOT independently audited
+here; do not read older "still live" prose as current process state. Follow its
+separate final-audit/bind/commit/certification gate, not this multilayer task.
+
 LATEST BASELINE HANDOFF (2026-09-21):
 Robust Experts R3 is EXECUTED,13.209s with postflight;147/147 training-end vs
 post-evaluation state tensors equal,74 finite SGD momentum buffers. R2 native
