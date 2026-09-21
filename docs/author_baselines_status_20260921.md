@@ -79,9 +79,14 @@ and input gradients equal a full original module with synthetic auxiliary
 heads; this is NOT a resumed-training or full auxiliary-state equivalence.
 Code defaults s4,b6,alpha=rank remain explicit, not claimed as recovered recipe.
 Native AutoAttack dependency and author's evaluate.py help pass in a dedicated
-CPU environment. One raw index0 standardLinf8/255 attack control is frozen,
-600s end-to-end execution, with postflight cost separately reported. No attack
-parameter search or table accuracy from this one input. [Saved archive](rome_deployment_archive_20260921.json).
+CPU environment. Frozen index0 standardLinf8/255 control COMPLETED in18.559s
+including postflight. Clean3→adversarial5; independent full-model replay PASS.
+The saved-input exact distance exceeds8/255 by2.79e-8, within the registered1e-7
+numerical attack tolerance. EMPIRICAL attack only, NOT an exact-box UNSAFE.
+Native AA found the attack in APGD-CE and skipped later attacks on this already
+broken input. No attack parameter search or table accuracy from this one input.
+[Intake archive](rome_deployment_archive_20260921.json),
+[attack and replay archive](rome_autoattack_archive_20260921_r1.json).
 A clean
 trace is NOT enumeration of all dependent histories. Neither family is sent
 through normalized output-layer F0 with an incorrect semantic label.
@@ -90,9 +95,9 @@ through normalized output-layer F0 with an incorrect semantic label.
 
 | Work | Remaining requirement |
 |---|---|
-| Dual RS |90epoch training completion; freeze actual final weight identity; supervised two-stage Monte Carlo pilot; then paper-scale replication|
+| Dual RS |90epoch training running; certification execution recipe/6 controls now passed, actual final-weight binding and real two-stage pilot pending; then paper-scale replication|
 | MetaMoE author-table reproduction |MNIST conversion/source adapter control; router and expert tables; matched complete-request comparison|
-| RoME |Execute frozen standard AutoAttack control, then freeze paper-scale evaluation separately; no multi-layer HZ lowering yet|
+| RoME |Standard AutoAttack deployment control and independent replay completed; paper-scale evaluation still separate; no multi-layer HZ lowering yet|
 | Robust Experts |Training/attack workflow with public CIFAR100, source-vs-paper recipe separation; no trained weights or multi-layer HZ lowering yet|
 | J-TLAT |Pinned author checkout still README-only; no runnable implementation to deploy|
 | Feature Noise |Author experiment implementation not identified; do not substitute an invented implementation|

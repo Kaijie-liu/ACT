@@ -1,5 +1,22 @@
 # MoE project handoff
 
+ROME ATTACK COMPLETE / DUAL RS CERT PREPARED (2026-09-21):
+Read `docs/rome_autoattack_archive_20260921_r1.json`: fixedidx0 clean3→attack5,
+native standardAutoAttack,18.559s withpostflight; independent original-variable
+route replay PASS. Exact stored-input distance exceeds8/255 by2.79e-8 but fits
+frozen1e-7 attack tolerance. EMPIRICAL ONLY, not exact-box UNSAFE/formal SAFE.
+Native AA stops after APGD-CE breaks this input; remaining attacks are configured,
+not separately executed successes. No substitution/paper accuracy claim.
+
+Dual RS90epoch training remains live; check filesystem, not older pending prose.
+`docs/dual_rs_certification_execution_20260921.md` now documents prepared runner,
+six native controls PASS and actual premature-binding rejection. Recipe is
+frozen, but NO real certification before epoch090 and final saved-state audit.
+Do not edit any training OR certification hash-bound execution files; actual
+weight manifest is created only after landing, then commit/push before launch.
+Robust Experts' isolated full workflow dependency stage is being prepared;
+initialized-model intake alone still does not mean its paper pipeline is run.
+
 LIVE TRAINING / ROME ATTACK CONTROL FREEZE (2026-09-21):
 Dual RS90epoch training launched at826e8e94b after BOTH exact resume controls
 passed. Run `baseline_runs/dual_rs_selector_training_20260921_r1`, launcher

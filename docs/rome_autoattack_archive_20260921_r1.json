@@ -1,0 +1,38 @@
+{
+  "audit": "INDEPENDENT_FULL_MODEL_REPLAY_PASS",
+  "result": {
+    "status": "ATTACK_EVALUATION_COMPLETED",
+    "config_sha256": "c819eed707ec5792d24aa4b07ffea9d1bef44e61e14fd56c4ffd28993d1aa648",
+    "index": 0,
+    "label": 3,
+    "clean_prediction": 3,
+    "adversarial_prediction": 5,
+    "linf_distance": 0.03137257695198059,
+    "empirically_correct_after_attack": false,
+    "evidence_grade": "EMPIRICAL_ATTACK_ONLY",
+    "formal_SAFE": false,
+    "attacks": [
+      "apgd-ce",
+      "apgd-t",
+      "fab-t",
+      "square"
+    ],
+    "witness_sha256": "77bff5301362f8698238426a7705d934fb1155677579b63dabae56cc48cff490",
+    "setup_seconds": 2.6962135173380375,
+    "attack_replay_save_seconds": 15.356717308983207,
+    "worker_total_seconds": 18.052931835874915,
+    "semantics": "original dense multilayer variable-weight logits, inference-only unused auxiliary head absent",
+    "scope": "single observed-input deployment control; not paper accuracy or ACT competitive table"
+  },
+  "config_sha256": "c819eed707ec5792d24aa4b07ffea9d1bef44e61e14fd56c4ffd28993d1aa648",
+  "receipt_sha256": "7c7822888f5f9a74c49ae61b0658a6d5210fcead6602a4a66bbc5bf33cd9af6a",
+  "exact_binary_input_linf_in_double": 0.03137257695198059,
+  "inside_exact_requested_epsilon": false,
+  "excess_over_requested_epsilon": 2.793237274811844e-08,
+  "registered_numerical_tolerance": 1e-07,
+  "execution_seconds": 18.553286319598556,
+  "execution_with_postflight_seconds": 18.5590228009969,
+  "independent_replay_seconds_separate_from_attack_budget": 2.8458542842417955,
+  "formal_SAFE": false,
+  "scope": "single-input empirical deployment control; tolerance-accepted attack is NOT exact-box UNSAFE"
+}
