@@ -1,5 +1,20 @@
 # MoE project handoff
 
+ROBUST EXPERTS REAL WORKFLOW FROZEN (2026-09-21):
+`configs/recent_moe/robust_experts_workflow_r1.json` binds actual public CIFAR100
+files, isolated CPU dependency inventory, native composed config and exact
+two-file optional SyncBN patch. See preparation archive.600s shared outer;
+one batch2 train/validation/test/PGD20/APGD20, E4/k1/layer4, native SGD/PGD7.
+Data-dir forwarding/local CSV replace only broken location/remote logging;
+Hydra1.3.2 compatibility is explicit. No paper accuracy or full resume claim.
+Native config/terminal controls PASS; real training NOT launched at this entry.
+Download serial timeout and missing-range error remain; assembled archive MD5
+matches torchvision. Dependency R1 nonexistent ClearML pin was OUR setup error.
+
+MetaMoE R2 Git summary is now `metamoe_full_intake_compact_archive_20260921_r2.json`:
+same saved-record audit and unchanged server result, full-coordinate summary
+hash retained; inline input tensor removed from current tree, no history rewrite.
+
 ROME ATTACK COMPLETE / DUAL RS CERT PREPARED (2026-09-21):
 Read `docs/rome_autoattack_archive_20260921_r1.json`: fixedidx0 clean3→attack5,
 native standardAutoAttack,18.559s withpostflight; independent original-variable

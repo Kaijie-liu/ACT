@@ -41,11 +41,14 @@ checkpoint, CIFAR raw-order test index0, normalized-space2/255,300s:
 **UNSAFE_REPLAYED at the center**, global label3/prediction5, in BOTH source
 float32 and explicit float64 snapshot. No replacement sample. Float32↔float64
 probe max4.10e-6 is descriptive, not a full-domain equivalence test.
-[Record archive](metamoe_full_intake_archive_20260921_r2.json) and
+[Compact record archive](metamoe_full_intake_compact_archive_20260921_r2.json) and
 [independent original-module replay](metamoe_full_witness_replay_20260921_r2.json).
 The zero-filled-source interface is validated; this particular request exits
 on a real counterexample, so it is NOT a real positive HZ bound demonstration.
 Nine analytical controls exercise the positive/negative/undefined guard cases.
+The first Git summary accidentally inlined one full input witness. The current
+tree replaces it with a hash reference, preserving all original server records
+and the prior summary hash; historical commits are not rewritten.
 
 All HZ positives from the new entry remain conditional on network/input/guard
 lowering and the frozen solver numerical policy. This does not solve the older
@@ -93,12 +96,24 @@ through normalized output-layer F0 with an incorrect semantic label.
 
 ## Remaining gates — NOT marked complete
 
+Robust Experts now also has a dedicated workflow environment, passing native
+Lightning/Hydra/attack imports and two configuration/terminal controls. Public
+CIFAR100 is integrity checked; serial timeout and range-connection failure are
+retained. Its600s real control is frozen but not executed at this preparation
+entry: native E4/k1/layer4 ConvMoE, one batch2 per phase, PGD7 training and
+PGD20/APGD20 evaluation; original SGD and transforms. Location-only data_dir
+forwarding is needed because the author subclass swallows that argument. All
+logging is local CSV and network connections are prohibited in the child.
+Hydra1.3.2/Python3.12/CPU Torch2.9.1/Lightning1.9.5 is an explicitly named
+compatibility stack, not a claim of identical author environment.
+[Preparation archive](robust_experts_workflow_preparation_20260921.json).
+
 | Work | Remaining requirement |
 |---|---|
 | Dual RS |90epoch training running; certification execution recipe/6 controls now passed, actual final-weight binding and real two-stage pilot pending; then paper-scale replication|
 | MetaMoE author-table reproduction |MNIST conversion/source adapter control; router and expert tables; matched complete-request comparison|
 | RoME |Standard AutoAttack deployment control and independent replay completed; paper-scale evaluation still separate; no multi-layer HZ lowering yet|
-| Robust Experts |Training/attack workflow with public CIFAR100, source-vs-paper recipe separation; no trained weights or multi-layer HZ lowering yet|
+| Robust Experts |Execute separately frozen native single-batch workflow; then full training/attack protocol; no paper-trained weights or multi-layer HZ lowering yet|
 | J-TLAT |Pinned author checkout still README-only; no runnable implementation to deploy|
 | Feature Noise |Author experiment implementation not identified; do not substitute an invented implementation|
 

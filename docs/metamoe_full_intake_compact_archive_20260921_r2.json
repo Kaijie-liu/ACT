@@ -1,0 +1,126 @@
+{
+  "archive_schema": "compact_witness_reference_v1",
+  "superseded_full_coordinate_archive_sha256": "88bee565e4512299dbcb0d2a1d858f32d9314fed6c62262aa576055bb8e8d207",
+  "audit": "PASS",
+  "scope": "record identities and coverage only; no independent HZ reproof",
+  "config_sha256": "789841111ad30e8e2c4eebcf477d51f89a7f0bf096fc597d20887564bd69bb0c",
+  "records": [
+    {
+      "terminal": {
+        "request": {
+          "id": "cifar10_test_0",
+          "index": 0,
+          "selection": "first raw-order CIFAR10 test, no correct/routing filter"
+        },
+        "status": "UNSAFE_REPLAYED",
+        "receipt": "/data1/Kane/MOE/baseline_runs/metamoe_full_intake_20260921_r2/cifar10_test_0/receipt.json",
+        "complete_result": true,
+        "evidence_grade": "FULL_MODEL_REPLAY"
+      },
+      "result": {
+        "schema": 1,
+        "status": "UNSAFE_REPLAYED",
+        "evidence_grade": "FULL_MODEL_REPLAY",
+        "semantics": "class_separated_raw_top1_zero_fill_any_legal_ties",
+        "class_counts": [
+          10,
+          10
+        ],
+        "source_sha256": "560ef6cee9000faf0f1d4579d4e91f7a0439d3cdc3a8722e37b69571f3836c34",
+        "property_rows": 19,
+        "nonzero_obligations": [],
+        "trusted": [
+          "network_to_HZ",
+          "input_and_guard_lowering",
+          "HZ_solver_numerical_policy"
+        ],
+        "source_complete": false,
+        "reason": "original_model_center",
+        "seconds": 0.0010747238993644714,
+        "config_sha256": "789841111ad30e8e2c4eebcf477d51f89a7f0bf096fc597d20887564bd69bb0c",
+        "request": {
+          "id": "cifar10_test_0",
+          "index": 0,
+          "selection": "first raw-order CIFAR10 test, no correct/routing filter"
+        },
+        "checkpoint_sha256": "0e0514342c1ef99cfc86258c42a1d60c15ee55df0b6dcb44c64ac375253aac2a",
+        "allowed_globals": [
+          "small_expert.UltraVerifiableCNN",
+          "small_expert.UltraVerifiableCNN_Features",
+          "torch.nn.modules.batchnorm.BatchNorm2d",
+          "torch.nn.modules.container.ModuleList",
+          "torch.nn.modules.conv.Conv2d",
+          "torch.nn.modules.dropout.Dropout",
+          "torch.nn.modules.linear.Linear",
+          "torch.nn.modules.pooling.AvgPool2d",
+          "vision_transformer_moe.MetaGatingNet",
+          "vision_transformer_moe.MetaMoE"
+        ],
+        "source_native_forward_equal": true,
+        "reduced_float64_probe_equal": true,
+        "dtype_probe_max_abs": 4.1016755703005e-06,
+        "global_label": 3,
+        "source_prediction": 5,
+        "float64_prediction": 5,
+        "scores_float64": [
+          [
+            1564.1786389760434,
+            -1560.7305013861196
+          ]
+        ],
+        "output_float64": [
+          [
+            -0.5232993232389952,
+            -0.7014722192051206,
+            -1.2633825032522448,
+            0.8725526806667965,
+            -1.6667761119930615,
+            1.0817236923932576,
+            -1.4198318824581082,
+            -1.1267855945413687,
+            -1.1620960942091343,
+            -1.2977459639915496,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "numerical_object": "explicit CPU float64 snapshot of public state; not source-complete float32 semantics",
+        "input_space": "author CIFAR normalization; epsilon in normalized coordinates, not raw pixel L_inf",
+        "control_seconds": 1.8218764122575521,
+        "materialized_tensor_hashes": {
+          "center": "acc363ea49d01ef53444a6675b622d757fd91075c60167af2817ea6bfd52273e",
+          "lower": "fb0c90e87c4ad13f69585452d061ef75ea9b370e7c2838028050eb62cda57633",
+          "upper": "bddc8a62fa8b575255750bbeb276ecfb9e6d0f9dee291e03c3dd6d8d659d8fc3",
+          "rows": "0f137f3c2614a9e3ba0415fc059dfa87e522e0e606bf68959324c0d54eaae65e",
+          "thresholds": "58b4c36db421154f8b77a2fbcb8641e2ec9e767c9ebb98b89a2d82bf09e96509"
+        },
+        "worker_total_seconds": 1.8235663902014494,
+        "witness_reference": {
+          "canonical_json_sha256": "72782d041f0d15bedd71db08cbff885fb95866e69ca750cf0eac5b152de28041",
+          "location": "original server result.json, bound by record_hashes",
+          "inline_coordinates_omitted": true
+        }
+      },
+      "cost_seconds": {
+        "execution_including_preflight_seconds": 2.39685739018023,
+        "total_with_postflight_seconds": 2.426490494981408
+      },
+      "record_hashes": {
+        "/data1/Kane/MOE/baseline_runs/metamoe_full_intake_20260921_r2/cifar10_test_0/intake.json": "831d1f3e0e233a21940bf9b3382ddf6abf24b24dc5244a0fb6671c9349c98aa7",
+        "/data1/Kane/MOE/baseline_runs/metamoe_full_intake_20260921_r2/cifar10_test_0/receipt.json": "b0dfa0d2493013d9cc3f2b1a701bc4b2038526f2eb2af1abdf94f5478fd12d07",
+        "/data1/Kane/MOE/baseline_runs/metamoe_full_intake_20260921_r2/cifar10_test_0/request.pt": "75aefba3b4f9dc390ceacc9e4e4439beb73b75a8f6ef7b58beb75d3fd523790d",
+        "/data1/Kane/MOE/baseline_runs/metamoe_full_intake_20260921_r2/cifar10_test_0/result.json": "651c14efa5731589b4b2c28363e6445128ccd5f46c787a52b8981fdb4af01aac",
+        "/data1/Kane/MOE/baseline_runs/metamoe_full_intake_20260921_r2/cifar10_test_0/stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "/data1/Kane/MOE/baseline_runs/metamoe_full_intake_20260921_r2/cifar10_test_0/stdout.txt": "8d2976e7bd0cd8faf6154be552532f3be2e038debbe42fdf09237700ab3fbc9d"
+      }
+    }
+  ]
+}
