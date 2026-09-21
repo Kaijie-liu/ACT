@@ -33,3 +33,34 @@ R2继续原256输入、batch和统一300s；精确续步接受门不变。
 分开验收：原生前向接入/差分、完整输入域与路由义务、受支持后端求界。
 缺算子或缺路由覆盖时必须返回明确unsupported/unknown，不把clean-path导出当完整证明。
 最终性能实验仅在这些门和整批监督/审计通过后冻结。
+# Executed update: Dual RS R2 and MetaMoE full intake preparation
+
+R2 is now `CONTROL_PASS`, with independent saved-only re-audit. The two real
+updates and fresh-process continuation agree exactly in all eight snapshot
+components and next-step metrics (excluding time). Outer execution10.377s,
+postflight-inclusive10.422s. See `dual_rs_training_control_archive_20260921_r2.json`.
+R1's nonfinite-gradient failure remains unchanged. This validates the named
+log-domain compatibility loss and state restore, not final training or accuracy.
+
+`class_separated_top1.py` is a NEW ACT entry, not a widening of the frozen
+selected-softmax top-2 entry. It consumes the pinned original `MetaMoE` class,
+keeps its zero-filled class blocks, and separately checks selected router score
+nonzero on each legal guard before using the top-1 reduction. A global class
+margin includes competitors in unselected zero blocks. All legal ties must be
+covered; incomplete route enumeration, NaNs and unproved division return no
+positive. UNSAFE requires in-box finite original complete-model replay.
+
+Nine controls cover positive/negative selected scores, zero score, a zero-crossing
+score, global-vs-local classification, ties, changing class widths, invalid mode/
+dtype/source, out-of-box/NaN witnesses and late conclusions. Run CPU controls
+with `CUDA_VISIBLE_DEVICES=`; ACT initialization is explicitly CPU/float64.
+Conversion/support still rely on existing ACT lowering and HZ numerical policy.
+Neither the old input enclosure trust nor solver roundoff is independently closed.
+
+One separately frozen full author checkpoint control uses CIFAR test index0,
+no outcome filter, normalized-space2/255 and300s outer deadline including import,
+load, materialization, conversion and solve. Author float32 forward and float64
+snapshot reduction are compared at the center only, NOT claimed globally
+equivalent. Full API verification uses the explicitly named float64 snapshot;
+it does not relabel the failed MNIST ONNX R2 conversion. NOT executed at this
+preparation entry. No new performance sample set or original paper replication.

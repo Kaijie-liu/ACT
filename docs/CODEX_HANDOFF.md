@@ -1,5 +1,22 @@
 # MoE project handoff
 
+DUAL RS R2 PASS / ORIGINAL METAMOE INTAKE PREPARATION (2026-09-21):
+`docs/dual_rs_training_control_archive_20260921_r2.json` binds successful real
+step/save/fresh-process restore at721dd80d3; all8 state components and next-step
+metrics equal exactly. Independent CPU saved-only re-audit PASS;10.422s including
+postflight. Named log-domain compatibility variant, NOT byte-identical author
+loss evaluation. R1 failure remains. No90epoch training/certification yet.
+
+New `act/back_end/moe/class_separated_top1.py` directly accepts pinned original
+MetaMoE eval top1: zero-filled unselected classes and score/score division are
+preserved; reduction acceptance additionally needs each legal selected score
+nonzero. Global output property includes unselected classes. Nine CPU controls
+pass; original weighted top2 production entry unchanged. A separate300s full
+author checkpoint/CIFAR index0 normalized2/255 intake control is frozen in
+`configs/recent_moe/metamoe_full_intake_r1.json`, NOT started at this entry.
+Its verification object is explicitly a float64 snapshot; no source-complete
+float32 claim, no MNIST ONNX failure relabeling. See extension document.
+
 AUTHORIZED BASELINE EXTENSION (2026-09-21): PI now asks to close deployment,
 semantic adapters, supervision and freeze stages, including original MetaMoE,
 RoME and Robust Experts inputs. See `docs/author_baselines_extension_20260921.md`.

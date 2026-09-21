@@ -1,0 +1,141 @@
+{
+  "schema": 1,
+  "result": "CONTROL_PASS",
+  "execution_commit": "721dd80d3cd251f9a815df4e0ba5c107060c3ec3",
+  "config": "configs/recent_moe/dual_rs_training_control_r2.json",
+  "config_sha256": "d5e6141b57d043b2830a55660b24270fde046348fef86c75dfe948773b8bafa1",
+  "scope": "log-domain numerical compatibility variant, two real updates and fresh-process exact restore; not trained accuracy or certification",
+  "native_r1_remains": "FAILED_NONFINITE_GRADIENT_BEFORE_SECOND_UPDATE",
+  "audit": {
+    "audit": "PASS",
+    "config_sha256": "d5e6141b57d043b2830a55660b24270fde046348fef86c75dfe948773b8bafa1",
+    "exact_state_component_equality": {
+      "scheduler": true,
+      "optimizer": true,
+      "schema": true,
+      "binding": true,
+      "rng": true,
+      "model": true,
+      "batch": true,
+      "cursor": true
+    },
+    "next_step_metrics_equal_excluding_time": true,
+    "optimizer_step_counts": [
+      1,
+      2
+    ],
+    "epoch_scheduler_unchanged_within_batch": true,
+    "global_step": 2,
+    "scope": "saved optimizer-update reproducibility, not learned accuracy/certification",
+    "audit_seconds": 0.8693345654755831
+  },
+  "independent_saved_only_audit": {
+    "audit": "PASS",
+    "config_sha256": "d5e6141b57d043b2830a55660b24270fde046348fef86c75dfe948773b8bafa1",
+    "exact_state_component_equality": {
+      "rng": true,
+      "schema": true,
+      "binding": true,
+      "batch": true,
+      "model": true,
+      "scheduler": true,
+      "cursor": true,
+      "optimizer": true
+    },
+    "next_step_metrics_equal_excluding_time": true,
+    "optimizer_step_counts": [
+      1,
+      2
+    ],
+    "epoch_scheduler_unchanged_within_batch": true,
+    "global_step": 2,
+    "scope": "saved optimizer-update reproducibility, not learned accuracy/certification",
+    "audit_seconds": 0.8428187277168036
+  },
+  "outer_terminal": {
+    "status": "CONTROL_PASS",
+    "stages": [
+      {
+        "phase": "reference",
+        "returncode": 0,
+        "wall_seconds": 5.256497511640191,
+        "status": "COMPLETED"
+      },
+      {
+        "phase": "resume",
+        "returncode": 0,
+        "wall_seconds": 3.9242118671536446,
+        "status": "COMPLETED"
+      },
+      {
+        "phase": "audit",
+        "returncode": 0,
+        "wall_seconds": 1.0817010663449764,
+        "status": "COMPLETED"
+      }
+    ],
+    "deadline_seconds": 300,
+    "execution_including_preflight_seconds": 10.376682529225945,
+    "total_with_postflight_seconds": 10.421906163915992,
+    "postflight_in_execution_budget": false,
+    "partial_files_retained": [
+      "after_step1.json",
+      "after_step1.pt",
+      "audit.json",
+      "audit.stderr",
+      "audit.stdout",
+      "audit_finished.json",
+      "audit_started.json",
+      "receipt.json",
+      "reference.json",
+      "reference.stderr",
+      "reference.stdout",
+      "reference_after_step2.pt",
+      "reference_finished.json",
+      "reference_started.json",
+      "resume.json",
+      "resume.stderr",
+      "resume.stdout",
+      "resume_after_step2.pt",
+      "resume_finished.json",
+      "resume_started.json",
+      "stderr.txt",
+      "stdout.txt",
+      "terminal.json"
+    ],
+    "terminal_accounting_seconds": 0.00024351850152015686
+  },
+  "cost_seconds": {
+    "execution_including_preflight_seconds": 10.376682529225945,
+    "total_with_postflight_seconds": 10.421906163915992
+  },
+  "all_record_hashes": {
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r2/after_step1.json": "6f7544aaf092d0cd084dedf774be24221ae60b68ded28012c13b868c52c1ce14",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r2/after_step1.pt": "28b49fa6a50b0365a01610a5ace6a722821ea180d6281e367eef58e13166614d",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r2/audit.json": "a74a2fe1e7c516dadbc58548cb0f08eb51f60d23cf57a614125b5dd8d778d9fc",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r2/audit.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r2/audit.stdout": "a74a2fe1e7c516dadbc58548cb0f08eb51f60d23cf57a614125b5dd8d778d9fc",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r2/audit_finished.json": "b751a6479a31ff400965f539aea889e5aae1c70e02f6b3e4c94c6d436326ddc1",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r2/audit_started.json": "93d8fd7281524ac146213db8c07881bad58f624ab8ec5cff9670095e732da9d2",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r2/outer_terminal.json": "a3537cad81ab6657195c47ee83a7116ccbc60ed9820394ff625eaa4714ce652f",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r2/receipt.json": "51c6a00ba2adca8fb95deda703ab6166bb640d0b3b45f21ba192541e9e012f15",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r2/reference.json": "c3898ab9103899a0101eee5df1b4965bf395c9f617a816f841840e27cb58d20c",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r2/reference.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r2/reference.stdout": "650b558b33150a4af14edfb784db48f159c7cac88dc7e612a8fde8fcdfd5c5cf",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r2/reference_after_step2.pt": "880f2f52b64c66d475c735d01e08f2dd7bdefee58bf942cdbfbd019dd621d442",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r2/reference_finished.json": "7a33e94c00a765434c68a42979fd7af23f39738f793c8b40e6c7a664f1610bbe",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r2/reference_started.json": "4362a8f325fd45f9576fcd49284fa2e6c2ee42c4d684da20a7ed61097e85a74b",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r2/resume.json": "cae68af5c088516775564bfd36c8010762cfe5128f57437c8b0e7e554b55a75f",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r2/resume.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r2/resume.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r2/resume_after_step2.pt": "880f2f52b64c66d475c735d01e08f2dd7bdefee58bf942cdbfbd019dd621d442",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r2/resume_finished.json": "20a12b6ad1ce436deccffcc41f82bd6fc943f0a50bb717a57f252464d18b9676",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r2/resume_started.json": "6cb2336e24b6d2ca405d8f57e0cc33e75b4861f3ec7eb65746ba87f805d0eb21",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r2/stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r2/stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_training_control_20260921_r2/terminal.json": "ab8e0d0f3c32483a32b35e23fa575f39c98d9599d0195a4d02f37da7df755c08"
+  },
+  "saved_only_reaudit_sha256": "fe202a768193c2c7333def6eeaa2beaff13b34a7eea5a90f0914381616e7c7c8",
+  "long_training_started": false,
+  "new_certification_started": false
+}
