@@ -1,5 +1,16 @@
 # MoE project handoff
 
+META FULL-MODEL R1 FAILURE / R2 INTAKE FREEZE (2026-09-22):
+R1 old-input smoke preserved: ACT CIFAR UNSAFE (independent original replay),
+author CIFAR TIMEOUT; author MNIST BACKEND_POSITIVE; ACT MNIST ERROR on functional
+ReLU. No formal selection/launch gate passed. Separate R2 rewrites ONLY
+non-inplace F.relu into nn.ReLU without folding BN or touching frozen ACT core;
+adds symmetric complete-model center replay and runtime environment/source checks.
+Six semantic/rewrite controls PASS; same old inputs300s, new directory, not yet
+run at this freeze. Robust Experts scientific200epoch/lr.01 E4/k2 recipe fixed,
+but GPU dependency/full-batch controls and execution supervisor NOT yet frozen.
+RoME12 norm controls still live; inspect terminal ledger before new work.
+
 NATIVE CONTINUATION PASS / MATCHED META SMOKE FREEZE (2026-09-22):
 Robust Experts2epoch fresh-process continuation PASS21.29s; all SGD/PolyLR/model/
 RNG and next augmented batch equal, independent saved reread provided. RoME12

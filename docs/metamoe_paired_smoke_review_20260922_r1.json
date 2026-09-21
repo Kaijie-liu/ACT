@@ -1,0 +1,59 @@
+{
+  "audit": "PASS",
+  "config_sha256": "01f0a9117ee1deb89629cd6a1851a47434482561b09384044dd6d7afa7e514c7",
+  "rows": [
+    {
+      "id": "cifar10_0",
+      "arm": "act",
+      "status": "UNSAFE_REPLAYED",
+      "seconds": 2.218811208382249,
+      "receipt_sha256": "93b3ef69231dd37648206fa3595e66102d411df5cce57557de7fac28473739b7",
+      "result_sha256": "9e39a482105a68e482d3be3b8dc8a14e15cd55d61f71f6599ca455dc33835a7a",
+      "grade": "FULL_MODEL_REPLAY",
+      "reason": "original_model_center"
+    },
+    {
+      "id": "cifar10_0",
+      "arm": "author",
+      "status": "TIMEOUT",
+      "seconds": 300.0226617306471,
+      "receipt_sha256": "311a91a1235c557587b57b95197ffc9b8fe88028641888386555d2c88183d915",
+      "result_sha256": null,
+      "grade": "NONE",
+      "reason": null
+    },
+    {
+      "id": "mnist_0",
+      "arm": "author",
+      "status": "BACKEND_POSITIVE",
+      "seconds": 7.038017258048058,
+      "receipt_sha256": "a0cb58758f64ac0c0a6a9f48c7b61671994057f4f6120521b32fc920e0b242df",
+      "result_sha256": "454037f497ad7c99a1121cf9655a5a6ff47e2db6ddcbab1e2bae1d1f96cc3fa2",
+      "grade": "AUTHOR_BACKEND_NUMERICAL_SUFFICIENT_FILTER",
+      "reason": null
+    },
+    {
+      "id": "mnist_0",
+      "arm": "act",
+      "status": "ERROR",
+      "seconds": 2.121641468256712,
+      "receipt_sha256": "edb58c93ac151f5fc40cac4fb28b6c5cf606e8304cffedb59970ce95809ebff7",
+      "result_sha256": null,
+      "grade": "NONE",
+      "reason": null
+    }
+  ],
+  "counts": {
+    "act": {
+      "UNSAFE_REPLAYED": 1,
+      "ERROR": 1
+    },
+    "author": {
+      "TIMEOUT": 1,
+      "BACKEND_POSITIVE": 1
+    }
+  },
+  "execution_control_pass": false,
+  "trust": "structural/input/terminal consistency, not independent SAFE proof; UNSAFE requires separate original-model replay",
+  "numerical_guarantees_equated": false
+}

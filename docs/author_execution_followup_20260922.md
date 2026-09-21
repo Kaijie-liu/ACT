@@ -28,8 +28,6 @@ and failures are untouched. Positive finite probes would not establish domain
 equivalence or a deployed-float guarantee. The execution freeze is
 `metamoe_component_control_r3.json`; original backend and environment unchanged.
 
-## Other work lines
-
 ## Executed outcomes and next conversion freeze
 
 Dual RS real pilot completed in43.6797s (43.7190s with source postflight).
@@ -89,8 +87,39 @@ Three analytic semantic controls pass (zero blocks, negative selected score,
 tie/zero rejection). First freeze is OLD index0 CIFAR/MNIST smoke (4calls),
 not the20 new-input experiment. The latter requires the smoke audit gate.
 
-Robust Experts: exact complete-state training continuation must precede a long
-training freeze; R3 one-batch workflow alone is not this control.
+## Full-model smoke R1 failure and limited R2 interface repair
+
+R1 terminal audit passes as a RECORD audit; execution gate FAILS. ACT CIFAR0
+replays a real center violation (label3/pred5, independently reread), author
+CIFAR0 times out. Author MNIST0 verifies its full20-class sufficient obligations;
+ACT MNIST0 raises unsupported functional F.relu in TorchToACT. This is an
+intake implementation blocker, not evidence of a negative HZ bound. Archives:
+`metamoe_paired_smoke_review_20260922_r1.json` and
+`metamoe_paired_replay_20260922_r1.json`. Do not run the formal cohort on R1.
+
+R2 uses a separately versioned adapter: F.relu(x,inplace=False) becomes an
+nn.ReLU call with the identical input edge. No parameter, normalization, pool,
+BN statistic or bound acceptance is changed. Original model remains the witness
+target. Reject inplace/training rewrites; exact output/gradient/source-state
+controls pass. Both arms now share the cheap ORIGINAL full-model center check;
+neither wastes its budget on an already witnessed violation. Runtime inventories
+and original/backend/LiRPA Git identities are checked inside charged execution.
+Same four OLD-input calls, same300s/epsilon/margin, new R2 identity; no effect-
+based sample substitution. Formal selection remains gated by completed smoke.
+
+## Robust Experts scientific long-training recipe (NOT executable freeze)
+
+`robust_experts_paper_training_recipe_r1.json` resolves the scientific choices:
+paper200epochs/lr.01 versus source100/.1, dense ResNet18 and ConvMoE E4/k2/layer4,
+native batch640/SGD/PGD7/PolyLR/augmentation, finalepoch200 checkpoint only.
+This follows the source-versus-paper ledger in `recent_moe_comparison_protocol_v1.md`.
+No early stopping or verifier-based model selection; native attack/eval semantics
+are retained under the explicitly named R3 compatibility variant.
+CPU exact continuation has now passed; GPU-capable isolated workflow, BOTH final
+architectures' full-batch update/save control, resource/deadline supervision and
+resolved local output bindings remain REQUIRED before execution freeze/launch.
+Do not claim CPU resume proves GPU equivalence, or that long training has begun.
+
 RoME: three-norm empirical evaluation remains separate from ACT full-domain
 support. Full-size compiler or forward compatibility is never certification.
 All six author reproductions and ACT comparisons require separate status

@@ -1,0 +1,423 @@
+{
+  "status": "SCIENTIFIC_RECIPE_FIXED_GPU_EXECUTION_NOT_FROZEN",
+  "recipes": {
+    "dense": {
+      "work_dir": "${hydra:runtime.cwd}",
+      "data_dir": "${work_dir}/data/",
+      "print_config": true,
+      "ignore_warnings": true,
+      "execute_train": true,
+      "execute_test": true,
+      "seed": 12345,
+      "name": "cifar100-resnet18-pgd-adv",
+      "wandb": {},
+      "trainer": {
+        "_target_": "pytorch_lightning.Trainer",
+        "gpus": 1,
+        "min_epochs": 200,
+        "max_epochs": 200,
+        "resume_from_checkpoint": null,
+        "num_sanity_val_steps": 0
+      },
+      "model": {
+        "model": {
+          "_target_": "src.models.nn.resnet.ResNet",
+          "pretrained": false,
+          "layers": 18,
+          "small_inputs": true,
+          "num_classes": 100,
+          "num_channels": 3
+        },
+        "scheduler": {
+          "_target_": "functools.partial",
+          "_args_": [
+            "${get_method: src.utils.lr.PolyLR}"
+          ],
+          "_name_": "PolyLR",
+          "exponent": 0.9,
+          "T_max": "${trainer.max_epochs}"
+        },
+        "optimizer": {
+          "_target_": "functools.partial",
+          "_args_": [
+            "${get_method: torch.optim.SGD}"
+          ],
+          "lr": 0.01,
+          "momentum": 0.9,
+          "weight_decay": 0.0005,
+          "nesterov": true
+        },
+        "_target_": "src.models.adv_train_pgd_lit.make_lit_module",
+        "attack": {
+          "_target_": "functools.partial",
+          "_args_": [
+            "${get_method: src.utils.attack.pgd}"
+          ],
+          "_name_": "PGD",
+          "eps": 0.03137,
+          "alpha": 0.00784313725,
+          "steps": 7
+        },
+        "base_class": "src.models.lit_module.CrossEntropyLitModule",
+        "normalization": {
+          "_target_": "src.datamodules.cifar100_datamodule.cifar100_normalization"
+        }
+      },
+      "datamodule": {
+        "_target_": "src.datamodules.cifar100_datamodule.CIFAR100DataModule",
+        "data_dir": "/data1/Kane/MOE/baseline_data/robust_experts_20260921_r3",
+        "batch_size": 640,
+        "num_workers": 2,
+        "normalize": true,
+        "train_transforms": {
+          "_target_": "torchvision.transforms.Compose",
+          "transforms": [
+            {
+              "_target_": "torchvision.transforms.RandomCrop",
+              "size": 32,
+              "padding": 4
+            },
+            {
+              "_target_": "torchvision.transforms.RandomHorizontalFlip"
+            },
+            {
+              "_target_": "torchvision.transforms.ColorJitter",
+              "brightness": 0.3,
+              "contrast": 0.3,
+              "saturation": 0.3,
+              "hue": 0.3
+            },
+            {
+              "_target_": "torchvision.transforms.ToTensor"
+            },
+            {
+              "_target_": "src.datamodules.cifar100_datamodule.cifar100_normalization"
+            }
+          ]
+        },
+        "pin_memory": true
+      },
+      "callbacks": {
+        "model_checkpoint": {
+          "_target_": "pytorch_lightning.callbacks.ModelCheckpoint",
+          "monitor": "val/acc",
+          "mode": "max",
+          "save_top_k": 0,
+          "save_last": true,
+          "verbose": true,
+          "dirpath": "checkpoints/",
+          "filename": "epoch_{epoch:03d}",
+          "auto_insert_metric_name": false,
+          "every_n_epochs": 1,
+          "save_on_train_epoch_end": true
+        },
+        "model_summary": {
+          "_target_": "pytorch_lightning.callbacks.RichModelSummary",
+          "max_depth": 1
+        },
+        "learning_rate_monitor": {
+          "_target_": "pytorch_lightning.callbacks.LearningRateMonitor"
+        },
+        "upload_ckpts_as_artifact": {
+          "artifact_name": "${name}"
+        }
+      },
+      "logger": {
+        "csv": {
+          "_target_": "pytorch_lightning.loggers.csv_logs.CSVLogger",
+          "save_dir": ".",
+          "name": "csv/",
+          "version": "${name}",
+          "prefix": ""
+        },
+        "wandb": {
+          "tags": [
+            "cifar100",
+            "resnet18",
+            "${name}"
+          ],
+          "project": "robust-cifar100-resnet-moe"
+        }
+      },
+      "default_mode": true,
+      "attack_model": {
+        "model": {
+          "_target_": "src.models.nn.resnet.ResNet",
+          "pretrained": false,
+          "layers": 18,
+          "small_inputs": true,
+          "num_classes": 100,
+          "num_channels": 3
+        },
+        "scheduler": {
+          "_target_": "functools.partial",
+          "_args_": [
+            "${get_method: src.utils.lr.CosineLR}"
+          ],
+          "_name_": "CosineLR",
+          "eta_min": 5e-05,
+          "T_max": "${trainer.max_epochs}",
+          "warmup_epochs": 5
+        },
+        "optimizer": {
+          "_target_": "functools.partial",
+          "_args_": [
+            "${get_method: torch.optim.SGD}"
+          ],
+          "lr": 0.01,
+          "momentum": 0.9,
+          "weight_decay": 0.0001,
+          "nesterov": true
+        },
+        "_target_": "src.models.attack_module.make_lit_module",
+        "attack": {
+          "_target_": "functools.partial",
+          "_args_": [
+            "${get_method: src.utils.attack.auto_pgd}"
+          ],
+          "_name_": "APGD",
+          "eps": 0.03137,
+          "alpha": 0.0078431,
+          "steps": 20
+        },
+        "base_class": "src.models.lit_module.CrossEntropyLitModule",
+        "normalization": {
+          "_target_": "src.datamodules.cifar100_datamodule.cifar100_normalization"
+        }
+      },
+      "execute_attack": true,
+      "attack_batch_size": 256,
+      "use_clearml": false
+    },
+    "convmoe": {
+      "work_dir": "${hydra:runtime.cwd}",
+      "data_dir": "${work_dir}/data/",
+      "print_config": true,
+      "ignore_warnings": true,
+      "execute_train": true,
+      "execute_test": true,
+      "seed": 12345,
+      "name": "resnet${model.model.layers}-pgd-adv-train-conv${model.model.moe_layer_prefix}-moe${model.model.num_experts}-${model.model.routing_layer_type._name_}-${model.model.k}-${model.model.balancing_loss_type}",
+      "wandb": {},
+      "trainer": {
+        "_target_": "pytorch_lightning.Trainer",
+        "gpus": 1,
+        "min_epochs": 200,
+        "max_epochs": 200,
+        "resume_from_checkpoint": null,
+        "num_sanity_val_steps": 0
+      },
+      "model": {
+        "model": {
+          "routing_layer_type": {
+            "_target_": "functools.partial",
+            "_args_": [
+              "${get_method: src.models.nn.moe.routing.GlobalAvgLinearRoutingNetwork}"
+            ],
+            "_name_": "GALRN"
+          },
+          "_target_": "src.models.nn.moe.resnet_conv_moe.ResNetConvMoE",
+          "layers": 18,
+          "small_inputs": true,
+          "num_classes": 100,
+          "num_channels": 3,
+          "num_experts": 4,
+          "moe_layer_prefix": "layer4",
+          "use_ste": true,
+          "expert_capacity": null,
+          "balancing_loss": 0.5,
+          "k": 2,
+          "balancing_loss_type": "entropy"
+        },
+        "scheduler": {
+          "_target_": "functools.partial",
+          "_args_": [
+            "${get_method: src.utils.lr.PolyLR}"
+          ],
+          "_name_": "PolyLR",
+          "exponent": 0.9,
+          "T_max": "${trainer.max_epochs}"
+        },
+        "optimizer": {
+          "_target_": "functools.partial",
+          "_args_": [
+            "${get_method: torch.optim.SGD}"
+          ],
+          "lr": 0.01,
+          "momentum": 0.9,
+          "weight_decay": 0.0005,
+          "nesterov": true
+        },
+        "_target_": "src.models.adv_train_pgd_lit.make_lit_module",
+        "attack": {
+          "_target_": "functools.partial",
+          "_args_": [
+            "${get_method: src.utils.attack.pgd}"
+          ],
+          "_name_": "PGD",
+          "eps": 0.03137,
+          "alpha": 0.00784313725,
+          "steps": 7
+        },
+        "base_class": "src.models.lit_module.CrossEntropyLitModule",
+        "normalization": {
+          "_target_": "src.datamodules.cifar100_datamodule.cifar100_normalization"
+        }
+      },
+      "datamodule": {
+        "_target_": "src.datamodules.cifar100_datamodule.CIFAR100DataModule",
+        "data_dir": "/data1/Kane/MOE/baseline_data/robust_experts_20260921_r3",
+        "batch_size": 640,
+        "num_workers": 2,
+        "normalize": true,
+        "train_transforms": {
+          "_target_": "torchvision.transforms.Compose",
+          "transforms": [
+            {
+              "_target_": "torchvision.transforms.RandomCrop",
+              "size": 32,
+              "padding": 4
+            },
+            {
+              "_target_": "torchvision.transforms.RandomHorizontalFlip"
+            },
+            {
+              "_target_": "torchvision.transforms.ColorJitter",
+              "brightness": 0.3,
+              "contrast": 0.3,
+              "saturation": 0.3,
+              "hue": 0.3
+            },
+            {
+              "_target_": "torchvision.transforms.ToTensor"
+            },
+            {
+              "_target_": "src.datamodules.cifar100_datamodule.cifar100_normalization"
+            }
+          ]
+        },
+        "pin_memory": true
+      },
+      "callbacks": {
+        "model_checkpoint": {
+          "_target_": "pytorch_lightning.callbacks.ModelCheckpoint",
+          "monitor": "val/acc",
+          "mode": "max",
+          "save_top_k": 0,
+          "save_last": true,
+          "verbose": true,
+          "dirpath": "checkpoints/",
+          "filename": "epoch_{epoch:03d}",
+          "auto_insert_metric_name": false,
+          "every_n_epochs": 1,
+          "save_on_train_epoch_end": true
+        },
+        "model_summary": {
+          "_target_": "pytorch_lightning.callbacks.RichModelSummary",
+          "max_depth": 1
+        },
+        "learning_rate_monitor": {
+          "_target_": "pytorch_lightning.callbacks.LearningRateMonitor"
+        },
+        "upload_ckpts_as_artifact": {
+          "artifact_name": "${name}"
+        }
+      },
+      "logger": {
+        "csv": {
+          "_target_": "pytorch_lightning.loggers.csv_logs.CSVLogger",
+          "save_dir": ".",
+          "name": "csv/",
+          "version": "${name}",
+          "prefix": ""
+        },
+        "wandb": {
+          "tags": [
+            "cifar100",
+            "resnet${model.model.layers}_conv_moe",
+            "pgd_adv_train",
+            "${name}",
+            "${model.model.balancing_loss_type}"
+          ],
+          "project": "robust-cifar100-resnet-moe"
+        }
+      },
+      "default_mode": true,
+      "attack_model": {
+        "model": {
+          "_target_": "src.models.nn.resnet.ResNet",
+          "pretrained": false,
+          "layers": 18,
+          "small_inputs": true,
+          "num_classes": 100,
+          "num_channels": 3
+        },
+        "scheduler": {
+          "_target_": "functools.partial",
+          "_args_": [
+            "${get_method: src.utils.lr.CosineLR}"
+          ],
+          "_name_": "CosineLR",
+          "eta_min": 5e-05,
+          "T_max": "${trainer.max_epochs}",
+          "warmup_epochs": 5
+        },
+        "optimizer": {
+          "_target_": "functools.partial",
+          "_args_": [
+            "${get_method: torch.optim.SGD}"
+          ],
+          "lr": 0.01,
+          "momentum": 0.9,
+          "weight_decay": 0.0001,
+          "nesterov": true
+        },
+        "_target_": "src.models.attack_module.make_lit_module",
+        "attack": {
+          "_target_": "functools.partial",
+          "_args_": [
+            "${get_method: src.utils.attack.auto_pgd}"
+          ],
+          "_name_": "APGD",
+          "eps": 0.03137,
+          "alpha": 0.0078431,
+          "steps": 20
+        },
+        "base_class": "src.models.lit_module.CrossEntropyLitModule",
+        "normalization": {
+          "_target_": "src.datamodules.cifar100_datamodule.cifar100_normalization"
+        }
+      },
+      "execute_attack": true,
+      "attack_batch_size": 256,
+      "use_clearml": false
+    }
+  },
+  "data": "native CIFAR100 split and five native train transforms, identical seed12345",
+  "checkpoint_selection": "completed epoch200 only; no validation/certification-based selection",
+  "fixed_changes_from_source_default": [
+    "200 instead of100 epochs",
+    ".01 instead of.1 LR",
+    "ConvMoE E4/k2 instead of source experiment k1",
+    "no early stop; completed-epoch recovery state",
+    "local logging and location-only data forwarding, workers2"
+  ],
+  "native_invariants": [
+    "SGD momentum.9/wd.0005",
+    "PolyLR exponent.9",
+    "batch640",
+    "PGD7 eps.03137/alpha.00784313725",
+    "eval clean/PGD20/APGD20",
+    "native STE/router math and balancing loss retained"
+  ],
+  "compatibility": "R3 explicit APGD eval-mode restoration variant and optional SyncBN import repair",
+  "cpu_continuation_archive_sha256": "5ba2e9768f3412d178318f3132fdc37b1f1489fee570786e53436e62f36e8d60",
+  "remaining_execution_gates": [
+    "dedicated Blackwell-capable full workflow environment",
+    "both final architectures/batch sizes native GPU update+save controls",
+    "resource/whole-run deadline and outer-supervisor execution freeze",
+    "resolved local-only output paths and checkpoint binding; no accidental remote logger"
+  ],
+  "automatic_launch": false,
+  "ACT_full_domain_certificates": "NOT_ESTABLISHED"
+}
