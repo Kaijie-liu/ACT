@@ -1,0 +1,664 @@
+{
+  "cases": [
+    {
+      "candidate_sha256": "d9044829c7ddc4c43ad05fa3b99dd0421564a2301410e9777f81dffe7e1323b2",
+      "expected_status": "POSITIVE",
+      "matches_expected": true,
+      "name": "safe",
+      "result": {
+        "child_audit": {
+          "issues": [],
+          "scope": "identity/coverage/acceptance structure; not independent numeric reproof",
+          "status": "PASS"
+        },
+        "child_audit_seconds": 7.586926221847534e-05,
+        "complete": true,
+        "evidence_grade": "HZ_POLICY_ACCEPTED",
+        "expected_histories": 4,
+        "identity": {
+          "budget_seconds": 299.12226129695773,
+          "graph": "4ece4e606a0ae4da3ef3a4cb54fb84377ee3a09ce6025fe3c1759dfc4ba207c4",
+          "history_cap": 4,
+          "implementation": "07451139f51c4d6698ef999b7021e2fd63e88630f0fbbd3547f5652a4f56f707",
+          "model_structure": "Sequential(\n  (0): RoutedLayer(\n    (router): Linear(in_features=1, out_features=2, bias=True)\n    (experts): ModuleList(\n      (0-1): 2 x Linear(in_features=1, out_features=1, bias=True)\n    )\n  )\n  (1): RoutedLayer(\n    (router): Linear(in_features=1, out_features=2, bias=True)\n    (experts): ModuleList(\n      (0-1): 2 x Linear(in_features=1, out_features=1, bias=True)\n    )\n  )\n  (2): Linear(in_features=1, out_features=2, bias=True)\n)",
+          "policy": {
+            "certifying_objective": "finite mip_dual_bound for MILP; status-0 optimum for pure LP; never a non-optimal primal incumbent",
+            "feasibility_tolerance": 1e-07,
+            "integrality_tolerance": 1e-07,
+            "mip_relative_gap": 0.0,
+            "outward_absolute": 1e-09,
+            "outward_relative": 1e-09,
+            "outward_rounding": "nextafter after absolute-plus-relative correction",
+            "require_finite_dual_bound": true,
+            "require_optimal_status": 0,
+            "require_solver_success": true,
+            "safe_positive_margin": 1e-07,
+            "solver": "scipy.optimize.milp/HiGHS"
+          },
+          "properties": 1,
+          "sites": [
+            {
+              "epsilon": 1e-05,
+              "experts": 2,
+              "k": 1,
+              "mode": "hard_top1",
+              "name": "_0",
+              "rank": 2,
+              "residual": false,
+              "target": "0"
+            },
+            {
+              "epsilon": 1e-05,
+              "experts": 2,
+              "k": 1,
+              "mode": "hard_top1",
+              "name": "_1",
+              "rank": 2,
+              "residual": false,
+              "target": "1"
+            }
+          ],
+          "sources": {},
+          "state": {
+            "0.experts.0.bias": "99f21e3a11bcfb7536423303d61ecaa7ff1f46e52cf0c9566261d32de089987e",
+            "0.experts.0.weight": "cee02fdb989980c8aa14109870dea7e6c84657bff361e05100cfc19d32be194f",
+            "0.experts.1.bias": "99f21e3a11bcfb7536423303d61ecaa7ff1f46e52cf0c9566261d32de089987e",
+            "0.experts.1.weight": "8fd2c03d56771482aaf0797599cbadc69220d6e7cf480849ea29fdbf045c7eb3",
+            "0.router.bias": "62afc080254350f1f303a2030f72c35ae27cb8b95da23349ebabccc582f42436",
+            "0.router.weight": "399abd7c8aadcb79f5284401c6a75e892e860e3875c634f4adf77e1839a659dd",
+            "1.experts.0.bias": "59decd222dc606c5b72cdb277112b1cc906d5565598fce610baaa18402e59c4a",
+            "1.experts.0.weight": "cee02fdb989980c8aa14109870dea7e6c84657bff361e05100cfc19d32be194f",
+            "1.experts.1.bias": "f01053707eea6a1b3d639e9c8d40856f0ba407aa27601e48741439dac7a5434a",
+            "1.experts.1.weight": "8fd2c03d56771482aaf0797599cbadc69220d6e7cf480849ea29fdbf045c7eb3",
+            "1.router.bias": "debd9b5f2ac1031fb3587e8f654ad09fb7f42d2d618a627802462f1151acfbe5",
+            "1.router.weight": "399abd7c8aadcb79f5284401c6a75e892e860e3875c634f4adf77e1839a659dd",
+            "2.bias": "62afc080254350f1f303a2030f72c35ae27cb8b95da23349ebabccc582f42436",
+            "2.weight": "45752dcd41b7e7f374a587108253363b06b9a418fc50cb288eb35a96771c690e"
+          },
+          "tensors": {
+            "center": "4c3b4095c77d2e32619a92ca18344884afb89df4aec6bdcc3c8794e9e5452c7e",
+            "lower": "8fd2c03d56771482aaf0797599cbadc69220d6e7cf480849ea29fdbf045c7eb3",
+            "rows": "749cedc2c0f8dab213cca147d1ebb04e486bdf8cc4ce9d42a5bb4ce46bdccb96",
+            "thresholds": "99f21e3a11bcfb7536423303d61ecaa7ff1f46e52cf0c9566261d32de089987e",
+            "upper": "cee02fdb989980c8aa14109870dea7e6c84657bff361e05100cfc19d32be194f"
+          }
+        },
+        "independent_replay": false,
+        "numerical_policy": {
+          "certifying_objective": "finite mip_dual_bound for MILP; status-0 optimum for pure LP; never a non-optimal primal incumbent",
+          "feasibility_tolerance": 1e-07,
+          "integrality_tolerance": 1e-07,
+          "mip_relative_gap": 0.0,
+          "outward_absolute": 1e-09,
+          "outward_relative": 1e-09,
+          "outward_rounding": "nextafter after absolute-plus-relative correction",
+          "require_finite_dual_bound": true,
+          "require_optimal_status": 0,
+          "require_solver_success": true,
+          "safe_positive_margin": 1e-07,
+          "solver": "scipy.optimize.milp/HiGHS"
+        },
+        "properties": 1,
+        "reason": "all_complete_histories_discharged",
+        "records": [
+          {
+            "active_property": 0,
+            "compile_seconds": 0.008089359849691391,
+            "compiled_graph_sha256": "cec8719501ebb173879d51108e3a3ffc492f45ed713a3d129edefbc10bec549d",
+            "definedness": [],
+            "feasibility": "feasible",
+            "feasibility_seconds": 0.0016642622649669647,
+            "guard_seconds": 0.000868799164891243,
+            "history": [
+              [
+                0
+              ],
+              [
+                0
+              ]
+            ],
+            "phase": "complete",
+            "propagation_seconds": 0.006491746753454208,
+            "properties": [
+              {
+                "bound_kind": "lp_status0_optimum",
+                "lower": 1.4999999979999998,
+                "row": 0,
+                "seconds": 0.0012738443911075592,
+                "solver_status": 0,
+                "status": "optimal"
+              }
+            ],
+            "seconds": 0.10253348760306835,
+            "status": "ACCEPTED"
+          },
+          {
+            "active_property": 0,
+            "compile_seconds": 0.005948292091488838,
+            "compiled_graph_sha256": "cec8719501ebb173879d51108e3a3ffc492f45ed713a3d129edefbc10bec549d",
+            "definedness": [],
+            "feasibility": "feasible",
+            "feasibility_seconds": 0.0009686090052127838,
+            "guard_seconds": 0.000780012458562851,
+            "history": [
+              [
+                0
+              ],
+              [
+                1
+              ]
+            ],
+            "phase": "complete",
+            "propagation_seconds": 0.004874851554632187,
+            "properties": [
+              {
+                "bound_kind": "lp_status0_optimum",
+                "lower": 1.4999999969999998,
+                "row": 0,
+                "seconds": 0.0010918769985437393,
+                "solver_status": 0,
+                "status": "optimal"
+              }
+            ],
+            "seconds": 0.017013415694236755,
+            "status": "ACCEPTED"
+          },
+          {
+            "active_property": 0,
+            "compile_seconds": 0.0037106890231370926,
+            "compiled_graph_sha256": "cec8719501ebb173879d51108e3a3ffc492f45ed713a3d129edefbc10bec549d",
+            "definedness": [],
+            "feasibility": "feasible",
+            "feasibility_seconds": 0.0008887220174074173,
+            "guard_seconds": 0.0007896739989519119,
+            "history": [
+              [
+                1
+              ],
+              [
+                0
+              ]
+            ],
+            "phase": "complete",
+            "propagation_seconds": 0.004630999639630318,
+            "properties": [
+              {
+                "bound_kind": "lp_status0_optimum",
+                "lower": 1.4999999979999998,
+                "row": 0,
+                "seconds": 0.000768519937992096,
+                "solver_status": 0,
+                "status": "optimal"
+              }
+            ],
+            "seconds": 0.013692701235413551,
+            "status": "ACCEPTED"
+          },
+          {
+            "active_property": 0,
+            "compile_seconds": 0.0034264661371707916,
+            "compiled_graph_sha256": "cec8719501ebb173879d51108e3a3ffc492f45ed713a3d129edefbc10bec549d",
+            "definedness": [],
+            "feasibility": "feasible",
+            "feasibility_seconds": 0.000791449099779129,
+            "guard_seconds": 0.0007668882608413696,
+            "history": [
+              [
+                1
+              ],
+              [
+                1
+              ]
+            ],
+            "phase": "complete",
+            "propagation_seconds": 0.004546035081148148,
+            "properties": [
+              {
+                "bound_kind": "lp_status0_optimum",
+                "lower": 1.4999999969999998,
+                "row": 0,
+                "seconds": 0.0008232314139604568,
+                "solver_status": 0,
+                "status": "optimal"
+              }
+            ],
+            "seconds": 0.013407096266746521,
+            "status": "ACCEPTED"
+          }
+        ],
+        "request_id": "64558eb94aaef58ce4de3dd2c0b5b9dc976c06ccd7f1e07c9df36ec5a4b4fc44",
+        "schema": "multilayer-histories-v1",
+        "seconds": 0.15356772020459175,
+        "semantics": "real_arithmetic_stored_coefficients_ANY_LEGAL_TOPK",
+        "sites": [
+          {
+            "epsilon": 1e-05,
+            "experts": 2,
+            "k": 1,
+            "mode": "hard_top1",
+            "name": "_0",
+            "rank": 2,
+            "residual": false,
+            "target": "0"
+          },
+          {
+            "epsilon": 1e-05,
+            "experts": 2,
+            "k": 1,
+            "mode": "hard_top1",
+            "name": "_1",
+            "rank": 2,
+            "residual": false,
+            "target": "1"
+          }
+        ],
+        "source_complete": false,
+        "status": "POSITIVE",
+        "trusted": [
+          "FX/static_history_lowering",
+          "network_input_guard_to_HZ",
+          "HZ_solver_numerical_policy"
+        ]
+      },
+      "terminal": {
+        "artifacts": {
+          "candidate.json": "d9044829c7ddc4c43ad05fa3b99dd0421564a2301410e9777f81dffe7e1323b2",
+          "progress.json": "7a1770787e5dbdd26f7c2ad0256aaa7cef42871d656ee08ce90ee6f7c61e5985",
+          "request.json": "581906cfa93781720f510636070020ecbb3e93cd5dcf940198f92d6bc82eace7"
+        },
+        "audit": {
+          "issues": [],
+          "scope": "identity/coverage/acceptance structure; not independent numeric reproof",
+          "status": "PASS"
+        },
+        "audit_seconds": 0.0004325713962316513,
+        "budget_seconds": 300.0,
+        "cleanup_seconds": 5.02169132232666e-06,
+        "decision_seconds": 2.0414392575621605,
+        "elapsed_before_receipt_seconds": 2.041597006842494,
+        "evidence_grade": "HZ_POLICY_ACCEPTED",
+        "execution_id": "1c58a25937894ead9f404d5b5002bb1a",
+        "parent_start_seconds": 0.048838187009096146,
+        "partial_histories": 4,
+        "reason": "all_complete_histories_discharged",
+        "result_request_id": "64558eb94aaef58ce4de3dd2c0b5b9dc976c06ccd7f1e07c9df36ec5a4b4fc44",
+        "return_wall_seconds": 2.0428961738944054,
+        "schema": "multilayer-supervisor-v1",
+        "status": "POSITIVE",
+        "worker_exitcode": 0
+      }
+    },
+    {
+      "candidate_sha256": "c060271dd18d2625c839f75385aa8bca208510e4a5e65649ff915d85c58f29d4",
+      "expected_status": "UNSAFE_REPLAYED",
+      "matches_expected": true,
+      "name": "unsafe",
+      "result": {
+        "child_audit": {
+          "issues": [],
+          "scope": "identity/coverage/acceptance structure; not independent numeric reproof",
+          "status": "PASS"
+        },
+        "child_audit_seconds": 0.0002506747841835022,
+        "complete": false,
+        "evidence_grade": "FULL_MODEL_REPLAY",
+        "expected_histories": 4,
+        "identity": {
+          "budget_seconds": 299.12577842734754,
+          "graph": "4ece4e606a0ae4da3ef3a4cb54fb84377ee3a09ce6025fe3c1759dfc4ba207c4",
+          "history_cap": 4,
+          "implementation": "07451139f51c4d6698ef999b7021e2fd63e88630f0fbbd3547f5652a4f56f707",
+          "model_structure": "Sequential(\n  (0): RoutedLayer(\n    (router): Linear(in_features=1, out_features=2, bias=True)\n    (experts): ModuleList(\n      (0-1): 2 x Linear(in_features=1, out_features=1, bias=True)\n    )\n  )\n  (1): RoutedLayer(\n    (router): Linear(in_features=1, out_features=2, bias=True)\n    (experts): ModuleList(\n      (0-1): 2 x Linear(in_features=1, out_features=1, bias=True)\n    )\n  )\n  (2): Linear(in_features=1, out_features=2, bias=True)\n)",
+          "policy": {
+            "certifying_objective": "finite mip_dual_bound for MILP; status-0 optimum for pure LP; never a non-optimal primal incumbent",
+            "feasibility_tolerance": 1e-07,
+            "integrality_tolerance": 1e-07,
+            "mip_relative_gap": 0.0,
+            "outward_absolute": 1e-09,
+            "outward_relative": 1e-09,
+            "outward_rounding": "nextafter after absolute-plus-relative correction",
+            "require_finite_dual_bound": true,
+            "require_optimal_status": 0,
+            "require_solver_success": true,
+            "safe_positive_margin": 1e-07,
+            "solver": "scipy.optimize.milp/HiGHS"
+          },
+          "properties": 1,
+          "sites": [
+            {
+              "epsilon": 1e-05,
+              "experts": 2,
+              "k": 1,
+              "mode": "hard_top1",
+              "name": "_0",
+              "rank": 2,
+              "residual": false,
+              "target": "0"
+            },
+            {
+              "epsilon": 1e-05,
+              "experts": 2,
+              "k": 1,
+              "mode": "hard_top1",
+              "name": "_1",
+              "rank": 2,
+              "residual": false,
+              "target": "1"
+            }
+          ],
+          "sources": {},
+          "state": {
+            "0.experts.0.bias": "99f21e3a11bcfb7536423303d61ecaa7ff1f46e52cf0c9566261d32de089987e",
+            "0.experts.0.weight": "cee02fdb989980c8aa14109870dea7e6c84657bff361e05100cfc19d32be194f",
+            "0.experts.1.bias": "99f21e3a11bcfb7536423303d61ecaa7ff1f46e52cf0c9566261d32de089987e",
+            "0.experts.1.weight": "8fd2c03d56771482aaf0797599cbadc69220d6e7cf480849ea29fdbf045c7eb3",
+            "0.router.bias": "62afc080254350f1f303a2030f72c35ae27cb8b95da23349ebabccc582f42436",
+            "0.router.weight": "399abd7c8aadcb79f5284401c6a75e892e860e3875c634f4adf77e1839a659dd",
+            "1.experts.0.bias": "6aabd857aae69e175e650ddbc61822646eaa1349d5c1a17a47422b7e031d0769",
+            "1.experts.0.weight": "8fd2c03d56771482aaf0797599cbadc69220d6e7cf480849ea29fdbf045c7eb3",
+            "1.experts.1.bias": "f01053707eea6a1b3d639e9c8d40856f0ba407aa27601e48741439dac7a5434a",
+            "1.experts.1.weight": "8fd2c03d56771482aaf0797599cbadc69220d6e7cf480849ea29fdbf045c7eb3",
+            "1.router.bias": "debd9b5f2ac1031fb3587e8f654ad09fb7f42d2d618a627802462f1151acfbe5",
+            "1.router.weight": "399abd7c8aadcb79f5284401c6a75e892e860e3875c634f4adf77e1839a659dd",
+            "2.bias": "62afc080254350f1f303a2030f72c35ae27cb8b95da23349ebabccc582f42436",
+            "2.weight": "45752dcd41b7e7f374a587108253363b06b9a418fc50cb288eb35a96771c690e"
+          },
+          "tensors": {
+            "center": "4c3b4095c77d2e32619a92ca18344884afb89df4aec6bdcc3c8794e9e5452c7e",
+            "lower": "8fd2c03d56771482aaf0797599cbadc69220d6e7cf480849ea29fdbf045c7eb3",
+            "rows": "749cedc2c0f8dab213cca147d1ebb04e486bdf8cc4ce9d42a5bb4ce46bdccb96",
+            "thresholds": "99f21e3a11bcfb7536423303d61ecaa7ff1f46e52cf0c9566261d32de089987e",
+            "upper": "cee02fdb989980c8aa14109870dea7e6c84657bff361e05100cfc19d32be194f"
+          }
+        },
+        "independent_replay": true,
+        "numerical_policy": {
+          "certifying_objective": "finite mip_dual_bound for MILP; status-0 optimum for pure LP; never a non-optimal primal incumbent",
+          "feasibility_tolerance": 1e-07,
+          "integrality_tolerance": 1e-07,
+          "mip_relative_gap": 0.0,
+          "outward_absolute": 1e-09,
+          "outward_relative": 1e-09,
+          "outward_rounding": "nextafter after absolute-plus-relative correction",
+          "require_finite_dual_bound": true,
+          "require_optimal_status": 0,
+          "require_solver_success": true,
+          "safe_positive_margin": 1e-07,
+          "solver": "scipy.optimize.milp/HiGHS"
+        },
+        "properties": 1,
+        "reason": "complete_model_candidate",
+        "records": [
+          {
+            "active_property": 0,
+            "compile_seconds": 0.007002865895628929,
+            "compiled_graph_sha256": "cec8719501ebb173879d51108e3a3ffc492f45ed713a3d129edefbc10bec549d",
+            "definedness": [],
+            "feasibility": "feasible",
+            "feasibility_seconds": 0.0019902214407920837,
+            "guard_seconds": 0.0008115824311971664,
+            "history": [
+              [
+                0
+              ],
+              [
+                0
+              ]
+            ],
+            "phase": "complete",
+            "propagation_seconds": 0.00533958338201046,
+            "properties": [
+              {
+                "bound_kind": "lp_status0_optimum",
+                "lower": -0.7500000020000002,
+                "row": 0,
+                "seconds": 0.000868065282702446,
+                "solver_status": 0,
+                "status": "optimal"
+              }
+            ],
+            "seconds": 0.018640246242284775,
+            "status": "UNSAFE_REPLAYED"
+          }
+        ],
+        "request_id": "e39391abd1dcd389a5dc307efe30710762f4a2b9ea0aa641634a9cbfa952509e",
+        "schema": "multilayer-histories-v1",
+        "seconds": 0.022919511422514915,
+        "semantics": "real_arithmetic_stored_coefficients_ANY_LEGAL_TOPK",
+        "sites": [
+          {
+            "epsilon": 1e-05,
+            "experts": 2,
+            "k": 1,
+            "mode": "hard_top1",
+            "name": "_0",
+            "rank": 2,
+            "residual": false,
+            "target": "0"
+          },
+          {
+            "epsilon": 1e-05,
+            "experts": 2,
+            "k": 1,
+            "mode": "hard_top1",
+            "name": "_1",
+            "rank": 2,
+            "residual": false,
+            "target": "1"
+          }
+        ],
+        "source_complete": false,
+        "status": "UNSAFE_REPLAYED",
+        "trusted": [
+          "FX/static_history_lowering",
+          "network_input_guard_to_HZ",
+          "HZ_solver_numerical_policy"
+        ],
+        "witness": [
+          [
+            1.0
+          ]
+        ]
+      },
+      "terminal": {
+        "artifacts": {
+          "candidate.json": "c060271dd18d2625c839f75385aa8bca208510e4a5e65649ff915d85c58f29d4",
+          "progress.json": "a92beca77cdf43b1b5d8531d63327edaed38b5757df2df120f16a83ba37b0d61",
+          "request.json": "3b6190db74132680637feef06aec4de71484d2c4ccdb76ff91f772d6fa4c764e"
+        },
+        "audit": {
+          "issues": [],
+          "scope": "identity/coverage/acceptance structure; not independent numeric reproof",
+          "status": "PASS"
+        },
+        "audit_seconds": 0.00022400915622711182,
+        "budget_seconds": 300.0,
+        "cleanup_seconds": 3.071501851081848e-06,
+        "decision_seconds": 1.8674670234322548,
+        "elapsed_before_receipt_seconds": 1.867593303322792,
+        "evidence_grade": "FULL_MODEL_REPLAY",
+        "execution_id": "06a1cc2f13044788ab1ba776ed6112ad",
+        "parent_start_seconds": 0.0013018269091844559,
+        "partial_histories": 1,
+        "reason": "complete_model_candidate",
+        "result_request_id": "e39391abd1dcd389a5dc307efe30710762f4a2b9ea0aa641634a9cbfa952509e",
+        "return_wall_seconds": 1.8692706059664488,
+        "schema": "multilayer-supervisor-v1",
+        "status": "UNSAFE_REPLAYED",
+        "worker_exitcode": 0
+      }
+    },
+    {
+      "candidate_sha256": "8e4e967fb20a7985f2a96db6aa71f613c7180d38c87e8c54e00fc0793ee98aeb",
+      "expected_status": "UNKNOWN",
+      "matches_expected": true,
+      "name": "cap",
+      "result": {
+        "child_audit": {
+          "issues": [],
+          "scope": "identity/coverage/acceptance structure; not independent numeric reproof",
+          "status": "PASS"
+        },
+        "child_audit_seconds": 3.6425888538360596e-05,
+        "complete": false,
+        "evidence_grade": "NONE",
+        "expected_histories": 4,
+        "identity": {
+          "budget_seconds": 299.1799548957497,
+          "graph": "4ece4e606a0ae4da3ef3a4cb54fb84377ee3a09ce6025fe3c1759dfc4ba207c4",
+          "history_cap": 3,
+          "implementation": "07451139f51c4d6698ef999b7021e2fd63e88630f0fbbd3547f5652a4f56f707",
+          "model_structure": "Sequential(\n  (0): RoutedLayer(\n    (router): Linear(in_features=1, out_features=2, bias=True)\n    (experts): ModuleList(\n      (0-1): 2 x Linear(in_features=1, out_features=1, bias=True)\n    )\n  )\n  (1): RoutedLayer(\n    (router): Linear(in_features=1, out_features=2, bias=True)\n    (experts): ModuleList(\n      (0-1): 2 x Linear(in_features=1, out_features=1, bias=True)\n    )\n  )\n  (2): Linear(in_features=1, out_features=2, bias=True)\n)",
+          "policy": {
+            "certifying_objective": "finite mip_dual_bound for MILP; status-0 optimum for pure LP; never a non-optimal primal incumbent",
+            "feasibility_tolerance": 1e-07,
+            "integrality_tolerance": 1e-07,
+            "mip_relative_gap": 0.0,
+            "outward_absolute": 1e-09,
+            "outward_relative": 1e-09,
+            "outward_rounding": "nextafter after absolute-plus-relative correction",
+            "require_finite_dual_bound": true,
+            "require_optimal_status": 0,
+            "require_solver_success": true,
+            "safe_positive_margin": 1e-07,
+            "solver": "scipy.optimize.milp/HiGHS"
+          },
+          "properties": 1,
+          "sites": [
+            {
+              "epsilon": 1e-05,
+              "experts": 2,
+              "k": 1,
+              "mode": "hard_top1",
+              "name": "_0",
+              "rank": 2,
+              "residual": false,
+              "target": "0"
+            },
+            {
+              "epsilon": 1e-05,
+              "experts": 2,
+              "k": 1,
+              "mode": "hard_top1",
+              "name": "_1",
+              "rank": 2,
+              "residual": false,
+              "target": "1"
+            }
+          ],
+          "sources": {},
+          "state": {
+            "0.experts.0.bias": "99f21e3a11bcfb7536423303d61ecaa7ff1f46e52cf0c9566261d32de089987e",
+            "0.experts.0.weight": "cee02fdb989980c8aa14109870dea7e6c84657bff361e05100cfc19d32be194f",
+            "0.experts.1.bias": "99f21e3a11bcfb7536423303d61ecaa7ff1f46e52cf0c9566261d32de089987e",
+            "0.experts.1.weight": "8fd2c03d56771482aaf0797599cbadc69220d6e7cf480849ea29fdbf045c7eb3",
+            "0.router.bias": "62afc080254350f1f303a2030f72c35ae27cb8b95da23349ebabccc582f42436",
+            "0.router.weight": "399abd7c8aadcb79f5284401c6a75e892e860e3875c634f4adf77e1839a659dd",
+            "1.experts.0.bias": "59decd222dc606c5b72cdb277112b1cc906d5565598fce610baaa18402e59c4a",
+            "1.experts.0.weight": "cee02fdb989980c8aa14109870dea7e6c84657bff361e05100cfc19d32be194f",
+            "1.experts.1.bias": "f01053707eea6a1b3d639e9c8d40856f0ba407aa27601e48741439dac7a5434a",
+            "1.experts.1.weight": "8fd2c03d56771482aaf0797599cbadc69220d6e7cf480849ea29fdbf045c7eb3",
+            "1.router.bias": "debd9b5f2ac1031fb3587e8f654ad09fb7f42d2d618a627802462f1151acfbe5",
+            "1.router.weight": "399abd7c8aadcb79f5284401c6a75e892e860e3875c634f4adf77e1839a659dd",
+            "2.bias": "62afc080254350f1f303a2030f72c35ae27cb8b95da23349ebabccc582f42436",
+            "2.weight": "45752dcd41b7e7f374a587108253363b06b9a418fc50cb288eb35a96771c690e"
+          },
+          "tensors": {
+            "center": "4c3b4095c77d2e32619a92ca18344884afb89df4aec6bdcc3c8794e9e5452c7e",
+            "lower": "8fd2c03d56771482aaf0797599cbadc69220d6e7cf480849ea29fdbf045c7eb3",
+            "rows": "749cedc2c0f8dab213cca147d1ebb04e486bdf8cc4ce9d42a5bb4ce46bdccb96",
+            "thresholds": "99f21e3a11bcfb7536423303d61ecaa7ff1f46e52cf0c9566261d32de089987e",
+            "upper": "cee02fdb989980c8aa14109870dea7e6c84657bff361e05100cfc19d32be194f"
+          }
+        },
+        "independent_replay": false,
+        "numerical_policy": {
+          "certifying_objective": "finite mip_dual_bound for MILP; status-0 optimum for pure LP; never a non-optimal primal incumbent",
+          "feasibility_tolerance": 1e-07,
+          "integrality_tolerance": 1e-07,
+          "mip_relative_gap": 0.0,
+          "outward_absolute": 1e-09,
+          "outward_relative": 1e-09,
+          "outward_rounding": "nextafter after absolute-plus-relative correction",
+          "require_finite_dual_bound": true,
+          "require_optimal_status": 0,
+          "require_solver_success": true,
+          "safe_positive_margin": 1e-07,
+          "solver": "scipy.optimize.milp/HiGHS"
+        },
+        "properties": 1,
+        "reason": "history_limit_no_histories_dropped",
+        "records": [],
+        "request_id": "02d57efb61de2b712f326feb8a5d57533a05a1566e1a64260eae828e62aaf272",
+        "schema": "multilayer-histories-v1",
+        "seconds": 0.004241516813635826,
+        "semantics": "real_arithmetic_stored_coefficients_ANY_LEGAL_TOPK",
+        "sites": [
+          {
+            "epsilon": 1e-05,
+            "experts": 2,
+            "k": 1,
+            "mode": "hard_top1",
+            "name": "_0",
+            "rank": 2,
+            "residual": false,
+            "target": "0"
+          },
+          {
+            "epsilon": 1e-05,
+            "experts": 2,
+            "k": 1,
+            "mode": "hard_top1",
+            "name": "_1",
+            "rank": 2,
+            "residual": false,
+            "target": "1"
+          }
+        ],
+        "source_complete": false,
+        "status": "UNKNOWN",
+        "trusted": [
+          "FX/static_history_lowering",
+          "network_input_guard_to_HZ",
+          "HZ_solver_numerical_policy"
+        ]
+      },
+      "terminal": {
+        "artifacts": {
+          "candidate.json": "8e4e967fb20a7985f2a96db6aa71f613c7180d38c87e8c54e00fc0793ee98aeb",
+          "request.json": "28faf6dc6f9ed4181eeb8c117b8bcf2593f8137e599ba422c748c61ef757295f"
+        },
+        "audit": {
+          "issues": [],
+          "scope": "identity/coverage/acceptance structure; not independent numeric reproof",
+          "status": "PASS"
+        },
+        "audit_seconds": 0.00023087672889232635,
+        "budget_seconds": 300.0,
+        "cleanup_seconds": 2.3748725652694702e-06,
+        "decision_seconds": 1.727810736745596,
+        "elapsed_before_receipt_seconds": 1.7278853375464678,
+        "evidence_grade": "NONE",
+        "execution_id": "c23d49eae70f4a2e8a37b5c045616a6b",
+        "parent_start_seconds": 0.0020686015486717224,
+        "partial_histories": 0,
+        "reason": "history_limit_no_histories_dropped",
+        "result_request_id": "02d57efb61de2b712f326feb8a5d57533a05a1566e1a64260eae828e62aaf272",
+        "return_wall_seconds": 1.7292497716844082,
+        "schema": "multilayer-supervisor-v1",
+        "status": "UNKNOWN",
+        "worker_exitcode": 0
+      }
+    }
+  ],
+  "schema": "multilayer-domain-control-archive-v1",
+  "scope": "analytic two-layer controls, NOT trained-model performance or source-complete certification",
+  "seconds": 5.644217500463128,
+  "source_sha256": {
+    "act/back_end/moe/multilayer.py": "07451139f51c4d6698ef999b7021e2fd63e88630f0fbbd3547f5652a4f56f707",
+    "act/back_end/moe/multilayer_audit.py": "1298997379910c0eb8df81ae68f2dc5bd442ad6947ed3e2b8c8613319e521108",
+    "act/back_end/moe/multilayer_supervisor.py": "fd7194fab266c17112ece7db4a873e0282db4034e95dd2ae9df458d8d8a1ee3c",
+    "scripts/multilayer_domain_control.py": "baaaad9c952c55b1100527b6c04f2964522750f9b1f9abc7c601e7608d79366b"
+  },
+  "status": "PASS"
+}

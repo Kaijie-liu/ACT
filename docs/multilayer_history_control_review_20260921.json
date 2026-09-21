@@ -1,0 +1,38 @@
+{
+  "schema": "multilayer-saved-control-review-v1",
+  "executed_commit": "5ac65998c",
+  "status": "PASS",
+  "scope": "Saved identities, history/property coverage, source hashes and original toy full-model witness replay; no independent solver-bound reproof",
+  "analytic_archive": "docs/multilayer_domain_control_archive_20260921_r1.json",
+  "analytic_archive_sha256": "593a03eb32cd10e306c8a8e9cf91c66873442cf9a8c2e723284c969f79ff9cb5",
+  "analytic_cases": [
+    {"name": "safe", "status": "POSITIVE", "histories": 4, "minimum_recorded_bound": 1.4999999969999998, "outer_seconds": 2.0428961738944054, "audit_issues": []},
+    {"name": "unsafe", "status": "UNSAFE_REPLAYED", "histories_visited": 1, "witness": [[1.0]], "original_margin_at_witness": -0.75, "outer_seconds": 1.8692706059664488, "audit_issues": []},
+    {"name": "cap", "status": "UNKNOWN", "history_cap": 3, "required_histories": 4, "histories_visited": 0, "outer_seconds": 1.7292497716844082, "audit_issues": []}
+  ],
+  "author_compatibility": {
+    "status": "COMPATIBILITY_PASS",
+    "directory": "/data1/Kane/MOE/baseline_runs/multilayer_author_history_control_20260921_r1",
+    "candidate_sha256": "7a8a3e303514dd99beea5b89e2bc4b2373888025ec388421a6181c04839a265e",
+    "source_inventory_files_rehashed": 69,
+    "architecture": "original ResNetConvMoE18 / layer4 / E4 / k1",
+    "parameters": 36394168,
+    "routing_call_sites": 5,
+    "possible_histories": 1024,
+    "compiled_nodes_per_probe": 122,
+    "probe_constants": [0.0, 0.25],
+    "probe_histories": [[[2], [0], [0], [1], [1]], [[1], [0], [0], [2], [2]]],
+    "maximum_absolute_output_errors": [0.0, 0.0],
+    "source_mutation_rejected": true,
+    "seconds": 2.117663275450468,
+    "budget_seconds": 300,
+    "trained_checkpoint": false,
+    "box_certificate": false,
+    "torch": "2.9.1+cpu"
+  },
+  "regressions": {
+    "multilayer_controls_after_raw_dispatch_guard": {"passed": 25, "failed": 0, "seconds": 16.424},
+    "existing_class_separated_top1": {"passed": 9, "failed": 0, "seconds": 0.724}
+  },
+  "post_archive_hardening": "Explicitly reject positive certification of ORIGINAL non-STE raw dispatch, whose all-zero selection may leave output shape undefined. Static compile compatibility retained. New gate control passes; archived generic controls and k1 compiler results are not relabeled."
+}

@@ -7,9 +7,13 @@
 | Dual RS |Both exact resume controls PASS; frozen90epoch training running (epoch51 saved at this update); real certification runner/6 controls prepared|Separate statistical L2 path, not deterministic MoE HZ SAFE|Finalepoch90 audit, final-weight binding, then frozen2-input certification|
 | MetaMoE |Original full public CIFAR checkpoint loaded; frozenindex0 full-model counterexample independently replayed|NEW original class-separated top1 box entry,9 semantic controls; conditional HZ policy|MNIST ONNX/source mismatch and full author-table / paired experiment|
 | RoME |Public trained checkpoint strict prediction load; native standardAA control and independent replay complete|Original dense multilayer routing forward/gradient intake; whole-box UNSUPPORTED|Three-norm paper-scale evaluation and complete dependent-history lowering|
-| Robust Experts |Real native train/clean/PGD20/APGD20 R2 completes but BN state drifts; separate eval-mode R3 completes13.21s with147/147 checkpoint tensors preserved|Original intermediate MoE execution intake; whole-box UNSUPPORTED|Full-state continuation control, long-training recipe and multi-layer HZ lowering|
+| Robust Experts |Real native train/clean/PGD20/APGD20 R2 completes but BN state drifts; separate eval-mode R3 completes13.21s with147/147 checkpoint tensors preserved; new full-size E4/k1 history compiler compatibility PASS|NEW complete-history HZ entry with conditional numerical policy and prefix-STE checks; analytic multi-layer proofs, NOT trained full-size certificates; original non-STE raw dispatch fail-closed|Frozen trained-model whole-box experiment, nonlinear joint-HZ coverage/scale, full-state continuation and long-training recipe|
 | J-TLAT |Pinned author repository README-only|No runnable author implementation substituted|Public code/weights or PI-mediated artifact access|
 | Feature Noise |Paper studied; author implementation not identified|No invented implementation counted as deployment|Identify experiment source and freeze task|
+
+New multilayer implementation/evidence: [contract and controls](multilayer_history_verifier.md).
+The two fixed full-size compiler probes are not a trained-model certificate or
+a paper comparison. RoME continuous dense routing is not reinterpreted as top-k.
 
 Robust Experts source-corrected R3 is explicitly NOT byte-identical native R2.
 Independent saved-only audit checks147 tensors,74 finite SGD buffers and both

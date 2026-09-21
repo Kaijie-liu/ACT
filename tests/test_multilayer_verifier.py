@@ -223,6 +223,16 @@ class MultilayerControls(unittest.TestCase):
         result=verify_multilayer_box(model,**self.kwargs)
         self.assertEqual(result['status'],'UNSUPPORTED')
 
+    def test_author_raw_dispatch_contract_is_fail_closed(self):
+        layer=RoutedLayer(affine([[0.],[0.]],[1.,.5]),[affine([[0.]],[1.]),affine([[0.]],[1.])],mode='raw')
+        model=nn.Sequential(layer,affine([[1.],[0.]],[0.,0.])).eval()
+        # Contract gate control; author-class execution has its separate source
+        # compatibility protocol, not a synthetic claim of author reproduction.
+        with patch('act.back_end.moe.multilayer._author_layer',side_effect=lambda m:type(m) is RoutedLayer and m.mode=='raw'):
+            result=verify_multilayer_box(model,**self.kwargs)
+        self.assertEqual(result['status'],'UNSUPPORTED')
+        self.assertEqual(result['reason'],'author_raw_dispatch_definedness_not_supported')
+
 
 if __name__=='__main__':
     unittest.main()

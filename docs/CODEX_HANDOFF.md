@@ -1,5 +1,21 @@
 # MoE project handoff
 
+MULTILAYER CONTROL ARCHIVE / REVIEW COMPLETE (2026-09-21):
+Read `docs/multilayer_history_control_review_20260921.json` and method doc.
+At frozen5ac65998c: analytic whole-box/all4histories POSITIVE, recorded lower
+bound1.4999999969999998; nonclean-history x=1 full-model UNSAFE; cap3 UNKNOWN.
+All receipts independently re-read/rehashed and witness replayed; no solver
+reproof. Full-size original Robust Experts E4/k1/layer4 compiler compatibility
+PASS,5sites/1024histories/36,394,168params,two fixed probes difference0.
+This is NOT full-size certification or a trained-checkpoint result.
+Current25 multilayer controls and9 original-top1 regressions PASS. Separate
+post-archive hardening rejects ORIGINAL non-STE raw dispatch (all-zero selection
+can leave native output shape undefined); no silent raw/softmax substitution.
+Native STE prefix-definedness remains mandatory. RoME, token/patch routing and
+backend graphs without joint HZ remain unsupported. No dependencies installed,
+no GPU use, no holdout or old result changed. Legacy trace verify_box remains
+unsupported by design; NEW explicit multilayer entry is the domain API.
+
 MULTILAYER HISTORY IMPLEMENTATION / CONTROL FREEZE (2026-09-21):
 Read `docs/multilayer_history_verifier.md`. New separate `multilayer.py` API
 compiles EVERY complete tie-legal route history with its actual intermediate

@@ -29,7 +29,13 @@ The pinned Robust Experts `MOELayer`/`SkipMOELayer` and `TopKGate` have an
 explicit source adapter. It recognizes their ORIGINAL gate semantics: k=1
 STE is nonzero-score masking, not softmax; k>1 normalization is raw-score
 division, not selected softmax. Zero-score STE cannot silently become weight
-one. Source hash mismatch/fixed-expert/variance modes reject. RoME's dense
+one. For positive box verification the ORIGINAL dispatcher is currently limited
+to nonzero-STE: raw/normalized dispatch can have no selected nonzero expert,
+leaving the author's output shape undefined even with a nonzero denominator.
+Those author modes therefore reject before solving; compiling their arithmetic
+is not sufficient to establish source definedness. Generic `RoutedLayer` always
+computes defined expert tensors and has a different dispatch contract.
+Source hash mismatch/fixed-expert/variance modes reject. RoME's dense
 continuous low-rank mixture is deliberately NOT reinterpreted as top-k.
 
 ## Coverage argument (conditional on lowering and numerical policy)
@@ -129,6 +135,31 @@ installed or injected). ACT solving/tests remain in act-py312. Its two fixed
 probes are NOT a certification experiment and do not exercise all 1,024
 histories. It is initialized, not a trained checkpoint. Results will be archived
 separately without overwriting any existing author workflow or holdout.
+
+## Executed controls and saved-record review
+
+Frozen implementation `5ac65998c` executed the three analytic controls under a
+300s request budget: safe → POSITIVE (all four histories, minimum recorded
+bound 1.4999999969999998, outer 2.043s); unsafe → original-model counterexample
+at x=1, margin -0.75 (1.869s); cap=3 with four obligations → UNKNOWN (1.729s).
+The full-size original Robust Experts check passed in 2.118s: 36,394,168
+parameters, five call sites, 1,024 possible histories, 122 compiled nodes per
+probe. Both fixed probes match native outputs with maximum difference zero;
+their observed histories differ. This remains finite-probe compatibility, NOT
+whole-box certification of that architecture or a trained model.
+
+See [analytic packages](multilayer_domain_control_archive_20260921_r1.json) and
+[saved-record/source review](multilayer_history_control_review_20260921.json).
+The review rehashed all 69 author source files, rechecked candidate/terminal
+hashes, model identity and structural obligations, and replayed x=1 on the
+original analytic model. It did not solve again or independently prove bounds.
+Current controls: 25 multilayer and 9 existing class-separated top-1 regressions
+pass. The post-archive original-raw-dispatch definedness rejection is separately
+tested; it does not relabel or rerun the archived controls.
+
+Legacy `LayeredAuthorIntake.verify_box()` is intentionally still the old
+fail-closed trace API. Use the new explicit `verify_multilayer_box` or its
+supervised counterpart for domain verification; a trace is never promoted.
 
 ## Next boundary
 

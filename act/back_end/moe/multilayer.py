@@ -384,6 +384,13 @@ def verify_multilayer_box(model, *, center, lower, upper, rows, thresholds,
         if validate_replay(model, center, lower, upper, rows, thresholds):
             result['witness'] = center.tolist()
             return finish('UNSAFE_REPLAYED', 'complete_model_center')
+        # In the original author dispatcher, all selected raw scores zero can
+        # leave expert_output_shape undefined. A nonzero normalization
+        # denominator alone does NOT prove this source dispatch is defined.
+        # Static compilation supports its expression, but positive certification
+        # currently admits only the separately checked nonzero-STE contract.
+        if any(_author_layer(plan.graph.get_submodule(s.target)) and s.mode!='nonzero_ste' for s in plan.sites):
+            return finish('UNSUPPORTED', 'author_raw_dispatch_definedness_not_supported')
         if plan.total_histories > max_histories:
             return finish('UNKNOWN', 'history_limit_no_histories_dropped')
         for history in plan.histories():
