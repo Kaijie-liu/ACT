@@ -1,5 +1,21 @@
 # MoE project handoff
 
+AUTHOR BASELINE TURN ARCHIVED / TRAINING LIVE (2026-09-22):
+Latest matrix `author_baselines_execution_20260922.md`. RoME12/12 terminal ledger
+and independent full-model replay audit complete:5 completed,7TIMEOUT,4252.397s
+inclpostflight;3 completed rows are ONE preexisting clean error,2 are ONE input
+broken inLinf/L1. Linf accepted only under registered1e-7 tolerance. No100-input
+expansion or RA/formalSAFE claim. Read separate interpretation artifact.
+Meta native R4 raw parser retained misleading ONNX grade; append-only hash-bound
+erratum corrects frontend label, no frozen records changed. ACT formal20-input
+gate STILL BLOCKED by shared HZ capacity; no new cohort executed.
+Robust serial paper training actually live at acd27d19f, PID3530635; dense epoch32
+observed (33completed), thenConvMoE after final200epoch/full10k eval/audit. Check
+server files for CURRENT progress; don't edit bound source/config/env or repeat
+launch. Not training completion, exact GPU resume or whole-domain certification.
+Dual RS final weight/two-input certification DONE; J-TLAT/FeatureNoise full
+artifacts still unresolved. Six-work state table != six completed reproductions.
+
 ROBUST PAPER TRAINING ACTUALLY LAUNCHED (2026-09-22):
 At acd27d19f, config7731f7ae...67954d. Detached serial supervisor PID3530635;
 read docs/robust_experts_paper_training_launch_20260922_r1.json and SERVER logs.

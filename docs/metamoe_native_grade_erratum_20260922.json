@@ -1,0 +1,26 @@
+{
+  "type": "APPENDED_METADATA_CORRECTION_NO_RERUN",
+  "finding": "R4 reused the old parser's ONNX evidence-grade string, although the executed backend used the native PyTorch Customized loader.",
+  "original_grade": "AUTHOR_BACKEND_REPORTED_ONNX_RESULT",
+  "correct_interpretation": "AUTHOR_BACKEND_REPORTED_NATIVE_COMPONENT_NUMERICAL_RESULT",
+  "unchanged": ["raw files", "BACKEND_POSITIVE statuses", "input domains", "all bounds", "timing", "acceptance rules"],
+  "formal_SAFE": false,
+  "domain_equivalence_proof": false,
+  "records": [
+    {
+      "id": "cifar10_rt_index0",
+      "terminal_sha256": "45a2b93b019eeb107468802b9b0361b60cec23a91be5d9fea932d6318777b2c0",
+      "backend_yaml_sha256": "69ec9df196d58b84fbe64725ea6b28d44215255ffd7cd864c6aebdf45c84f0c3",
+      "loader": "Customized(..., load_component, ...)",
+      "onnx_path_present": false
+    },
+    {
+      "id": "mnist_rt_index0",
+      "terminal_sha256": "4f9a4e7928832b5e5aacdc4fb20ed7b5f3b2e94eb2cbeb258d6dbe9610786ef3",
+      "backend_yaml_sha256": "2bc4024b0f644929e35146dd628fb215d614c5db9fc86bcf7a238144eb6b4b68",
+      "loader": "Customized(..., load_component, ...)",
+      "onnx_path_present": false
+    }
+  ],
+  "scope": "Correct the frontend label only; do not promote numerical component results to full-model or floating execution proofs. Future native entries must use the correct evidence grade."
+}

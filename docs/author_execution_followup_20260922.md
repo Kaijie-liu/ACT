@@ -180,3 +180,23 @@ audit checks122/147 finite tensors and62/86 finite SGD momenta. No long training
 or GPU-resume guarantee. Consolidated six-author deployment/comparison matrix:
 `author_baselines_execution_20260922.md`; it explicitly preserves missing
 paper-scale and ACT same-object comparison results.
+# Final execution update: RoME archive and Robust training
+
+RoME frozen4x3 batch and independent saved replay complete:5 completed,7timeouts,
+4252.397s including postflight,11.107s separate audit. Completed rows split into
+3 preexisting clean-error records on index6044 and2 numerical-tolerance-accepted
+perturbation breaks on index2890. All12 stay in denominator; incomplete rows
+are not robust. See `rome_multinorm_archive_20260922_r1.json` and the interpretation
+artifact; three derived-label controls pass. No automatic100-input extension.
+
+Robust native full workflow controls now PASS for both final architectures,
+including two full640 updates, complete checkpoints, final clean/PGD20/APGD20
+batches and in-budget audit. R1 CSV collision preserved; R2 isolated logs pass,
+20.402/27.464s.8 outer controls+1 isolation control+1 fullrecipe test passed.
+Paper200epoch execution frozen and actually launched at acd27d19f under24h/arm,
+dense thenConvMoE. Full10k evaluations and saved audit are supervised but have
+NOT completed at this entry. Native source/recipe and whole-domain ACT limits
+remain unchanged. Source files bound to the live run must not be edited.
+
+R4 Meta native terminal's stale ONNX evidence-grade label is separately corrected
+in `metamoe_native_grade_erratum_20260922.json`; no status/domain/bound is changed.
