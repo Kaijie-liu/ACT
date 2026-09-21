@@ -1,5 +1,12 @@
 # Author baseline deployment and ACT intake: execution ledger
 
+Latest execution update: Dual RS90epoch training is RUNNING, launched from
+826e8e94b after both real resume controls passed. Fresh run directory:
+`/data1/Kane/MOE/baseline_runs/dual_rs_selector_training_20260921_r1`.
+No automatic certification, retry, or Git write. Epoch1 total70.43s; this is
+an early timing observation, not a guaranteed completion time. Its34.83% test
+metric measures sigma-selector labels, NOT CIFAR classification accuracy.
+
 ## Completed in this stage
 
 - Dual RS numerical-compatibility step/resume R2: PASS, exact all-state equality.
@@ -15,7 +22,7 @@
   change is the named differentiable log-domain consistency evaluation. Final
   epoch90, never best certification/accuracy.12h hard outer deadline includes
   train/test/save and final saved-state audit. No automatic retries or git writes.
-  Config `configs/recent_moe/dual_rs_training_r1.json`; launch is a separate step.
+  Config `configs/recent_moe/dual_rs_training_r1.json`; launch is now recorded.
   The two-input RS certification *scientific recipe* is fixed there, but the
   trained-weight certification execution manifest remains a subsequent gate.
 
@@ -63,8 +70,19 @@ exact archived patch; original author checkout remains clean. Missing-einops
 failure is retained. [Source/controls archive](author_adapter_controls_archive_20260921.json).
 
 These are initialized full-size models, not their trained accuracy. RoME's
-public CIFAR10 MAX checkpoint has separately been located and downloaded; its
-trained-state loading and author attack runner are subsequent gates. A clean
+public CIFAR10 MAX checkpoint is also now downloaded and its prediction path
+has passed a separately labeled trained-state intake. Default strict R1 failed
+on48 absent auxiliary global_proj tensors. Source inspection shows they feed
+only returned diversity telemetry. R2 builds the author-supported zero auxiliary
+projection variant and STRICTLY loads all440 prediction-state tensors. Output
+and input gradients equal a full original module with synthetic auxiliary
+heads; this is NOT a resumed-training or full auxiliary-state equivalence.
+Code defaults s4,b6,alpha=rank remain explicit, not claimed as recovered recipe.
+Native AutoAttack dependency and author's evaluate.py help pass in a dedicated
+CPU environment. One raw index0 standardLinf8/255 attack control is frozen,
+600s end-to-end execution, with postflight cost separately reported. No attack
+parameter search or table accuracy from this one input. [Saved archive](rome_deployment_archive_20260921.json).
+A clean
 trace is NOT enumeration of all dependent histories. Neither family is sent
 through normalized output-layer F0 with an incorrect semantic label.
 
@@ -74,7 +92,7 @@ through normalized output-layer F0 with an incorrect semantic label.
 |---|---|
 | Dual RS |90epoch training completion; freeze actual final weight identity; supervised two-stage Monte Carlo pilot; then paper-scale replication|
 | MetaMoE author-table reproduction |MNIST conversion/source adapter control; router and expert tables; matched complete-request comparison|
-| RoME |Public trained-weight strict intake; AutoAttack dependency/CLI and supervised attack control; no multi-layer HZ lowering yet|
+| RoME |Execute frozen standard AutoAttack control, then freeze paper-scale evaluation separately; no multi-layer HZ lowering yet|
 | Robust Experts |Training/attack workflow with public CIFAR100, source-vs-paper recipe separation; no trained weights or multi-layer HZ lowering yet|
 | J-TLAT |Pinned author checkout still README-only; no runnable implementation to deploy|
 | Feature Noise |Author experiment implementation not identified; do not substitute an invented implementation|

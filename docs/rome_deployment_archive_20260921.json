@@ -1,0 +1,155 @@
+{
+  "status": "SAVED_RECORD_AUDIT_PASS",
+  "records": [
+    {
+      "name": "rome_public_listing_20260921_r1",
+      "status": "COMPLETED",
+      "receipt_sha256": "489f14166fa1266a9c608f5693aa41b1a625a19b512db917562290d5b496033b",
+      "execution_seconds": 4.422285635024309,
+      "total_with_postflight_seconds": 4.422377919778228
+    },
+    {
+      "name": "rome_public_download_20260921_r1",
+      "status": "COMPLETED",
+      "receipt_sha256": "7d46b6196d66ea7dbe963f48bf2ae48c355a8ea126bae2e360e0be852ca624f7",
+      "execution_seconds": 82.01358579471707,
+      "total_with_postflight_seconds": 82.01368065550923
+    },
+    {
+      "name": "rome_trained_intake_20260921_r1",
+      "status": "ERROR",
+      "receipt_sha256": "8f0a85cc3d0fe3e5044534f5150d42a88d0404ff0981a6e0dd8845ff1d17952d",
+      "execution_seconds": 3.1752102617174387,
+      "total_with_postflight_seconds": 3.1808085162192583
+    },
+    {
+      "name": "rome_prediction_intake_20260921_r2",
+      "status": "COMPLETED",
+      "receipt_sha256": "d3501e95f522fdf7642fc6c1977a302b1ad91fd0f2c07e52ba5fa58cb88541b3",
+      "execution_seconds": 4.126439364627004,
+      "total_with_postflight_seconds": 4.131653573364019
+    },
+    {
+      "name": "rome_author_eval_help_20260921_r1",
+      "status": "COMPLETED",
+      "receipt_sha256": "f71bdc90f19630c8afb92081bb0f9b83547a8d8b9a0ae7f8b43866590bfdee55",
+      "execution_seconds": 1.5220914911478758,
+      "total_with_postflight_seconds": 1.5280652455985546
+    }
+  ],
+  "checkpoint": {
+    "public_author_folder": "1OnuDO-y3Bf3_F_SQKEHVW7zU9icniPEN",
+    "entry": {
+      "id": "1uXcDiPfY8VyN9JjbQf4hN7rik6_ZzSQ4",
+      "path": "checkpoints/ViT_CIFAR10/MAX_apgd_cifar10.pth",
+      "local_path": "/data1/Kane/MOE/baseline_runs/rome_public_listing_20260921_r1/not_downloaded/checkpoints/ViT_CIFAR10/MAX_apgd_cifar10.pth"
+    },
+    "listing_sha256": "051eb6d1b7e21a2b668a5c1e1185f44e82125a47e491a8bd5c1b862a05f9abd0",
+    "path": "/data1/Kane/MOE/baseline_weights/rome_20260921/MAX_apgd_cifar10.pth",
+    "bytes": 1066598022,
+    "local_sha256": "ed45e0bac700b05a4775a5f9c5d1aae86f7e5311a0a7ab785827634918765cf6",
+    "publisher_checksum_available": false,
+    "scope": "public author-linked weight, not evaluated yet"
+  },
+  "trained_intake": {
+    "status": "CONTROL_PASS",
+    "checkpoint_sha256": "ed45e0bac700b05a4775a5f9c5d1aae86f7e5311a0a7ab785827634918765cf6",
+    "spec": {
+      "num_lora": 4,
+      "r": 16,
+      "mlp_gate": false,
+      "num_classes": 10
+    },
+    "prediction_state_tensors": 440,
+    "missing_auxiliary_tensors": [
+      "blocks.0.attn.proj_adapter.global_proj.bias",
+      "blocks.0.attn.proj_adapter.global_proj.weight",
+      "blocks.0.attn.qkv_adapter.global_proj.bias",
+      "blocks.0.attn.qkv_adapter.global_proj.weight",
+      "blocks.1.attn.proj_adapter.global_proj.bias",
+      "blocks.1.attn.proj_adapter.global_proj.weight",
+      "blocks.1.attn.qkv_adapter.global_proj.bias",
+      "blocks.1.attn.qkv_adapter.global_proj.weight",
+      "blocks.10.attn.proj_adapter.global_proj.bias",
+      "blocks.10.attn.proj_adapter.global_proj.weight",
+      "blocks.10.attn.qkv_adapter.global_proj.bias",
+      "blocks.10.attn.qkv_adapter.global_proj.weight",
+      "blocks.11.attn.proj_adapter.global_proj.bias",
+      "blocks.11.attn.proj_adapter.global_proj.weight",
+      "blocks.11.attn.qkv_adapter.global_proj.bias",
+      "blocks.11.attn.qkv_adapter.global_proj.weight",
+      "blocks.2.attn.proj_adapter.global_proj.bias",
+      "blocks.2.attn.proj_adapter.global_proj.weight",
+      "blocks.2.attn.qkv_adapter.global_proj.bias",
+      "blocks.2.attn.qkv_adapter.global_proj.weight",
+      "blocks.3.attn.proj_adapter.global_proj.bias",
+      "blocks.3.attn.proj_adapter.global_proj.weight",
+      "blocks.3.attn.qkv_adapter.global_proj.bias",
+      "blocks.3.attn.qkv_adapter.global_proj.weight",
+      "blocks.4.attn.proj_adapter.global_proj.bias",
+      "blocks.4.attn.proj_adapter.global_proj.weight",
+      "blocks.4.attn.qkv_adapter.global_proj.bias",
+      "blocks.4.attn.qkv_adapter.global_proj.weight",
+      "blocks.5.attn.proj_adapter.global_proj.bias",
+      "blocks.5.attn.proj_adapter.global_proj.weight",
+      "blocks.5.attn.qkv_adapter.global_proj.bias",
+      "blocks.5.attn.qkv_adapter.global_proj.weight",
+      "blocks.6.attn.proj_adapter.global_proj.bias",
+      "blocks.6.attn.proj_adapter.global_proj.weight",
+      "blocks.6.attn.qkv_adapter.global_proj.bias",
+      "blocks.6.attn.qkv_adapter.global_proj.weight",
+      "blocks.7.attn.proj_adapter.global_proj.bias",
+      "blocks.7.attn.proj_adapter.global_proj.weight",
+      "blocks.7.attn.qkv_adapter.global_proj.bias",
+      "blocks.7.attn.qkv_adapter.global_proj.weight",
+      "blocks.8.attn.proj_adapter.global_proj.bias",
+      "blocks.8.attn.proj_adapter.global_proj.weight",
+      "blocks.8.attn.qkv_adapter.global_proj.bias",
+      "blocks.8.attn.qkv_adapter.global_proj.weight",
+      "blocks.9.attn.proj_adapter.global_proj.bias",
+      "blocks.9.attn.proj_adapter.global_proj.weight",
+      "blocks.9.attn.qkv_adapter.global_proj.bias",
+      "blocks.9.attn.qkv_adapter.global_proj.weight"
+    ],
+    "strict_prediction_load": true,
+    "unused_auxiliary_variant": "gate_proj_dim=0_inference_only",
+    "synthetic_auxiliary_full_model_and_gradient_equal": true,
+    "native_gate_scores_preserved": true,
+    "gate_calls": 24,
+    "source_options": {
+      "s": 4,
+      "b": 6,
+      "alpha": 16,
+      "scope": "code-default, not reconstructed training recipe"
+    },
+    "index": 0,
+    "label": 3,
+    "prediction": 3,
+    "source_hashes": {
+      "/data1/Kane/MOE/baselines/recent_moe_20260921/rome/evaluate.py": "801b45225ec989455acc6fa40fcc6ddc039b4263c7e33387613cfb6ab65932ff",
+      "/data1/Kane/MOE/baselines/recent_moe_20260921/rome/train.py": "88bdc91ce55a171b2a9db5e1b740da3d9a7789f3fede9c4e5fb74ce867181385",
+      "/data1/Kane/MOE/baselines/recent_moe_20260921/rome/data/__init__.py": "7fcb9e10d79c21e1990bb5f5b38be7bf3c86d9b39f1e11e3c28a076bc14cda57",
+      "/data1/Kane/MOE/baselines/recent_moe_20260921/rome/data/loaders.py": "ffbab5f1eaeaf2f7da2fa3653a209e462269ab15efaa57432187869a14d715dd",
+      "/data1/Kane/MOE/baselines/recent_moe_20260921/rome/models/lora_moe_linear.py": "e7a4e6cc14cdbc7e622567674a993ce8504c9a2cab0c158f9502392e5a640598",
+      "/data1/Kane/MOE/baselines/recent_moe_20260921/rome/models/lora_moe_mlp.py": "e5f8921f7cc572949ecfd49d997b43ac8f626186acb86ed1383cd0a717877f66",
+      "/data1/Kane/MOE/baselines/recent_moe_20260921/rome/models/vit.py": "45bf6523d8cfff0dfc066b7d472c680e71e83593662cf8934da5cec710c1f748",
+      "/data1/Kane/MOE/baselines/recent_moe_20260921/rome/models/__init__.py": "7a568ad96b2395ea51ec5e1d5e4202a6bdd97060930ef8cd39fb175598cc3a27",
+      "/data1/Kane/MOE/baselines/recent_moe_20260921/rome/utils/config.py": "669b2f60adeea57bbb84d0fd8e58df88d616e3ae2dd3303ea6be733c22097c08",
+      "/data1/Kane/MOE/baselines/recent_moe_20260921/rome/utils/__init__.py": "55495e44c79cae4a20f5ec5b02f466854cd59c37087591353c00ff2a9f4c5ccb",
+      "/data1/Kane/MOE/baselines/recent_moe_20260921/rome/loss/gate_diversity.py": "c993887d8ca895046a664cf232b6ea524e63220bfe315230f0b1b89f84b81a36",
+      "/data1/Kane/MOE/baselines/recent_moe_20260921/rome/loss/__init__.py": "08051c162736cc627f7d66242581be6fde7369a08a365957aa92409d74f917cc",
+      "/data1/Kane/MOE/baselines/recent_moe_20260921/rome/attacks/apgd.py": "e01847c263db9ffdb0af736cb48de6c859d7731c70141233c2464324c270b8fe",
+      "/data1/Kane/MOE/baselines/recent_moe_20260921/rome/attacks/__init__.py": "fae1692f15494e3bf2e3fc9311931353971c354992bd5b48719a384bbc2ce285"
+    },
+    "scope": "trained-state inference control only; not resumed training or paper accuracy"
+  },
+  "trusted_source_assessment": "global_proj only feeds returned auxiliary diversity, never gate_scores/LoRA/logits",
+  "limitations": [
+    "Not a paper-accuracy reproduction",
+    "Not resumed-training state",
+    "Concrete and gradient equality is a control, not full-domain proof",
+    "Original code-default s4,b6,alpha=rank, not reconstructed paper recipe",
+    "Local SHA identifies download; no publisher checksum verified"
+  ],
+  "formal_SAFE": false
+}

@@ -1,5 +1,24 @@
 # MoE project handoff
 
+LIVE TRAINING / ROME ATTACK CONTROL FREEZE (2026-09-21):
+Dual RS90epoch training launched at826e8e94b after BOTH exact resume controls
+passed. Run `baseline_runs/dual_rs_selector_training_20260921_r1`, launcher
+receipt in `dual_rs_selector_training_launch_20260921_r1`. Inspect current
+epoch/outer_terminal before another job; no auto certification or git push.
+Do NOT edit hash-bound training scripts/configs/archives while it runs.
+First epoch70.43s total, selector-label test metric34.83%, NOT class accuracy.
+
+RoME public MAX CIFAR10 checkpoint downloaded, local SHA recorded. Default
+strict load R1 fails: exactly48 missing inference-unused global_proj tensors.
+Separate R2 strict prediction load uses author's gate_proj_dim0; logits and
+input gradients equal full module with explicitly synthetic auxiliary heads.
+This is inference-only, not resumed training; s4/b6/alpha=rank source defaults.
+See `docs/rome_deployment_archive_20260921.json`. Native AutoAttack dependency
+and author eval CLI pass. Fixed raw index0 standardLinf8/255 CPU control frozen
+in `configs/recent_moe/rome_autoattack_control_r1.json`,600s execution budget,
+separate postflight cost disclosed. NOT launched at this preparation entry.
+No paper accuracy claim; multi-layer box proof remains UNSUPPORTED.
+
 LATEST EXECUTED BASELINE STAGE (2026-09-21): read
 `docs/author_baselines_status_20260921.md` and its evidence links.
 Dual RS completed-epoch2/fresh-process replay PASS, allstate exact; outer12.877s
