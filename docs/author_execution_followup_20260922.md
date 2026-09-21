@@ -72,6 +72,23 @@ robust; errors stop new requests; union robustness requires all three completed
 without attack. Two roster/timeout controls PASS. Batch freeze:
 `rome_multinorm_batch_r1.json`. No automatic100-input expansion or ACT SAFE.
 
+Robust Experts continuation has EXECUTED and passed in21.29s with postflight.
+Independent saved-state reread matches all model/SGD/PolyLR/RNG components and
+next augmented batch. Long training is still not launched. RoME batch is live;
+inspect its terminal ledger, not this preparation text, for current progress.
+
+MetaMoE full-request comparison implementation is prepared separately:
+same full public20-class model, materialized float64 normalized2/255 boxes,
+global margin1e-7 and300s per complete request. Author route-invariance arm
+uses the native pinned backend with its original alpha/beta/BaB settings;
+strict route dominance, selected-score nonzero AND all19 global output margins
+include zero-filled other-domain classes. It is an explicitly adapted sufficient
+path, not the author's unchanged component table. ACT covers tie-legal routes.
+Source float32 execution is NOT claimed equivalent to this explicit snapshot.
+Three analytic semantic controls pass (zero blocks, negative selected score,
+tie/zero rejection). First freeze is OLD index0 CIFAR/MNIST smoke (4calls),
+not the20 new-input experiment. The latter requires the smoke audit gate.
+
 Robust Experts: exact complete-state training continuation must precede a long
 training freeze; R3 one-batch workflow alone is not this control.
 RoME: three-norm empirical evaluation remains separate from ACT full-domain

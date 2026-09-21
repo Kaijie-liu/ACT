@@ -1,5 +1,14 @@
 # MoE project handoff
 
+NATIVE CONTINUATION PASS / MATCHED META SMOKE FREEZE (2026-09-22):
+Robust Experts2epoch fresh-process continuation PASS21.29s; all SGD/PolyLR/model/
+RNG and next augmented batch equal, independent saved reread provided. RoME12
+native norm controls running separately; check batch terminal. MetaMoE paired
+FULL20-class model smoke frozen on old CIFAR/MNISTindex0,300s per complete arm,
+same explicit float64 normalized box/global margins. Author native backend arm
+is a named route-invariance sufficient adaptation with zero-block/nonzero-score
+obligations, NOT unchanged author table. Formal20-input freeze follows smoke.
+
 META NATIVE INTAKE PASSES / RE+ROME FREEZE (2026-09-22):
 MetaMoE R4 bypasses ONNX via pinned backend native PyTorch loader; both fixed
 CIFAR/MNIST components BACKEND_POSITIVE and saved audit PASS, exact probes0.
