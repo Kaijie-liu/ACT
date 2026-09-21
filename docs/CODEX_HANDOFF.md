@@ -1,5 +1,18 @@
 # MoE project handoff
 
+LATEST METAMOE COMPATIBILITY REVISION (2026-09-21): R1 froze at c058caf2f,
+then CIFAR failed BEFORE any bounds: original pinned onnx2pytorch cannot parse
+AveragePool.count_include_pad. MNIST was NOT_STARTED_AFTER_ERROR. Keep R1,
+its environment and failure review. A separate R2 environment preserves all
+package versions and changes only converter source to the immediate upstream
+successor 8447c42c (bool attribute mapping). Four pooling probes and conversion
+of the same failed real ONNX graph pass (max probe error4.77e-7).
+`configs/recent_moe/metamoe_component_control_r2.json` freezes the SAME requests,
+budget and backend settings. R2 queries NOT STARTED at this preparation entry.
+23 controls and unchanged historical table rebuild pass. Commit/push this
+revision, then run once and independently audit saved terminals. No paper-scale
+or full-MoE success follows from setup or finite conversion probes.
+
 LATEST AUTHORIZED DEPLOYMENT (2026-09-21): PI explicitly permits isolated
 environments, author dependencies and public model/data downloads under MOE.
 The previous pending-permission note is superseded. No old environment may be

@@ -1,0 +1,48 @@
+{
+  "audit": "PASS",
+  "config_sha256": "07698fcf5faca58dcac0c27f26aa7080fe0aa985822b32a2a4403b8777cf971d",
+  "requests": [
+    {
+      "id": "cifar10_rt_index0",
+      "status": "ERROR",
+      "outer_seconds": 4.722411941736937,
+      "postflight_total_seconds": 4.7225072234869,
+      "receipt_sha256": "7015f959c48e48835110cd0a4a2960268ded4ae4a11681e46fb9d90e17eac8aa",
+      "phases": [
+        {
+          "phase": "preflight_started",
+          "elapsed_seconds": 4.512816667556763e-05
+        },
+        {
+          "phase": "model_loaded",
+          "elapsed_seconds": 1.271202016621828
+        },
+        {
+          "phase": "data_loaded",
+          "elapsed_seconds": 2.2164361122995615
+        },
+        {
+          "phase": "onnx_export_and_conformance_complete",
+          "elapsed_seconds": 2.260905619710684
+        },
+        {
+          "phase": "backend_started",
+          "elapsed_seconds": 2.279299132525921
+        },
+        {
+          "phase": "backend_finished",
+          "elapsed_seconds": 4.32343191280961
+        }
+      ],
+      "worker_seconds": 4.32358268275857,
+      "error": "backend_nonzero_exit"
+    },
+    {
+      "id": "mnist_rt_index0",
+      "status": "NOT_STARTED_AFTER_ERROR"
+    }
+  ],
+  "scope": "saved identities, complete property grammar, native status and cost accounting",
+  "independent_bound_or_network_reproof": false,
+  "full_dynamic_moe_verification": false
+}

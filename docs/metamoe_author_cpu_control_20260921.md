@@ -74,3 +74,27 @@ CIFAR-RT及MNIST-RT作者专家均已在受限加载器下检查，仅允许7种
 ```
 
 准备状态：两条实际界查询尚未启动。结果须追加，不覆盖本冻结说明及首次失败。
+
+## R1实际执行与R2兼容修复（追加，不覆盖）
+
+R1在`c058caf2f`冻结后执行：CIFAR index0真实预测为3，与label3一致；
+原始checkpoint→ONNX的三次探针最大差约8.83e-6，低于固定1e-4。
+之后后端在ONNX解析失败：`count_include_pad`属性未实现；**尚未开始求界**。
+按fail-stop，MNIST为`NOT_STARTED_AFTER_ERROR`。独立记录审计通过只说明这次失败记账闭合。
+[R1审计](metamoe_component_control_review_20260921_r1.json)。
+
+已定位最小上游修复：onnx2pytorch `8447c42c3192dad383e5598edc74dddac5706ee2`
+的直接父提交恰为R1的`325959ed...`。差分仅加入`count_include_pad`到PyTorch布尔属性的
+两行映射，以及一处空白修正。无需删除池化属性、修改模型或换CROWN策略。
+
+R2在**另一个隔离环境**重新安装R1相同的全部包版本，仅更换这一个源码commit；
+保留R1环境、图、数据、日志及终态。先测padding0/1×include_pad0/1四个ONNX/转换结果，
+再转换R1实际失败图并检查相同输入上的误差，全部通过才冻结R2。
+相同两个index0、checkpoint、epsilon、性质、迭代与预算，新结果目录；
+这属于版本化前端兼容修复，不是发现负界之后调整认证策略。
+R1原生子进程墙钟约2.04秒，整个worker约4.32秒；不得将R2覆盖R1或隐去部署失败成本。
+
+R2冻结前检查：`pip check`通过；四种pool探针逐值一致，R1失败图的
+ONNX Runtime/转换模型探针误差4.7684e-7。R2全部包版本与R1相同（源码commit单独绑定）。
+[R2配置](../configs/recent_moe/metamoe_component_control_r2.json)绑定检查回执及结果，
+冻结时未执行真实请求。23项控制测试通过，旧论文表格重建未变。

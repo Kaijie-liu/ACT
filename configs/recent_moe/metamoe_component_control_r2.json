@@ -1,0 +1,99 @@
+{
+  "schema": 1,
+  "protocol": "metamoe_author_component_cpu_control_r2",
+  "author_repo": "/data1/Kane/MOE/baselines/recent_moe_20260921/metamoe",
+  "author_commit": "6aed3606e4b226e18e1c9d249485d99bb453f488",
+  "backend_repo": "/data1/Kane/MOE/baselines/recent_moe_20260921/metamoe_abcrown",
+  "backend_commit": "58bb93f4886eea7cd1a3dfeb303695f20f61473b",
+  "lirpa_commit": "28da3d0148ce320142f4a50b485ac71bca7acc3b",
+  "onnx2pytorch_commit": "8447c42c3192dad383e5598edc74dddac5706ee2",
+  "python": "/data1/Kane/MOE/envs/metamoe-author-cpu-20260921-r2/bin/python",
+  "data_root": "/data1/Kane/MOE/baseline_data/metamoe_20260921",
+  "data_manifest_sha256": "881f445adcc7bfdcfde9b31d3ede2925f6cad9f3efd7d814cd63cbd52a9aae7c",
+  "environment_inventory": "/data1/Kane/MOE/baseline_runs/metamoe_install_20260921_r2/new_environment_frozen.json",
+  "environment_inventory_sha256": "c59ab6db341cd9eb0e4f83cacd2ed47ba17c070e3bb53f99ee832e4d629fc50f",
+  "output_root": "/data1/Kane/MOE/baseline_runs/metamoe_component_20260921_r2",
+  "seed": 100,
+  "seed_source": "unchanged author backend default; paper states 42",
+  "epsilon_numerator": 2,
+  "epsilon_denominator": 255,
+  "epsilon_space": "author per-dataset normalized tensor, clipped to [-10,10]",
+  "solver_seconds": 300,
+  "outer_seconds": 360,
+  "outer_includes": "startup, identities/data/model load, export, probe, spec, backend and terminal",
+  "installation_cost_separate": true,
+  "conformance_tolerance": 0.0001,
+  "execution_files": {
+    "scripts/metamoe_component_control.py": "5595bf58d980046f4ead1321c8721f981ca8899834b57dc3b5bea6668e6b2238",
+    "scripts/recent_moe_deployment.py": "77b9893dc6142f284c6f4cf20511e0ca3709efb4844d3f91b995baf947b393bf",
+    "scripts/recent_moe_env_inventory.py": "fa20dffe8137312ee98bda98db0064c4d3615b5f9dbf5ca1e37a522ac0e3d859",
+    "scripts/freeze_metamoe_component_control.py": "2ef4b129cb8b274aa11d39f540d890c0a5cf4eabfc1833466037cdc4a7098ace",
+    "configs/recent_moe/metamoe_cpu_requirements_20260921.txt": "4460ecba3e6eeff560176fef83b6fcdfd845261ea8b4db8d4bc97cd6f91221b4"
+  },
+  "requests": [
+    {
+      "id": "cifar10_rt_index0",
+      "dataset": "CIFAR10",
+      "dataset_index": 0,
+      "checkpoint": "paper/artifacts/E_0_CNN_AT/cifar10_ultra_verifiable_cnn_best_RT_eps0.031.pth",
+      "checkpoint_sha256": "e256e3a423cc0112a29e5e802e35bacfcf70ef90d3c4bba6c890b7b6eadfa9ae"
+    },
+    {
+      "id": "mnist_rt_index0",
+      "dataset": "MNIST",
+      "dataset_index": 0,
+      "checkpoint": "paper/artifacts/E_1_CNN_AT/mnist_ultra_verifiable_cnn_best_RT_eps0.031.pth",
+      "checkpoint_sha256": "e4d32a028646cbb5efbb959ffe2ca97f194cd540d685c1d91a3d85437097432d"
+    }
+  ],
+  "scope": "author component deployment on fixed raw-order inputs, not paper table/full MoE reproduction",
+  "stop_rule": "ERROR stops remaining requests; timeout retained; no replacement/retry",
+  "guarantee": "native backend report for exported decimal problem; no source-complete/native-float claim",
+  "parent_config_sha256": "07698fcf5faca58dcac0c27f26aa7080fe0aa985822b32a2a4403b8777cf971d",
+  "source_package_direct_urls": {
+    "onnx2pytorch": {
+      "url": "https://github.com/Verified-Intelligence/onnx2pytorch.git",
+      "vcs_info": {
+        "commit_id": "8447c42c3192dad383e5598edc74dddac5706ee2",
+        "requested_revision": "8447c42c3192dad383e5598edc74dddac5706ee2",
+        "vcs": "git"
+      }
+    },
+    "auto-LiRPA": {
+      "url": "https://github.com/Verified-Intelligence/auto_LiRPA.git",
+      "vcs_info": {
+        "commit_id": "28da3d0148ce320142f4a50b485ac71bca7acc3b",
+        "requested_revision": "28da3d0148ce320142f4a50b485ac71bca7acc3b",
+        "vcs": "git"
+      }
+    }
+  },
+  "compatibility_change": "Upstream immediate successor adds bool count_include_pad mapping; no other source diff except whitespace. R1 retained.",
+  "compatibility_controls": {
+    "pool_controls": [
+      {
+        "padding": 0,
+        "count_include_pad": 0,
+        "exact_probe_match": true
+      },
+      {
+        "padding": 0,
+        "count_include_pad": 1,
+        "exact_probe_match": true
+      },
+      {
+        "padding": 1,
+        "count_include_pad": 0,
+        "exact_probe_match": true
+      },
+      {
+        "padding": 1,
+        "count_include_pad": 1,
+        "exact_probe_match": true
+      }
+    ],
+    "old_failed_graph_conversion_max_error": 4.76837158203125e-07,
+    "scope": "finite compatibility probes, not full-domain equivalence or a certificate"
+  },
+  "compatibility_receipt_sha256": "55e7e6ca64501f3c27d2cbae26f2c28da005a6f5f4b7bc60810130c72caeaf50"
+}
