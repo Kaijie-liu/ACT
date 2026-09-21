@@ -1,5 +1,14 @@
 # MoE project handoff
 
+ROBUST WORKFLOW R1 PASS WITH LOGGING GAP / R2 FREEZE (2026-09-22):
+Both fullbatch two-update workflows complete final clean/PGD20/APGD20 and
+saved audit; independent saved review archived. R1 native CSV evaluation
+overwrote training CSV; epoch/checkpoint/evaluation JSON retained. Separate R2
+isolates stage log paths ONLY, checks both at terminal; same900s and native
+recipe. One exact configuration-difference regression plus8 parent controls.
+New control configuration prepared; commit before running. Long training not
+launched; logging preservation must pass. Do not relabel short metrics as RA.
+
 ROBUST FULL WORKFLOW CONTROL PREPARATION (2026-09-22):
 Read `robust_experts_training_supervision_20260922.md`. Separate supervised
 train/final-weight-eval/saved-audit pipeline preserves fullbatch640/workers2,

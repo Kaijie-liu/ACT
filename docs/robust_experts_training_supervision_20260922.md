@@ -42,3 +42,19 @@ committed configuration freeze. Its result is not known at this protocol entry.
 Full training mode is explicitly gated by a SEPARATE execution configuration.
 Passing this control does not automatically start200epochs or alter ACT's
 unsupported full-size intermediate-router certification boundary.
+
+## R1 result and R2 storage repair
+
+Both R1 architectures completed the two updates, final-checkpoint loading,
+three native evaluations and saved audit within900s. The independent saved
+review is `robust_experts_pipeline_archive_20260922_r1.json`. However, the native
+CSV logger reused `local/pipeline` during the fresh evaluation process and
+overwrote its earlier training CSV. Epoch journals, checkpoints, stdout and
+separate evaluation JSON survived; lost CSV entries are NOT reconstructed.
+
+Separate R2 changes ONLY CSV version to `train` / `evaluate`, requires both
+files at terminal, and retains all source settings, sample limits, budgets and
+R1 outputs. One exact configuration-difference test confirms the only changed
+field. The eight deadline/exception/identity controls remain unchanged.
+Commit the new R2 configuration before execution. No long training launch is
+implied by either control.
