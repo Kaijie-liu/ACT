@@ -47,6 +47,31 @@ settings, two inputs and budgets. Wrapper-removal probes must be exactly equal.
 This is a named front-end adaptation, not a claim to have fixed or reproduced
 the author's original exporter. No extra backend parameters are searched.
 
+R4 EXECUTED: both original float32 components BACKEND_POSITIVE, exact wrapper
+probes [0,0,0], independent saved-record audit PASS. See
+`metamoe_native_control_review_20260922_r4.json`. This resolves the deployment
+blocker by bypassing ONNX, NOT by proving the old conversion equivalent.
+Formal complete-model matched execution remains a separate freeze.
+
+## Robust Experts and RoME follow-up freezes
+
+Robust Experts600s control: native R3 source, E4/k1, original PGD7/SGD and
+augmentation, two epochs with one batch2 each. Fresh process resumes epoch00;
+epoch01 model/optimizer/PolyLR/global step/RNG AND next augmented batch must
+match exactly. A named callback adds/restores Python/NumPy/Torch RNG to native
+Lightning checkpoints. Not automatic long training; failure retains both
+states. Three RNG/equality controls PASS. Configuration:
+`robust_experts_resume_r1.json`.
+
+RoME four-input/three-norm control: author's seed0 randperm selects
+[6044,2890,9399,1917], no clean-correct/route filtering. All12 combinations
+of Linf8/255, L1=12, L2=.5, native standardAutoAttack, per-input/norm600s,
+CPU2threads, original public MAX prediction checkpoint/code defaults retained.
+Separate process/model load charged each time. Timeout is incomplete, never
+robust; errors stop new requests; union robustness requires all three completed
+without attack. Two roster/timeout controls PASS. Batch freeze:
+`rome_multinorm_batch_r1.json`. No automatic100-input expansion or ACT SAFE.
+
 Robust Experts: exact complete-state training continuation must precede a long
 training freeze; R3 one-batch workflow alone is not this control.
 RoME: three-norm empirical evaluation remains separate from ACT full-domain

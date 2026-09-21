@@ -1,0 +1,181 @@
+{
+  "audit": "PASS",
+  "config_sha256": "4694240e6bff85b7dd5da80022ada6f2a9c4b7119c3c6400fd0f15e34369184a",
+  "requests": [
+    {
+      "id": "cifar10_rt_index0",
+      "status": "BACKEND_POSITIVE",
+      "outer_seconds": 5.789764292538166,
+      "postflight_total_seconds": 5.789840517565608,
+      "receipt_sha256": "24ddc1881265765dbb76b8def046ae79a4800f596659dbdbee84324e4d972ac4",
+      "phases": [
+        {
+          "phase": "preflight_started",
+          "elapsed_seconds": 0.00017791613936424255
+        },
+        {
+          "phase": "model_loaded",
+          "elapsed_seconds": 1.2994343731552362
+        },
+        {
+          "phase": "data_loaded",
+          "elapsed_seconds": 1.7531321942806244
+        },
+        {
+          "phase": "native_pytorch_exact_probe_complete",
+          "elapsed_seconds": 1.7565540801733732
+        },
+        {
+          "phase": "backend_started",
+          "elapsed_seconds": 1.7751128561794758
+        },
+        {
+          "phase": "backend_finished",
+          "elapsed_seconds": 5.390788255259395
+        }
+      ],
+      "worker_seconds": 5.391128426417708,
+      "prepared": {
+        "input_sha256": "f628a6dbc2e99fd4b354e0f0b259cd0a55e4fd46c2b1fd7c525041e31a4991b5",
+        "label": 3,
+        "clean_prediction": 3,
+        "original_logits": [
+          [
+            -0.5740523934364319,
+            -1.077438473701477,
+            -1.092905044555664,
+            1.2362563610076904,
+            -1.624027967453003,
+            0.7173599600791931,
+            -1.0190229415893555,
+            -1.3370842933654785,
+            -1.1177771091461182,
+            -1.2108875513076782
+          ]
+        ],
+        "mean": [
+          0.49139968910217285,
+          0.4821584191894531,
+          0.44653092010498047
+        ],
+        "std": [
+          0.2470322410602002,
+          0.24348513156455537,
+          0.26158785261491585
+        ],
+        "native_model_spec_sha256": "e6bb6393f8a9f6655fb7296fa54390e2f1a5aea6e863b4aebe700892c5711359",
+        "vnnlib_sha256": "57d8a10c09081b1ce92331387dd3e4d84b2727b85430c1d30f45693fad39d5dd",
+        "config_sha256": "69ec9df196d58b84fbe64725ea6b28d44215255ffd7cd864c6aebdf45c84f0c3",
+        "property_rows": 9,
+        "export_info": {
+          "native_pytorch": true,
+          "source_bn_count": 4
+        },
+        "conformance_errors": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "vnnlib_inward_decimal_coordinates": {
+          "lower": 1533,
+          "upper": 1514
+        },
+        "epsilon_space": "author normalized input, not raw pixels",
+        "guarantee_object": "original native PyTorch component plus decimal VNNLIB; real/backend policy, not floating execution proof"
+      },
+      "backend_status": "safe-incomplete",
+      "backend_wall_seconds": 3.615645796060562,
+      "backend_stdout_sha256": "f7eba19876673f1e23e84ea842347ba079ad9141e5e5c3106398dcbc863e4017",
+      "backend_stderr_sha256": "a7c13d2cce7fa4d9ac01ebebbee1900e75eb50fb9a4974e353ef8c0cf6e5621c"
+    },
+    {
+      "id": "mnist_rt_index0",
+      "status": "BACKEND_POSITIVE",
+      "outer_seconds": 5.080331448465586,
+      "postflight_total_seconds": 5.080410065129399,
+      "receipt_sha256": "410c54c368b1b40804e218ccfc5d5b94e555cb6f576aec85bc70367c3d2b8d63",
+      "phases": [
+        {
+          "phase": "preflight_started",
+          "elapsed_seconds": 3.713741898536682e-05
+        },
+        {
+          "phase": "model_loaded",
+          "elapsed_seconds": 1.3071689903736115
+        },
+        {
+          "phase": "data_loaded",
+          "elapsed_seconds": 1.317793121561408
+        },
+        {
+          "phase": "native_pytorch_exact_probe_complete",
+          "elapsed_seconds": 1.3202314600348473
+        },
+        {
+          "phase": "backend_started",
+          "elapsed_seconds": 1.338224207982421
+        },
+        {
+          "phase": "backend_finished",
+          "elapsed_seconds": 4.678783547133207
+        }
+      ],
+      "worker_seconds": 4.679125647991896,
+      "prepared": {
+        "input_sha256": "25fd95993ed81b5c3a5364f415ad0ec0e1e744e7ff7d1f27b200a21745e3dba7",
+        "label": 7,
+        "clean_prediction": 7,
+        "original_logits": [
+          [
+            -1.4706368446350098,
+            -1.2423927783966064,
+            -1.4683246612548828,
+            -1.5858228206634521,
+            -1.419803500175476,
+            -1.365551233291626,
+            -1.4928659200668335,
+            2.827869415283203,
+            -1.5108481645584106,
+            -1.7081161737442017
+          ]
+        ],
+        "mean": [
+          0.1309002565383911,
+          0.1309002565383911,
+          0.1309002565383911
+        ],
+        "std": [
+          0.2892882413884404,
+          0.2892882413884404,
+          0.2892882413884404
+        ],
+        "native_model_spec_sha256": "0e004814a2d3f5bef4fc8bdebc3b3d9edf5875304ed292a8205a09efd66759ad",
+        "vnnlib_sha256": "2c728cb10d04b9eb9e9a16e3257056004f8f27e44b8eedc7e3ccad960fcf5f5f",
+        "config_sha256": "2bc4024b0f644929e35146dd628fb215d614c5db9fc86bcf7a238144eb6b4b68",
+        "property_rows": 9,
+        "export_info": {
+          "native_pytorch": true,
+          "source_bn_count": 4
+        },
+        "conformance_errors": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "vnnlib_inward_decimal_coordinates": {
+          "lower": 315,
+          "upper": 2739
+        },
+        "epsilon_space": "author normalized input, not raw pixels",
+        "guarantee_object": "original native PyTorch component plus decimal VNNLIB; real/backend policy, not floating execution proof"
+      },
+      "backend_status": "safe-incomplete",
+      "backend_wall_seconds": 3.340533772483468,
+      "backend_stdout_sha256": "bc7aa759fe48456cb2b478a00160b3a96641bca94cc769ebac0f6c3178c58812",
+      "backend_stderr_sha256": "a7c13d2cce7fa4d9ac01ebebbee1900e75eb50fb9a4974e353ef8c0cf6e5621c"
+    }
+  ],
+  "scope": "saved identities, complete property grammar, native status and cost accounting",
+  "independent_bound_or_network_reproof": false,
+  "full_dynamic_moe_verification": false
+}

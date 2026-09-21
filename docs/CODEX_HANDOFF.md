@@ -1,5 +1,13 @@
 # MoE project handoff
 
+META NATIVE INTAKE PASSES / RE+ROME FREEZE (2026-09-22):
+MetaMoE R4 bypasses ONNX via pinned backend native PyTorch loader; both fixed
+CIFAR/MNIST components BACKEND_POSITIVE and saved audit PASS, exact probes0.
+This is front-end adaptation, not old folded-export equivalence or full table.
+Robust Experts two-epoch fresh-process full-state continuation control and
+RoME4seeded-input x3norm native AA controls are now frozen (not yet executed
+at this entry). See author_execution_followup_20260922.md and new configs.
+
 DUAL RS REAL CERTIFICATION COMPLETE (2026-09-22):
 Read dual_rs_certification_archive_20260922_r1.json. Both frozen inputs correct,
 composed statistical L2 radii0.8304935215/1.1060614554;43.72s including postflight;
