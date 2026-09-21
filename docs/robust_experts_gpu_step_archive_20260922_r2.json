@@ -1,0 +1,64 @@
+{
+  "audit": "SAVED_IPC_FAILURE_AND_MANUAL_STOP_REVIEW",
+  "summary": {
+    "config_sha256": "0ae69d85f60593534a6abb4fcde6fbf86c4754debe5423207c08692a7227f7fa",
+    "records": [
+      {
+        "arm": "dense",
+        "receipt": {
+          "schema": 1,
+          "command": [
+            "/data1/Kane/MOE/envs/robust-experts-workflow-blackwell-20260922-r1/bin/python",
+            "/data1/Kane/MOE/ACT/scripts/robust_experts_gpu_step_control_r2.py",
+            "--config",
+            "/data1/Kane/MOE/ACT/configs/recent_moe/robust_experts_gpu_step_r2.json",
+            "--worker",
+            "dense"
+          ],
+          "cwd": "/data1/Kane/MOE/ACT",
+          "status": "ERROR",
+          "exit_code": -15,
+          "error": null,
+          "evidence_grade": "GPU_DEPLOYMENT_ONLY",
+          "deadline_seconds": 600,
+          "execution_including_preflight_seconds": 112.34712364524603,
+          "total_with_postflight_seconds": 112.34720446541905,
+          "postflight_in_execution_budget": false,
+          "cpu_only": false,
+          "threads": 2,
+          "source_before": null,
+          "source_unchanged": true,
+          "command_file_sha256": {
+            "/data1/Kane/MOE/envs/rt-er-blackwell/bin/python3.11": "19b660d026d733a795fc95b4d888a28e8569e4be3f37201a720ff434dfecb558",
+            "/data1/Kane/MOE/ACT/scripts/robust_experts_gpu_step_control_r2.py": "25815e633a2827c725bc27a7253f0561bffbebaf7c70d51da95a8244e820ad80",
+            "/data1/Kane/MOE/ACT/configs/recent_moe/robust_experts_gpu_step_r2.json": "0ae69d85f60593534a6abb4fcde6fbf86c4754debe5423207c08692a7227f7fa"
+          },
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "0ccdc20ecb60fd2f714767322778a67c11e90eff648e8a92bbd3994ad90934f6",
+          "claim": "Deployment receipt only; not a reproduced accuracy or a proof."
+        },
+        "result": null
+      }
+    ],
+    "accepted": false
+  },
+  "operator_abort": {
+    "utc": "2026-09-21 14:53:32",
+    "target_process_group": 982713,
+    "target_worker": "robust_experts_gpu_step_control_r2.py --worker dense",
+    "reason": "Repeated AF_UNIX path too long in DataLoader IPC; own failed control stopped before deadline to release resources",
+    "not_a_budget_timeout": true,
+    "complete_training_update_recorded": false,
+    "preserve_failure": true
+  },
+  "files": {
+    "/data1/Kane/MOE/baseline_runs/robust_experts_gpu_step_20260922_r2/summary.json": "b6f03dbaae55cbb15308ab8a25946e9c21ad2c244fb27230bbf197bbc52c1e0a",
+    "/data1/Kane/MOE/baseline_runs/robust_experts_gpu_step_20260922_r2/operator_abort.json": "295f16885c47ef5cd1a5812aba40a1af92cd0ad5a4dae1dbc408f86fbf9609a6",
+    "/data1/Kane/MOE/baseline_runs/robust_experts_gpu_step_20260922_r2/dense/receipt.json": "2ac9d2ed3e282d0e38b58f459db8a18d48fbdfdd8b95b19375d0c08ceecc0054",
+    "/data1/Kane/MOE/baseline_runs/robust_experts_gpu_step_20260922_r2/dense/stderr.txt": "0ccdc20ecb60fd2f714767322778a67c11e90eff648e8a92bbd3994ad90934f6",
+    "/data1/Kane/MOE/baseline_runs/robust_experts_gpu_step_20260922_r2/dense/prepared.json": "39b73b31624ee333b7b5327ae611f49c66ee95dac6cf6e1834b44a7af7280c83"
+  },
+  "training_success": false,
+  "not_a_natural_budget_timeout": true,
+  "repair": "short private IPC temp path; permit AF_UNIX only; keep all model/PGD/batch/budget settings"
+}

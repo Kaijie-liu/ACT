@@ -1,5 +1,12 @@
 # MoE project handoff
 
+ROBUST GPU R2 IPC FAILURE / R3 FREEZE (2026-09-22):
+R2 training loader cannot deliver its first batch: AF_UNIX path exceeds OS limit.
+Only its own verified process group was stopped; this is an explicitly recorded
+operator abort, NOT a natural budget timeout. R3 short private temp directory
+and AF_UNIX-only Python socket policy preserve workers2/batch640/PGD7/600s.
+Local IPC/network-rejection regression PASS; original failures preserved.
+
 ROBUST GPU R1 METADATA FAILURE / R2 FREEZE (2026-09-22):
 R1 failed BEFORE training: our prepared.json serializer resolved the author's
 get_method interpolation to Python callables. No GPU update occurred. Partial

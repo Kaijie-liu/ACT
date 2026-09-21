@@ -163,3 +163,13 @@ strings (resolve=False), with a regression reproducing/rejecting the old form.
 Same architecture/batch/optimizer/PGD/budget/resource gates; separate config,
 directory and failure archive. This is our deployment bug, not author training
 failure or evidence of insufficient GPU memory.
+
+GPU R2 then exposed a separate location/IPC problem with workers2: the nested
+supervisor temporary path exceeds the Unix socket address length. The verified
+own failed process group was manually stopped after repeated IPC errors; the
+operator record and partial prepared configuration remain. No completed update
+exists. R3 uses a short private directory under MOE/tmp and allows AF_UNIX
+connections for dataloader transfer while rejecting IP connections. A socket
+regression passes. Workers2, fullbatch640, attacks, precision, update count,
+resource gate and600s limit are unchanged. This is not a performance retry or
+evidence that a model/batch is too hard; no other tenant was interrupted.
