@@ -155,3 +155,11 @@ control. The resource gate requires48GiB currently free and caps own Torch
 allocation at40% of total GPU memory; no other tenant is interrupted.
 CPU recipe controls verify these invariants before execution. Exact GPU
 continuation is NOT implied by successful one-step serialization.
+
+GPU R1 failed before native setup/training: our metadata serialization resolved
+Hydra get_method entries into callables. The partial prepared.json is retained,
+not overwritten. R2 changes ONLY metadata storage to preserve native resolver
+strings (resolve=False), with a regression reproducing/rejecting the old form.
+Same architecture/batch/optimizer/PGD/budget/resource gates; separate config,
+directory and failure archive. This is our deployment bug, not author training
+failure or evidence of insufficient GPU memory.

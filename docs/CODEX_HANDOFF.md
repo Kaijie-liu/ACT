@@ -1,5 +1,12 @@
 # MoE project handoff
 
+ROBUST GPU R1 METADATA FAILURE / R2 FREEZE (2026-09-22):
+R1 failed BEFORE training: our prepared.json serializer resolved the author's
+get_method interpolation to Python callables. No GPU update occurred. Partial
+metadata/error preserved in robust_experts_gpu_step_archive_20260922_r1.json.
+Separate R2 keeps symbolic native resolver strings in JSON; one regression PASS.
+Same dense+E4/k2 batch640/PGD7/SGD/600s/memory gates, new output; not yet run.
+
 META R2 ACT CAPACITY BLOCK / GPU STEP CONTROL FREEZE (2026-09-22):
 R2 both CIFAR arms replay the same original-model counterexample; author MNIST
 BACKEND_POSITIVE; ACT MNIST remains ERROR because its joint HZ is dropped.

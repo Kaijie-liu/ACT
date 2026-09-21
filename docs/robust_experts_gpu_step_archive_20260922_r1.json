@@ -1,0 +1,54 @@
+{
+  "audit": "SAVED_PRE_TRAIN_FAILURE_REVIEW",
+  "summary": {
+    "config_sha256": "ba35edabfebb47483791ad9e6660407a08f58ab4007007e5ecf3a31a1fe901e0",
+    "records": [
+      {
+        "arm": "dense",
+        "receipt": {
+          "schema": 1,
+          "command": [
+            "/data1/Kane/MOE/envs/robust-experts-workflow-blackwell-20260922-r1/bin/python",
+            "/data1/Kane/MOE/ACT/scripts/robust_experts_gpu_step_control.py",
+            "--config",
+            "/data1/Kane/MOE/ACT/configs/recent_moe/robust_experts_gpu_step_r1.json",
+            "--worker",
+            "dense"
+          ],
+          "cwd": "/data1/Kane/MOE/ACT",
+          "status": "ERROR",
+          "exit_code": 1,
+          "error": null,
+          "evidence_grade": "GPU_DEPLOYMENT_ONLY",
+          "deadline_seconds": 600,
+          "execution_including_preflight_seconds": 3.820662919431925,
+          "total_with_postflight_seconds": 3.820766218006611,
+          "postflight_in_execution_budget": false,
+          "cpu_only": false,
+          "threads": 2,
+          "source_before": null,
+          "source_unchanged": true,
+          "command_file_sha256": {
+            "/data1/Kane/MOE/envs/rt-er-blackwell/bin/python3.11": "19b660d026d733a795fc95b4d888a28e8569e4be3f37201a720ff434dfecb558",
+            "/data1/Kane/MOE/ACT/scripts/robust_experts_gpu_step_control.py": "8605a6d928c942e856f41c964c1af5303c7d2a4749fff873e5a9e6d1d5f571c3",
+            "/data1/Kane/MOE/ACT/configs/recent_moe/robust_experts_gpu_step_r1.json": "ba35edabfebb47483791ad9e6660407a08f58ab4007007e5ecf3a31a1fe901e0"
+          },
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "de55a2c6d2b2b33f181c81c82ab08bfda3261ff049f16fc3f968d4c6b9061517",
+          "claim": "Deployment receipt only; not a reproduced accuracy or a proof."
+        },
+        "result": null
+      }
+    ],
+    "accepted": false
+  },
+  "error": "our resolved OmegaConf metadata contains author get_method callables; JSON cannot serialize",
+  "files": {
+    "/data1/Kane/MOE/baseline_runs/robust_experts_gpu_step_20260922_r1/summary.json": "3d9f0261b3abb7ea09098c10ad089fffee80819a68e335a11f3354ca6e0f6ef4",
+    "/data1/Kane/MOE/baseline_runs/robust_experts_gpu_step_20260922_r1/dense/receipt.json": "1c78b38dd8a51d4fd65dd5bed5fd36c0ac40f75419196b635e4e06806e508195",
+    "/data1/Kane/MOE/baseline_runs/robust_experts_gpu_step_20260922_r1/dense/stderr.txt": "de55a2c6d2b2b33f181c81c82ab08bfda3261ff049f16fc3f968d4c6b9061517",
+    "/data1/Kane/MOE/baseline_runs/robust_experts_gpu_step_20260922_r1/dense/prepared.json": "b1abbee5ca77a560341f19d792df58c0a06700b01dae78c9cade2b641dbb90e4"
+  },
+  "trained": false,
+  "retry": "separate R2 keeps symbolic native resolver strings, unchanged recipe/budget"
+}
