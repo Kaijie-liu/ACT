@@ -1,5 +1,13 @@
 # MoE project handoff
 
+ROBUST FULL WORKFLOW CONTROL PREPARATION (2026-09-22):
+Read `robust_experts_training_supervision_20260922.md`. Separate supervised
+train/final-weight-eval/saved-audit pipeline preserves fullbatch640/workers2,
+native PGD7 and clean/PGD20/APGD20. Control is2epochs x1train batch and one test
+batch per path,900s/architecture INCLUDING saved audit; NOT200epoch training.
+No automatic resume; CUDA RNG and every completed epoch saved, exact GPU resume
+still unestablished. Controls/freeze precede launch, no silent dependency change.
+
 LATEST SIX-WORK EXECUTION MATRIX / ROBUST GPU PASS (2026-09-22):
 Read `author_baselines_execution_20260922.md` before older baseline entries.
 Robust GPU R3 BOTH batch640/PGD7 updates+full-save PASS: dense10.0845s,ConvMoE
