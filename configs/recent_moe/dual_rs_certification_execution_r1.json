@@ -1,0 +1,71 @@
+{
+  "schema": "dual_rs_final_epoch_certification_execution_v1",
+  "training_config": "configs/recent_moe/dual_rs_training_r1.json",
+  "training_parent": "configs/recent_moe/dual_rs_training_control_r2.json",
+  "author_repo": "/data1/Kane/MOE/baselines/recent_moe_20260921/dual_rs",
+  "python": "/data1/Kane/MOE/envs/dual-rs-author-blackwell-20260921/bin/python",
+  "vit": "/data1/Kane/MOE/baseline_weights/dual_rs_20260921/vit",
+  "files": {
+    "configs/recent_moe/dual_rs_training_r1.json": "de9c3a9b7ff1346715e999e00821786e9c3dceb65aadea96ac0c900952bdf066",
+    "configs/recent_moe/dual_rs_training_control_r2.json": "d5e6141b57d043b2830a55660b24270fde046348fef86c75dfe948773b8bafa1",
+    "/data1/Kane/MOE/baseline_weights/dual_rs_20260921/manifest.json": "ee05577f00b9f294f0caedfb92d589bfde482d8bfa9aec7dd612f391450120b6",
+    "scripts/dual_rs_certification_pipeline.py": "15732d159af40e2e68916260a6ddb1fb8fb04e346425188bd102e9bf4c34b24d",
+    "scripts/dual_rs_certification_evidence.py": "82da1460c37e2a481cf7f4f11a6be7ddd944730d0530bcfd173f18422c4bbb1f",
+    "scripts/audit_dual_rs_certification.py": "67f4ba24fbccb7c9e65005d390b485893f9569726881feee605f82191c2936f0",
+    "scripts/prepare_dual_rs_certification.py": "32145e4751e194411ab2e05df105ae0da04161e45f5ab284a547895d424fec47",
+    "scripts/recent_moe_deployment.py": "77b9893dc6142f284c6f4cf20511e0ca3709efb4844d3f91b995baf947b393bf",
+    "scripts/recent_moe_env_inventory.py": "fa20dffe8137312ee98bda98db0064c4d3615b5f9dbf5ca1e37a522ac0e3d859",
+    "scripts/dual_rs_training_control.py": "3f90e67f541f69a7f222284ef4d52e97273fff2292f10fbf750e1daaa6547240",
+    "scripts/dual_rs_training_state.py": "36ddce918c956c1277c26e980a6e9165c17142f9f6cbb8f3b0cfb16bca718c78",
+    "scripts/dual_rs_epoch_pipeline.py": "04323428759d59c1285ff70fd74c12cae8fe25c3d540b3de3600af74e6ddccd8",
+    "tests/test_dual_rs_certification.py": "390698feef86231101fc6f8450ede2c9b3a3782abe35f9eab46696c53e020dbd",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_controls_20260921_r1/receipt.json": "8affe26776444f9150af73721d3ed5dba6359d2af4380e95bb4d0af59fe82a5d",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_certification_controls_20260921_r1/stderr.txt": "d6650543ac7fb296a6cbfd1ec33fcfc21706ded775d8da7ffcafea32bdfbc76b",
+    "/data1/Kane/MOE/baseline_weights/dual_rs_20260921/cifar10_uncond_50M_500K.pt": "351ef8b22e54e0eb2f8ef70389e101ef67e313f8fda41b46139575b3ce042cec",
+    "/data1/Kane/MOE/baseline_weights/dual_rs_20260921/vit/config.json": "efb7893468f2250d3934d897feaebeea59394e6270acaa2996ff552a67173daf",
+    "/data1/Kane/MOE/baseline_weights/dual_rs_20260921/vit/preprocessor_config.json": "af4eb4d79cf61b47010fc0bc9352ee967579c417423b4917188d809b7e048948",
+    "/data1/Kane/MOE/baseline_weights/dual_rs_20260921/vit/pytorch_model.bin": "5e738962ed1175c80087a29447e899372301113b4995a6fbe1127ad2a53d7ac4",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_selector_training_20260921_r1/outer_terminal.json": "3a801e9c11ac03facc9c62cc84297df621a6229f4d4c76c49ecc311581bb8843",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_selector_training_20260921_r1/audit.json": "f577dc5d13bd5f862411cc1dc472c1ef762eb1fb904e77155e2fed868c5a1b1a",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_selector_training_20260921_r1/training/epoch090.pt": "5bcf3fd0ad3b28cab728fa3e56c77f3300cae572f864ff8b3d78bcf342ad07cc",
+    "/data1/Kane/MOE/baseline_runs/dual_rs_selector_training_20260921_r1/training/epoch090.json": "57ab4a49ab4c26fde089ed29bc6d3a3e7878b40075508fe459d1318fd59df3df",
+    "configs/recent_moe/dual_rs_certification_recipe_r1.json": "9b10a29fb1429463f1945250e866a9b5fddcf6f84e8974e14f4c7e6f56144dc4"
+  },
+  "test_indices": [
+    0,
+    1
+  ],
+  "n0": 100,
+  "n": 10000,
+  "alpha": 0.0005,
+  "selector_sigma": 1.0,
+  "sigma_candidates": [
+    0.25,
+    0.5,
+    1.0
+  ],
+  "batch_size": 16,
+  "total_seconds": 7200,
+  "epoch": 90,
+  "minimum_free_gpu_gib": 24,
+  "memory_fraction": 0.25,
+  "seeds": {
+    "0": [
+      202609210,
+      202609211
+    ],
+    "1": [
+      202609212,
+      202609213
+    ]
+  },
+  "precision": "native CUDA autocast, no fallback or parameter search",
+  "selection": "raw CIFAR test0,1 regardless of clean/selector/cert outcome",
+  "accounting": "one7200s outer includes setup, sampling, saves, child imports and audit; source postflight reported separately",
+  "failure": "retain partial counts, no retry/substitution/early epoch",
+  "automatic_launch": false,
+  "recipe_path": "configs/recent_moe/dual_rs_certification_recipe_r1.json",
+  "recipe_sha256": "9b10a29fb1429463f1945250e866a9b5fddcf6f84e8974e14f4c7e6f56144dc4",
+  "selector_checkpoint": "/data1/Kane/MOE/baseline_runs/dual_rs_selector_training_20260921_r1/training/epoch090.pt",
+  "output_root": "/data1/Kane/MOE/baseline_runs/dual_rs_certification_20260921_r1"
+}

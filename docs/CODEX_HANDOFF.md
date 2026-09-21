@@ -1,5 +1,14 @@
 # MoE project handoff
 
+AUTHOR EXECUTION FOLLOW-UP FREEZE (2026-09-22):
+Read `docs/author_execution_followup_20260922.md`. Dual RS90epoch training has
+LANDED; final weights now bound in dual_rs_certification_execution_r1.json.
+Same two-input statistical certification recipe; commit this freeze before
+launch. MetaMoE separate unfused eval-BN R3 conversion controls prepared,
+3 native export controls and13 existing spec/terminal controls PASS; SAME two
+component requests, no relaxed conformance gate. Neither actual execution is
+claimed at this freeze entry. All frozen parent sources/results unchanged.
+
 MULTILAYER CONTROL ARCHIVE / REVIEW COMPLETE (2026-09-21):
 Read `docs/multilayer_history_control_review_20260921.json` and method doc.
 At frozen5ac65998c: analytic whole-box/all4histories POSITIVE, recorded lower
