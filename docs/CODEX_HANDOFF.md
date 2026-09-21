@@ -1,5 +1,23 @@
 # MoE project handoff
 
+LATEST AUTHORIZED DEPLOYMENT (2026-09-21): PI explicitly permits isolated
+environments, author dependencies and public model/data downloads under MOE.
+The previous pending-permission note is superseded. No old environment may be
+modified; no author contact/release or closed-holdout reopening is authorized.
+Read `docs/metamoe_author_cpu_control_20260921.md` and the frozen
+`configs/recent_moe/metamoe_component_control_r1.json`.
+
+Dedicated CPU Py3.11/Torch2.3.1 environment and pinned author's CROWN/LiRPA/
+onnx2pytorch are installed. Public CIFAR copied independently, MNIST downloaded;
+five old environment inventories unchanged. Native backend help/pip check and
+both restricted author expert checkpoint controls pass. This is compatibility
+deployment, NOT the paper's PyTorch2.1/CUDA4060/d4c79e3 reproduction.
+First real controls are fixed CIFAR-RT/MNIST-RT test index0, normalized2/255,
+solver300s/outer360s CPU each, no replacements. Native ONNX positives are not
+full-MoE or source-complete proofs. Preparation is frozen; queries NOT STARTED
+at this entry. Execute once after test/commit/push, audit saved terminals, then
+append results. Do not modify frozen execution files mid-run.
+
 LATEST AUTHOR-BASELINE WORKLINE (2026-09-21): PI explicitly requested learning
 six recent MoE papers, concrete comparison design and deployment. Read
 `docs/recent_moe_baselines_20260921.md`,
@@ -26,10 +44,9 @@ The added MetaMoE CIFAR-RT author expert checkpoint control passes restricted
 weights_only loading (7 reviewed types), CPU forward and input gradient.
 This uses real trained weights but random inputs, not accuracy/certification.
 
-No new training/certification or same-task comparison has completed. No installs
-were made. A question requesting dedicated isolated environment/dependency and
-public model/data-download permission was sent; explicit reply is still needed
-before dependency installation. Do not modify act-py312 or old environments.
+At the previous source-only stage, no fresh certification/comparison or installs
+had completed. PI subsequently authorized installation; see latest entry above.
+Do not modify act-py312 or old environments.
 Priorities now: MetaMoE remaining-checkpoint loading/backend binding and actual
 component controls, then DualRS certification pipeline, then RoME AA/weights,
 Robust Experts compatibility. J-TLAT README-only and unidentified Feature Noise

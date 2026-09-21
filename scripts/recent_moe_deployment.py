@@ -109,7 +109,8 @@ def main():
     p.add_argument("--seconds", type=float, default=120)
     p.add_argument("--grade", required=True,
                    choices=["AUTHOR_RESULT_REPLAY", "AUTHOR_MODEL_INIT_SMOKE",
-                            "AUTHOR_CHECKPOINT_SMOKE", "ENTRYPOINT_PROBE"])
+                            "AUTHOR_CHECKPOINT_SMOKE", "ENTRYPOINT_PROBE",
+                            "DEPENDENCY_SETUP", "DATA_PREPARATION", "AUTHOR_COMPONENT_CONTROL"])
     p.add_argument("command", nargs=argparse.REMAINDER)
     args = p.parse_args()
     command = args.command[1:] if args.command[:1] == ["--"] else args.command
