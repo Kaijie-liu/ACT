@@ -1,0 +1,3897 @@
+{
+  "passed": false,
+  "config_sha256": "a7303a0535becd2915a575fffc775a9922227e758c2ff66779cec206d1d5bddf",
+  "receipt": {
+    "status": "COMPLETED",
+    "exit_code": 0,
+    "error": null,
+    "command": [
+      "/data1/Kane/MOE/envs/moe-author-cpu-py312-20260921/bin/python",
+      "/data1/Kane/MOE/ACT/scripts/diagnose_metamoe_csr.py",
+      "--config",
+      "/data1/Kane/MOE/ACT/configs/recent_moe/metamoe_csr_smoke_r3.json",
+      "--output",
+      "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r3_diagnostic",
+      "--worker"
+    ],
+    "deadline_seconds": 90,
+    "execution_including_preflight_seconds": 7.425767868757248,
+    "peak_sampled_group_rss_bytes": 1605013504,
+    "group_rss_limit_bytes": 8589934592,
+    "rss_poll_seconds": 0.05,
+    "rss_is_sampled_not_instantaneous_cap": true,
+    "postflight_in_execution_budget": false,
+    "source_unchanged": null,
+    "stdout_sha256": "8d2976e7bd0cd8faf6154be552532f3be2e038debbe42fdf09237700ab3fbc9d",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "total_with_postflight_seconds": 7.425903609022498,
+    "receipt_own_write_excluded_from_this_clock": true
+  },
+  "result": {
+    "config_sha256": "a7303a0535becd2915a575fffc775a9922227e758c2ff66779cec206d1d5bddf",
+    "status": "RESOURCE_REFUSED",
+    "completed_phases": [
+      "router"
+    ],
+    "failure_phase": "guarded_expert_0",
+    "failure": {
+      "stage": "operator_pre",
+      "layer": 7,
+      "cached_representation_bytes": 48697600,
+      "requested_reserve_bytes": 3280982736,
+      "total_accounted_bytes": 3329680336,
+      "limit_bytes": 2147483648,
+      "accepted": false,
+      "details": {
+        "estimated_retained_bytes": 384303984,
+        "workspace_reserve_bytes": 3280982736,
+        "nnz_upper_bound": 24002307,
+        "operator_nnz_upper_bound": 1290240,
+        "unstable_upper_bound": 0
+      }
+    },
+    "events": [
+      {
+        "phase": "router",
+        "id": 0,
+        "kind": "INPUT",
+        "seconds": 0.003926917910575867,
+        "outputs": 3072,
+        "drop": null,
+        "dense_retained": false,
+        "sparse": {
+          "bytes": 86040,
+          "nnz": 3072,
+          "matrices": {
+            "Gc": {
+              "nnz": 3072,
+              "bytes": 49156,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 12292,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 0,
+              "bytes": 4,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 0,
+              "bytes": 4,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 0,
+              "bytes": 4,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 0,
+              "bytes": 4,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 3072,
+          "n_cont": 3072,
+          "n_bin": 0,
+          "n_eq": 0,
+          "n_ineq": 0,
+          "frame_id": 0
+        },
+        "last_admission": [
+          {
+            "stage": "seed_post",
+            "layer": 0,
+            "cached_representation_bytes": 86040,
+            "requested_reserve_bytes": 0,
+            "total_accounted_bytes": 86040,
+            "limit_bytes": 2147483648,
+            "accepted": true
+          }
+        ]
+      },
+      {
+        "phase": "router",
+        "id": 1,
+        "kind": "INPUT_SPEC",
+        "seconds": 0.0005150642246007919,
+        "outputs": 3072,
+        "drop": null,
+        "dense_retained": false,
+        "sparse": {
+          "bytes": 86040,
+          "nnz": 3072,
+          "matrices": {
+            "Gc": {
+              "nnz": 3072,
+              "bytes": 49156,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 12292,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 0,
+              "bytes": 4,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 0,
+              "bytes": 4,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 0,
+              "bytes": 4,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 0,
+              "bytes": 4,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 3072,
+          "n_cont": 3072,
+          "n_bin": 0,
+          "n_eq": 0,
+          "n_ineq": 0,
+          "frame_id": 1
+        },
+        "last_admission": [
+          {
+            "stage": "seed_post",
+            "layer": 1,
+            "cached_representation_bytes": 172080,
+            "requested_reserve_bytes": 0,
+            "total_accounted_bytes": 172080,
+            "limit_bytes": 2147483648,
+            "accepted": true
+          }
+        ]
+      },
+      {
+        "phase": "router",
+        "id": 2,
+        "kind": "CONV2D",
+        "seconds": 0.22371051274240017,
+        "outputs": 20480,
+        "drop": null,
+        "dense_retained": false,
+        "sparse": {
+          "bytes": 6689624,
+          "nnz": 530160,
+          "matrices": {
+            "Gc": {
+              "nnz": 530160,
+              "bytes": 6443844,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 81924,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 0,
+              "bytes": 4,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 0,
+              "bytes": 4,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 0,
+              "bytes": 4,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 0,
+              "bytes": 4,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 20480,
+          "n_cont": 3072,
+          "n_bin": 0,
+          "n_eq": 0,
+          "n_ineq": 0,
+          "frame_id": 1
+        },
+        "last_admission": [
+          {
+            "stage": "operator_post",
+            "layer": 2,
+            "cached_representation_bytes": 172080,
+            "requested_reserve_bytes": 6689624,
+            "total_accounted_bytes": 6861704,
+            "limit_bytes": 2147483648,
+            "accepted": true,
+            "details": {
+              "bytes": 6689624,
+              "nnz": 530160,
+              "matrices": {
+                "Gc": {
+                  "nnz": 530160,
+                  "bytes": 6443844,
+                  "index_bytes": 4
+                },
+                "Gb": {
+                  "nnz": 0,
+                  "bytes": 81924,
+                  "index_bytes": 4
+                },
+                "Ac": {
+                  "nnz": 0,
+                  "bytes": 4,
+                  "index_bytes": 4
+                },
+                "Ab": {
+                  "nnz": 0,
+                  "bytes": 4,
+                  "index_bytes": 4
+                },
+                "Auc": {
+                  "nnz": 0,
+                  "bytes": 4,
+                  "index_bytes": 4
+                },
+                "Aub": {
+                  "nnz": 0,
+                  "bytes": 4,
+                  "index_bytes": 4
+                }
+              },
+              "n_out": 20480,
+              "n_cont": 3072,
+              "n_bin": 0,
+              "n_eq": 0,
+              "n_ineq": 0,
+              "frame_id": 1
+            }
+          }
+        ]
+      },
+      {
+        "phase": "router",
+        "id": 3,
+        "kind": "RELU",
+        "seconds": 0.01583176665008068,
+        "outputs": 20480,
+        "drop": null,
+        "dense_retained": false,
+        "sparse": {
+          "bytes": 2135084,
+          "nnz": 147271,
+          "matrices": {
+            "Gc": {
+              "nnz": 118916,
+              "bytes": 1508916,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 81924,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 24175,
+              "bytes": 293448,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 836,
+              "bytes": 13380,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 1672,
+              "bytes": 26756,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 1672,
+              "bytes": 26756,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 20480,
+          "n_cont": 4744,
+          "n_bin": 836,
+          "n_eq": 836,
+          "n_ineq": 1672,
+          "frame_id": 1
+        },
+        "last_admission": [
+          {
+            "stage": "operator_post",
+            "layer": 3,
+            "cached_representation_bytes": 6861704,
+            "requested_reserve_bytes": 2135084,
+            "total_accounted_bytes": 8996788,
+            "limit_bytes": 2147483648,
+            "accepted": true,
+            "details": {
+              "bytes": 2135084,
+              "nnz": 147271,
+              "matrices": {
+                "Gc": {
+                  "nnz": 118916,
+                  "bytes": 1508916,
+                  "index_bytes": 4
+                },
+                "Gb": {
+                  "nnz": 0,
+                  "bytes": 81924,
+                  "index_bytes": 4
+                },
+                "Ac": {
+                  "nnz": 24175,
+                  "bytes": 293448,
+                  "index_bytes": 4
+                },
+                "Ab": {
+                  "nnz": 836,
+                  "bytes": 13380,
+                  "index_bytes": 4
+                },
+                "Auc": {
+                  "nnz": 1672,
+                  "bytes": 26756,
+                  "index_bytes": 4
+                },
+                "Aub": {
+                  "nnz": 1672,
+                  "bytes": 26756,
+                  "index_bytes": 4
+                }
+              },
+              "n_out": 20480,
+              "n_cont": 4744,
+              "n_bin": 836,
+              "n_eq": 836,
+              "n_ineq": 1672,
+              "frame_id": 1
+            }
+          }
+        ]
+      },
+      {
+        "phase": "router",
+        "id": 4,
+        "kind": "AVGPOOL2D",
+        "seconds": 0.16472958214581013,
+        "outputs": 5120,
+        "drop": null,
+        "dense_retained": false,
+        "sparse": {
+          "bytes": 1174580,
+          "nnz": 87709,
+          "matrices": {
+            "Gc": {
+              "nnz": 59354,
+              "bytes": 732732,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 20484,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 24175,
+              "bytes": 293448,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 836,
+              "bytes": 13380,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 1672,
+              "bytes": 26756,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 1672,
+              "bytes": 26756,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 5120,
+          "n_cont": 4744,
+          "n_bin": 836,
+          "n_eq": 836,
+          "n_ineq": 1672,
+          "frame_id": 1
+        },
+        "last_admission": [
+          {
+            "stage": "operator_post",
+            "layer": 4,
+            "cached_representation_bytes": 9157300,
+            "requested_reserve_bytes": 1174580,
+            "total_accounted_bytes": 10331880,
+            "limit_bytes": 2147483648,
+            "accepted": true,
+            "details": {
+              "bytes": 1174580,
+              "nnz": 87709,
+              "matrices": {
+                "Gc": {
+                  "nnz": 59354,
+                  "bytes": 732732,
+                  "index_bytes": 4
+                },
+                "Gb": {
+                  "nnz": 0,
+                  "bytes": 20484,
+                  "index_bytes": 4
+                },
+                "Ac": {
+                  "nnz": 24175,
+                  "bytes": 293448,
+                  "index_bytes": 4
+                },
+                "Ab": {
+                  "nnz": 836,
+                  "bytes": 13380,
+                  "index_bytes": 4
+                },
+                "Auc": {
+                  "nnz": 1672,
+                  "bytes": 26756,
+                  "index_bytes": 4
+                },
+                "Aub": {
+                  "nnz": 1672,
+                  "bytes": 26756,
+                  "index_bytes": 4
+                }
+              },
+              "n_out": 5120,
+              "n_cont": 4744,
+              "n_bin": 836,
+              "n_eq": 836,
+              "n_ineq": 1672,
+              "frame_id": 1
+            }
+          }
+        ]
+      },
+      {
+        "phase": "router",
+        "id": 5,
+        "kind": "CONV2D",
+        "seconds": 0.49458835273981094,
+        "outputs": 7168,
+        "drop": null,
+        "dense_retained": false,
+        "sparse": {
+          "bytes": 17415052,
+          "nnz": 1438351,
+          "matrices": {
+            "Gc": {
+              "nnz": 1409996,
+              "bytes": 16948628,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 28676,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 24175,
+              "bytes": 293448,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 836,
+              "bytes": 13380,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 1672,
+              "bytes": 26756,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 1672,
+              "bytes": 26756,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 7168,
+          "n_cont": 4744,
+          "n_bin": 836,
+          "n_eq": 836,
+          "n_ineq": 1672,
+          "frame_id": 1
+        },
+        "last_admission": [
+          {
+            "stage": "operator_post",
+            "layer": 5,
+            "cached_representation_bytes": 10331880,
+            "requested_reserve_bytes": 17415052,
+            "total_accounted_bytes": 27746932,
+            "limit_bytes": 2147483648,
+            "accepted": true,
+            "details": {
+              "bytes": 17415052,
+              "nnz": 1438351,
+              "matrices": {
+                "Gc": {
+                  "nnz": 1409996,
+                  "bytes": 16948628,
+                  "index_bytes": 4
+                },
+                "Gb": {
+                  "nnz": 0,
+                  "bytes": 28676,
+                  "index_bytes": 4
+                },
+                "Ac": {
+                  "nnz": 24175,
+                  "bytes": 293448,
+                  "index_bytes": 4
+                },
+                "Ab": {
+                  "nnz": 836,
+                  "bytes": 13380,
+                  "index_bytes": 4
+                },
+                "Auc": {
+                  "nnz": 1672,
+                  "bytes": 26756,
+                  "index_bytes": 4
+                },
+                "Aub": {
+                  "nnz": 1672,
+                  "bytes": 26756,
+                  "index_bytes": 4
+                }
+              },
+              "n_out": 7168,
+              "n_cont": 4744,
+              "n_bin": 836,
+              "n_eq": 836,
+              "n_ineq": 1672,
+              "frame_id": 1
+            }
+          }
+        ]
+      },
+      {
+        "phase": "router",
+        "id": 6,
+        "kind": "RELU",
+        "seconds": 0.02227962203323841,
+        "outputs": 7168,
+        "drop": null,
+        "dense_retained": false,
+        "sparse": {
+          "bytes": 4194712,
+          "nnz": 335668,
+          "matrices": {
+            "Gc": {
+              "nnz": 258994,
+              "bytes": 3136604,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 28676,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 71259,
+              "bytes": 859444,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1083,
+              "bytes": 17332,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 2166,
+              "bytes": 34660,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2166,
+              "bytes": 34660,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 7168,
+          "n_cont": 5238,
+          "n_bin": 1083,
+          "n_eq": 1083,
+          "n_ineq": 2166,
+          "frame_id": 1
+        },
+        "last_admission": [
+          {
+            "stage": "operator_post",
+            "layer": 6,
+            "cached_representation_bytes": 27746932,
+            "requested_reserve_bytes": 4194712,
+            "total_accounted_bytes": 31941644,
+            "limit_bytes": 2147483648,
+            "accepted": true,
+            "details": {
+              "bytes": 4194712,
+              "nnz": 335668,
+              "matrices": {
+                "Gc": {
+                  "nnz": 258994,
+                  "bytes": 3136604,
+                  "index_bytes": 4
+                },
+                "Gb": {
+                  "nnz": 0,
+                  "bytes": 28676,
+                  "index_bytes": 4
+                },
+                "Ac": {
+                  "nnz": 71259,
+                  "bytes": 859444,
+                  "index_bytes": 4
+                },
+                "Ab": {
+                  "nnz": 1083,
+                  "bytes": 17332,
+                  "index_bytes": 4
+                },
+                "Auc": {
+                  "nnz": 2166,
+                  "bytes": 34660,
+                  "index_bytes": 4
+                },
+                "Aub": {
+                  "nnz": 2166,
+                  "bytes": 34660,
+                  "index_bytes": 4
+                }
+              },
+              "n_out": 7168,
+              "n_cont": 5238,
+              "n_bin": 1083,
+              "n_eq": 1083,
+              "n_ineq": 2166,
+              "frame_id": 1
+            }
+          }
+        ]
+      },
+      {
+        "phase": "router",
+        "id": 7,
+        "kind": "AVGPOOL2D",
+        "seconds": 0.026359226554632187,
+        "outputs": 1792,
+        "drop": null,
+        "dense_retained": false,
+        "sparse": {
+          "bytes": 2643220,
+          "nnz": 213545,
+          "matrices": {
+            "Gc": {
+              "nnz": 136871,
+              "bytes": 1649624,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 7172,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 71259,
+              "bytes": 859444,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1083,
+              "bytes": 17332,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 2166,
+              "bytes": 34660,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2166,
+              "bytes": 34660,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 1792,
+          "n_cont": 5238,
+          "n_bin": 1083,
+          "n_eq": 1083,
+          "n_ineq": 2166,
+          "frame_id": 1
+        },
+        "last_admission": [
+          {
+            "stage": "operator_post",
+            "layer": 7,
+            "cached_representation_bytes": 31989068,
+            "requested_reserve_bytes": 2643220,
+            "total_accounted_bytes": 34632288,
+            "limit_bytes": 2147483648,
+            "accepted": true,
+            "details": {
+              "bytes": 2643220,
+              "nnz": 213545,
+              "matrices": {
+                "Gc": {
+                  "nnz": 136871,
+                  "bytes": 1649624,
+                  "index_bytes": 4
+                },
+                "Gb": {
+                  "nnz": 0,
+                  "bytes": 7172,
+                  "index_bytes": 4
+                },
+                "Ac": {
+                  "nnz": 71259,
+                  "bytes": 859444,
+                  "index_bytes": 4
+                },
+                "Ab": {
+                  "nnz": 1083,
+                  "bytes": 17332,
+                  "index_bytes": 4
+                },
+                "Auc": {
+                  "nnz": 2166,
+                  "bytes": 34660,
+                  "index_bytes": 4
+                },
+                "Aub": {
+                  "nnz": 2166,
+                  "bytes": 34660,
+                  "index_bytes": 4
+                }
+              },
+              "n_out": 1792,
+              "n_cont": 5238,
+              "n_bin": 1083,
+              "n_eq": 1083,
+              "n_ineq": 2166,
+              "frame_id": 1
+            }
+          }
+        ]
+      },
+      {
+        "phase": "router",
+        "id": 8,
+        "kind": "CONV2D",
+        "seconds": 0.9523224271833897,
+        "outputs": 2560,
+        "drop": null,
+        "dense_retained": false,
+        "sparse": {
+          "bytes": 29142016,
+          "nnz": 2420754,
+          "matrices": {
+            "Gc": {
+              "nnz": 2344080,
+              "bytes": 28139204,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 10244,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 71259,
+              "bytes": 859444,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1083,
+              "bytes": 17332,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 2166,
+              "bytes": 34660,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2166,
+              "bytes": 34660,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 2560,
+          "n_cont": 5238,
+          "n_bin": 1083,
+          "n_eq": 1083,
+          "n_ineq": 2166,
+          "frame_id": 1
+        },
+        "last_admission": [
+          {
+            "stage": "operator_post",
+            "layer": 8,
+            "cached_representation_bytes": 34632288,
+            "requested_reserve_bytes": 29142016,
+            "total_accounted_bytes": 63774304,
+            "limit_bytes": 2147483648,
+            "accepted": true,
+            "details": {
+              "bytes": 29142016,
+              "nnz": 2420754,
+              "matrices": {
+                "Gc": {
+                  "nnz": 2344080,
+                  "bytes": 28139204,
+                  "index_bytes": 4
+                },
+                "Gb": {
+                  "nnz": 0,
+                  "bytes": 10244,
+                  "index_bytes": 4
+                },
+                "Ac": {
+                  "nnz": 71259,
+                  "bytes": 859444,
+                  "index_bytes": 4
+                },
+                "Ab": {
+                  "nnz": 1083,
+                  "bytes": 17332,
+                  "index_bytes": 4
+                },
+                "Auc": {
+                  "nnz": 2166,
+                  "bytes": 34660,
+                  "index_bytes": 4
+                },
+                "Aub": {
+                  "nnz": 2166,
+                  "bytes": 34660,
+                  "index_bytes": 4
+                }
+              },
+              "n_out": 2560,
+              "n_cont": 5238,
+              "n_bin": 1083,
+              "n_eq": 1083,
+              "n_ineq": 2166,
+              "frame_id": 1
+            }
+          }
+        ]
+      },
+      {
+        "phase": "router",
+        "id": 9,
+        "kind": "RELU",
+        "seconds": 0.08203081227838993,
+        "outputs": 2560,
+        "drop": null,
+        "dense_retained": false,
+        "sparse": {
+          "bytes": 12015796,
+          "nnz": 993061,
+          "matrices": {
+            "Gc": {
+              "nnz": 809301,
+              "bytes": 9721856,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 10244,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 177710,
+              "bytes": 2137364,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1210,
+              "bytes": 19364,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 2420,
+              "bytes": 38724,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2420,
+              "bytes": 38724,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 2560,
+          "n_cont": 5492,
+          "n_bin": 1210,
+          "n_eq": 1210,
+          "n_ineq": 2420,
+          "frame_id": 1
+        },
+        "last_admission": [
+          {
+            "stage": "operator_post",
+            "layer": 9,
+            "cached_representation_bytes": 63774304,
+            "requested_reserve_bytes": 12015796,
+            "total_accounted_bytes": 75790100,
+            "limit_bytes": 2147483648,
+            "accepted": true,
+            "details": {
+              "bytes": 12015796,
+              "nnz": 993061,
+              "matrices": {
+                "Gc": {
+                  "nnz": 809301,
+                  "bytes": 9721856,
+                  "index_bytes": 4
+                },
+                "Gb": {
+                  "nnz": 0,
+                  "bytes": 10244,
+                  "index_bytes": 4
+                },
+                "Ac": {
+                  "nnz": 177710,
+                  "bytes": 2137364,
+                  "index_bytes": 4
+                },
+                "Ab": {
+                  "nnz": 1210,
+                  "bytes": 19364,
+                  "index_bytes": 4
+                },
+                "Auc": {
+                  "nnz": 2420,
+                  "bytes": 38724,
+                  "index_bytes": 4
+                },
+                "Aub": {
+                  "nnz": 2420,
+                  "bytes": 38724,
+                  "index_bytes": 4
+                }
+              },
+              "n_out": 2560,
+              "n_cont": 5492,
+              "n_bin": 1210,
+              "n_eq": 1210,
+              "n_ineq": 2420,
+              "frame_id": 1
+            }
+          }
+        ]
+      },
+      {
+        "phase": "router",
+        "id": 10,
+        "kind": "AVGPOOL2D",
+        "seconds": 0.011818528175354004,
+        "outputs": 640,
+        "drop": null,
+        "dense_retained": false,
+        "sparse": {
+          "bytes": 7347280,
+          "nnz": 606578,
+          "matrices": {
+            "Gc": {
+              "nnz": 422818,
+              "bytes": 5076380,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 2564,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 177710,
+              "bytes": 2137364,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1210,
+              "bytes": 19364,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 2420,
+              "bytes": 38724,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2420,
+              "bytes": 38724,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 640,
+          "n_cont": 5492,
+          "n_bin": 1210,
+          "n_eq": 1210,
+          "n_ineq": 2420,
+          "frame_id": 1
+        },
+        "last_admission": [
+          {
+            "stage": "operator_post",
+            "layer": 10,
+            "cached_representation_bytes": 75814484,
+            "requested_reserve_bytes": 7347280,
+            "total_accounted_bytes": 83161764,
+            "limit_bytes": 2147483648,
+            "accepted": true,
+            "details": {
+              "bytes": 7347280,
+              "nnz": 606578,
+              "matrices": {
+                "Gc": {
+                  "nnz": 422818,
+                  "bytes": 5076380,
+                  "index_bytes": 4
+                },
+                "Gb": {
+                  "nnz": 0,
+                  "bytes": 2564,
+                  "index_bytes": 4
+                },
+                "Ac": {
+                  "nnz": 177710,
+                  "bytes": 2137364,
+                  "index_bytes": 4
+                },
+                "Ab": {
+                  "nnz": 1210,
+                  "bytes": 19364,
+                  "index_bytes": 4
+                },
+                "Auc": {
+                  "nnz": 2420,
+                  "bytes": 38724,
+                  "index_bytes": 4
+                },
+                "Aub": {
+                  "nnz": 2420,
+                  "bytes": 38724,
+                  "index_bytes": 4
+                }
+              },
+              "n_out": 640,
+              "n_cont": 5492,
+              "n_bin": 1210,
+              "n_eq": 1210,
+              "n_ineq": 2420,
+              "frame_id": 1
+            }
+          }
+        ]
+      },
+      {
+        "phase": "router",
+        "id": 11,
+        "kind": "CONV2D",
+        "seconds": 1.6843999698758125,
+        "outputs": 896,
+        "drop": null,
+        "dense_retained": false,
+        "sparse": {
+          "bytes": 33861560,
+          "nnz": 2815760,
+          "matrices": {
+            "Gc": {
+              "nnz": 2632000,
+              "bytes": 31587588,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 3588,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 177710,
+              "bytes": 2137364,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1210,
+              "bytes": 19364,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 2420,
+              "bytes": 38724,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2420,
+              "bytes": 38724,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 896,
+          "n_cont": 5492,
+          "n_bin": 1210,
+          "n_eq": 1210,
+          "n_ineq": 2420,
+          "frame_id": 1
+        },
+        "last_admission": [
+          {
+            "stage": "operator_post",
+            "layer": 11,
+            "cached_representation_bytes": 83161764,
+            "requested_reserve_bytes": 33861560,
+            "total_accounted_bytes": 117023324,
+            "limit_bytes": 2147483648,
+            "accepted": true,
+            "details": {
+              "bytes": 33861560,
+              "nnz": 2815760,
+              "matrices": {
+                "Gc": {
+                  "nnz": 2632000,
+                  "bytes": 31587588,
+                  "index_bytes": 4
+                },
+                "Gb": {
+                  "nnz": 0,
+                  "bytes": 3588,
+                  "index_bytes": 4
+                },
+                "Ac": {
+                  "nnz": 177710,
+                  "bytes": 2137364,
+                  "index_bytes": 4
+                },
+                "Ab": {
+                  "nnz": 1210,
+                  "bytes": 19364,
+                  "index_bytes": 4
+                },
+                "Auc": {
+                  "nnz": 2420,
+                  "bytes": 38724,
+                  "index_bytes": 4
+                },
+                "Aub": {
+                  "nnz": 2420,
+                  "bytes": 38724,
+                  "index_bytes": 4
+                }
+              },
+              "n_out": 896,
+              "n_cont": 5492,
+              "n_bin": 1210,
+              "n_eq": 1210,
+              "n_ineq": 2420,
+              "frame_id": 1
+            }
+          }
+        ]
+      },
+      {
+        "phase": "router",
+        "id": 12,
+        "kind": "RELU",
+        "seconds": 0.36897844448685646,
+        "outputs": 896,
+        "drop": null,
+        "dense_retained": false,
+        "sparse": {
+          "bytes": 12763592,
+          "nnz": 1057396,
+          "matrices": {
+            "Gc": {
+              "nnz": 726984,
+              "bytes": 8727396,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 3588,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 324112,
+              "bytes": 3894388,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1260,
+              "bytes": 20164,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 2520,
+              "bytes": 40324,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2520,
+              "bytes": 40324,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 896,
+          "n_cont": 5592,
+          "n_bin": 1260,
+          "n_eq": 1260,
+          "n_ineq": 2520,
+          "frame_id": 1
+        },
+        "last_admission": [
+          {
+            "stage": "operator_post",
+            "layer": 12,
+            "cached_representation_bytes": 117023324,
+            "requested_reserve_bytes": 12763592,
+            "total_accounted_bytes": 129786916,
+            "limit_bytes": 2147483648,
+            "accepted": true,
+            "details": {
+              "bytes": 12763592,
+              "nnz": 1057396,
+              "matrices": {
+                "Gc": {
+                  "nnz": 726984,
+                  "bytes": 8727396,
+                  "index_bytes": 4
+                },
+                "Gb": {
+                  "nnz": 0,
+                  "bytes": 3588,
+                  "index_bytes": 4
+                },
+                "Ac": {
+                  "nnz": 324112,
+                  "bytes": 3894388,
+                  "index_bytes": 4
+                },
+                "Ab": {
+                  "nnz": 1260,
+                  "bytes": 20164,
+                  "index_bytes": 4
+                },
+                "Auc": {
+                  "nnz": 2520,
+                  "bytes": 40324,
+                  "index_bytes": 4
+                },
+                "Aub": {
+                  "nnz": 2520,
+                  "bytes": 40324,
+                  "index_bytes": 4
+                }
+              },
+              "n_out": 896,
+              "n_cont": 5592,
+              "n_bin": 1260,
+              "n_eq": 1260,
+              "n_ineq": 2520,
+              "frame_id": 1
+            }
+          }
+        ]
+      },
+      {
+        "phase": "router",
+        "id": 13,
+        "kind": "RESHAPE",
+        "seconds": 0.0013700462877750397,
+        "outputs": 896,
+        "drop": null,
+        "dense_retained": false,
+        "sparse": {
+          "bytes": 12763592,
+          "nnz": 1057396,
+          "matrices": {
+            "Gc": {
+              "nnz": 726984,
+              "bytes": 8727396,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 3588,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 324112,
+              "bytes": 3894388,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1260,
+              "bytes": 20164,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 2520,
+              "bytes": 40324,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2520,
+              "bytes": 40324,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 896,
+          "n_cont": 5592,
+          "n_bin": 1260,
+          "n_eq": 1260,
+          "n_ineq": 2520,
+          "frame_id": 1
+        },
+        "last_admission": [
+          {
+            "stage": "operator_post",
+            "layer": 13,
+            "cached_representation_bytes": 129796516,
+            "requested_reserve_bytes": 12763592,
+            "total_accounted_bytes": 142560108,
+            "limit_bytes": 2147483648,
+            "accepted": true,
+            "details": {
+              "bytes": 12763592,
+              "nnz": 1057396,
+              "matrices": {
+                "Gc": {
+                  "nnz": 726984,
+                  "bytes": 8727396,
+                  "index_bytes": 4
+                },
+                "Gb": {
+                  "nnz": 0,
+                  "bytes": 3588,
+                  "index_bytes": 4
+                },
+                "Ac": {
+                  "nnz": 324112,
+                  "bytes": 3894388,
+                  "index_bytes": 4
+                },
+                "Ab": {
+                  "nnz": 1260,
+                  "bytes": 20164,
+                  "index_bytes": 4
+                },
+                "Auc": {
+                  "nnz": 2520,
+                  "bytes": 40324,
+                  "index_bytes": 4
+                },
+                "Aub": {
+                  "nnz": 2520,
+                  "bytes": 40324,
+                  "index_bytes": 4
+                }
+              },
+              "n_out": 896,
+              "n_cont": 5592,
+              "n_bin": 1260,
+              "n_eq": 1260,
+              "n_ineq": 2520,
+              "frame_id": 1
+            }
+          }
+        ]
+      },
+      {
+        "phase": "router",
+        "id": 14,
+        "kind": "DENSE",
+        "seconds": 0.004289684817194939,
+        "outputs": 2,
+        "drop": null,
+        "dense_retained": false,
+        "sparse": {
+          "bytes": 4129448,
+          "nnz": 339076,
+          "matrices": {
+            "Gc": {
+              "nnz": 8664,
+              "bytes": 103980,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 12,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 324112,
+              "bytes": 3894388,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1260,
+              "bytes": 20164,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 2520,
+              "bytes": 40324,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2520,
+              "bytes": 40324,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 2,
+          "n_cont": 5592,
+          "n_bin": 1260,
+          "n_eq": 1260,
+          "n_ineq": 2520,
+          "frame_id": 1
+        },
+        "last_admission": [
+          {
+            "stage": "operator_post",
+            "layer": 14,
+            "cached_representation_bytes": 129796516,
+            "requested_reserve_bytes": 4129448,
+            "total_accounted_bytes": 133925964,
+            "limit_bytes": 2147483648,
+            "accepted": true,
+            "details": {
+              "bytes": 4129448,
+              "nnz": 339076,
+              "matrices": {
+                "Gc": {
+                  "nnz": 8664,
+                  "bytes": 103980,
+                  "index_bytes": 4
+                },
+                "Gb": {
+                  "nnz": 0,
+                  "bytes": 12,
+                  "index_bytes": 4
+                },
+                "Ac": {
+                  "nnz": 324112,
+                  "bytes": 3894388,
+                  "index_bytes": 4
+                },
+                "Ab": {
+                  "nnz": 1260,
+                  "bytes": 20164,
+                  "index_bytes": 4
+                },
+                "Auc": {
+                  "nnz": 2520,
+                  "bytes": 40324,
+                  "index_bytes": 4
+                },
+                "Aub": {
+                  "nnz": 2520,
+                  "bytes": 40324,
+                  "index_bytes": 4
+                }
+              },
+              "n_out": 2,
+              "n_cont": 5592,
+              "n_bin": 1260,
+              "n_eq": 1260,
+              "n_ineq": 2520,
+              "frame_id": 1
+            }
+          }
+        ]
+      },
+      {
+        "phase": "router",
+        "id": 15,
+        "kind": "ASSERT",
+        "seconds": 8.524768054485321e-05,
+        "outputs": 2,
+        "drop": null,
+        "dense_retained": false,
+        "sparse": null,
+        "last_admission": [
+          {
+            "stage": "seed_post",
+            "layer": 15,
+            "cached_representation_bytes": 133925964,
+            "requested_reserve_bytes": 0,
+            "total_accounted_bytes": 133925964,
+            "limit_bytes": 2147483648,
+            "accepted": true
+          }
+        ]
+      },
+      {
+        "phase": "guarded_expert_0",
+        "id": 0,
+        "kind": "INPUT",
+        "seconds": 0.04084034636616707,
+        "outputs": 3072,
+        "drop": null,
+        "dense_retained": false,
+        "sparse": {
+          "bytes": 4163464,
+          "nnz": 337816,
+          "matrices": {
+            "Gc": {
+              "nnz": 3072,
+              "bytes": 49156,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 12292,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 324112,
+              "bytes": 3894388,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1260,
+              "bytes": 20164,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 6852,
+              "bytes": 92312,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2520,
+              "bytes": 40328,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 3072,
+          "n_cont": 5592,
+          "n_bin": 1260,
+          "n_eq": 1260,
+          "n_ineq": 2521,
+          "frame_id": 1
+        },
+        "last_admission": [
+          {
+            "stage": "seed_post",
+            "layer": 0,
+            "cached_representation_bytes": 4163464,
+            "requested_reserve_bytes": 0,
+            "total_accounted_bytes": 4163464,
+            "limit_bytes": 2147483648,
+            "accepted": true
+          }
+        ]
+      },
+      {
+        "phase": "guarded_expert_0",
+        "id": 1,
+        "kind": "INPUT_SPEC",
+        "seconds": 0.00029631704092025757,
+        "outputs": 3072,
+        "drop": null,
+        "dense_retained": false,
+        "sparse": {
+          "bytes": 4163464,
+          "nnz": 337816,
+          "matrices": {
+            "Gc": {
+              "nnz": 3072,
+              "bytes": 49156,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 12292,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 324112,
+              "bytes": 3894388,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1260,
+              "bytes": 20164,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 6852,
+              "bytes": 92312,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2520,
+              "bytes": 40328,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 3072,
+          "n_cont": 5592,
+          "n_bin": 1260,
+          "n_eq": 1260,
+          "n_ineq": 2521,
+          "frame_id": 1
+        },
+        "last_admission": [
+          {
+            "stage": "seed_post",
+            "layer": 1,
+            "cached_representation_bytes": 4163464,
+            "requested_reserve_bytes": 0,
+            "total_accounted_bytes": 4163464,
+            "limit_bytes": 2147483648,
+            "accepted": true
+          }
+        ]
+      },
+      {
+        "phase": "guarded_expert_0",
+        "id": 2,
+        "kind": "CONV2D",
+        "seconds": 0.19774415343999863,
+        "outputs": 20480,
+        "drop": null,
+        "dense_retained": false,
+        "sparse": {
+          "bytes": 10767048,
+          "nnz": 864904,
+          "matrices": {
+            "Gc": {
+              "nnz": 530160,
+              "bytes": 6443844,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 81924,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 324112,
+              "bytes": 3894388,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1260,
+              "bytes": 20164,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 6852,
+              "bytes": 92312,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2520,
+              "bytes": 40328,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 20480,
+          "n_cont": 5592,
+          "n_bin": 1260,
+          "n_eq": 1260,
+          "n_ineq": 2521,
+          "frame_id": 1
+        },
+        "last_admission": [
+          {
+            "stage": "operator_post",
+            "layer": 2,
+            "cached_representation_bytes": 4163464,
+            "requested_reserve_bytes": 10767048,
+            "total_accounted_bytes": 14930512,
+            "limit_bytes": 2147483648,
+            "accepted": true,
+            "details": {
+              "bytes": 10767048,
+              "nnz": 864904,
+              "matrices": {
+                "Gc": {
+                  "nnz": 530160,
+                  "bytes": 6443844,
+                  "index_bytes": 4
+                },
+                "Gb": {
+                  "nnz": 0,
+                  "bytes": 81924,
+                  "index_bytes": 4
+                },
+                "Ac": {
+                  "nnz": 324112,
+                  "bytes": 3894388,
+                  "index_bytes": 4
+                },
+                "Ab": {
+                  "nnz": 1260,
+                  "bytes": 20164,
+                  "index_bytes": 4
+                },
+                "Auc": {
+                  "nnz": 6852,
+                  "bytes": 92312,
+                  "index_bytes": 4
+                },
+                "Aub": {
+                  "nnz": 2520,
+                  "bytes": 40328,
+                  "index_bytes": 4
+                }
+              },
+              "n_out": 20480,
+              "n_cont": 5592,
+              "n_bin": 1260,
+              "n_eq": 1260,
+              "n_ineq": 2521,
+              "frame_id": 1
+            }
+          }
+        ]
+      },
+      {
+        "phase": "guarded_expert_0",
+        "id": 3,
+        "kind": "SCALE",
+        "seconds": 0.008200278505682945,
+        "outputs": 20480,
+        "drop": null,
+        "dense_retained": false,
+        "sparse": {
+          "bytes": 10767048,
+          "nnz": 864904,
+          "matrices": {
+            "Gc": {
+              "nnz": 530160,
+              "bytes": 6443844,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 81924,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 324112,
+              "bytes": 3894388,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1260,
+              "bytes": 20164,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 6852,
+              "bytes": 92312,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2520,
+              "bytes": 40328,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 20480,
+          "n_cont": 5592,
+          "n_bin": 1260,
+          "n_eq": 1260,
+          "n_ineq": 2521,
+          "frame_id": 1
+        },
+        "last_admission": [
+          {
+            "stage": "operator_post",
+            "layer": 3,
+            "cached_representation_bytes": 14930512,
+            "requested_reserve_bytes": 10767048,
+            "total_accounted_bytes": 25697560,
+            "limit_bytes": 2147483648,
+            "accepted": true,
+            "details": {
+              "bytes": 10767048,
+              "nnz": 864904,
+              "matrices": {
+                "Gc": {
+                  "nnz": 530160,
+                  "bytes": 6443844,
+                  "index_bytes": 4
+                },
+                "Gb": {
+                  "nnz": 0,
+                  "bytes": 81924,
+                  "index_bytes": 4
+                },
+                "Ac": {
+                  "nnz": 324112,
+                  "bytes": 3894388,
+                  "index_bytes": 4
+                },
+                "Ab": {
+                  "nnz": 1260,
+                  "bytes": 20164,
+                  "index_bytes": 4
+                },
+                "Auc": {
+                  "nnz": 6852,
+                  "bytes": 92312,
+                  "index_bytes": 4
+                },
+                "Aub": {
+                  "nnz": 2520,
+                  "bytes": 40328,
+                  "index_bytes": 4
+                }
+              },
+              "n_out": 20480,
+              "n_cont": 5592,
+              "n_bin": 1260,
+              "n_eq": 1260,
+              "n_ineq": 2521,
+              "frame_id": 1
+            }
+          }
+        ]
+      },
+      {
+        "phase": "guarded_expert_0",
+        "id": 4,
+        "kind": "BIAS",
+        "seconds": 0.00433177687227726,
+        "outputs": 20480,
+        "drop": null,
+        "dense_retained": false,
+        "sparse": {
+          "bytes": 10767048,
+          "nnz": 864904,
+          "matrices": {
+            "Gc": {
+              "nnz": 530160,
+              "bytes": 6443844,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 81924,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 324112,
+              "bytes": 3894388,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1260,
+              "bytes": 20164,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 6852,
+              "bytes": 92312,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2520,
+              "bytes": 40328,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 20480,
+          "n_cont": 5592,
+          "n_bin": 1260,
+          "n_eq": 1260,
+          "n_ineq": 2521,
+          "frame_id": 1
+        },
+        "last_admission": [
+          {
+            "stage": "operator_post",
+            "layer": 4,
+            "cached_representation_bytes": 25697560,
+            "requested_reserve_bytes": 10767048,
+            "total_accounted_bytes": 36464608,
+            "limit_bytes": 2147483648,
+            "accepted": true,
+            "details": {
+              "bytes": 10767048,
+              "nnz": 864904,
+              "matrices": {
+                "Gc": {
+                  "nnz": 530160,
+                  "bytes": 6443844,
+                  "index_bytes": 4
+                },
+                "Gb": {
+                  "nnz": 0,
+                  "bytes": 81924,
+                  "index_bytes": 4
+                },
+                "Ac": {
+                  "nnz": 324112,
+                  "bytes": 3894388,
+                  "index_bytes": 4
+                },
+                "Ab": {
+                  "nnz": 1260,
+                  "bytes": 20164,
+                  "index_bytes": 4
+                },
+                "Auc": {
+                  "nnz": 6852,
+                  "bytes": 92312,
+                  "index_bytes": 4
+                },
+                "Aub": {
+                  "nnz": 2520,
+                  "bytes": 40328,
+                  "index_bytes": 4
+                }
+              },
+              "n_out": 20480,
+              "n_cont": 5592,
+              "n_bin": 1260,
+              "n_eq": 1260,
+              "n_ineq": 2521,
+              "frame_id": 1
+            }
+          }
+        ]
+      },
+      {
+        "phase": "guarded_expert_0",
+        "id": 5,
+        "kind": "RELU",
+        "seconds": 0.013501681387424469,
+        "outputs": 20480,
+        "drop": null,
+        "dense_retained": false,
+        "sparse": {
+          "bytes": 6908640,
+          "nnz": 543134,
+          "matrices": {
+            "Gc": {
+              "nnz": 206399,
+              "bytes": 2558712,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 81924,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 325808,
+              "bytes": 3914976,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1319,
+              "bytes": 21108,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 6970,
+              "bytes": 94200,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2638,
+              "bytes": 42216,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 20480,
+          "n_cont": 5710,
+          "n_bin": 1319,
+          "n_eq": 1319,
+          "n_ineq": 2639,
+          "frame_id": 1
+        },
+        "last_admission": [
+          {
+            "stage": "operator_post",
+            "layer": 5,
+            "cached_representation_bytes": 36464608,
+            "requested_reserve_bytes": 6908640,
+            "total_accounted_bytes": 43373248,
+            "limit_bytes": 2147483648,
+            "accepted": true,
+            "details": {
+              "bytes": 6908640,
+              "nnz": 543134,
+              "matrices": {
+                "Gc": {
+                  "nnz": 206399,
+                  "bytes": 2558712,
+                  "index_bytes": 4
+                },
+                "Gb": {
+                  "nnz": 0,
+                  "bytes": 81924,
+                  "index_bytes": 4
+                },
+                "Ac": {
+                  "nnz": 325808,
+                  "bytes": 3914976,
+                  "index_bytes": 4
+                },
+                "Ab": {
+                  "nnz": 1319,
+                  "bytes": 21108,
+                  "index_bytes": 4
+                },
+                "Auc": {
+                  "nnz": 6970,
+                  "bytes": 94200,
+                  "index_bytes": 4
+                },
+                "Aub": {
+                  "nnz": 2638,
+                  "bytes": 42216,
+                  "index_bytes": 4
+                }
+              },
+              "n_out": 20480,
+              "n_cont": 5710,
+              "n_bin": 1319,
+              "n_eq": 1319,
+              "n_ineq": 2639,
+              "frame_id": 1
+            }
+          }
+        ]
+      },
+      {
+        "phase": "guarded_expert_0",
+        "id": 6,
+        "kind": "AVGPOOL2D",
+        "seconds": 0.16783634386956692,
+        "outputs": 5120,
+        "drop": null,
+        "dense_retained": false,
+        "sparse": {
+          "bytes": 5313024,
+          "nnz": 430646,
+          "matrices": {
+            "Gc": {
+              "nnz": 93911,
+              "bytes": 1147416,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 20484,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 325808,
+              "bytes": 3914976,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1319,
+              "bytes": 21108,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 6970,
+              "bytes": 94200,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2638,
+              "bytes": 42216,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 5120,
+          "n_cont": 5710,
+          "n_bin": 1319,
+          "n_eq": 1319,
+          "n_ineq": 2639,
+          "frame_id": 1
+        },
+        "last_admission": [
+          {
+            "stage": "operator_post",
+            "layer": 6,
+            "cached_representation_bytes": 43384576,
+            "requested_reserve_bytes": 5313024,
+            "total_accounted_bytes": 48697600,
+            "limit_bytes": 2147483648,
+            "accepted": true,
+            "details": {
+              "bytes": 5313024,
+              "nnz": 430646,
+              "matrices": {
+                "Gc": {
+                  "nnz": 93911,
+                  "bytes": 1147416,
+                  "index_bytes": 4
+                },
+                "Gb": {
+                  "nnz": 0,
+                  "bytes": 20484,
+                  "index_bytes": 4
+                },
+                "Ac": {
+                  "nnz": 325808,
+                  "bytes": 3914976,
+                  "index_bytes": 4
+                },
+                "Ab": {
+                  "nnz": 1319,
+                  "bytes": 21108,
+                  "index_bytes": 4
+                },
+                "Auc": {
+                  "nnz": 6970,
+                  "bytes": 94200,
+                  "index_bytes": 4
+                },
+                "Aub": {
+                  "nnz": 2638,
+                  "bytes": 42216,
+                  "index_bytes": 4
+                }
+              },
+              "n_out": 5120,
+              "n_cont": 5710,
+              "n_bin": 1319,
+              "n_eq": 1319,
+              "n_ineq": 2639,
+              "frame_id": 1
+            }
+          }
+        ]
+      },
+      {
+        "phase": "guarded_expert_0",
+        "id": 7,
+        "kind": "CONV2D",
+        "seconds": 0.0005691628903150558,
+        "outputs": 7168,
+        "drop": "csr_resource_limit",
+        "dense_retained": false,
+        "sparse": null,
+        "last_admission": [
+          {
+            "stage": "operator_pre",
+            "layer": 7,
+            "cached_representation_bytes": 48697600,
+            "requested_reserve_bytes": 3280982736,
+            "total_accounted_bytes": 3329680336,
+            "limit_bytes": 2147483648,
+            "accepted": false,
+            "details": {
+              "estimated_retained_bytes": 384303984,
+              "workspace_reserve_bytes": 3280982736,
+              "nnz_upper_bound": 24002307,
+              "operator_nnz_upper_bound": 1290240,
+              "unstable_upper_bound": 0
+            }
+          }
+        ]
+      }
+    ],
+    "admissions": [
+      {
+        "stage": "input_pre",
+        "layer": -1,
+        "cached_representation_bytes": 0,
+        "requested_reserve_bytes": 983424,
+        "total_accounted_bytes": 983424,
+        "limit_bytes": 2147483648,
+        "accepted": true
+      },
+      {
+        "stage": "seed_post",
+        "layer": 0,
+        "cached_representation_bytes": 86040,
+        "requested_reserve_bytes": 0,
+        "total_accounted_bytes": 86040,
+        "limit_bytes": 2147483648,
+        "accepted": true
+      },
+      {
+        "stage": "input_pre",
+        "layer": -1,
+        "cached_representation_bytes": 86040,
+        "requested_reserve_bytes": 983424,
+        "total_accounted_bytes": 1069464,
+        "limit_bytes": 2147483648,
+        "accepted": true
+      },
+      {
+        "stage": "seed_post",
+        "layer": 1,
+        "cached_representation_bytes": 172080,
+        "requested_reserve_bytes": 0,
+        "total_accounted_bytes": 172080,
+        "limit_bytes": 2147483648,
+        "accepted": true
+      },
+      {
+        "stage": "seed_post",
+        "layer": 2,
+        "cached_representation_bytes": 172080,
+        "requested_reserve_bytes": 0,
+        "total_accounted_bytes": 172080,
+        "limit_bytes": 2147483648,
+        "accepted": true
+      },
+      {
+        "stage": "operator_pre",
+        "layer": 2,
+        "cached_representation_bytes": 172080,
+        "requested_reserve_bytes": 163234176,
+        "total_accounted_bytes": 163406256,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "estimated_retained_bytes": 9338928,
+          "workspace_reserve_bytes": 163234176,
+          "nnz_upper_bound": 552960,
+          "operator_nnz_upper_bound": 552960,
+          "unstable_upper_bound": 0
+        }
+      },
+      {
+        "stage": "operator_post",
+        "layer": 2,
+        "cached_representation_bytes": 172080,
+        "requested_reserve_bytes": 6689624,
+        "total_accounted_bytes": 6861704,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "bytes": 6689624,
+          "nnz": 530160,
+          "matrices": {
+            "Gc": {
+              "nnz": 530160,
+              "bytes": 6443844,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 81924,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 0,
+              "bytes": 4,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 0,
+              "bytes": 4,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 0,
+              "bytes": 4,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 0,
+              "bytes": 4,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 20480,
+          "n_cont": 3072,
+          "n_bin": 0,
+          "n_eq": 0,
+          "n_ineq": 0,
+          "frame_id": 1
+        }
+      },
+      {
+        "stage": "seed_post",
+        "layer": 3,
+        "cached_representation_bytes": 6861704,
+        "requested_reserve_bytes": 0,
+        "total_accounted_bytes": 6861704,
+        "limit_bytes": 2147483648,
+        "accepted": true
+      },
+      {
+        "stage": "operator_pre",
+        "layer": 3,
+        "cached_representation_bytes": 6861704,
+        "requested_reserve_bytes": 109525376,
+        "total_accounted_bytes": 116387080,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "estimated_retained_bytes": 13070128,
+          "workspace_reserve_bytes": 109525376,
+          "nnz_upper_bound": 694000,
+          "operator_nnz_upper_bound": 0,
+          "unstable_upper_bound": 20480
+        }
+      },
+      {
+        "stage": "relu_slots_pre",
+        "layer": 3,
+        "cached_representation_bytes": 6861704,
+        "requested_reserve_bytes": 73380416,
+        "total_accounted_bytes": 80242120,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "estimated_retained_bytes": 9141328,
+          "workspace_reserve_bytes": 73380416,
+          "nnz_upper_bound": 536848,
+          "operator_nnz_upper_bound": 0,
+          "unstable_upper_bound": 836
+        }
+      },
+      {
+        "stage": "operator_post",
+        "layer": 3,
+        "cached_representation_bytes": 6861704,
+        "requested_reserve_bytes": 2135084,
+        "total_accounted_bytes": 8996788,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "bytes": 2135084,
+          "nnz": 147271,
+          "matrices": {
+            "Gc": {
+              "nnz": 118916,
+              "bytes": 1508916,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 81924,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 24175,
+              "bytes": 293448,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 836,
+              "bytes": 13380,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 1672,
+              "bytes": 26756,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 1672,
+              "bytes": 26756,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 20480,
+          "n_cont": 4744,
+          "n_bin": 836,
+          "n_eq": 836,
+          "n_ineq": 1672,
+          "frame_id": 1
+        }
+      },
+      {
+        "stage": "seed_post",
+        "layer": 4,
+        "cached_representation_bytes": 9157300,
+        "requested_reserve_bytes": 0,
+        "total_accounted_bytes": 9157300,
+        "limit_bytes": 2147483648,
+        "accepted": true
+      },
+      {
+        "stage": "operator_pre",
+        "layer": 4,
+        "cached_representation_bytes": 9157300,
+        "requested_reserve_bytes": 69345472,
+        "total_accounted_bytes": 78502772,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "estimated_retained_bytes": 8247424,
+          "workspace_reserve_bytes": 69345472,
+          "nnz_upper_bound": 504019,
+          "operator_nnz_upper_bound": 20480,
+          "unstable_upper_bound": 0
+        }
+      },
+      {
+        "stage": "operator_post",
+        "layer": 4,
+        "cached_representation_bytes": 9157300,
+        "requested_reserve_bytes": 1174580,
+        "total_accounted_bytes": 10331880,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "bytes": 1174580,
+          "nnz": 87709,
+          "matrices": {
+            "Gc": {
+              "nnz": 59354,
+              "bytes": 732732,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 20484,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 24175,
+              "bytes": 293448,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 836,
+              "bytes": 13380,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 1672,
+              "bytes": 26756,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 1672,
+              "bytes": 26756,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 5120,
+          "n_cont": 4744,
+          "n_bin": 836,
+          "n_eq": 836,
+          "n_ineq": 1672,
+          "frame_id": 1
+        }
+      },
+      {
+        "stage": "seed_post",
+        "layer": 5,
+        "cached_representation_bytes": 10331880,
+        "requested_reserve_bytes": 0,
+        "total_accounted_bytes": 10331880,
+        "limit_bytes": 2147483648,
+        "accepted": true
+      },
+      {
+        "stage": "operator_pre",
+        "layer": 5,
+        "cached_representation_bytes": 10331880,
+        "requested_reserve_bytes": 2126537920,
+        "total_accounted_bytes": 2136869800,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "estimated_retained_bytes": 240001280,
+          "workspace_reserve_bytes": 2126537920,
+          "nnz_upper_bound": 14985563,
+          "operator_nnz_upper_bound": 1290240,
+          "unstable_upper_bound": 0
+        }
+      },
+      {
+        "stage": "operator_post",
+        "layer": 5,
+        "cached_representation_bytes": 10331880,
+        "requested_reserve_bytes": 17415052,
+        "total_accounted_bytes": 27746932,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "bytes": 17415052,
+          "nnz": 1438351,
+          "matrices": {
+            "Gc": {
+              "nnz": 1409996,
+              "bytes": 16948628,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 28676,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 24175,
+              "bytes": 293448,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 836,
+              "bytes": 13380,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 1672,
+              "bytes": 26756,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 1672,
+              "bytes": 26756,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 7168,
+          "n_cont": 4744,
+          "n_bin": 836,
+          "n_eq": 836,
+          "n_ineq": 1672,
+          "frame_id": 1
+        }
+      },
+      {
+        "stage": "seed_post",
+        "layer": 6,
+        "cached_representation_bytes": 27746932,
+        "requested_reserve_bytes": 0,
+        "total_accounted_bytes": 27746932,
+        "limit_bytes": 2147483648,
+        "accepted": true
+      },
+      {
+        "stage": "operator_pre",
+        "layer": 6,
+        "cached_representation_bytes": 27746932,
+        "requested_reserve_bytes": 199245504,
+        "total_accounted_bytes": 226992436,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "estimated_retained_bytes": 24679488,
+          "workspace_reserve_bytes": 199245504,
+          "nnz_upper_bound": 1495695,
+          "operator_nnz_upper_bound": 0,
+          "unstable_upper_bound": 7168
+        }
+      },
+      {
+        "stage": "relu_slots_pre",
+        "layer": 6,
+        "cached_representation_bytes": 27746932,
+        "requested_reserve_bytes": 186510864,
+        "total_accounted_bytes": 214257796,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "estimated_retained_bytes": 23295288,
+          "workspace_reserve_bytes": 186510864,
+          "nnz_upper_bound": 1440327,
+          "operator_nnz_upper_bound": 0,
+          "unstable_upper_bound": 247
+        }
+      },
+      {
+        "stage": "operator_post",
+        "layer": 6,
+        "cached_representation_bytes": 27746932,
+        "requested_reserve_bytes": 4194712,
+        "total_accounted_bytes": 31941644,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "bytes": 4194712,
+          "nnz": 335668,
+          "matrices": {
+            "Gc": {
+              "nnz": 258994,
+              "bytes": 3136604,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 28676,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 71259,
+              "bytes": 859444,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1083,
+              "bytes": 17332,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 2166,
+              "bytes": 34660,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2166,
+              "bytes": 34660,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 7168,
+          "n_cont": 5238,
+          "n_bin": 1083,
+          "n_eq": 1083,
+          "n_ineq": 2166,
+          "frame_id": 1
+        }
+      },
+      {
+        "stage": "seed_post",
+        "layer": 7,
+        "cached_representation_bytes": 31989068,
+        "requested_reserve_bytes": 0,
+        "total_accounted_bytes": 31989068,
+        "limit_bytes": 2147483648,
+        "accepted": true
+      },
+      {
+        "stage": "operator_pre",
+        "layer": 7,
+        "cached_representation_bytes": 31989068,
+        "requested_reserve_bytes": 144635472,
+        "total_accounted_bytes": 176624540,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "estimated_retained_bytes": 17923432,
+          "workspace_reserve_bytes": 144635472,
+          "nnz_upper_bound": 1112650,
+          "operator_nnz_upper_bound": 7168,
+          "unstable_upper_bound": 0
+        }
+      },
+      {
+        "stage": "operator_post",
+        "layer": 7,
+        "cached_representation_bytes": 31989068,
+        "requested_reserve_bytes": 2643220,
+        "total_accounted_bytes": 34632288,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "bytes": 2643220,
+          "nnz": 213545,
+          "matrices": {
+            "Gc": {
+              "nnz": 136871,
+              "bytes": 1649624,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 7172,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 71259,
+              "bytes": 859444,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1083,
+              "bytes": 17332,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 2166,
+              "bytes": 34660,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2166,
+              "bytes": 34660,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 1792,
+          "n_cont": 5238,
+          "n_bin": 1083,
+          "n_eq": 1083,
+          "n_ineq": 2166,
+          "frame_id": 1
+        }
+      },
+      {
+        "stage": "seed_post",
+        "layer": 8,
+        "cached_representation_bytes": 34632288,
+        "requested_reserve_bytes": 0,
+        "total_accounted_bytes": 34632288,
+        "limit_bytes": 2147483648,
+        "accepted": true
+      },
+      {
+        "stage": "operator_pre",
+        "layer": 8,
+        "cached_representation_bytes": 34632288,
+        "requested_reserve_bytes": 1830638160,
+        "total_accounted_bytes": 1865270448,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "estimated_retained_bytes": 215914728,
+          "workspace_reserve_bytes": 1830638160,
+          "nnz_upper_bound": 13485954,
+          "operator_nnz_upper_bound": 645120,
+          "unstable_upper_bound": 0
+        }
+      },
+      {
+        "stage": "operator_post",
+        "layer": 8,
+        "cached_representation_bytes": 34632288,
+        "requested_reserve_bytes": 29142016,
+        "total_accounted_bytes": 63774304,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "bytes": 29142016,
+          "nnz": 2420754,
+          "matrices": {
+            "Gc": {
+              "nnz": 2344080,
+              "bytes": 28139204,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 10244,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 71259,
+              "bytes": 859444,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1083,
+              "bytes": 17332,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 2166,
+              "bytes": 34660,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2166,
+              "bytes": 34660,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 2560,
+          "n_cont": 5238,
+          "n_bin": 1083,
+          "n_eq": 1083,
+          "n_ineq": 2166,
+          "frame_id": 1
+        }
+      },
+      {
+        "stage": "seed_post",
+        "layer": 9,
+        "cached_representation_bytes": 63774304,
+        "requested_reserve_bytes": 0,
+        "total_accounted_bytes": 63774304,
+        "limit_bytes": 2147483648,
+        "accepted": true
+      },
+      {
+        "stage": "operator_pre",
+        "layer": 9,
+        "cached_representation_bytes": 63774304,
+        "requested_reserve_bytes": 315783760,
+        "total_accounted_bytes": 379558064,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "estimated_retained_bytes": 39383528,
+          "workspace_reserve_bytes": 315783760,
+          "nnz_upper_bound": 2441234,
+          "operator_nnz_upper_bound": 0,
+          "unstable_upper_bound": 2560
+        }
+      },
+      {
+        "stage": "relu_slots_pre",
+        "layer": 9,
+        "cached_representation_bytes": 63774304,
+        "requested_reserve_bytes": 311307040,
+        "total_accounted_bytes": 375081344,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "estimated_retained_bytes": 38896928,
+          "workspace_reserve_bytes": 311307040,
+          "nnz_upper_bound": 2421770,
+          "operator_nnz_upper_bound": 0,
+          "unstable_upper_bound": 127
+        }
+      },
+      {
+        "stage": "operator_post",
+        "layer": 9,
+        "cached_representation_bytes": 63774304,
+        "requested_reserve_bytes": 12015796,
+        "total_accounted_bytes": 75790100,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "bytes": 12015796,
+          "nnz": 993061,
+          "matrices": {
+            "Gc": {
+              "nnz": 809301,
+              "bytes": 9721856,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 10244,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 177710,
+              "bytes": 2137364,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1210,
+              "bytes": 19364,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 2420,
+              "bytes": 38724,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2420,
+              "bytes": 38724,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 2560,
+          "n_cont": 5492,
+          "n_bin": 1210,
+          "n_eq": 1210,
+          "n_ineq": 2420,
+          "frame_id": 1
+        }
+      },
+      {
+        "stage": "seed_post",
+        "layer": 10,
+        "cached_representation_bytes": 75814484,
+        "requested_reserve_bytes": 0,
+        "total_accounted_bytes": 75814484,
+        "limit_bytes": 2147483648,
+        "accepted": true
+      },
+      {
+        "stage": "operator_pre",
+        "layer": 10,
+        "cached_representation_bytes": 75814484,
+        "requested_reserve_bytes": 439220448,
+        "total_accounted_bytes": 515034932,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "estimated_retained_bytes": 54837952,
+          "workspace_reserve_bytes": 439220448,
+          "nnz_upper_bound": 3420964,
+          "operator_nnz_upper_bound": 2560,
+          "unstable_upper_bound": 0
+        }
+      },
+      {
+        "stage": "operator_post",
+        "layer": 10,
+        "cached_representation_bytes": 75814484,
+        "requested_reserve_bytes": 7347280,
+        "total_accounted_bytes": 83161764,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "bytes": 7347280,
+          "nnz": 606578,
+          "matrices": {
+            "Gc": {
+              "nnz": 422818,
+              "bytes": 5076380,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 2564,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 177710,
+              "bytes": 2137364,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1210,
+              "bytes": 19364,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 2420,
+              "bytes": 38724,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2420,
+              "bytes": 38724,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 640,
+          "n_cont": 5492,
+          "n_bin": 1210,
+          "n_eq": 1210,
+          "n_ineq": 2420,
+          "frame_id": 1
+        }
+      },
+      {
+        "stage": "seed_post",
+        "layer": 11,
+        "cached_representation_bytes": 83161764,
+        "requested_reserve_bytes": 0,
+        "total_accounted_bytes": 83161764,
+        "limit_bytes": 2147483648,
+        "accepted": true
+      },
+      {
+        "stage": "operator_pre",
+        "layer": 11,
+        "cached_representation_bytes": 83161764,
+        "requested_reserve_bytes": 705973984,
+        "total_accounted_bytes": 789135748,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "estimated_retained_bytes": 81782144,
+          "workspace_reserve_bytes": 705973984,
+          "nnz_upper_bound": 5104592,
+          "operator_nnz_upper_bound": 322560,
+          "unstable_upper_bound": 0
+        }
+      },
+      {
+        "stage": "operator_post",
+        "layer": 11,
+        "cached_representation_bytes": 83161764,
+        "requested_reserve_bytes": 33861560,
+        "total_accounted_bytes": 117023324,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "bytes": 33861560,
+          "nnz": 2815760,
+          "matrices": {
+            "Gc": {
+              "nnz": 2632000,
+              "bytes": 31587588,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 3588,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 177710,
+              "bytes": 2137364,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1210,
+              "bytes": 19364,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 2420,
+              "bytes": 38724,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2420,
+              "bytes": 38724,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 896,
+          "n_cont": 5492,
+          "n_bin": 1210,
+          "n_eq": 1210,
+          "n_ineq": 2420,
+          "frame_id": 1
+        }
+      },
+      {
+        "stage": "seed_post",
+        "layer": 12,
+        "cached_representation_bytes": 117023324,
+        "requested_reserve_bytes": 0,
+        "total_accounted_bytes": 117023324,
+        "limit_bytes": 2147483648,
+        "accepted": true
+      },
+      {
+        "stage": "operator_pre",
+        "layer": 12,
+        "cached_representation_bytes": 117023324,
+        "requested_reserve_bytes": 363042528,
+        "total_accounted_bytes": 480065852,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "estimated_retained_bytes": 45340032,
+          "workspace_reserve_bytes": 363042528,
+          "nnz_upper_bound": 2822928,
+          "operator_nnz_upper_bound": 0,
+          "unstable_upper_bound": 896
+        }
+      },
+      {
+        "stage": "relu_slots_pre",
+        "layer": 12,
+        "cached_representation_bytes": 117023324,
+        "requested_reserve_bytes": 361485888,
+        "total_accounted_bytes": 478509212,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "estimated_retained_bytes": 45170832,
+          "workspace_reserve_bytes": 361485888,
+          "nnz_upper_bound": 2816160,
+          "operator_nnz_upper_bound": 0,
+          "unstable_upper_bound": 50
+        }
+      },
+      {
+        "stage": "operator_post",
+        "layer": 12,
+        "cached_representation_bytes": 117023324,
+        "requested_reserve_bytes": 12763592,
+        "total_accounted_bytes": 129786916,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "bytes": 12763592,
+          "nnz": 1057396,
+          "matrices": {
+            "Gc": {
+              "nnz": 726984,
+              "bytes": 8727396,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 3588,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 324112,
+              "bytes": 3894388,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1260,
+              "bytes": 20164,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 2520,
+              "bytes": 40324,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2520,
+              "bytes": 40324,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 896,
+          "n_cont": 5592,
+          "n_bin": 1260,
+          "n_eq": 1260,
+          "n_ineq": 2520,
+          "frame_id": 1
+        }
+      },
+      {
+        "stage": "seed_post",
+        "layer": 13,
+        "cached_representation_bytes": 129796516,
+        "requested_reserve_bytes": 0,
+        "total_accounted_bytes": 129796516,
+        "limit_bytes": 2147483648,
+        "accepted": true
+      },
+      {
+        "stage": "operator_pre",
+        "layer": 13,
+        "cached_representation_bytes": 129796516,
+        "requested_reserve_bytes": 136354496,
+        "total_accounted_bytes": 266151012,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "estimated_retained_bytes": 17030608,
+          "workspace_reserve_bytes": 136354496,
+          "nnz_upper_bound": 1057396,
+          "operator_nnz_upper_bound": 0,
+          "unstable_upper_bound": 0
+        }
+      },
+      {
+        "stage": "operator_post",
+        "layer": 13,
+        "cached_representation_bytes": 129796516,
+        "requested_reserve_bytes": 12763592,
+        "total_accounted_bytes": 142560108,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "bytes": 12763592,
+          "nnz": 1057396,
+          "matrices": {
+            "Gc": {
+              "nnz": 726984,
+              "bytes": 8727396,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 3588,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 324112,
+              "bytes": 3894388,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1260,
+              "bytes": 20164,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 2520,
+              "bytes": 40324,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2520,
+              "bytes": 40324,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 896,
+          "n_cont": 5592,
+          "n_bin": 1260,
+          "n_eq": 1260,
+          "n_ineq": 2520,
+          "frame_id": 1
+        }
+      },
+      {
+        "stage": "seed_post",
+        "layer": 14,
+        "cached_representation_bytes": 129796516,
+        "requested_reserve_bytes": 0,
+        "total_accounted_bytes": 129796516,
+        "limit_bytes": 2147483648,
+        "accepted": true
+      },
+      {
+        "stage": "operator_pre",
+        "layer": 14,
+        "cached_representation_bytes": 129796516,
+        "requested_reserve_bytes": 44847168,
+        "total_accounted_bytes": 174643684,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "estimated_retained_bytes": 5556352,
+          "workspace_reserve_bytes": 44847168,
+          "nnz_upper_bound": 341596,
+          "operator_nnz_upper_bound": 1792,
+          "unstable_upper_bound": 0
+        }
+      },
+      {
+        "stage": "operator_post",
+        "layer": 14,
+        "cached_representation_bytes": 129796516,
+        "requested_reserve_bytes": 4129448,
+        "total_accounted_bytes": 133925964,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "bytes": 4129448,
+          "nnz": 339076,
+          "matrices": {
+            "Gc": {
+              "nnz": 8664,
+              "bytes": 103980,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 12,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 324112,
+              "bytes": 3894388,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1260,
+              "bytes": 20164,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 2520,
+              "bytes": 40324,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2520,
+              "bytes": 40324,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 2,
+          "n_cont": 5592,
+          "n_bin": 1260,
+          "n_eq": 1260,
+          "n_ineq": 2520,
+          "frame_id": 1
+        }
+      },
+      {
+        "stage": "seed_post",
+        "layer": 15,
+        "cached_representation_bytes": 133925964,
+        "requested_reserve_bytes": 0,
+        "total_accounted_bytes": 133925964,
+        "limit_bytes": 2147483648,
+        "accepted": true
+      },
+      {
+        "stage": "guarded_entry_pre",
+        "layer": 0,
+        "cached_representation_bytes": 4163464,
+        "requested_reserve_bytes": 0,
+        "total_accounted_bytes": 4163464,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "bytes": 4163464,
+          "nnz": 337816,
+          "matrices": {
+            "Gc": {
+              "nnz": 3072,
+              "bytes": 49156,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 12292,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 324112,
+              "bytes": 3894388,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1260,
+              "bytes": 20164,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 6852,
+              "bytes": 92312,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2520,
+              "bytes": 40328,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 3072,
+          "n_cont": 5592,
+          "n_bin": 1260,
+          "n_eq": 1260,
+          "n_ineq": 2521,
+          "frame_id": 1
+        }
+      },
+      {
+        "stage": "seed_post",
+        "layer": 0,
+        "cached_representation_bytes": 4163464,
+        "requested_reserve_bytes": 0,
+        "total_accounted_bytes": 4163464,
+        "limit_bytes": 2147483648,
+        "accepted": true
+      },
+      {
+        "stage": "guarded_entry_pre",
+        "layer": 1,
+        "cached_representation_bytes": 4163464,
+        "requested_reserve_bytes": 0,
+        "total_accounted_bytes": 4163464,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "bytes": 4163464,
+          "nnz": 337816,
+          "matrices": {
+            "Gc": {
+              "nnz": 3072,
+              "bytes": 49156,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 12292,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 324112,
+              "bytes": 3894388,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1260,
+              "bytes": 20164,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 6852,
+              "bytes": 92312,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2520,
+              "bytes": 40328,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 3072,
+          "n_cont": 5592,
+          "n_bin": 1260,
+          "n_eq": 1260,
+          "n_ineq": 2521,
+          "frame_id": 1
+        }
+      },
+      {
+        "stage": "seed_post",
+        "layer": 1,
+        "cached_representation_bytes": 4163464,
+        "requested_reserve_bytes": 0,
+        "total_accounted_bytes": 4163464,
+        "limit_bytes": 2147483648,
+        "accepted": true
+      },
+      {
+        "stage": "seed_post",
+        "layer": 2,
+        "cached_representation_bytes": 4163464,
+        "requested_reserve_bytes": 0,
+        "total_accounted_bytes": 4163464,
+        "limit_bytes": 2147483648,
+        "accepted": true
+      },
+      {
+        "stage": "operator_pre",
+        "layer": 2,
+        "cached_representation_bytes": 4163464,
+        "requested_reserve_bytes": 206867840,
+        "total_accounted_bytes": 211031304,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "estimated_retained_bytes": 14785576,
+          "workspace_reserve_bytes": 206867840,
+          "nnz_upper_bound": 887704,
+          "operator_nnz_upper_bound": 552960,
+          "unstable_upper_bound": 0
+        }
+      },
+      {
+        "stage": "operator_post",
+        "layer": 2,
+        "cached_representation_bytes": 4163464,
+        "requested_reserve_bytes": 10767048,
+        "total_accounted_bytes": 14930512,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "bytes": 10767048,
+          "nnz": 864904,
+          "matrices": {
+            "Gc": {
+              "nnz": 530160,
+              "bytes": 6443844,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 81924,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 324112,
+              "bytes": 3894388,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1260,
+              "bytes": 20164,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 6852,
+              "bytes": 92312,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2520,
+              "bytes": 40328,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 20480,
+          "n_cont": 5592,
+          "n_bin": 1260,
+          "n_eq": 1260,
+          "n_ineq": 2521,
+          "frame_id": 1
+        }
+      },
+      {
+        "stage": "seed_post",
+        "layer": 3,
+        "cached_representation_bytes": 14930512,
+        "requested_reserve_bytes": 0,
+        "total_accounted_bytes": 14930512,
+        "limit_bytes": 2147483648,
+        "accepted": true
+      },
+      {
+        "stage": "operator_pre",
+        "layer": 3,
+        "cached_representation_bytes": 14930512,
+        "requested_reserve_bytes": 115475840,
+        "total_accounted_bytes": 130406352,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "estimated_retained_bytes": 14420776,
+          "workspace_reserve_bytes": 115475840,
+          "nnz_upper_bound": 864904,
+          "operator_nnz_upper_bound": 0,
+          "unstable_upper_bound": 0
+        }
+      },
+      {
+        "stage": "operator_post",
+        "layer": 3,
+        "cached_representation_bytes": 14930512,
+        "requested_reserve_bytes": 10767048,
+        "total_accounted_bytes": 25697560,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "bytes": 10767048,
+          "nnz": 864904,
+          "matrices": {
+            "Gc": {
+              "nnz": 530160,
+              "bytes": 6443844,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 81924,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 324112,
+              "bytes": 3894388,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1260,
+              "bytes": 20164,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 6852,
+              "bytes": 92312,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2520,
+              "bytes": 40328,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 20480,
+          "n_cont": 5592,
+          "n_bin": 1260,
+          "n_eq": 1260,
+          "n_ineq": 2521,
+          "frame_id": 1
+        }
+      },
+      {
+        "stage": "seed_post",
+        "layer": 4,
+        "cached_representation_bytes": 25697560,
+        "requested_reserve_bytes": 0,
+        "total_accounted_bytes": 25697560,
+        "limit_bytes": 2147483648,
+        "accepted": true
+      },
+      {
+        "stage": "operator_pre",
+        "layer": 4,
+        "cached_representation_bytes": 25697560,
+        "requested_reserve_bytes": 115475840,
+        "total_accounted_bytes": 141173400,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "estimated_retained_bytes": 14420776,
+          "workspace_reserve_bytes": 115475840,
+          "nnz_upper_bound": 864904,
+          "operator_nnz_upper_bound": 0,
+          "unstable_upper_bound": 0
+        }
+      },
+      {
+        "stage": "operator_post",
+        "layer": 4,
+        "cached_representation_bytes": 25697560,
+        "requested_reserve_bytes": 10767048,
+        "total_accounted_bytes": 36464608,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "bytes": 10767048,
+          "nnz": 864904,
+          "matrices": {
+            "Gc": {
+              "nnz": 530160,
+              "bytes": 6443844,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 81924,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 324112,
+              "bytes": 3894388,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1260,
+              "bytes": 20164,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 6852,
+              "bytes": 92312,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2520,
+              "bytes": 40328,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 20480,
+          "n_cont": 5592,
+          "n_bin": 1260,
+          "n_eq": 1260,
+          "n_ineq": 2521,
+          "frame_id": 1
+        }
+      },
+      {
+        "stage": "seed_post",
+        "layer": 5,
+        "cached_representation_bytes": 36464608,
+        "requested_reserve_bytes": 0,
+        "total_accounted_bytes": 36464608,
+        "limit_bytes": 2147483648,
+        "accepted": true
+      },
+      {
+        "stage": "operator_pre",
+        "layer": 5,
+        "cached_representation_bytes": 36464608,
+        "requested_reserve_bytes": 153159040,
+        "total_accounted_bytes": 189623648,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "estimated_retained_bytes": 18516776,
+          "workspace_reserve_bytes": 153159040,
+          "nnz_upper_bound": 1028744,
+          "operator_nnz_upper_bound": 0,
+          "unstable_upper_bound": 20480
+        }
+      },
+      {
+        "stage": "relu_slots_pre",
+        "layer": 5,
+        "cached_representation_bytes": 36464608,
+        "requested_reserve_bytes": 115584400,
+        "total_accounted_bytes": 152049008,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "estimated_retained_bytes": 14432576,
+          "workspace_reserve_bytes": 115584400,
+          "nnz_upper_bound": 865376,
+          "operator_nnz_upper_bound": 0,
+          "unstable_upper_bound": 59
+        }
+      },
+      {
+        "stage": "operator_post",
+        "layer": 5,
+        "cached_representation_bytes": 36464608,
+        "requested_reserve_bytes": 6908640,
+        "total_accounted_bytes": 43373248,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "bytes": 6908640,
+          "nnz": 543134,
+          "matrices": {
+            "Gc": {
+              "nnz": 206399,
+              "bytes": 2558712,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 81924,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 325808,
+              "bytes": 3914976,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1319,
+              "bytes": 21108,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 6970,
+              "bytes": 94200,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2638,
+              "bytes": 42216,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 20480,
+          "n_cont": 5710,
+          "n_bin": 1319,
+          "n_eq": 1319,
+          "n_ineq": 2639,
+          "frame_id": 1
+        }
+      },
+      {
+        "stage": "seed_post",
+        "layer": 6,
+        "cached_representation_bytes": 43384576,
+        "requested_reserve_bytes": 0,
+        "total_accounted_bytes": 43384576,
+        "limit_bytes": 2147483648,
+        "accepted": true
+      },
+      {
+        "stage": "operator_pre",
+        "layer": 6,
+        "cached_representation_bytes": 43384576,
+        "requested_reserve_bytes": 153910992,
+        "total_accounted_bytes": 197295568,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "estimated_retained_bytes": 18815216,
+          "workspace_reserve_bytes": 153910992,
+          "nnz_upper_bound": 1162331,
+          "operator_nnz_upper_bound": 20480,
+          "unstable_upper_bound": 0
+        }
+      },
+      {
+        "stage": "operator_post",
+        "layer": 6,
+        "cached_representation_bytes": 43384576,
+        "requested_reserve_bytes": 5313024,
+        "total_accounted_bytes": 48697600,
+        "limit_bytes": 2147483648,
+        "accepted": true,
+        "details": {
+          "bytes": 5313024,
+          "nnz": 430646,
+          "matrices": {
+            "Gc": {
+              "nnz": 93911,
+              "bytes": 1147416,
+              "index_bytes": 4
+            },
+            "Gb": {
+              "nnz": 0,
+              "bytes": 20484,
+              "index_bytes": 4
+            },
+            "Ac": {
+              "nnz": 325808,
+              "bytes": 3914976,
+              "index_bytes": 4
+            },
+            "Ab": {
+              "nnz": 1319,
+              "bytes": 21108,
+              "index_bytes": 4
+            },
+            "Auc": {
+              "nnz": 6970,
+              "bytes": 94200,
+              "index_bytes": 4
+            },
+            "Aub": {
+              "nnz": 2638,
+              "bytes": 42216,
+              "index_bytes": 4
+            }
+          },
+          "n_out": 5120,
+          "n_cont": 5710,
+          "n_bin": 1319,
+          "n_eq": 1319,
+          "n_ineq": 2639,
+          "frame_id": 1
+        }
+      },
+      {
+        "stage": "seed_post",
+        "layer": 7,
+        "cached_representation_bytes": 48697600,
+        "requested_reserve_bytes": 0,
+        "total_accounted_bytes": 48697600,
+        "limit_bytes": 2147483648,
+        "accepted": true
+      },
+      {
+        "stage": "operator_pre",
+        "layer": 7,
+        "cached_representation_bytes": 48697600,
+        "requested_reserve_bytes": 3280982736,
+        "total_accounted_bytes": 3329680336,
+        "limit_bytes": 2147483648,
+        "accepted": false,
+        "details": {
+          "estimated_retained_bytes": 384303984,
+          "workspace_reserve_bytes": 3280982736,
+          "nnz_upper_bound": 24002307,
+          "operator_nnz_upper_bound": 1290240,
+          "unstable_upper_bound": 0
+        }
+      }
+    ],
+    "seconds": 6.826606161892414,
+    "solver_calls": 0,
+    "scope": "old MNIST0 representation and both guarded experts; no feasibility or property query"
+  },
+  "parse_error": null,
+  "files": {
+    "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r3_diagnostic/diagnostic.json": "903d6b4b370b26b3b9611336aa729dbdc490fde0ea1f5bc81d2df9d6f40387c5",
+    "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r3_diagnostic/layer_001.json": "896375ffd18f13ce0767d7827282537e486044a92ed9036540b4468ebff0a622",
+    "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r3_diagnostic/layer_002.json": "7be304954212c0d92c3883becd380d16c558ab78bea12110b0a060dde2eada90",
+    "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r3_diagnostic/layer_003.json": "dcf040b3e835d4f0aa6daddaef3559a527f86ef35c242cf6764e0ff15335b67f",
+    "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r3_diagnostic/layer_004.json": "cb00cb5f02fefcccdc3eb862ace1d46a35879e04cd0227b9a6fde80512496a12",
+    "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r3_diagnostic/layer_005.json": "8489b9229e3a700d2c6adea9013653abeb697952b8fc51943a94f6d55e7ffff4",
+    "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r3_diagnostic/layer_006.json": "932b99d6ceaf06f961583ef43b09c3c9a5f3aea1def9ec986131f40dd7565799",
+    "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r3_diagnostic/layer_007.json": "b0f2f6b83915c0aaaf06c6297b43d6ea56e10e9e98c1f813a22a36f6c71a8eac",
+    "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r3_diagnostic/layer_008.json": "c5f1e2d52114866c936332faf378eb3481c1b5a5a1a15b1e861950a211190b24",
+    "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r3_diagnostic/layer_009.json": "a741368dc8edb66155da4a72a31ffba20643ff34cf262cc13b21a74a1890eb0c",
+    "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r3_diagnostic/layer_010.json": "5070dd561e436903ef9a19d54be45cf3331839fb7dc007bb4ce9f44d4548a703",
+    "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r3_diagnostic/layer_011.json": "fb05d7477bdf23044b31fc43b36da81e010903f3793251862b25603e06407828",
+    "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r3_diagnostic/layer_012.json": "b94b9ccc33a9d5e38d46b53853adc90766b1be7e5e4e381c4c1ea2c42c964820",
+    "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r3_diagnostic/layer_013.json": "9bd39542fb48689b5e52e75fd8b3575556019452b10b96c91b5441e8575ad921",
+    "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r3_diagnostic/layer_014.json": "239c28a78e1bcf5eb1243890ea65ca57f85be5bee0478d4120b9ce24c73e5ec5",
+    "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r3_diagnostic/layer_015.json": "17f936c4ec2821519ef4186dd8accac6a59f34aee73290b81873b6afd00bc628",
+    "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r3_diagnostic/layer_016.json": "3aeb14e4e3b29ef5021d334df9a83841a10a0e83b2452c528c513b20ffa25603",
+    "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r3_diagnostic/layer_017.json": "d71c003d0cbfaebbcea1748acdb3d30cdaf371806dbc44b7c8ca9d87b1db8681",
+    "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r3_diagnostic/layer_018.json": "d01a7c1db02658061397fb3e293b3166d4affcf32deac1922a1be2a28a62d91f",
+    "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r3_diagnostic/layer_019.json": "c98e7a39819effaf0915f1c53703aa3d0df0fb387f2997ab1192a42dd258b84d",
+    "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r3_diagnostic/layer_020.json": "90e9ebfa4f5ba8c1f9102a83aba76239c45bf7d23ddc7c2bb3861d5d00e22df4",
+    "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r3_diagnostic/layer_021.json": "9c60d6824db83be19d0531a4d6cd373b72f3c4df4010cd7ec4907e7314b822ea",
+    "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r3_diagnostic/layer_022.json": "f68c5a56463ee24765f730fd1c996a8316759b65303242a6520530b398bca58b",
+    "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r3_diagnostic/layer_023.json": "5379eddd06d6fcf02e520a539b585a5b7135c82d9f21ca503cfe80df6fb7e3df",
+    "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r3_diagnostic/layer_024.json": "ac81fa14d3a9efb0a7c306b4c1b3b230378ce5d6007ca930b94f2dbfcb86c5ac",
+    "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r3_diagnostic/receipt.json": "61c2eb63685ee18fa63a3734c500dfe8206d11bf28185c3eb1836cf681502846"
+  }
+}

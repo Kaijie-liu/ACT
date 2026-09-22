@@ -1,5 +1,21 @@
 # MoE project handoff
 
+META CSR R3 REAL DIAGNOSTIC / FORMAL GATE STILL CLOSED (2026-09-22):
+Read `metamoe_csr_result_20260922_r3.md` and hash-bound diagnostic review.
+Pre-run freeze9b79f9ddb; full old MNIST0 router NOW propagates, firstReLU836
+unstable/finalrouter1260binary. Sparse guarded expert0 enters and propagates
+through firstConv/Scale/Bias/ReLU/Pool, then nextConv layer7 rejects BEFORE
+construction:3,329,680,336 accounted bytes > frozen2GiB. NOT observed OOM.
+Outer7.426s, peak sampledRSS1.495GiB,0solver calls. Diagnostic worker COMPLETE
+means record written; representation RESOURCE_REFUSED, independent gatefalse.
+50 targeted tests PASS; old ONNX BN-export failure disclosed separately.
+No four-call fullsmoke/new20selection/40call formal launched. Do not raisecap
+or interpret rejection as model unsafety. Next engineering: sharpen sparse
+convolution nonzero/workspace plan under same cap or bounded construction,
+with controls and separate old-input freeze; no new cohort for diagnosis.
+Legacy64M default, oldR2 results, numerical acceptance and source-proof gaps
+unchanged. Preparation prose below is historical; this outcome supersedes it.
+
 META CSR R3 IMPLEMENTATION / OLD-INPUT GATE PREPARATION (2026-09-22):
 Read `metamoe_csr_protocol_20260922_r3.md`. Opt-in CSR bytes policy and sparse
 guarded entry replace neither legacy64M default nor numerical acceptance.
