@@ -372,11 +372,11 @@ class HybridZConfig:
     sparse_representation_bytes: int = 0
 
     def __post_init__(self) -> None:
-        if self.sparse_resource_policy not in {"legacy_affine_cells", "csr_bytes_v1"}:
+        if self.sparse_resource_policy not in {"legacy_affine_cells", "csr_bytes_v1", "csr_spatial_v2"}:
             raise ValueError("unknown sparse resource policy")
         if type(self.sparse_representation_bytes) is not int or self.sparse_representation_bytes < 0:
             raise ValueError("sparse representation budget must be a nonnegative integer")
-        if (self.sparse_resource_policy == "csr_bytes_v1") != (self.sparse_representation_bytes > 0):
+        if (self.sparse_resource_policy != "legacy_affine_cells") != (self.sparse_representation_bytes > 0):
             raise ValueError("CSR policy requires an explicit positive budget; legacy budget must be zero")
         supported = {"scipy", "highspy_incremental"}
         if self.guarded_support_solver_backend not in supported:

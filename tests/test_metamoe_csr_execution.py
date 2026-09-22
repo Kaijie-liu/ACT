@@ -26,7 +26,10 @@ class OuterControls(unittest.TestCase):
         return receipt, folder
 
     def test_success_and_cost(self):
-        receipt, _ = self.call('print("completed")')
+        # A process may legitimately exit between RSS samples. Keep this
+        # sampling control alive across several polls instead of asserting a
+        # nonzero sample for an arbitrarily short process.
+        receipt, _ = self.call('import time; print("completed"); time.sleep(.2)')
         self.assertEqual(receipt['status'], 'COMPLETED')
         self.assertGreater(receipt['peak_sampled_group_rss_bytes'], 0)
 

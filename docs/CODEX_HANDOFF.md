@@ -1,5 +1,17 @@
 # MoE project handoff
 
+META CSR SPATIAL R4 PREPARATION (2026-09-22):
+Read `metamoe_csr_protocol_20260922_r4.md`. User authorized sharper convolution
+workspace/nonzero planning then OLD-input control, not a new cohort. New
+csr_spatial_v2 counts receptive-field factor-support unions per batch/group;
+original numerical Conv/8xreserve/2GiB/8GiB/90s unchanged. Planner scratch is
+admitted BEFORE allocation; no partial count acceptance. Legacy andv1 kept.
+11 new planner+5 protocol controls,50 existing targeted controls PASS. A short
+RSS sampling test was made deterministic; no production supervision change.
+Next commit/freeze newR4 identity then ONE oldMNIST0 router+bothguardedexperts
+zero-solver diagnostic. No formal/comparison entry in R4. Actual result must
+be separately archived; do not infer pass from this preparation note.
+
 META CSR R3 REAL DIAGNOSTIC / FORMAL GATE STILL CLOSED (2026-09-22):
 Read `metamoe_csr_result_20260922_r3.md` and hash-bound diagnostic review.
 Pre-run freeze9b79f9ddb; full old MNIST0 router NOW propagates, firstReLU836

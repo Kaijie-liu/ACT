@@ -51,8 +51,9 @@ class HybridzTF(RegistryTF):
     def __init__(self, config: Optional[HybridZConfig] = None):
         super().__init__("HybridzTF")
         cfg = config or HybridZConfig()
+        self._sparse_resource_policy = cfg.sparse_resource_policy
         self._sparse_budget = (SparseBudget(cfg.sparse_representation_bytes)
-                               if cfg.sparse_resource_policy == "csr_bytes_v1" else None)
+                               if cfg.sparse_resource_policy != "legacy_affine_cells" else None)
         self._pending_sparse_slots = None
         self._hz_cache: Dict[int, HZono] = {}
         self._sparse_hz_cache: Dict[int, SparseHZono] = {}
@@ -526,6 +527,11 @@ class HybridzTF(RegistryTF):
                 if plan is None:
                     raise SparseResourceLimit({'stage': 'unsupported_csr_policy_op', 'kind': k,
                                                'layer': L.id, 'accepted': False})
+                if k == 'CONV2D' and self._sparse_resource_policy == 'csr_spatial_v2':
+                    from .sparse_conv_plan import scratch_bytes, conv_support_plan
+                    self._budget_admit('conv_planner_pre', L.id, scratch_bytes(hz),
+                                       {'planner': 'conv_support_union_v1'})
+                    plan = conv_support_plan(L, hz, result.bounds.lb.numel())
                 self._budget_admit('operator_pre', L.id, plan['workspace_reserve_bytes'], plan)
             for apply_sparse in (
                 hz_mlp.sparse_hz_apply_layer,
