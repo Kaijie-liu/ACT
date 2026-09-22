@@ -11,7 +11,7 @@
 |---|---|---|---|
 | Dual RS |90epoch selector落地；绑定最终权重后，原序输入0、1均正确，统计L2半径0.8304935215、1.1060614554；43.719s含postflight|未完成全测试认证曲线；这是命名的log-domain数值兼容变体|尚无同函数比赛；原生RS证明平滑函数，不是ACT确定性F，不能横比SAFE百分比|
 | MetaMoE |原生PyTorch作者后端绕过ONNX后，CIFAR/MNIST组件均正；完整20类smoke中，两臂均复放CIFAR0误分类，作者臂MNIST0正|尚未复跑全部router/expert表；旧ONNX不等价失败保留|R2正式执行门未过：ACT在router首层ReLU丢失共享HZ，触发64M容量限制。未冻结／启动新20输入比较|
-| Robust Experts |CPU续训、GPU640批量及完整短训练→最终权重→clean/PGD20/APGD20→审计均通过；日志阶段隔离通过|200epoch/lr.01执行已冻结并启动，dense后ConvMoE串行；尚未训练完成|有原始语义接口及解析全历史控制，无已训练全尺寸全域成绩；不能用编译通过填认证栏|
+| Robust Experts |两臂200epoch/12600更新＋全10k终评完成，独立存盘复核通过；dense clean/PGD/APGD=37.27/18.99/18.74%，ConvMoE=22.18/12.88/11.70%|完成两配置的论文规模训练，未复现全部论文表或其MoE优势；另查明源码entropy目标不同于正文公式，保留命名兼容变体|有原始语义接口及解析全历史控制，无已训练全尺寸全域成绩；不能用经验RA或编译通过填认证栏|
 | RoME |4输入×3范数已全部终止并独立审计：5完成、7超时；完成中3条是已有clean错误、2条是同一输入的Linf/L1扰动误分类|不是全10k RA；s4/b6等代码默认与论文身份差异明确保留|原始连续多层LoRA混合仍不在ACT完整全域入口范围；不得替换成离散top-k|
 | J-TLAT |指定公开作者仓库本次仍只有README；论文称有匿名补充代码，尚未取得可执行包|未完成；不是“复现得零分”|未运行；不能用自编同名方法冒充作者工具|
 | Feature Noise |已读作者实验设计；v2论文与作者组页面仍未定位完整实验制品|未完成；TEAL/MiniMind链接只是依赖，不是本文完整实现|特征／文本噪声任务不等于像素L∞盒；尚无同对象协议或成绩|
@@ -48,7 +48,18 @@ ACT R1的函数式ReLU错误已由独立R2等价拼写适配修复；R2仍无法
 [原模型反例复放](metamoe_paired_replay_20260922_r2.json)、
 [容量诊断](metamoe_hz_intake_diagnostic_20260922_r1.json)。
 
-## Robust Experts：训练部署控制已补，长训练仍是独立执行阶段
+## Robust Experts：完整训练与独立落地复核已完成
+
+最新结果、完整曲线、论文—代码—执行对照与证据边界见
+[落地报告](robust_experts_landing_20260922_r1/README.md)。两臂原序全10k评估完成，
+独立重读498冻结输入文件、400epoch checkpoint哈希、最终权重/optimizer、全轨迹与评估
+汇总后通过，48.060秒；不是独立重跑全部攻击。原执行总26,208.253秒。
+本次ConvMoE未超过dense；不改epoch200选模，不把最高validation替换为终评。
+尤其需要保留目标身份：论文的−H(batch mean)对应源码`column_entropy`，本次冻结的
+源码`entropy`还含mean H(sample)。不能把“跟随源码”与“精确复现论文公式”混写。
+Top2有效STE=false；原始源码自动关闭，非本轮改动。
+
+以下为已完成部署与启动过程的历史说明：
 
 | GPU控制 | 实际批量／训练攻击 | 含启动及存盘耗时 | 峰值Torch allocated | 存盘状态／动量 |
 |---|---|---:|---:|---:|
@@ -66,12 +77,12 @@ native SGD/PolyLR/augmentation/PGD7，finalepoch200唯一模型选择。
 8项截止／异常／身份控制；R2两个架构的完整短流程分别20.402／27.464s通过。
 原R1共用CSV造成训练曲线覆盖已保留；R2仅隔离目录，两份曲线均核验存在。
 正式执行另行冻结24h/架构、串行、最终200epoch唯一模型选择，无隐式重试／GPU精确续训声明。
-剩余是**实际完整训练、全10k终评和最终归档**，不是再把这些监督器列为未实现。
+当时剩余的实际完整训练、全10k终评和最终归档**现均已完成**；不能再列为尚未启动。
 **没有把短控制checkpoint当成训练完成权重。**
 正式启动记录绑定执行commit `acd27d19f`、config SHA256
 `7731f7ae144b3816d28b0dde7ee59dfcb4fac90f2c73b6e47cd36ceeca67954d`。
 已观察dense真实首epoch完成63个更新；这不是最终成绩，终态和各epoch以服务器新目录为准。
-监督流程不自动Git写入；完成后的结果还需另行独立归档。
+监督流程不自动Git写入；本次已另行独立归档，不回填或覆盖原始记录。
 证据：[CPU续训](robust_experts_resume_archive_20260922_r1.json)、
 [GPU独立存盘检查](robust_experts_gpu_step_archive_20260922_r3.json)、
 [完整短流程](robust_experts_pipeline_archive_20260922_r2.json)、

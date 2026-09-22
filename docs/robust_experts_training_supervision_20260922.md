@@ -77,3 +77,15 @@ committed branch,48GiB free GPU and128GiB disk. Source/environment identities ar
 checked again in each subprocess. The detached launcher writes only outside
 the checkout; no automatic Git commit/push. Results require separate final
 archive after the terminal exists. A freeze/launch record is NOT completion.
+
+## Full training landed and separately reviewed
+
+Both arms now completed200epochs/12600updates and all10k clean/PGD20/APGD20.
+See [landing review](robust_experts_landing_20260922_r1/README.md), including all
+trajectory data, final weight identities, independent saved-file checks and
+the paper/source/actual-recipe comparison. Dense37.27/18.99/18.74%; ConvMoE
+22.18/12.88/11.70%, empirical only. No trained full-domain ACT result follows.
+The source `entropy` includes a per-sample entropy term absent from the printed
+paper objective. This run remains source-entropy; it is not relabelled as a
+paper-formula reproduction. Native top2 also disables the requested STE flag.
+No new training, attack, checkpoint choice or frozen-source edit was made.

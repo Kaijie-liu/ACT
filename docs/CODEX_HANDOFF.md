@@ -1,5 +1,26 @@
 # MoE project handoff
 
+ROBUST FULL TRAINING LANDED / INDEPENDENT REVIEW (2026-09-22):
+Read `robust_experts_landing_20260922_r1/README.md`, review.json and source_semantics.json.
+Both frozen arms finished200epochs/12600updates, full10k clean/PGD20/APGD20,
+and in-budget saved audit. New independent CPU reader checks498 frozen inputs,
+400epoch checkpoint hashes, final122/147tensors and62/87momentum buffers,
+CSV/journal/evaluation identity and costs; PASS48.060s. No new training/inference.
+Dense37.27/18.99/18.74%; ConvMoE22.18/12.88/11.70%; empirical only.7h17m original
+whole launch. Not a MoE advantage or trained whole-domain ACT certificate.
+Important source finding: paper entropy=-H(batch mean), native `entropy` is
+mean H(sample)-H(batch mean); native `column_entropy` matches the printed formula.
+Two uniform rows give0 vs-ln4. Keep this run's SOURCE-ENTROPY label; do not edit
+weights/source or claim exact paper-objective reproduction. Top2 disables STE
+despite requestedtrue (native warnings and constructor control). LR.01/200epoch
+matches paper, not source default. No unique causal attribution from trajectories.
+9 new ACT review controls +10 existing author-environment controls PASS. First
+combined ACT run lackedOmegaConf in3 old tests; no installation, no hidden failure.
+Independent review checks saved aggregates, NOT new10k prediction/attack replay.
+All raw runs/failures remain. New finite objective controls require own scope;
+no new training is queued. DualRS/Meta/RoME/remaining2artifact states unchanged.
+The training-live prose immediately below is historical and superseded.
+
 AUTHOR BASELINE TURN ARCHIVED / TRAINING LIVE (2026-09-22):
 Latest matrix `author_baselines_execution_20260922.md`. RoME12/12 terminal ledger
 and independent full-model replay audit complete:5 completed,7TIMEOUT,4252.397s

@@ -300,3 +300,18 @@ route-changing certificate gains and independent raw-dynamic-model competition
 remain open. All four-state tables can be
 [rebuilt from committed reviews](../results/main_tables.md) without private
 models; rebuilding the tables is not independently reproving their SAFE bounds.
+
+### Author-model execution context (not a verifier competition)
+
+A frozen CIFAR-100 Robust Experts reproduction variant completed200epochs for
+dense ResNet18 and E4/k2/layer4 ConvMoE, with final-epoch-only selection and
+full10k clean/PGD20/APGD20 evaluation. The accuracies were37.27/18.99/18.74%
+and22.18/12.88/11.70%, respectively: this single-run pair did not reproduce a
+MoE advantage. Independent saved-state review checked all400epoch checkpoint
+hashes, final states, trajectories and aggregate records, not new predictions
+or attacks. The source `entropy` objective additionally includes mean per-input
+entropy, unlike the paper's printed negative entropy of the batch mean; the
+run is consequently labelled a paper-hyperparameter/source-entropy compatibility
+variant. These empirical results are not added to our verifier SAFE tables.
+Details and the unmodified negative result are in the
+[landing and recipe review](../../docs/robust_experts_landing_20260922_r1/README.md).

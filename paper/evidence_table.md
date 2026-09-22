@@ -125,6 +125,14 @@ No pooling with30 or rewriting old2/3. Next workstreams are separate.
 
 ## Artifact hierarchy
 
+External-model provenance update (2026-09-22): Robust Experts dense/ConvMoE
+source-entropy compatibility runs each completed200epochs and full10k CIFAR100
+evaluation. Clean/PGD20/APGD20:37.27/18.99/18.74% and22.18/12.88/11.70%.
+Independent saved-file/state review passes; NOT an independent attack replay,
+ACT comparison, formal certificate, or successful reproduction of a MoE advantage.
+Paper entropy formula and the source branch of that name differ; preserve the
+explicit run identity. See `docs/robust_experts_landing_20260922_r1/README.md`.
+
 REL1 (observed mechanism follow-up): shared versus independent guarded expert
 factors yields +3SAFE/+5solved, no losses on30 model-input pairs/10images.
 Two SAFE gains are multi-pair versus relaxation UNKNOWN; one single-pair gain
