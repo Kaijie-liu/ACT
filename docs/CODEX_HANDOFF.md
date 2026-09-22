@@ -1,5 +1,17 @@
 # MoE project handoff
 
+META CSR R3 IMPLEMENTATION / OLD-INPUT GATE PREPARATION (2026-09-22):
+Read `metamoe_csr_protocol_20260922_r3.md`. Opt-in CSR bytes policy and sparse
+guarded entry replace neither legacy64M default nor numerical acceptance.
+2GiB representation reserve +8GiB sampled own-group RSS; unknown operators
+reject before dispatch; partial/late results cannot upgrade outer termination.
+10 sparse +10 outer/audit controls PASS,9 CPU class-separated controls PASS.
+Historical ONNX BN-export regression remains failed (native path used here).
+Next commit/freeze old-input R3;90s zero-solver router+BOTH guarded experts,
+then four-call300s smoke if intake passes, independent audit/replay, then ONLY
+after success freeze20new/40calls. No new cohort at this preparation point.
+Do not infer formal readiness from a structural audit or representation pass.
+
 SIX-WORK COMPLETION / SUBMISSION GAP RECONCILIATION (2026-09-22):
 Read `submission_execution_plan_20260922.md`, current author-baseline matrix,
 and `baseline_readiness_20260922.json`. New stdlib accounting checker binds9

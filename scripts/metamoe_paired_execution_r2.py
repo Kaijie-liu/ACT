@@ -36,7 +36,7 @@ def validate(cfg):
         raise ValueError('request protocol changed')
 
 
-def worker(cfg, path, request_id, arm):
+def worker(cfg, path, request_id, arm, *, hybridz_config=None):
     start = time.monotonic()
     validate(cfg)
     import numpy as np
@@ -79,7 +79,8 @@ def worker(cfg, path, request_id, arm):
         rows = classification_rows(model.total_classes, label)
         out = verify_class_separated_box(adapted, center=x, lower=lo, upper=hi,
             rows=rows, thresholds=torch.full((len(rows),), cfg['margin'], dtype=torch.float64),
-            total_seconds=max(.001, cfg['seconds']-(time.monotonic()-start)))
+            total_seconds=max(.001, cfg['seconds']-(time.monotonic()-start)),
+            hybridz_config=hybridz_config)
     else:
         # The sufficient route-invariance path includes nonzero division and
         # zero-filled OTHER-domain outputs, not just a local expert label.
@@ -160,4 +161,3 @@ if __name__ == '__main__':
                 rows.append(row)
                 blocked = status in ['ERROR', 'SOURCE_CHANGED']
         write(root / 'summary.json', {'config_sha256': sha256(a.config), 'rows': rows})
-

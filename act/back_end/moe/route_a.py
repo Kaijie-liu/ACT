@@ -189,6 +189,7 @@ class RouteAEngine:
         except RuntimeError:
             previous_tf = None
         tf = HybridzTF(config=self.hybridz_config)
+        self.sparse_resource_events = []
         set_transfer_function(tf)
         set_solver_mode("hybridz")
         expert_results: list[tuple[int, VerifyResult]] = []
@@ -264,6 +265,7 @@ class RouteAEngine:
                 expert_results=tuple(expert_results),
             )
         finally:
+            self.sparse_resource_events = tf.sparse_resource_events()
             tf.clear_entry_hz()
             set_solver_mode(previous_solver)
             if previous_tf is not None:

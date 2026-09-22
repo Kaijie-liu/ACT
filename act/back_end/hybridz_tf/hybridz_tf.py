@@ -42,6 +42,7 @@ import act.back_end.hybridz_tf.tf_rnn as hz_rnn
 import act.back_end.hybridz_tf.tf_transformer as hz_transformer
 import act.back_end.interval_tf.tf_mlp as interval_mlp
 import act.back_end.interval_tf.tf_cnn as interval_cnn
+from .sparse_budget import KINDS, SparseBudget, SparseResourceLimit, estimate, storage, retained_bound
 
 
 class HybridzTF(RegistryTF):
@@ -50,6 +51,9 @@ class HybridzTF(RegistryTF):
     def __init__(self, config: Optional[HybridZConfig] = None):
         super().__init__("HybridzTF")
         cfg = config or HybridZConfig()
+        self._sparse_budget = (SparseBudget(cfg.sparse_representation_bytes)
+                               if cfg.sparse_resource_policy == "csr_bytes_v1" else None)
+        self._pending_sparse_slots = None
         self._hz_cache: Dict[int, HZono] = {}
         self._sparse_hz_cache: Dict[int, SparseHZono] = {}
         self._sparse_drop_reasons: Dict[int, str] = {}
@@ -91,6 +95,11 @@ class HybridzTF(RegistryTF):
         that INPUT followed by one or more INPUT_SPEC layers all see the same
         guarded domain.  Callers should clear it in a ``finally`` block.
         """
+        if self._sparse_budget is not None:
+            if hz is not None and not isinstance(hz, SparseHZono):
+                raise ValueError("CSR policy requires a sparse guarded entry")
+            # Same-net reanalysis must not retain the preceding domain's slots.
+            self._cache_net_id = None
         self._entry_hz_override = hz if isinstance(hz, HZono) else None
         self._entry_sparse_hz_override = hz if isinstance(hz, SparseHZono) else None
 
@@ -326,6 +335,8 @@ class HybridzTF(RegistryTF):
         *,
         col_ids: Optional[torch.Tensor] = None,
     ) -> Optional[HZono]:
+        if self._sparse_budget is not None:
+            return None  # Sparse-only: never recover a dropped relation via a dense box.
         lb, ub = bounds.lb.flatten(), bounds.ub.flatten()
         rad = (ub - lb) / 2.0
         ng = int((rad > 0).sum().item())
@@ -340,6 +351,9 @@ class HybridzTF(RegistryTF):
         )
 
     def _sparse_from_bounds(self, bounds: Bounds) -> SparseHZono:
+        if self._sparse_budget is not None:
+            n = int(bounds.lb.numel())
+            self._budget_admit('input_pre', -1, 8*retained_bound(n, n, 0, 0))
         frame_id = self._sparse_next_frame_id
         self._sparse_next_frame_id += 1
         hz = sparse_hz_from_bounds(bounds, frame_id=frame_id)
@@ -364,19 +378,30 @@ class HybridzTF(RegistryTF):
             (frame_id, int(layer_id), int(neuron)) not in self._sparse_relu_slots
             for neuron in neurons
         )
-        if hz.n_out * (n_cont + n_bin + 3 * missing) > self._SPARSE_MAX_AFFINE_CELLS:
+        if self._sparse_budget is not None:
+            from types import SimpleNamespace
+            plan = estimate(SimpleNamespace(kind='RELU'), hz, hz.n_out, unstable=len(neurons))
+            self._budget_admit('relu_slots_pre', layer_id, plan['workspace_reserve_bytes'], plan)
+        elif hz.n_out * (n_cont + n_bin + 3 * missing) > self._SPARSE_MAX_AFFINE_CELLS:
             return None
         slots = []
+        pending = {}
         for neuron in neurons:
             key = (frame_id, int(layer_id), int(neuron))
-            slot = self._sparse_relu_slots.get(key)
+            slot = self._sparse_relu_slots.get(key, pending.get(key))
             if slot is None:
                 slot = (n_cont, n_cont + 1, n_bin)
-                self._sparse_relu_slots[key] = slot
+                if self._sparse_budget is None:
+                    self._sparse_relu_slots[key] = slot
+                else:
+                    pending[key] = slot
                 n_cont += 2
                 n_bin += 1
             slots.append(slot)
-        self._sparse_frame_widths[frame_id] = (n_cont, n_bin)
+        if self._sparse_budget is None:
+            self._sparse_frame_widths[frame_id] = (n_cont, n_bin)
+        else:
+            self._pending_sparse_slots = (frame_id, n_cont, n_bin, pending)
         return slots, n_cont, n_bin
 
     def _sparse_cont_slots_for(
@@ -428,12 +453,17 @@ class HybridzTF(RegistryTF):
                         raise ValueError(
                             "guarded sparse HZ input width does not match entry bounds"
                         )
+                    if self._sparse_budget is not None:
+                        self._budget_admit('guarded_entry_pre', L.id, 0, storage(override))
                     self._sparse_hz_cache[L.id] = override
                     if override.frame_id is not None:
+                        prior = self._sparse_frame_widths.get(int(override.frame_id), (0, 0))
                         self._sparse_frame_widths[int(override.frame_id)] = (
-                            override.n_cont,
-                            override.n_bin,
+                            max(prior[0], override.n_cont) if self._sparse_budget is not None else override.n_cont,
+                            max(prior[1], override.n_bin) if self._sparse_budget is not None else override.n_bin,
                         )
+                        if self._sparse_budget is not None:
+                            self._sparse_next_frame_id = max(self._sparse_next_frame_id, int(override.frame_id)+1)
                     self._sparse_drop_reasons.pop(L.id, None)
                 elif self._entry_hz_override is not None:
                     self._drop_sparse_hz(L.id, "dense_guarded_entry")
@@ -448,8 +478,23 @@ class HybridzTF(RegistryTF):
                 elif not preds:
                     self._sparse_hz_cache[L.id] = self._sparse_from_bounds(input_bounds)
                     self._sparse_drop_reasons.pop(L.id, None)
+            if self._sparse_budget is not None:
+                self._budget_admit('seed_post', L.id, 0)
+        except SparseResourceLimit:
+            self._drop_sparse_hz(L.id, 'csr_resource_limit')
+            raise
         except Exception as exc:
             self._drop_sparse_hz(L.id, f"sparse_seed_failed:{type(exc).__name__}")
+            if self._sparse_budget is not None:
+                raise
+
+    def _budget_admit(self, stage, layer_id, reserve, details=None):
+        return self._sparse_budget.admit(stage, layer_id,
+            [*self._sparse_hz_cache.values(), self._entry_sparse_hz_override], reserve,
+            details=details, slot_count=len(self._sparse_relu_slots))
+
+    def sparse_resource_events(self):
+        return [] if self._sparse_budget is None else list(self._sparse_budget.events)
 
     def _drop_sparse_hz(self, layer_id: int, reason: str) -> None:
         lid = int(layer_id)
@@ -457,6 +502,8 @@ class HybridzTF(RegistryTF):
         self._sparse_drop_reasons[lid] = reason
 
     def _sparse_exceeds_limit(self, hz: SparseHZono, out_dim: int) -> bool:
+        if self._sparse_budget is not None:
+            return False  # Replaced explicitly by pre/post CSR policy, not disabled globally.
         gen = int(hz.n_cont + hz.n_bin)
         return gen > 0 and int(out_dim) * gen > self._SPARSE_MAX_AFFINE_CELLS
 
@@ -472,6 +519,14 @@ class HybridzTF(RegistryTF):
             self._drop_sparse_hz(L.id, f"sparse_size_limit:{k}")
             return result
         try:
+            self._pending_sparse_slots = None
+            plan = None
+            if self._sparse_budget is not None:
+                plan = estimate(L, hz, result.bounds.lb.numel())
+                if plan is None:
+                    raise SparseResourceLimit({'stage': 'unsupported_csr_policy_op', 'kind': k,
+                                               'layer': L.id, 'accepted': False})
+                self._budget_admit('operator_pre', L.id, plan['workspace_reserve_bytes'], plan)
             for apply_sparse in (
                 hz_mlp.sparse_hz_apply_layer,
                 hz_cnn.sparse_hz_apply_layer,
@@ -482,13 +537,34 @@ class HybridzTF(RegistryTF):
                     continue
                 if out is None:
                     self._drop_sparse_hz(L.id, drop_reason or f"unsupported_sparse_op:{k}")
+                    if self._sparse_budget is not None:
+                        raise SparseResourceLimit({'stage': 'missing_csr_output', 'reason': drop_reason,
+                                                   'layer': L.id, 'accepted': False})
                     return result
+                final_result = self._sparse_fact(result, out)
+                if self._sparse_budget is not None:
+                    actual = storage(out)
+                    if actual['bytes'] > plan['estimated_retained_bytes']:
+                        raise SparseResourceLimit({'stage': 'estimate_underflow', 'layer': L.id,
+                                                   'actual': actual, 'plan': plan, 'accepted': False})
+                    self._budget_admit('operator_post', L.id, actual['bytes'], actual)
+                    if self._pending_sparse_slots is not None:
+                        frame, nc, nb, pending = self._pending_sparse_slots
+                        self._sparse_relu_slots.update(pending)
+                        self._sparse_frame_widths[frame] = (nc, nb)
                 self._sparse_hz_cache[L.id] = out
                 self._sparse_drop_reasons.pop(L.id, None)
-                return self._sparse_fact(result, out)
+                return final_result
             self._drop_sparse_hz(L.id, f"unsupported_sparse_op:{k}")
+        except SparseResourceLimit:
+            self._drop_sparse_hz(L.id, 'csr_resource_limit')
+            raise
         except Exception as exc:
             self._drop_sparse_hz(L.id, f"sparse_op_failed:{k}:{type(exc).__name__}")
+            if self._sparse_budget is not None:
+                raise
+        finally:
+            self._pending_sparse_slots = None
         return result
 
     def apply(
@@ -500,6 +576,12 @@ class HybridzTF(RegistryTF):
         after: Dict[int, Fact],
     ) -> Fact:
         k = self._check_supported(L.kind)
+        if self._sparse_budget is not None and k not in KINDS:
+            # Reject before a registry handler can allocate a dense/unsupported
+            # object. Checking only in sparse propagation is too late.
+            raise SparseResourceLimit({'stage': 'operator_dispatch', 'layer': L.id,
+                                       'kind': k, 'accepted': False,
+                                       'reason': 'operator_not_in_csr_v1'})
 
         net_id = id(net)
         if self._cache_net_id != net_id:
@@ -527,7 +609,7 @@ class HybridzTF(RegistryTF):
 
         if k in ("INPUT", "INPUT_SPEC"):
             hz_init = self._entry_hz_override
-            if hz_init is None and self._entry_sparse_hz_override is not None:
+            if hz_init is None and self._entry_sparse_hz_override is not None and self._sparse_budget is None:
                 hz_init = sparse_hz_to_dense(
                     self._entry_sparse_hz_override,
                     dtype=input_bounds.lb.dtype,

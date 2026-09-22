@@ -151,7 +151,7 @@ def validate_replay(model, point, lower, upper, rows, thresholds):
 
 
 def verify_class_separated_box(model, *, center, lower, upper, rows, thresholds,
-                               total_seconds=300.0):
+                               total_seconds=300.0, hybridz_config=None):
     """Tier-1 HZ-policy result for q @ output >= threshold on ALL legal top-1s.
 
     This in-process routine rejects late results and spends remaining time.
@@ -201,8 +201,16 @@ def verify_class_separated_box(model, *, center, lower, upper, rows, thresholds,
     remaining = deadline - time.monotonic()
     if remaining <= 0:
         return finish("TIMEOUT", "lowering_deadline")
-    report = RouteAEngine(program, expert_models=surrogate.experts,
-                         time_limit_per_route=min(30.0, remaining / (3 * len(model.experts)))).run_tier1()
+    from act.back_end.hybridz_tf.sparse_budget import SparseResourceLimit
+    engine = RouteAEngine(program, expert_models=surrogate.experts, hybridz_config=hybridz_config,
+                         time_limit_per_route=min(30.0, remaining / (3 * len(model.experts))))
+    try:
+        report = engine.run_tier1()
+    except SparseResourceLimit as exc:
+        result['sparse_resource_failure'] = exc.event
+        result['sparse_resource_events'] = engine.sparse_resource_events
+        return finish('UNKNOWN', 'sparse_representation_resource_limit')
+    result['sparse_resource_events'] = engine.sparse_resource_events
     candidates = report.router.candidates
     result.update(candidates=list(candidates.candidates), excluded=list(candidates.infeasible),
                   unresolved=list(candidates.unresolved), candidate_minimal=candidates.minimal,
