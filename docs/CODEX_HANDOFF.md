@@ -1,5 +1,22 @@
 # MoE project handoff
 
+META COMPLETE OLD-INPUT SMOKE EXECUTED / AUDITED (2026-09-22):
+Read `metamoe_csr_smoke_result_20260922_r4.md` and compact archive JSON.
+User explicitly authorized execution after freeze efa965880;4/4 calls complete
+under original300s/8GiB, no ERROR/outerTIMEOUT/resource refusal/retry. CIFAR0
+both arms replay SAME known center error; author MNIST numerical positive
+safe-incomplete7.115s; ACT MNIST UNKNOWN209.488s. Whole batch221.024s.
+ACT candidates[1]/excluded[0]/unresolved[], nonzero[3.345338,4.306859]accepted
+(fast_fallback); expert1 output UNKNOWN. NOT routing/score-definedness failure;
+native-limit vs relaxation NOT separated by saved data.138 admissions allpass,
+maxaccounted0.566GiB, sampledRSS2.198GiB. Frozen code/model/tensors unchanged.
+Terminal review +independent original-model replay +final review PASS;
+smoke_gate_pass=true, opens_formal_cohort=false.485 source/input identities,
+43 raw files archived; saved-only independent reconstruction agrees. No new
+cohort/strict SAFE/author-table reproduction or ACT superiority claim. A later
+formal cohort requires separate authorization/freeze; no automatic launch or
+old-input extra solving. Freeze-only/pending notes below are now historical.
+
 META COMPLETE OLD-INPUT SMOKE FROZEN, NOT EXECUTED (2026-09-22):
 Config `configs/recent_moe/metamoe_csr_paired_smoke_r4.json`, SHA256
 e8de03d21172dca52a70db958b5725c2b1e6919242adf39e9752dd080a656143;
