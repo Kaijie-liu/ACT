@@ -1,5 +1,20 @@
 # MoE project handoff
 
+META CSR SPATIAL R4 OLD-INPUT PASS (2026-09-22):
+Read `metamoe_csr_result_20260922_r4.md` + independent diagnostic JSON.
+Pre-run freezea05d61400; ONE oldMNIST0 run completes router16 +guardedexpert0
+27 +guardedexpert1 27 layers. Charged8.5095s, sampledRSS1.688GiB, maxaccounted
+0.625GiB; unchanged2GiB representation/8GiB RSS/90s,0solver,no denseHZ.
+Blockedexpert0conv7 nnz upper24,002,307→1,561,063 (=observed); totaladmission
+3.101GiB→0.426GiB. All12plans valid; planner total0.228s INCLUDED. No numeric
+Conv/guard/factor/acceptance change; v1 andR3 refusal kept.68 controls PASS.
+Representation gate NOW passes, NOT full smoke/certification/new20cohort.
+Next separately freeze old-input FULL300s pairedsmoke with this policy,
+independent terminal/cost audit +original-model witness replay; only then
+consider newformal selection. Do not use R3falsegate or R4diagnosticPASS as a
+shortcut. R4 has NO paired/cohort entry. Source-proof gaps stay unchanged.
+Preparation andR3block descriptions below are historical, superseded here.
+
 META CSR SPATIAL R4 PREPARATION (2026-09-22):
 Read `metamoe_csr_protocol_20260922_r4.md`. User authorized sharper convolution
 workspace/nonzero planning then OLD-input control, not a new cohort. New
