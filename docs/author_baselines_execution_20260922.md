@@ -35,7 +35,11 @@
 收紧非零数估算，原数值算子及8倍余量不动，在同2GiB/8GiB/90s下完成全部70层、
 完整router及两个guarded专家；8.5095s、峰值采样RSS1.688GiB、零求解。旧阻塞层
 准入预计3.101→0.426GiB，实际CSR非零数与新上界相符。**表示通过不是认证通过**；
-尚未执行R4完整smoke，不能据此启动新20输入。下列R3拒绝是保留的历史结果。
+尚未执行R4完整smoke，不能据此启动新20输入。完整旧输入四调用已另行冻结于
+`configs/recent_moe/metamoe_csr_paired_smoke_r4.json`（实现`c4813db94`），
+52项相关控制通过，独立静态审查通过；仅冻结，未启动、未创建结果目录。
+执行与独立终态/原模型复放要求见[完整smoke协议](metamoe_csr_paired_protocol_20260922_r4.md)。
+下列R3拒绝是保留的历史结果。
 
 最新[CSR R3结果](metamoe_csr_result_20260922_r3.md)已实测：新可选资源策略与
 稀疏guarded入口完成完整router（首ReLU836不稳定），旧64M默认未改。进入guarded

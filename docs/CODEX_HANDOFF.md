@@ -1,5 +1,20 @@
 # MoE project handoff
 
+META COMPLETE OLD-INPUT SMOKE FROZEN, NOT EXECUTED (2026-09-22):
+Config `configs/recent_moe/metamoe_csr_paired_smoke_r4.json`, SHA256
+e8de03d21172dca52a70db958b5725c2b1e6919242adf39e9752dd080a656143;
+implementation c4813db94. Protocol `metamoe_csr_paired_protocol_20260922_r4.md`
+contains ordered launch/terminal audit/original replay/final review commands.
+EXACT old CIFAR0/MNIST0 xACT/author=4calls,300s each,v2/2GiB/8GiB; all parent
+model/data/core/environment bindings retained.52controls PASS; independent
+read-only review found no remaining freeze blocker after two audit fixes.
+Saved diagnostic gate independently reconstructed; no real model or solve
+executed this stage, output root absent. User asked FREEZE ONLY. Do not launch
+until separate execution instruction; no automatic new20/cohort/commit chain.
+Known CIFAR center misclassification retained. HZ policy vs author numerical
+filter grades remain separate; neither is source-complete proof. Preparation
+entry below is historical; manifest now exists and is the next execution ID.
+
 META COMPLETE OLD-INPUT SMOKE FREEZE PREPARATION (2026-09-22):
 Read `metamoe_csr_paired_protocol_20260922_r4.md`. User authorizes FREEZE ONLY,
 not execution. New runner/freezer/auditor bind archived R4 representation PASS
