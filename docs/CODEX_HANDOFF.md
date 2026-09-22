@@ -1,5 +1,18 @@
 # MoE project handoff
 
+META COMPLETE OLD-INPUT SMOKE FREEZE PREPARATION (2026-09-22):
+Read `metamoe_csr_paired_protocol_20260922_r4.md`. User authorizes FREEZE ONLY,
+not execution. New runner/freezer/auditor bind archived R4 representation PASS
+and EXACT old CIFAR0/MNIST0 physical requests: ACT/author then author/ACT,
+four calls,300s EACH,csr_spatial_v2/2GiB/8GiB unchanged. Core/old-source hashes
+unchanged. CIFAR is known clean-error control, not four guaranteed solver runs.
+New terminal/cost/auxiliary-hash/replay checks reject raw backend timeout as
+completed UNKNOWN gate, unsafe→positive relabeling and malformed replay rows.
+52controls PASS:15new+10outer+7R4+11planner+9class-separated. Freeze after code commit;
+config NOT yet produced at this preparation entry. No real inference/solve,
+new inputs, result directory, retry/resume or automatic formal chain. Launch
+needs separate instruction after frozen manifest push. Positive trust unchanged.
+
 META CSR SPATIAL R4 OLD-INPUT PASS (2026-09-22):
 Read `metamoe_csr_result_20260922_r4.md` + independent diagnostic JSON.
 Pre-run freezea05d61400; ONE oldMNIST0 run completes router16 +guardedexpert0
