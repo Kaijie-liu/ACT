@@ -1,5 +1,10 @@
 # Manuscript reading order
 
+For the latest author-baseline results, actual execution gates, and unresolved
+submission claims, read the [2026-09-22 completion plan](../docs/submission_execution_plan_20260922.md).
+Its executable ledger separates deployment, pilot, full training and formal
+comparison; passing this accounting check does not establish paper readiness.
+
 The new [condensed technical-review paper](review_main.tex) is a single,
 compilable entry point with the complete conditional composition rule, four
 research questions, generated main comparison tables, the external cost

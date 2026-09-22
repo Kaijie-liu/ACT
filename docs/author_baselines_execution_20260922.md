@@ -5,13 +5,17 @@
 设计与论文实验细节仍见[研究记录](recent_moe_baselines_20260921.md)和
 [A/B/C分表协议](recent_moe_comparison_protocol_v1.md)。
 
+交叉复核后的[执行／投稿缺口及验收门](submission_execution_plan_20260922.md)
+和[可重建机器台账](baseline_readiness_20260922.json)区分草案、冻结执行、
+终态与正式同对象比较；台账检查不是重新认证或论文接收判断。
+
 ## 当前可引用的实际结果
 
 | 工作 | 本地真实执行／独立检查 | 论文规模作者复现 | ACT同对象公平比较 |
 |---|---|---|---|
 | Dual RS |90epoch selector落地；绑定最终权重后，原序输入0、1均正确，统计L2半径0.8304935215、1.1060614554；43.719s含postflight|未完成全测试认证曲线；这是命名的log-domain数值兼容变体|尚无同函数比赛；原生RS证明平滑函数，不是ACT确定性F，不能横比SAFE百分比|
 | MetaMoE |原生PyTorch作者后端绕过ONNX后，CIFAR/MNIST组件均正；完整20类smoke中，两臂均复放CIFAR0误分类，作者臂MNIST0正|尚未复跑全部router/expert表；旧ONNX不等价失败保留|R2正式执行门未过：ACT在router首层ReLU丢失共享HZ，触发64M容量限制。未冻结／启动新20输入比较|
-| Robust Experts |两臂200epoch/12600更新＋全10k终评完成，独立存盘复核通过；dense clean/PGD/APGD=37.27/18.99/18.74%，ConvMoE=22.18/12.88/11.70%|完成两配置的论文规模训练，未复现全部论文表或其MoE优势；另查明源码entropy目标不同于正文公式，保留命名兼容变体|有原始语义接口及解析全历史控制，无已训练全尺寸全域成绩；不能用经验RA或编译通过填认证栏|
+| Robust Experts |两臂200epoch/12600更新＋全10k终评完成，独立存盘复核通过；dense clean/PGD/APGD=37.27/18.99/18.74%，ConvMoE=22.18/12.88/11.70%|完成两配置的论文规模训练，未复现全部论文表或其MoE优势；另查明源码entropy目标不同于正文公式，保留命名兼容变体|已有全尺寸控制是未训练k1，不是已训练k2；原生k2的definedness及非线性joint-HZ尚不支持。无训练后全域成绩，不能用经验RA或编译通过填认证栏|
 | RoME |4输入×3范数已全部终止并独立审计：5完成、7超时；完成中3条是已有clean错误、2条是同一输入的Linf/L1扰动误分类|不是全10k RA；s4/b6等代码默认与论文身份差异明确保留|原始连续多层LoRA混合仍不在ACT完整全域入口范围；不得替换成离散top-k|
 | J-TLAT |指定公开作者仓库本次仍只有README；论文称有匿名补充代码，尚未取得可执行包|未完成；不是“复现得零分”|未运行；不能用自编同名方法冒充作者工具|
 | Feature Noise |已读作者实验设计；v2论文与作者组页面仍未定位完整实验制品|未完成；TEAL/MiniMind链接只是依赖，不是本文完整实现|特征／文本噪声任务不等于像素L∞盒；尚无同对象协议或成绩|
@@ -58,6 +62,13 @@ ACT R1的函数式ReLU错误已由独立R2等价拼写适配修复；R2仍无法
 尤其需要保留目标身份：论文的−H(batch mean)对应源码`column_entropy`，本次冻结的
 源码`entropy`还含mean H(sample)。不能把“跟随源码”与“精确复现论文公式”混写。
 Top2有效STE=false；原始源码自动关闭，非本轮改动。
+
+ACT适配边界补充：现有全尺寸历史控制为未训练E4/k1、5gate/1024 histories及有限探针。
+当前[全历史入口](multilayer_history_verifier.md)仅对原生nonzero-STE给出正盒验证路径；
+raw/normalized dispatch可能无非零selected expert、输出形状未定义，因此求解前拒绝。
+raw-epsilon算术控制也未保留joint HZ。新的已训练E4/k2、effective STE=false对象，
+**不是只差加载权重运行**；必须先解决原始语义支持并另行冻结，不能替换为不同的
+selected-softmax语义或删除分母epsilon（并非声称作者gate内部没有softmax）。
 
 以下为已完成部署与启动过程的历史说明：
 

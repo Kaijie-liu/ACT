@@ -1,0 +1,188 @@
+{
+  "as_of": "2026-09-22",
+  "limitations": [
+    "Classifications/next gates are reviewed metadata, not scientific proofs.",
+    "Archived search is not proof that an author artifact does not exist.",
+    "No cross-grade score ranking or CCF-A acceptance/readiness inference.",
+    "No reconstruction of uncommitted raw checkpoints or prediction replay."
+  ],
+  "rows": [
+    {
+      "act_comparison": "DIFFERENT_FUNCTION_NO_SAME_OBJECT_RESULT",
+      "deployment": "RUNNABLE_NAMED_VARIANT",
+      "entire_paper_reproduction_completed": false,
+      "executed_scope": "90_EPOCHS_AND_TWO_INPUT_CERTIFICATION",
+      "metrics": {
+        "indices": [
+          0,
+          1
+        ],
+        "radii_l2": [
+          0.8304935215242373,
+          1.106061455351514
+        ]
+      },
+      "name": "Dual RS",
+      "next_execution_frozen": false,
+      "next_gate": "Freeze native certification extension separately; g is not deterministic F.",
+      "result_grade": "PROBABILISTIC_RS_NATIVE_NUMERICAL"
+    },
+    {
+      "act_comparison": "SMOKE_ONLY_FORMAL_COHORT_BLOCKED",
+      "deployment": "RUNNABLE_NATIVE_AUTHOR_FRONTEND",
+      "entire_paper_reproduction_completed": false,
+      "executed_scope": "TWO_INPUT_SAME_OBJECT_SMOKE",
+      "metrics": {
+        "act_representation_blocked": true,
+        "states": [
+          {
+            "arm": "act",
+            "input": "cifar10_0",
+            "status": "UNSAFE_REPLAYED"
+          },
+          {
+            "arm": "author",
+            "input": "cifar10_0",
+            "status": "UNSAFE_REPLAYED"
+          },
+          {
+            "arm": "act",
+            "input": "mnist_0",
+            "status": "ERROR"
+          },
+          {
+            "arm": "author",
+            "input": "mnist_0",
+            "status": "BACKEND_POSITIVE"
+          }
+        ]
+      },
+      "name": "MetaMoE",
+      "next_execution_frozen": false,
+      "next_gate": "Separate CSR admission/storage controls, then new smoke; no new 20-input launch yet.",
+      "result_grade": "MIXED_REPLAY_AND_NUMERICAL_FILTER"
+    },
+    {
+      "act_comparison": "TRAINED_NATIVE_TOP2_UNSUPPORTED",
+      "deployment": "RUNNABLE_SOURCE_ENTROPY_VARIANT",
+      "entire_paper_reproduction_completed": false,
+      "executed_scope": "TWO_200_EPOCH_FULL_10K_EVALUATIONS",
+      "metrics": {
+        "convmoe": {
+          "APGD20": 11.7,
+          "PGD20": 12.88,
+          "clean": 22.18
+        },
+        "dense": {
+          "APGD20": 18.74,
+          "PGD20": 18.99,
+          "clean": 37.27
+        }
+      },
+      "name": "Robust Experts",
+      "next_execution_frozen": false,
+      "next_gate": "Native k2 definedness and joint-HZ nonlinear support precede trained-model comparison.",
+      "result_grade": "EMPIRICAL_AGGREGATES_NOT_REPLAYED"
+    },
+    {
+      "act_comparison": "CONTINUOUS_MULTILAYER_UNSUPPORTED",
+      "deployment": "RUNNABLE_SOURCE_DEFAULT_CHECKPOINT",
+      "entire_paper_reproduction_completed": false,
+      "executed_scope": "TWELVE_MULTINORM_TERMINALS",
+      "metrics": {
+        "INCOMPLETE_NOT_ROBUST": 7,
+        "PERTURBATION_BREAK_REPLAYED": 2,
+        "PREEXISTING_CLEAN_ERROR": 3
+      },
+      "name": "RoME",
+      "next_execution_frozen": false,
+      "next_gate": "Separate full evaluation freeze and original continuous-mixture semantics; no top-k substitution.",
+      "result_grade": "EMPIRICAL_DEPLOYMENT_ONLY"
+    },
+    {
+      "act_comparison": "NO_SAME_OBJECT_PROTOCOL",
+      "deployment": "EXECUTABLE_ARTIFACT_NOT_OBTAINED",
+      "entire_paper_reproduction_completed": false,
+      "executed_scope": "NO_TRAINING_OR_EVALUATION",
+      "metrics": null,
+      "name": "J-TLAT",
+      "next_execution_frozen": false,
+      "next_gate": "Obtain legitimate supplemental artifact via PI; no automatic author contact.",
+      "result_grade": "ACCESS_BLOCKED_NOT_ZERO_SCORE"
+    },
+    {
+      "act_comparison": "THREAT_MODEL_NOT_ALIGNED",
+      "deployment": "FULL_AUTHOR_ARTIFACT_NOT_IDENTIFIED",
+      "entire_paper_reproduction_completed": false,
+      "executed_scope": "NO_TRAINING_OR_EVALUATION",
+      "metrics": null,
+      "name": "Feature Noise",
+      "next_execution_frozen": false,
+      "next_gate": "Obtain implementation and define actual feature/text threat; pixel Linf is not equivalent.",
+      "result_grade": "ARTIFACT_AND_PROTOCOL_MISSING_NOT_ZERO_SCORE"
+    }
+  ],
+  "schema": "BASELINE_COMPLETION_ACCOUNTING_V1",
+  "scope": "committed archive accounting; no fresh execution, web search or proof checking",
+  "sources": {
+    "configs/recent_moe/dual_rs_certification_execution_r1.json": {
+      "bytes": 4794,
+      "sha256": "cf30794ec20c525b46227811f7162325fb2703494afcc8319cf195b5dc8d287a"
+    },
+    "configs/recent_moe/metamoe_paired_smoke_r2.json": {
+      "bytes": 66354,
+      "sha256": "68205c534017c375810d6c6159b6554f81b476368a307dbf02621664c8322d04"
+    },
+    "configs/recent_moe/robust_experts_paper_training_execution_r1.json": {
+      "bytes": 110068,
+      "sha256": "7731f7ae144b3816d28b0dde7ee59dfcb4fac90f2c73b6e47cd36ceeca67954d"
+    },
+    "configs/recent_moe/rome_multinorm_batch_r1.json": {
+      "bytes": 9412,
+      "sha256": "40d6a348769aef5682c0bd4c4de3b470b64340685a9ceef56629897773b24920"
+    },
+    "docs/dual_rs_certification_archive_20260922_r1.json": {
+      "bytes": 12389,
+      "sha256": "4416c4171e6a1c2e5d1ba8f77fa8c6f203b3a1d40e623965f404d98f9ef915c5"
+    },
+    "docs/dual_rs_training_landing_archive_20260922.json": {
+      "bytes": 34171,
+      "sha256": "e39d412b09576219c154335e6f7c4bfb370ca951b0138573fb080f475594a364"
+    },
+    "docs/metamoe_hz_intake_diagnostic_20260922_r1.json": {
+      "bytes": 4370,
+      "sha256": "ee744f04532b00148836733f1a6fe1389e22e5b332c5b162e0dce6ee759693a2"
+    },
+    "docs/metamoe_paired_smoke_review_20260922_r2.json": {
+      "bytes": 1964,
+      "sha256": "0e7dd590428b012aaf71008bf0eb7e93b8ca8ef2ee965d6dbe229958181b91ee"
+    },
+    "docs/recent_moe_deployment_20260921_r2.json": {
+      "bytes": 67797,
+      "sha256": "49f7b78106aeb2212a694bfb6cd748ffb9a096352b7b5d6b7c7f57dd91549d73"
+    },
+    "docs/robust_experts_landing_20260922_r1/review.json": {
+      "bytes": 90197,
+      "sha256": "ac5c297f0c5722caccf2020f03fbf0678692a3696ba78907836ce3347fdec74c"
+    },
+    "docs/robust_experts_landing_20260922_r1/source_semantics.json": {
+      "bytes": 2475,
+      "sha256": "eecb2030583d8a4b75c96ee35e33a67172eaca29dfa483e1e4b4dd92e2b8244f"
+    },
+    "docs/rome_multinorm_archive_20260922_r1.json": {
+      "bytes": 10053,
+      "sha256": "d06c39232e5f247e35a64a30129b67e7f2e7623ea3322f64e25a4c09fd830c45"
+    },
+    "docs/rome_multinorm_interpretation_20260922_r1.json": {
+      "bytes": 4205,
+      "sha256": "c678669e657c96db2c6ffa48c118b1c2b15b7676a6c9b61557a157b8e690e20c"
+    }
+  },
+  "summary": {
+    "entire_paper_reproductions_completed": 0,
+    "formal_cohort_act_comparisons_completed": 0,
+    "same_object_act_smoke_works": 1,
+    "works": 6,
+    "works_with_real_execution": 4
+  }
+}

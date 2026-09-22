@@ -1,5 +1,20 @@
 # MoE project handoff
 
+SIX-WORK COMPLETION / SUBMISSION GAP RECONCILIATION (2026-09-22):
+Read `submission_execution_plan_20260922.md`, current author-baseline matrix,
+and `baseline_readiness_20260922.json`. New stdlib accounting checker binds9
+archives/4execution configs;19 controls PASS, no inference/solver/training.
+Four works have real executions; no full six-paper reproduction/comparison.
+Meta has SAME-OBJECT two-input smoke, not a completed formal20input cohort.
+Robust full-size ACT control was UNTRAINED k1, not the trained k2; native k2
+effective STE=false, original dispatch definedness/nonlinear joint HZ blocked.
+Meta already uses CSR ReLU but admission uses dense-cell shape; guarded expert
+entry also densifies. Next separate resource/storage controls, NOT raise64M.
+No new execution freeze/launch, core change or acceptance upgrade this stage.
+Historical23gains remain policy results with CONFIRMED input-containment gaps.
+Human technical review, clean empirical reproduction and same-object strict
+source-to-output evidence remain open. Accounting PASS is not paper readiness.
+
 ROBUST FULL TRAINING LANDED / INDEPENDENT REVIEW (2026-09-22):
 Read `robust_experts_landing_20260922_r1/README.md`, review.json and source_semantics.json.
 Both frozen arms finished200epochs/12600updates, full10k clean/PGD20/APGD20,

@@ -1,5 +1,10 @@
 # Paper-complete roadmap and red-team closure
 
+Status addendum (2026-09-22): retain this historical decision, but use the
+[current execution and claim-gap plan](../docs/submission_execution_plan_20260922.md)
+and later audited evidence for present facts. This page's older pending items
+do not reopen sealed experiments; FSE 2027 remains skipped, not selected anew.
+
 Decision date: 2026-08-30. This document replaces deadline-driven expansion
 with a finite, evidence-driven completion definition. FSE 2027 is explicitly
 skipped. A later ICSE or FSE cycle will be selected only after its official CFP
