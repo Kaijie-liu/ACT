@@ -6,7 +6,7 @@ workspace/nonzero planning then OLD-input control, not a new cohort. New
 csr_spatial_v2 counts receptive-field factor-support unions per batch/group;
 original numerical Conv/8xreserve/2GiB/8GiB/90s unchanged. Planner scratch is
 admitted BEFORE allocation; no partial count acceptance. Legacy andv1 kept.
-11 new planner+5 protocol controls,50 existing targeted controls PASS. A short
+11 new planner+7 protocol controls,50 existing targeted controls PASS. A short
 RSS sampling test was made deterministic; no production supervision change.
 Next commit/freeze newR4 identity then ONE oldMNIST0 router+bothguardedexperts
 zero-solver diagnostic. No formal/comparison entry in R4. Actual result must

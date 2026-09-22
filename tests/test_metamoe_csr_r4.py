@@ -10,6 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'scripts'))
 from metamoe_csr_r4 import contract, validate
 from freeze_metamoe_csr_r4 import rebind
 from audit_metamoe_csr import diagnostic_review
+from audit_metamoe_csr_r4 import check_admission_trace
 from recent_moe_deployment import sha256
 
 
@@ -84,6 +85,32 @@ class R4Controls(unittest.TestCase):
                          lambda r, d: r.update(execution_including_preflight_seconds=90.),
                          lambda r, d: r.update(peak_sampled_group_rss_bytes=8*2**30+1)]:
             self.assertFalse(self.review(mutation)['passed'])
+
+    def trace(self):
+        return {'status': 'COMPLETE', 'events': [{'kind': 'CONV2D', 'id': 7, 'admission_start': 0, 'admission_end': 1}],
+            'admissions': [{'stage': 'operator_pre', 'layer': 7, 'cached_representation_bytes': 32,
+                'requested_reserve_bytes': 128, 'total_accounted_bytes': 160, 'limit_bytes': 2**31,
+                'accepted': True, 'details': {'workspace_reserve_bytes': 128}}]}
+
+    def test_auditor_rejects_wrong_slice_layer_and_reserve(self):
+        check_admission_trace(self.trace(), 2**31)
+        for mutation in [lambda d: d['events'][0].update(admission_start=-2),
+                         lambda d: d['events'][0].update(admission_end=99),
+                         lambda d: d['events'].append(d['events'][0].copy()),
+                         lambda d: d['admissions'][0].update(layer=99),
+                         lambda d: d['admissions'][0].update(requested_reserve_bytes=1, total_accounted_bytes=33)]:
+            trace = self.trace()
+            mutation(trace)
+            with self.assertRaises(ValueError):
+                check_admission_trace(trace, 2**31)
+
+    def test_auditor_rejects_budget_arithmetic_and_acceptance(self):
+        for key, value in [('total_accounted_bytes', 159), ('limit_bytes', 2**31+1),
+                           ('accepted', False), ('requested_reserve_bytes', -1), ('cached_representation_bytes', 32.)]:
+            trace = self.trace()
+            trace['admissions'][0][key] = value
+            with self.assertRaises(ValueError):
+                check_admission_trace(trace, 2**31)
 
 
 if __name__ == '__main__':

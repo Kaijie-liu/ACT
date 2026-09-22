@@ -50,8 +50,9 @@ duplicate/unsorted/stored-zero indices (including duplicates across4096-index
 chunks), invalid indices/geometry, no partial
 plan after exception, pre-marker and pre-builder refusal, no densification,
 six-matrix/c/b/ub/frame/exact equality, and complete guarded CNN/ReLU-slot
-differential.5 new protocol controls cover changed requests/resources/source,
-missing phases, empty events, nonzero solver counts, dense/late/RSS failures.
+differential.7 new protocol controls cover changed requests/resources/source,
+missing phases, empty events, nonzero solver counts, dense/late/RSS failures,
+admission slice/layer binding and exact reserve/total/limit arithmetic.
 Existing10 sparse,10 supervisor,21 MoE/conv and9 class-separated controls pass.
 
 Two initial failures were fixed before freeze: validation previously inspected
@@ -59,6 +60,9 @@ only visited indices (now validates all CSR indices in bounded chunks); an old
 RSS test required a nonzero sample from an instantly exiting process (test
 now sleeps0.2s to span polling windows). The latter changes TEST timing only;
 supervisor and mathematical implementation are unchanged and explicitly hashed.
+Read-only audit review also found that admission slices could point at another
+layer; strict nonnegative ordered ranges, layer identity and resource arithmetic
+checks plus mutation controls were added BEFORE freezing any execution.
 Historical ONNX BN-export failure remains sealed; this is native PyTorch.
 
 ## Execution identity and cost
