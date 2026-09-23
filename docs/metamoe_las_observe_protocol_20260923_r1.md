@@ -17,3 +17,8 @@ solves. The old20-request execution remains sealed. Missing lAs must not be
 silently zero-filled, discarded or exempted from its assertion. Only after
 evidence supports a semantics-preserving compatibility repair may a separate
 repair control be frozen. No new samples, time increase or ACT changes.
+
+Preparation note: the first freeze invocation found the new config parent
+directory absent and exited before publishing any manifest or launching a
+request. Parent creation was added before retrying freeze; no experiment was
+started by that failed preparation command.

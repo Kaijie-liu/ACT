@@ -68,7 +68,9 @@ def main():
         if CONFIG.exists() or OUTPUT.exists(): raise FileExistsError('sealed identity')
         cfg=build()
         cfg['execution_commit']=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
-        validate(cfg);write(CONFIG,cfg)
+        validate(cfg)
+        CONFIG.parent.mkdir(parents=True, exist_ok=True)
+        write(CONFIG,cfg)
         return
     cfg=json.loads(CONFIG.read_text());validate(cfg)
     if a.worker:
