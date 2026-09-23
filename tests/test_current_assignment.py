@@ -52,6 +52,34 @@ class AssignmentControls(unittest.TestCase):
             self.assertTrue(report['accepted'])
             self.assertAlmostEqual((model.value_center+model.value_matrix @ x).item(), max(2*max(seed, 0)-.25, 0))
 
+    def test_unsorted_csr_preserves_coefficients_and_full_check(self):
+        m = copy.deepcopy(self.model)
+        for A in (m.A, m.value_matrix):
+            for row in range(A.shape[0]):
+                start, end = A.indptr[row:row+2]
+                A.data[start:end] = A.data[start:end][::-1]
+                A.indices[start:end] = A.indices[start:end][::-1]
+            A.has_sorted_indices = False
+        before = model_fingerprint(m)
+        p = self.propose(m, [.25])
+        x, report = self.check(p, m)
+        self.assertTrue(report['accepted'])
+        self.assertEqual(model_fingerprint(m), before)
+        self.assertAlmostEqual((m.value_center+m.value_matrix @ x).item(), .25)
+
+    def test_duplicate_new_factor_refused_not_coalesced(self):
+        m = copy.deepcopy(self.model)
+        A = m.A
+        # Split the first equality's NEW xi1 coefficient into two entries.
+        pos = np.flatnonzero(A.indices[:A.indptr[1]] == 1)[0]
+        data = np.insert(A.data, pos, A.data[pos]/2)
+        data[pos+1] /= 2
+        indices = np.insert(A.indices, pos, A.indices[pos])
+        indptr = A.indptr.copy(); indptr[1:] += 1
+        m = replace(m, A=sp.csr_matrix((data, indices, indptr), shape=A.shape))
+        with self.assertRaises(ProposalUnavailable):
+            self.propose(m)
+
     def test_differential_with_native_base_feasibility(self):
         point, report = self.check(self.propose())
         native = sh._solve_hz_feasibility(self.model, time.monotonic()+5)

@@ -56,7 +56,6 @@ def _check_model(model):
     n, nc, nb = model.n_var, model.n_cont, model.n_bin
     if (nc < 0 or nb < 0 or not sp.isspmatrix_csr(model.A) or
             not sp.isspmatrix_csr(model.value_matrix) or
-            not model.A.has_canonical_format or not model.value_matrix.has_canonical_format or
             model.A.shape[1] != n or model.value_matrix.shape != (model.value_center.size, n) or
             model.row_lb.shape != (model.A.shape[0],) or model.row_ub.shape != model.row_lb.shape or
             model.var_lb.shape != (n,) or model.var_ub.shape != (n,)):
@@ -124,9 +123,12 @@ def propose_current_assignment(model, scope, deadline, *, free_values=None):
         start, end = A.indptr[row:row+2]
         cols, values = A.indices[start:end], A.data[start:end]
         new = np.asarray([prefix+2*j, prefix+2*j+1, nc+j])
-        found = np.searchsorted(cols, new)
-        if np.any(found >= cols.size) or not np.array_equal(cols[found], new):
+        # ACT sparse products can retain UNSORTED CSR rows. Preserve their
+        # stored summation order; never sort/coalesce/perturb model coefficients.
+        matches = [np.flatnonzero(cols == col) for col in new]
+        if any(len(pos) != 1 for pos in matches):
             raise ProposalUnavailable('missing appended factor')
+        found = np.array([pos[0] for pos in matches])
         a, b, binary = values[found]
         if not (a < 0 and b < 0 and binary == 2*a):
             raise ProposalUnavailable('noncanonical ReLU equality')

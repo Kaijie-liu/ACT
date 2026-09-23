@@ -1,5 +1,16 @@
 # MoE project handoff
 
+META CURRENT-ASSIGNMENT SAVED R1 REFUSED / R2 CSR REPAIR (2026-09-23):
+R1 diagnostic afterdcfb61971 made0nativequeries. Base assignment rejected
+`unsupported model shape/storage` (baseA unsorted,value_matrix sorted); grouping
+then raisedunsupportedqueryrow,so no summary. Partial launch/assignment retained.
+Read `metamoe_current_assignment_protocol_20260923_r2.md`. New recognizer locates
+newcolumns without assuming sortedCSR; rawcoefficients/order unchanged,no sort/
+coalescing.22assignment+7grouping controls PASS in bothenvs,includingunsorted
+CSR andduplicatenewfactorrefusal. Same savedmatrix/zero seed/3s/nooptimizer.
+Next commit/push then ONE R2 saved-only diagnostic under NEW_r2 root; separate
+check/archive bothR1failure andR2outcome. No defaultproduction/oldresults change.
+
 META CURRENT-ASSIGNMENT RESEARCH PREPARED (2026-09-23):
 Read `metamoe_current_assignment_protocol_20260923_r1.md`. User requests
 current-request feasible assignments,not time/relaxation changes. New pure

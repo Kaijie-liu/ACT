@@ -24,6 +24,15 @@ class ExactQueryIdentityControls(unittest.TestCase):
         out = query_groups([self.row(0), self.row(1, np.nextafter(1., 2.))], 'model-a')
         self.assertEqual(len(out), 2)
 
+    def test_unsorted_equal_storage_allowed_without_canonicalization(self):
+        a = self.row(0)
+        a['arrays'] = {**csr_arrays(sp.csr_matrix(([2., 1.], [1, 0], [0, 2]), shape=(1, 2))),
+                       'lb': np.array([0.]), 'ub': np.array([np.inf])}
+        b = copy.deepcopy(a); b['row'] = 1
+        out = query_groups([a, b], 'model-a')
+        self.assertEqual(out[0]['rows'], [0, 1])
+        self.assertEqual(a['arrays']['indices'].tolist(), [1, 0])
+
     def test_different_threshold_not_merged(self):
         out = query_groups([self.row(0), self.row(1, threshold=1e-8)], 'model-a')
         self.assertEqual(len(out), 2)

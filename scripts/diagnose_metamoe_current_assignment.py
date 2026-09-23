@@ -29,7 +29,7 @@ from robust_experts_workflow_control import write
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT/'configs/recent_moe/metamoe_protected_smoke_r1.json'
 ARCHIVE = ROOT/'docs/metamoe_protected_archive_20260923_r1.json'
-OUTPUT = Path('/data1/Kane/MOE/baseline_runs/metamoe_current_assignment_20260923_r1')
+OUTPUT = Path('/data1/Kane/MOE/baseline_runs/metamoe_current_assignment_20260923_r2')
 
 
 def query_groups(rows, model_identity):
@@ -46,7 +46,7 @@ def query_groups(rows, model_identity):
         if set(z) != {'data', 'indices', 'indptr', 'shape', 'lb', 'ub'}:
             raise ValueError('query fields')
         A = csr(z)
-        if (A.shape[0] != 1 or not A.has_canonical_format or not np.isfinite(A.data).all() or
+        if (A.shape[0] != 1 or not np.isfinite(A.data).all() or
                 z['lb'].shape != (1,) or z['ub'].shape != (1,) or
                 np.isnan(z['lb']).any() or np.isnan(z['ub']).any()):
             raise ValueError('unsupported query row')
@@ -80,10 +80,13 @@ def run():
             reviewed['evaluations'] != archived['evaluations']):
         raise ValueError('sealed source/review mismatch')
     OUTPUT.mkdir(parents=True, exist_ok=False)
-    write(OUTPUT/'launch.json', {'mode': 'SAVED_ONLY_NO_NEW_SOLVING', 'config_sha256': sha256(CONFIG),
+    write(OUTPUT/'launch.json', {'mode': 'SAVED_ONLY_NO_NEW_SOLVING', 'version': 'R2_UNSORTED_CSR_RECOGNITION', 'config_sha256': sha256(CONFIG),
         'archive_sha256': sha256(ARCHIVE), 'fixed_seed': 'all free factors zero',
         'proposal_and_check_budget_seconds': 3., 'core_acceptance_changed': False,
-        'integration_or_full_request_rerun': False, 'source_sha256': sha256(Path(__file__))})
+        'integration_or_full_request_rerun': False, 'source_sha256': sha256(Path(__file__)),
+        'sources': {name: sha256(ROOT/name) for name in (
+            'act/back_end/solver/current_assignment.py', 'scripts/diagnose_metamoe_current_assignment.py',
+            'docs/metamoe_current_assignment_protocol_20260923_r2.md')}})
     folder = Path(cfg['output_root'])/'mnist_0_act/protected/evaluation_000'
     z = arrays(folder/'base_model.npz')
     nc = int(np.count_nonzero(z['integrality'] == 0))
