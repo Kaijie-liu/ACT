@@ -1,5 +1,21 @@
 # MoE project handoff
 
+META PROTECTED EXPERT BUDGET PREPARATION (2026-09-23):
+Read `metamoe_protected_protocol_20260923_r1.md`. User prioritizes base-query
+budget starvation, NOT extra time/relaxation. Opt-in one-lane LINEAR_LE keeps
+same expert<=30s, caps base at10%, visits ALL rows in fixed order with remaining
+budget. Private native child enforces each deadline; transfer/startup/check/
+cleanup charged; original point/infeasibility gates retained. Unknown base can
+allow property attempts but NEVER CERTIFIED. All old core/files remain unchanged.
+54controls PASS (new21+11 also in pinned intake env); initial old-suite launcher
+missing device initialization is disclosed, corrected9/9PASS. No real run yet.
+Next commit/push, freeze ONE oldMNIST0 ACT identity, commit/push, inspectresources,
+run once, saved-only audit/archive. Same300s/2GiB/8GiB/19properties; no author,
+newcohort/retry/support or guard simplification. Primary endpoint is actual
+property-query budget access, NOT promisedSAFE; oldR4/observationR1 sealed.
+This is a controlled new execution path, not a default backend replacement or
+source-complete proof. Detailed raw matrix/query evidence stays outside Git.
+
 META EXPERT OBSERVATION EXECUTED / CAUSE LOCALIZED (2026-09-23):
 Read `metamoe_expert_diagnostic_result_20260923_r1.md` + compact archive.
 ONE oldMNIST0 run afterd6c1b3997,unchanged300s/2GiB/8GiB completes211.277s,
