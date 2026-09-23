@@ -1,5 +1,14 @@
 # MoE project handoff
 
+META SAME-POINT LAYER CONTROL PREPARED (2026-09-23):
+See `metamoe_assignment_layers_protocol_20260923_r1.md`. Six controls in both
+environments validate point IR evaluation and factor-prefix interpretation.
+No core/source change. New wrapper observes unchanged expert propagation and
+compares each HZ point to independent torch execution of the same IR; frozen
+replay worker reused in a NEW root, all old dependencies checked.30s/8GiB,
+zero native queries/proposals. Next commit/push, freeze config, commit/push,
+resource check, run ONCE, saved-only audit. No certification rerun/repair.
+
 META CURRENT ASSIGNMENT / SOURCE MISMATCH AUDITED (2026-09-23):
 Read `metamoe_current_assignment_result_20260923_r1.md` and companion archive.
 Saved-only R2: one deterministic point, 6,918 variables / 3,847 rows, 0.01859s
