@@ -1,5 +1,25 @@
 # MoE project handoff
 
+META EXPERT OBSERVATION EXECUTED / CAUSE LOCALIZED (2026-09-23):
+Read `metamoe_expert_diagnostic_result_20260923_r1.md` + compact archive.
+ONE oldMNIST0 run afterd6c1b3997,unchanged300s/2GiB/8GiB completes211.277s,
+UNKNOWN.494 source/input identities PASS. Router coverage[1]/excluded[0]
+and nonzero range unchanged. Expert base native feasibility requested30s,
+took78.313s,status1 BUT valid incumbent=>feasible. First property wrapper
+entered with-48.317s remaining and made NO native call.0/19 output native
+queries; storedsolves2 means base+local-deadline wrapper, NOT2MILPs. Final
+reasonviolation_region_undecided. NOT evidence that LP/output relaxation is
+too weak; notbase_unknown, no newSAFE. Candidate native similarly95.016s
+despite30s setting. Native internal phase unobserved; do not blame presolve.
+132events/11rawfiles,allspansclosed; terminal/trace audit PASS and fresh saved
+reconstruction agrees.203.425s native vs5.201s layer propagation; trace0.069s
+charged. HistoricalR4 remains sealed, its exact native trajectory unknown.
+Stop R1,no retry/cohort. Next separately controlled target: property-query
+budget access/native supervision; optional complete-singleton guard elimination
+can avoid carrying redundant1260router binaries (new scoped proof/control
+needed; no promised speedup). Do not tune precision before testing properties.
+Original numerical/source trust stays; diagnostic PASS is not SAFE reproof.
+
 META EXPERT OBSERVATION FROZEN (2026-09-23):
 Config `configs/recent_moe/metamoe_expert_trace_r1.json`, SHA256
 52406e625f87537e57e78c43d7a2f677d9ec734a1325adaa491ed81fb73e926e;

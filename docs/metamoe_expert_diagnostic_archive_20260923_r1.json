@@ -1,0 +1,551 @@
+{
+  "archive_schema": 1,
+  "audit": "PASS",
+  "config_path": "configs/recent_moe/metamoe_expert_trace_r1.json",
+  "config_sha256": "52406e625f87537e57e78c43d7a2f677d9ec734a1325adaa491ed81fb73e926e",
+  "review_path": "/data1/Kane/MOE/baseline_runs/metamoe_expert_trace_20260922_r1_review.json",
+  "review_sha256": "14a8bf1b1d0c6a0788c2a5482da2ed6a2b94e35dfe95c7e4f20243e77468efce",
+  "archive_source_sha256": "43669dd3b4be3ce34fb95bee93e1109b83654e38304b0bc037d2ceef93e09a08",
+  "row": {
+    "id": "mnist_0",
+    "arm": "act",
+    "status": "UNKNOWN",
+    "result_sha256": "56a22e54bb051df242057501f5bc38ee461ff6dda26a764edd1ae0c880fb97c3",
+    "result_parse_error": null,
+    "seconds": 211.27696151658893,
+    "receipt_sha256": "0573a9ac1d48c67b15b21af99401724c0ff92da2fcf3f6411dc6a070f7facd31",
+    "trace_sha256": "d595b0d774ee03c7019d8dd1fd3a062d2d40518ed0264fcf2ba0743df72feb7b"
+  },
+  "receipt": {
+    "status": "COMPLETED",
+    "exit_code": 0,
+    "error": null,
+    "command": [
+      "/data1/Kane/MOE/envs/moe-author-cpu-py312-20260921/bin/python",
+      "/data1/Kane/MOE/ACT/scripts/metamoe_expert_diagnostic.py",
+      "--config",
+      "/data1/Kane/MOE/ACT/configs/recent_moe/metamoe_expert_trace_r1.json",
+      "--worker"
+    ],
+    "deadline_seconds": 300,
+    "execution_including_preflight_seconds": 211.27696151658893,
+    "peak_sampled_group_rss_bytes": 2396061696,
+    "group_rss_limit_bytes": 8589934592,
+    "rss_poll_seconds": 0.05,
+    "rss_is_sampled_not_instantaneous_cap": true,
+    "postflight_in_execution_budget": false,
+    "source_unchanged": null,
+    "stdout_sha256": "8d2976e7bd0cd8faf6154be552532f3be2e038debbe42fdf09237700ab3fbc9d",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "total_with_postflight_seconds": 211.27702352404594,
+    "receipt_own_write_excluded_from_this_clock": true
+  },
+  "result": {
+    "schema": 1,
+    "status": "UNKNOWN",
+    "evidence_grade": "NONE",
+    "semantics": "class_separated_raw_top1_zero_fill_any_legal_ties",
+    "class_counts": [
+      10,
+      10
+    ],
+    "source_sha256": "560ef6cee9000faf0f1d4579d4e91f7a0439d3cdc3a8722e37b69571f3836c34",
+    "property_rows": 19,
+    "nonzero_obligations": [
+      {
+        "expert": 1,
+        "lower": 3.345338179462453,
+        "upper": 4.30685851511294,
+        "lower_status": [
+          "fast_fallback"
+        ],
+        "upper_status": [
+          "fast_fallback"
+        ],
+        "accepted": true
+      }
+    ],
+    "trusted": [
+      "network_to_HZ",
+      "input_and_guard_lowering",
+      "HZ_solver_numerical_policy"
+    ],
+    "source_complete": false,
+    "candidates": [
+      1
+    ],
+    "excluded": [
+      0
+    ],
+    "unresolved": [],
+    "candidate_minimal": true,
+    "expert_statuses": {
+      "1": "unknown"
+    },
+    "reason": "nonzero_or_global_output_obligation_unproved",
+    "seconds": 208.79989998601377,
+    "request_id": "mnist_0",
+    "arm": "act",
+    "config_sha256": "52406e625f87537e57e78c43d7a2f677d9ec734a1325adaa491ed81fb73e926e",
+    "tensor_file_sha256": "37b19c7ac318d6b2288547e206be2205adcb9d45a53d4e50833299b50df30766",
+    "label": 17,
+    "clean_prediction": 17,
+    "clean_route": 1,
+    "numerical_object": "same stored coefficients lifted to float64 real abstraction; not source-float proof",
+    "worker_seconds": 209.91410468518734
+  },
+  "batch_cost": {
+    "config_sha256": "52406e625f87537e57e78c43d7a2f677d9ec734a1325adaa491ed81fb73e926e",
+    "batch_wall_through_summary_seconds": 211.55707495845854,
+    "charged_request_seconds": 211.27696151658893,
+    "includes": "validation+launch+charged request+cleanup+postflight+terminal+summary",
+    "excludes": "this write and separate saved-only audit; trace/imports ARE charged"
+  },
+  "diagnosis": {
+    "expert_evaluations": [
+      {
+        "span_id": 110,
+        "arguments": {
+          "batch_size": 1,
+          "input_hz": {
+            "exact": true,
+            "n_bin": 1260,
+            "n_cont": 5592,
+            "n_out": 3072
+          },
+          "n_out": 20,
+          "output_hz": {
+            "exact": true,
+            "n_bin": 1282,
+            "n_cont": 5636,
+            "n_out": 20
+          },
+          "timelimit": 30.0
+        },
+        "seconds": 78.32097050733864,
+        "result": {
+          "verify_results": [
+            {
+              "has_counterexample": false,
+              "metadata": {
+                "elapsed": 78.31819722428918,
+                "lane": 0,
+                "n_bin": 1282,
+                "n_cont": 5636,
+                "n_rows": 3847,
+                "nodes": 0,
+                "reason": "violation_region_undecided",
+                "representation": "sparse",
+                "solves": 2,
+                "source": "hybridz_milp"
+              },
+              "status": "unknown"
+            }
+          ]
+        },
+        "queries": [
+          {
+            "span_id": 113,
+            "arguments": {
+              "M": 19,
+              "evaluate_callsite_line": 2813,
+              "extra_rows": 0,
+              "feasibility_tol": 1e-07,
+              "model": {
+                "matrix_nnz": 336069,
+                "matrix_shape": [
+                  3847,
+                  6918
+                ],
+                "n_bin": 1282,
+                "n_cont": 5636,
+                "n_var": 6918
+              },
+              "remaining_at_entry_seconds": 29.999936992302537
+            },
+            "elapsed_seconds": 78.3160443585366,
+            "right_censored": false,
+            "feasibility_status": "feasible",
+            "flags": [
+              "NATIVE_LIMIT_REPORTED"
+            ],
+            "native": [
+              {
+                "span_id": 114,
+                "seconds": 78.31315636076033,
+                "arguments": {
+                  "M": 19,
+                  "evaluate_callsite_line": 2813,
+                  "integral_entries": 1282,
+                  "matrix_nnz": 336069,
+                  "matrix_shape": [
+                    3847,
+                    6918
+                  ],
+                  "objective_size": 6918,
+                  "options": {
+                    "mip_rel_gap": 0.0,
+                    "presolve": true,
+                    "time_limit": 29.999642638489604
+                  }
+                },
+                "result": {
+                  "fun": 0.0,
+                  "has_incumbent": true,
+                  "incumbent_size": 6918,
+                  "message": "Time limit reached. (HiGHS Status 13: Time limit reached)",
+                  "mip_dual_bound": 0.0,
+                  "mip_gap": 0.0,
+                  "mip_node_count": 0,
+                  "status": 1,
+                  "success": false
+                },
+                "exception": null
+              }
+            ],
+            "incumbent_checks": [
+              {
+                "value": true
+              }
+            ]
+          },
+          {
+            "span_id": 119,
+            "arguments": {
+              "M": 19,
+              "evaluate_callsite_line": 2888,
+              "exact_witness": true,
+              "extra_rows": 1,
+              "feasibility_tol": 1e-07,
+              "lane": 0,
+              "model": {
+                "matrix_nnz": 336069,
+                "matrix_shape": [
+                  3847,
+                  6918
+                ],
+                "n_bin": 1282,
+                "n_cont": 5636,
+                "n_var": 6918
+              },
+              "remaining_at_entry_seconds": -48.31704646162689,
+              "row": 0
+            },
+            "elapsed_seconds": 0.0008430816233158112,
+            "right_censored": false,
+            "feasibility_status": "unknown",
+            "flags": [
+              "LOCAL_DEADLINE_EXHAUSTED_WITHOUT_NATIVE_CALL"
+            ],
+            "native": [],
+            "incumbent_checks": []
+          }
+        ],
+        "property_query_count": 1
+      }
+    ],
+    "native_status_counts_all_phases": {
+      "2": 1,
+      "1": 3
+    },
+    "limits": "Flags are observations, not exclusive causes. A native limit WITH a valid incumbent can still establish feasibility under the existing policy. No LP infeasibility/unsafety claim follows from UNKNOWN. Logging perturbs this new run; historical R4 cause is not reconstructed."
+  },
+  "native_calls_all_phases": [
+    {
+      "id": 43,
+      "name": "act.back_end.solver.solver_hz.milp",
+      "parent": 42,
+      "start": 4.136819820851088,
+      "arguments": {
+        "integral_entries": 1260,
+        "matrix_nnz": 334744,
+        "matrix_shape": [
+          3781,
+          6852
+        ],
+        "objective_size": 6852,
+        "options": {
+          "mip_rel_gap": 0.0,
+          "presolve": true,
+          "time_limit": 29.997513566166162
+        }
+      },
+      "end": 4.17941378057003,
+      "end_kind": "END",
+      "result": {
+        "has_incumbent": false,
+        "incumbent_size": null,
+        "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)",
+        "status": 2,
+        "success": false
+      },
+      "exception": null,
+      "seconds": 0.04259395971894264,
+      "exclusive_seconds": 0.04259395971894264,
+      "right_censored": false,
+      "phase_parent": "act.back_end.solver.solver_hz._solve_hz_feasibility"
+    },
+    {
+      "id": 49,
+      "name": "act.back_end.solver.solver_hz.milp",
+      "parent": 48,
+      "start": 4.185176201164722,
+      "arguments": {
+        "integral_entries": 1260,
+        "matrix_nnz": 334744,
+        "matrix_shape": [
+          3781,
+          6852
+        ],
+        "objective_size": 6852,
+        "options": {
+          "mip_rel_gap": 0.0,
+          "presolve": true,
+          "time_limit": 29.997422829270363
+        }
+      },
+      "end": 99.201187254861,
+      "end_kind": "END",
+      "result": {
+        "fun": 0.0,
+        "has_incumbent": true,
+        "incumbent_size": 6852,
+        "message": "Time limit reached. (HiGHS Status 13: Time limit reached)",
+        "mip_dual_bound": 0.0,
+        "mip_gap": 0.0,
+        "mip_node_count": 0,
+        "status": 1,
+        "success": false
+      },
+      "exception": null,
+      "seconds": 95.01601105369627,
+      "exclusive_seconds": 95.01601105369627,
+      "right_censored": false,
+      "phase_parent": "act.back_end.solver.solver_hz._solve_hz_feasibility"
+    },
+    {
+      "id": 114,
+      "name": "act.back_end.solver.solver_hz.milp",
+      "parent": 113,
+      "start": 102.2333795055747,
+      "arguments": {
+        "M": 19,
+        "evaluate_callsite_line": 2813,
+        "integral_entries": 1282,
+        "matrix_nnz": 336069,
+        "matrix_shape": [
+          3847,
+          6918
+        ],
+        "objective_size": 6918,
+        "options": {
+          "mip_rel_gap": 0.0,
+          "presolve": true,
+          "time_limit": 29.999642638489604
+        }
+      },
+      "end": 180.54653586633503,
+      "end_kind": "END",
+      "result": {
+        "fun": 0.0,
+        "has_incumbent": true,
+        "incumbent_size": 6918,
+        "message": "Time limit reached. (HiGHS Status 13: Time limit reached)",
+        "mip_dual_bound": 0.0,
+        "mip_gap": 0.0,
+        "mip_node_count": 0,
+        "status": 1,
+        "success": false
+      },
+      "exception": null,
+      "seconds": 78.31315636076033,
+      "exclusive_seconds": 78.31315636076033,
+      "right_censored": false,
+      "phase_parent": "act.back_end.solver.solver_hz._solve_hz_feasibility"
+    },
+    {
+      "id": 126,
+      "name": "act.back_end.solver.solver_hz.milp",
+      "parent": 123,
+      "start": 180.5549092553556,
+      "arguments": {
+        "integral_entries": 1260,
+        "matrix_nnz": 334744,
+        "matrix_shape": [
+          3781,
+          6852
+        ],
+        "objective_size": 6852,
+        "options": {
+          "mip_rel_gap": 0.0,
+          "presolve": true,
+          "time_limit": 29.997598461806774
+        }
+      },
+      "end": 210.60856398195028,
+      "end_kind": "END",
+      "result": {
+        "fun": -0.23917736591703306,
+        "has_incumbent": true,
+        "incumbent_size": 6852,
+        "message": "Time limit reached. (HiGHS Status 13: Time limit reached)",
+        "mip_dual_bound": -0.28805118462924767,
+        "mip_gap": 0.20434132019485565,
+        "mip_node_count": 0,
+        "status": 1,
+        "success": false
+      },
+      "exception": null,
+      "seconds": 30.053654726594687,
+      "exclusive_seconds": 30.053654726594687,
+      "right_censored": false,
+      "phase_parent": "act.back_end.solver.solver_hz.hz_support_bounds"
+    }
+  ],
+  "property_feasibility_wrapper_attempts": 1,
+  "property_native_calls": 0,
+  "trace": {
+    "event_count": 132,
+    "partial_tail_bytes": 0,
+    "last_hash": "ff155ba63b1c3fb112ab769f9039299ca55d875011259757b9d45be2448b1e89",
+    "last_event_elapsed": 210.61489721015096,
+    "logging_seconds_observed": 0.06943484582006931,
+    "aggregates": {
+      "unchanged_metamoe_worker": {
+        "closed_calls": 1,
+        "inclusive_closed_seconds": 209.91621319390833,
+        "exclusive_closed_seconds": 1.1139974128454924,
+        "open_calls": 0
+      },
+      "act.back_end.moe.class_separated_top1.verify_class_separated_box": {
+        "closed_calls": 1,
+        "inclusive_closed_seconds": 208.80221578106284,
+        "exclusive_closed_seconds": 0.07612219825387001,
+        "open_calls": 0
+      },
+      "act.back_end.moe.route_a._analyze_router": {
+        "closed_calls": 1,
+        "inclusive_closed_seconds": 2.2483021412044764,
+        "exclusive_closed_seconds": 0.02359478734433651,
+        "open_calls": 0
+      },
+      "HybridzTF.apply": {
+        "closed_calls": 43,
+        "inclusive_closed_seconds": 5.200762644410133,
+        "exclusive_closed_seconds": 5.200762644410133,
+        "open_calls": 0
+      },
+      "act.back_end.moe.hz_routing.analyze_candidates": {
+        "closed_calls": 1,
+        "inclusive_closed_seconds": 95.07939852960408,
+        "exclusive_closed_seconds": 0.013054272159934044,
+        "open_calls": 0
+      },
+      "act.back_end.solver.solver_hz._lower_hz_milp": {
+        "closed_calls": 4,
+        "inclusive_closed_seconds": 0.007470164448022842,
+        "exclusive_closed_seconds": 0.007470164448022842,
+        "open_calls": 0
+      },
+      "act.back_end.solver.solver_hz._solve_hz_feasibility": {
+        "closed_calls": 4,
+        "inclusive_closed_seconds": 173.37962368689477,
+        "exclusive_closed_seconds": 0.006268972530961037,
+        "open_calls": 0
+      },
+      "act.back_end.solver.solver_hz.milp": {
+        "closed_calls": 4,
+        "inclusive_closed_seconds": 203.42541610077024,
+        "exclusive_closed_seconds": 203.42541610077024,
+        "open_calls": 0
+      },
+      "act.back_end.solver.solver_hz._valid_milp_point": {
+        "closed_calls": 2,
+        "inclusive_closed_seconds": 0.0015933401882648468,
+        "exclusive_closed_seconds": 0.0015933401882648468,
+        "open_calls": 0
+      },
+      "act.back_end.moe.route_a.verify_once": {
+        "closed_calls": 1,
+        "inclusive_closed_seconds": 81.33989574201405,
+        "exclusive_closed_seconds": 0.042869944125413895,
+        "open_calls": 0
+      },
+      "HZSolver.evaluate_spec": {
+        "closed_calls": 1,
+        "inclusive_closed_seconds": 78.32097050733864,
+        "exclusive_closed_seconds": 0.0021582823246717453,
+        "open_calls": 0
+      },
+      "act.back_end.solver.solver_hz.hz_support_bounds": {
+        "closed_calls": 1,
+        "inclusive_closed_seconds": 30.058497169986367,
+        "exclusive_closed_seconds": 0.002905074506998062,
+        "open_calls": 0
+      }
+    },
+    "open_span_ids": [],
+    "limits": "Nested inclusive times overlap; open exposure is censored, not exact native solve time. Trace overhead is charged; last-event logging cost excludes its own write."
+  },
+  "sparse_admission_events": 138,
+  "source_binding_count": 494,
+  "files": {
+    "batch_cost.json": {
+      "sha256": "de62cc2be1d66313d61ecdba4ff4fa1a3da3189cfda33810eff5371472a6200e",
+      "bytes": 371
+    },
+    "launch.json": {
+      "sha256": "eb12e669d1fe99a462c12ca042b73ca7c4197b362400275212bad8643b1e3934",
+      "bytes": 264
+    },
+    "mnist_0_act/functional_rewrite.json": {
+      "sha256": "ddc255c55d6bb0feb43202a2c187c0ecadf635f9b06faca049d9102ef83b2ced",
+      "bytes": 1723
+    },
+    "mnist_0_act/prepared.json": {
+      "sha256": "35f98fee68752543ff09400e674a1fa6832b5eb694b03ebb1803169f6d4fa128",
+      "bytes": 395
+    },
+    "mnist_0_act/receipt.json": {
+      "sha256": "0573a9ac1d48c67b15b21af99401724c0ff92da2fcf3f6411dc6a070f7facd31",
+      "bytes": 927
+    },
+    "mnist_0_act/result.json": {
+      "sha256": "56a22e54bb051df242057501f5bc38ee461ff6dda26a764edd1ae0c880fb97c3",
+      "bytes": 85876
+    },
+    "mnist_0_act/stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "mnist_0_act/stdout.txt": {
+      "sha256": "8d2976e7bd0cd8faf6154be552532f3be2e038debbe42fdf09237700ab3fbc9d",
+      "bytes": 297
+    },
+    "mnist_0_act/terminal.json": {
+      "sha256": "fdc1ddebed9528a319239853dd388bbec29a5272223d5459bf2f982128ef6da7",
+      "bytes": 385
+    },
+    "mnist_0_act/trace.jsonl": {
+      "sha256": "d595b0d774ee03c7019d8dd1fd3a062d2d40518ed0264fcf2ba0743df72feb7b",
+      "bytes": 46176
+    },
+    "summary.json": {
+      "sha256": "ba09514aabe348c287d324c6476a67b4eae08b311ae3cdfa65a7244e4d12333f",
+      "bytes": 532
+    }
+  },
+  "original_separate_audit_seconds": 0.2704393398016691,
+  "reconstruction_audit_seconds": 0.27873869240283966,
+  "archive_through_construction_seconds": 0.2798160295933485,
+  "cost_excludes": "interpreter/interactive gaps/final archive serialization and write",
+  "opens_formal_cohort": false,
+  "independent_safe_reproof": false,
+  "annotations": [
+    "The generic trace property_index on verify_once is the CALLER EXPERT index, not an output property row. Only evaluate_spec lane/row/M locate properties.",
+    "solves includes a feasibility wrapper returning before native invocation; it is not a native MILP count.",
+    "HZ exact/exact_witness are implementation flags, not independent proof of source-to-HZ conversion.",
+    "New observation only; do not replace the sealed R4 result or infer its exact native trajectory.",
+    "Outer receipt source_unchanged is unset; post-run file/repository/environment validation is performed by the separate auditor."
+  ]
+}
