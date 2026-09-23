@@ -1,5 +1,25 @@
 # MoE project handoff
 
+REPAIRED METAMOE FOLLOWUP EXECUTED / ARCHIVED (2026-09-23):
+Read `metamoe_las_followup_result_20260923_r1.md`, archive and saved analysis.
+User authorized full20; execution442e08d5a, cfgaf662082 unchanged.20/20 calls,
+noERROR/noomission: ACT4HZ-policy positives/6UNKNOWN; repairedauthor9numerical
+filters/1outerTIMEOUT. Common positives MNIST1,3,9,10; author-only all5CIFAR;
+ACT-only0. Distinct grades, no newroute-changing/source-complete certificate.
+MNIST7author7checked restorations/7native inserts then300.033sTIMEOUT, no
+assertion error. ACTMNIST7alsoUNKNOWN: route0unresolved, failedcheckedbase
+with nativefallback, both expert outputs incomplete; NOT merely output limits.
+209outputrows=116excluded+93localTIMEOUT.92no savednative return;1status2
+record not timely accepted staysUNKNOWN. Other9ACT routing/base/sign complete.
+ACT285.577s vs author365.374s total; batch651.872s. Mean cost advantage driven
+by author timeout is NOT equal-success speedup. Nine normal pairs ACT slower
+by16.026smean. AuditPASS0; helper-disabled reaudit identical, tenVNNLIBs
+reconstructed incltimeout. ZeroUNSAFE replayledger. No new solving in analysis.
+Seal run. No additional samples/time/relaxation/backend tuning or automatic
+followup. Saved traces motivate future separately scoped local-budget/setup/
+receipt investigation, NOT established precision failure; no newcontrol frozen.
+Original R1 error and control timeout remain preserved. Entries below historical.
+
 REPAIRED AUTHOR FOLLOWUP FROZEN / NOT RUN (2026-09-23):
 Read `metamoe_las_followup_freeze_20260923_r1.md` and PASS0 freeze review.
 Config `configs/backend_controls/metamoe_las_followup_r1.json`, SHA256
