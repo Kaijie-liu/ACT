@@ -16,7 +16,7 @@ prohibited because the installed CROWN bounds are not outward rounded.
 | Comparator | What it provides | Audited delta in this project | Execution status |
 |---|---|---|---|
 | Zhang et al., ICML 2025 (RT-ER) | Analytic Lipschitz-gate certification theorems and official training/model code | Theorems 5.4/5.5 have no released numerical instantiation or constants protocol; the released CIFAR-10 pipeline uses hard argmax and does not update the router. Our exact K=20 census quantifies the resulting radius-dependent applicability and initialization lottery. | Two official-code compatibility reproductions land at 34.22%/32.70% and 32.01%/30.51% SA/PGD-50 RA, both outside frozen paper-reference intervals with 0 audit issues. B3 r5 completes all 318 expert branches: fixed-radius Route A versus route-invariance numerical filters are 17/12, 14/8, 7/3, 2/0, and 0/0. Formal SAFE remains zero pending validated numerical bounds. |
-| MetaMoE-style route invariance | Composition after proving a fixed route | With the same downstream verifier and budget on the frozen 100-sample cohort, staged Route A resolves 56 additional samples and yields 36 route-changing HZ-policy SAFE results unavailable to the route-invariance precondition. | Historical executed reimplementation, not author-tool reproduction. The 2026-09-21 follow-up located the MetaMoE author repository and weights; direct comparison is now pending. These are policy-accepted outcomes, not source-complete certificates. |
+| MetaMoE-style route invariance | Composition after proving a fixed route | With the same downstream verifier and budget on the frozen 100-sample cohort, staged Route A resolves 56 additional samples and yields 36 route-changing HZ-policy SAFE results unavailable to the route-invariance precondition. | Historical executed reimplementation, not author-tool reproduction. A separate 2026-09-23 author-checkpoint/backend sufficient-adapter comparison is now archived below; its frozen20 batch stopped after a backend ERROR, so complete-cohort comparison remains unfinished. Do not conflate these two experiments or their numerical grades. |
 | SpecSphere and unavailable certification artifacts | Published certification claims | The audited case series records artifact/retrieval availability and machine-checkable assumptions without inventing an executable comparison. | Survey-only; not presented as a runnable baseline. |
 | alpha,beta-CROWN | State-of-the-art static-network verification | Its frontend rejects the full dynamic-dispatch ONNX graph at `GatherElements`; Route A specialization converts the same model into four accepted static expert graphs. This project extends the verifier's input domain rather than competing with its expert bounds. | Parser rejection and 4/4 specialization acceptance executed; official-scale numerical conformance completed on 318 branches, while formal expert certificates remain gated on outward rounding. |
 | Monolithic MILP/HZ | Standard single-formulation exact or mixed-integer reference | Route-conditioned branches have substantially smaller structural binary width when multiple experts are feasible. On the frozen 20-row common cohort, Route A solves 12 rows and the true single-formulation F0 baseline solves 8; discordance is 5 versus 1 (exact paired p=0.21875), so the result is descriptive and not a dominance claim. | Executed with shared F0 semantics and 900-second row deadline; all 2 UNSAFE rows replay in both systems. Runtime is not treated as paired because executions were not interleaved. |
@@ -75,3 +75,26 @@ adapter. This validates the comparison path but supplies no ACT speed or
 coverage advantage. The three shortcuts remain default-off, all 19 output
 properties retained, and no source-complete claim is made. See the
 [four-request archive](../docs/metamoe_checked_paired_smoke_result_20260923_r1.md).
+
+## New-input author sufficient-adapter comparison (2026-09-23)
+
+The separately frozen5CIFAR10+5MNIST cohort has20 terminal rows, but only
+15 executions:14 normal returns,1 authorBaB ERROR and5 registered fail-stop
+omissions. On the7 normally returned input pairs, ACT accepts MNIST1,3 under
+HZ_POLICY_ACCEPTED and returns UNKNOWN on all5CIFAR10 inputs; the author
+strict-route-invariance sufficient adapter returns numerical positive filters
+on all7. There is no ACT-only positive, new route-changing certificate or
+performance victory. Author MNIST7 fails a BaB lAs consistency assertion;
+this cost and all omitted rows remain visible, not recoded as model failures.
+The missing3input pairs prevent a full-cohort comparison. These are different
+numerical contracts, not an unconditional formal-SAFE competition.
+
+ACT's133 recorded output rows comprise56 native infeasibility acceptances and
+77 local query TIMEOUTs; routes/base assignments/nonzero checks completed.
+This identifies an execution limit, not proven relaxation insufficiency.
+All attempted costs include the author error:ACT190.163s/7calls,
+author309.331s/8calls; these unequal, differently terminated denominators are
+not a speedup ratio. On seven complete pairs ACT is slower by19.108s mean;
+the two common positive MNIST pairs differ by2.606s mean. Source/guard lowering
+and native numeric bounds remain trusted. See the
+[stopped-run result, audit and limits](../docs/metamoe_checked_small_result_20260923_r1.md).

@@ -1,5 +1,25 @@
 # MoE project handoff
 
+FROZEN20 AUTHOR COMPARISON STOPPED / ARCHIVED (2026-09-23):
+Execution HEAD6aba571243, config97e9fcb8 unchanged. Read
+`metamoe_checked_small_result_20260923_r1.md`, independent archive/analysis.
+14normal returns +1ERROR +5NOT_STARTED_AFTER_ERROR; NOT20 executed successes.
+MNIST7 author BaB crashes at branching_domains.py:291, lAs length assertion,
+252.922s; registered fail-stop honored, no retry/skip/resume/backend patch.
+ACT2POSITIVE/5UNKNOWN/3notstarted; author7numericalfilters/1ERROR/2notstarted.
+Seven normal pairs: common positives MNIST1,3; author-only fiveCIFAR; ACT-only0.
+Grades different; route-stable all7ACT; no ACTwin/newroutechanging/sourceproof.
+ACT all133outputrows recorded:56excluded/77localTIMEOUT, base/route/nonzero
+complete. This diagnoses query execution limits, NOT relaxation impossibility.
+499.494s charged,501.578s batch incl postflight; error cost retained; missing
+times null not0. Saved audit PASS0; second solver/support/sign-helper-disabled
+audit identical. ZeroUNSAFE explicit replayledger. Seven analysis controlsPASS.
+No running/queued experiment. Seal this run; next requires separately scoped
+authorBaB compatibility control and NEW execution freeze, not resuming old
+manifest. ACT saved query-budget analysis may proceed without new solving;
+do not alter relaxation/time/samples based on this stopped cohort. Prior
+freeze-only and smoke entries below are historical, not current job status.
+
 AUTHOR-MATCHED SMALL COMPARISON FROZEN, NOT EXECUTED (2026-09-23):
 User's ordered task complete through freeze. Read
 `metamoe_checked_small_freeze_20260923_r1.md` and saved audit PASS0.
