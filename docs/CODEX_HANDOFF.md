@@ -1,5 +1,17 @@
 # MoE project handoff
 
+COMBINED CHECKED / AUTHOR SMOKE COMPLETE (2026-09-23):
+Read `metamoe_checked_paired_smoke_result_20260923_r1.md` and independent archive.
+Impla9f151804/freeeze603129df0; 4/4 old requests complete, audit PASS0,
+separate2/2 original UNSAFE replay, smoke gate TRUE. MNIST0 ACT policy positive
+9.445801s vs author sufficient numerical filter7.826143s; CIFAR0 both center
+UNSAFE. Same positive set; NOT ACT speed/coverage win. All19 ACT properties,
+route coverage and exact stored-HZ sign checked; positive source lowering still
+trusted.132 ACT/97 pinned tests pass. No running jobs. Next separately freeze
+5 raw-order clean-correct per dataset (10inputs/20calls),exclude previously
+used inputs, SAME methods/model/normalized2/255/300s, no outcome selection;
+freeze does not launch. Independent BN identity review remains separate.
+
 COMBINED CHECKED / AUTHOR-MATCHED SMOKE PREPARED (2026-09-23):
 User authorizes optional composition, fresh same-object author smoke, then
 separate small-cohort freeze ONLY after the smoke passes. Read

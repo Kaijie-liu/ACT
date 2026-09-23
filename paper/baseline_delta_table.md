@@ -66,3 +66,12 @@ calls. This demonstrates avoidance of unnecessary optimization on one old
 request, not tighter relaxation, new coverage or author-tool superiority.
 The upstream source/guard assumptions and native infeasibility trust remain.
 See the [separate result](../docs/metamoe_nonzero_precheck_result_20260923_r1.md).
+
+Fresh combined-configuration author smoke retains two old inputs and complete
+end-to-end charging. Both arms replay the CIFAR10/0 center violation and both
+accept MNIST/0 under their distinct numerical contracts. ACT takes 9.446 s
+versus 7.826 s for the unchanged author-backend route-invariance sufficient
+adapter. This validates the comparison path but supplies no ACT speed or
+coverage advantage. The three shortcuts remain default-off, all 19 output
+properties retained, and no source-complete claim is made. See the
+[four-request archive](../docs/metamoe_checked_paired_smoke_result_20260923_r1.md).
