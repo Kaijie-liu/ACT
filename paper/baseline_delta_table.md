@@ -44,3 +44,14 @@ This is one route-stable request, NOT route-changing or source-complete
 certification and NOT a new author-tool competition table. Historical defective
 runs are preserved, not retrospectively relabelled; any affected source claims
 must be reviewed using their actual converter/model identities.
+
+A separate two-call routing-feasibility control kept expert checked-base on in
+both arms and retained all 19 output obligations. Both accepted the same old
+route-stable request; full charged costs were 132.264 and 39.453 seconds.
+The checked arm supplied a fresh, fully checked point for the current guarded
+routing matrix instead of the 92.759-second native feasible-point search;
+score-support optimization stayed unchanged at about 30 seconds. Identical
+routing/expert matrices and complete obligations pass the saved-only audit.
+This is a single-input engineering cost control, not a new certificate gain,
+population speedup, source-complete guarantee or author-tool comparison.
+See the [result and limitations](../docs/metamoe_checked_routing_result_20260923_r1.md).

@@ -1,5 +1,22 @@
 # MoE project handoff
 
+GUARDED ROUTING CONTROL COMPLETE / SAME POSITIVE, LOWER COST (2026-09-23):
+Read `metamoe_checked_routing_result_20260923_r1.md` and saved audit. Impl
+32cfe732a / freeze104d22d90; exactly two oldMNIST0 executions, same repairedBN,
+expert checked-base ON both. PASS0, identical guarded routing/expert matrices,
+19/19 output violations infeasible both. Full HZ_POLICY_ACCEPTED both:
+132.264205s native ->39.452816s checked. Candidate analysis92.820852 ->.108426s;
+branch1 full guarded point .027941s, independent6852var/3781row check. Branch0
+still native infeasible. 100 ACT /58 pinned-env controls PASS. Native local
+overrun explicit; outer300s hard; support unchanged30.043572s. No new SAFE gain,
+route-changing result, source-complete proof or population speedup claim.
+All old defective/failed runs preserved. New path OPT-IN, no default changes.
+NEXT separately scoped sign-only support precheck may avoid optimizing a range
+whose existing fallback already excludes0; feasible point cannot supply that
+bound. Needs separate controls/freeze, not implemented here. Stop diagnosing
+this closed expert as relaxation failure. Source proof/author comparison remain
+separate. No experiment running/queued, no new cohort opened.
+
 GUARDED ROUTING CHECKED-POINT CONTROL PREPARED (2026-09-23):
 See `metamoe_checked_routing_protocol_20260923_r1.md`. Separate opt-in hook on
 route feasibility ONLY, full incoming guarded matrix checked, fresh per-query
