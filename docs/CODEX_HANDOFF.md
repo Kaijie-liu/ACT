@@ -1,5 +1,16 @@
 # MoE project handoff
 
+CHECKED BASE OPT-IN / TWO OLD-INPUT CONTROL PREPARED (2026-09-23):
+After repaired same-object PASS, added `checked_base_session.py`; one current
+proposal, full stored-matrix check, serialization/publication INSIDE original
+base deadline, unchanged native fallback/property/UNSAFE replay. No default
+activation, no reuse of old matrix evidence. Native-first then checked on
+MNIST0 only, same300s/30s/.1base and all19ordered properties; source-only repair
+shared by both. See `metamoe_checked_base_protocol_20260923_r1.md`.88 focused
+ACT/49 intake controls PASS before two further publication/one-attempt controls.
+Next tests/commit/push,freeze/commit/push,resourcecheck,run once,audit/archive.
+No new cohort/dedup/relaxation change. Need corrected logs before attribution.
+
 BN REPAIRED SAME-OBJECT CONFORMANCE PASS (2026-09-23):
 Read `metamoe_bn_corrected_result_20260923_r1.md` and archive first. Repair
 45f9a2094 / manifest cb91e48cd; one no-query run, saved-only audit PASS.
