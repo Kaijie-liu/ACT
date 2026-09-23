@@ -1,5 +1,13 @@
 # MoE project handoff
 
+META LAYER R1 RECORDER FAILURE / R2 PREPARATION (2026-09-23):
+R1 afterc30de592f stopped at second progress write (exclusive-create helper),
+no final matrix check/no accepted localization. Failed root fully retained.
+Read `metamoe_assignment_layers_protocol_20260923_r2.md`: recorder-only wrapper,
+new append-only layer files, same30s/8GiB/oldpoint/noquery. No R1/core changes.
+Next tests/commit/push, freezeR2,commit/push, runonce, saved-only audit. Never
+interpret R1 partial INPUT as source conformance or repeat oldcertification.
+
 META SAME-POINT LAYER CONTROL PREPARED (2026-09-23):
 See `metamoe_assignment_layers_protocol_20260923_r1.md`. Six controls in both
 environments validate point IR evaluation and factor-prefix interpretation.
