@@ -1,5 +1,19 @@
 # MoE project handoff
 
+META EXPERT UNKNOWN OBSERVATION PREPARATION (2026-09-23):
+User requests distinguishing output solver limits from representation precision.
+Read `metamoe_expert_diagnostic_protocol_20260922_r1.md`. Three source-level
+telemetry losses located; original R4 cannot separate native causes. New narrow
+runtime wrappers retain native status/message, validation, base/property phase,
+layer/lowering time and expert metadata. NO ACT production/source/options change,
+no extra query.14 synthetic controls pass in ACT and pinned intake environments;
+10 outer controls pass. Next commit/freeze then ONE original MNIST0 ACT call,
+same300s/2GiB/8GiB/19rows. No author/new cohort/retry/precision tuning. Expert
+feasibility allocation is at most30s; not an LP margin optimizer. Trace logging
+charged and potentially perturbing. Separate terminal/trace audit and archive
+required; no claim of retrospective R4 unique cause or new SAFE. This continues
+our own four untracked files left by the interrupted session, no other edits.
+
 META COMPLETE OLD-INPUT SMOKE EXECUTED / AUDITED (2026-09-22):
 Read `metamoe_csr_smoke_result_20260922_r4.md` and compact archive JSON.
 User explicitly authorized execution after freeze efa965880;4/4 calls complete
