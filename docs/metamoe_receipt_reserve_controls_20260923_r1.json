@@ -1,0 +1,132 @@
+{
+  "status": "PASS",
+  "controls_passed": true,
+  "real_requests_executed": 0,
+  "tests": 55,
+  "rows": [
+    {
+      "pattern": "test_receipt_reserve.py",
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_receipt_reserve.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "tests": 5,
+      "seconds": 1.5280446615070105,
+      "output": "[ACT] Auto-detecting project root: .\n[WARN] Gurobi license not found: modules/gurobi/gurobi.lic\n[INFO] Please place gurobi.lic in: modules/gurobi\ntest_checked_composition_same_obligations_and_native_matrices (test_receipt_reserve.ReserveControls.test_checked_composition_same_obligations_and_native_matrices) ... ok\ntest_invocation_identity_not_arbitrary_worker (test_receipt_reserve.ReserveControls.test_invocation_identity_not_arbitrary_worker) ... ok\ntest_output_only_and_registered_fractions (test_receipt_reserve.ReserveControls.test_output_only_and_registered_fractions) ... ok\ntest_scope_restores_after_exception (test_receipt_reserve.ReserveControls.test_scope_restores_after_exception) ... ok\ntest_status_one_returns_without_authorizing_infeasibility_and_keeps_worker (test_receipt_reserve.ReserveControls.test_status_one_returns_without_authorizing_infeasibility_and_keeps_worker) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 0.442s\n\nOK\n"
+    },
+    {
+      "pattern": "test_receipt_reserve_protocol.py",
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_receipt_reserve_protocol.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "tests": 5,
+      "seconds": 1.3642643857747316,
+      "output": "[ACT] Auto-detecting project root: .\n[WARN] Gurobi license not found: modules/gurobi/gurobi.lic\n[INFO] Please place gurobi.lic in: modules/gurobi\nsynthetic full_native ERROR 0.01703910157084465\nsynthetic full_native TIMEOUT 0.1380265112966299\nsynthetic receipt_reserve TIMEOUT 0.13820223696529865\ntest_exception_failstop_keeps_full_denominator (test_receipt_reserve_protocol.ProtocolControls.test_exception_failstop_keeps_full_denominator) ... ok\ntest_frozen_selection_order_and_no_new_parameters (test_receipt_reserve_protocol.ProtocolControls.test_frozen_selection_order_and_no_new_parameters) ... ok\ntest_native_budget_mutations_rejected (test_receipt_reserve_protocol.ProtocolControls.test_native_budget_mutations_rejected) ... ok\ntest_outer_deadline_partial_evidence_and_complete_cost (test_receipt_reserve_protocol.ProtocolControls.test_outer_deadline_partial_evidence_and_complete_cost) ... ok\ntest_replay_must_cover_variant_not_just_input (test_receipt_reserve_protocol.ProtocolControls.test_replay_must_cover_variant_not_just_input) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 0.307s\n\nOK\n"
+    },
+    {
+      "pattern": "test_protected_hz_solver.py",
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_protected_hz_solver.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "tests": 21,
+      "seconds": 2.5325341168791056,
+      "output": "[ACT] Auto-detecting project root: .\n[WARN] Gurobi license not found: modules/gurobi/gurobi.lic\n[INFO] Please place gurobi.lic in: modules/gurobi\ntest_base_feasible_all_properties_required (test_protected_hz_solver.ProtectedControls.test_base_feasible_all_properties_required) ... ok\ntest_child_exception_and_partial_candidate_retained (test_protected_hz_solver.ProtectedControls.test_child_exception_and_partial_candidate_retained) ... ok\ntest_constant_safe_no_native (test_protected_hz_solver.ProtectedControls.test_constant_safe_no_native) ... ok\ntest_context_restores_and_rejects_nested_installation (test_protected_hz_solver.ProtectedControls.test_context_restores_and_rejects_nested_installation) ... ok\ntest_existing_evaluation_directory_never_overwritten (test_protected_hz_solver.ProtectedControls.test_existing_evaluation_directory_never_overwritten) ... ok\ntest_expert_budget_cannot_be_expanded (test_protected_hz_solver.ProtectedControls.test_expert_budget_cannot_be_expanded) ... ok\ntest_expired_base_does_not_starve_properties_or_license_safe (test_protected_hz_solver.ProtectedControls.test_expired_base_does_not_starve_properties_or_license_safe) ... ok\ntest_expired_query_does_not_spawn (test_protected_hz_solver.ProtectedControls.test_expired_query_does_not_spawn) ... ok\ntest_frozen_tolerance_cannot_be_changed (test_protected_hz_solver.ProtectedControls.test_frozen_tolerance_cannot_be_changed) ... ok\ntest_infeasible_base_retains_nonvacuity_gate (test_protected_hz_solver.ProtectedControls.test_infeasible_base_retains_nonvacuity_gate) ... ok\ntest_late_native_candidate_cannot_be_accepted (test_protected_hz_solver.ProtectedControls.test_late_native_candidate_cannot_be_accepted) ... ok\ntest_native_hang_stopped_without_consuming_expert_budget (test_protected_hz_solver.ProtectedControls.test_native_hang_stopped_without_consuming_expert_budget) ... ok\ntest_publication_cost_can_demote_early_candidate (test_protected_hz_solver.ProtectedControls.test_publication_cost_can_demote_early_candidate) ... ok\ntest_real_base_hang_then_real_property_queries (test_protected_hz_solver.ProtectedControls.test_real_base_hang_then_real_property_queries) ... ok\ntest_status_one_invalid_candidate_is_unknown (test_protected_hz_solver.ProtectedControls.test_status_one_invalid_candidate_is_unknown) ... ok\ntest_status_one_valid_candidate_keeps_original_feasibility_gate (test_protected_hz_solver.ProtectedControls.test_status_one_valid_candidate_keeps_original_feasibility_gate) ... ok\ntest_tiny_safe_native_matches_legacy (test_protected_hz_solver.ProtectedControls.test_tiny_safe_native_matches_legacy) ... ok\ntest_tiny_unsafe_native_matches_legacy_and_recovers_input (test_protected_hz_solver.ProtectedControls.test_tiny_unsafe_native_matches_legacy_and_recovers_input) ... ok\ntest_truncated_candidate_is_error_not_positive (test_protected_hz_solver.ProtectedControls.test_truncated_candidate_is_error_not_positive) ... ok\ntest_unsupported_scope_no_fallback_to_unbounded_path (test_protected_hz_solver.ProtectedControls.test_unsupported_scope_no_fallback_to_unbounded_path) ... ok\ntest_wrong_candidate_binding_rejected (test_protected_hz_solver.ProtectedControls.test_wrong_candidate_binding_rejected) ... ok\n\n----------------------------------------------------------------------\nRan 21 tests in 1.505s\n\nOK\n"
+    },
+    {
+      "pattern": "test_metamoe_las_supervision.py",
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_metamoe_las_supervision.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "tests": 3,
+      "seconds": 1.2154864855110645,
+      "output": "[ACT] Auto-detecting project root: .\n[WARN] Gurobi license not found: modules/gurobi/gurobi.lic\n[INFO] Please place gurobi.lic in: modules/gurobi\ntest_deadline_partial_and_exception_costs (test_metamoe_las_supervision.SupervisorTests.test_deadline_partial_and_exception_costs) ... ok\ntest_event_identity_and_unjustified_restore_refused (test_metamoe_las_supervision.SupervisorTests.test_event_identity_and_unjustified_restore_refused) ... ok\ntest_protocol_hooks_restore_after_exception (test_metamoe_las_supervision.SupervisorTests.test_protocol_hooks_restore_after_exception) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 0.181s\n\nOK\n"
+    },
+    {
+      "pattern": "test_metamoe_checked_paired.py",
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-m",
+        "unittest",
+        "tests.test_metamoe_checked_paired.CompositionControls",
+        "-v"
+      ],
+      "returncode": 0,
+      "tests": 6,
+      "seconds": 2.4545323196798563,
+      "output": "[ACT] Auto-detecting project root: .\n[WARN] Gurobi license not found: modules/gurobi/gurobi.lic\n[INFO] Please place gurobi.lic in: modules/gurobi\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64, tf32=off\ntest_author_exact_box_property_and_identity_refusals (tests.test_metamoe_checked_paired.CompositionControls.test_author_exact_box_property_and_identity_refusals) ... ok\ntest_disabled_changes_nothing (tests.test_metamoe_checked_paired.CompositionControls.test_disabled_changes_nothing) ... ok\ntest_explicit_flags_and_identity (tests.test_metamoe_checked_paired.CompositionControls.test_explicit_flags_and_identity) ... ok\ntest_later_context_failure_unwinds_earlier (tests.test_metamoe_checked_paired.CompositionControls.test_later_context_failure_unwinds_earlier) ... ok\ntest_partial_full_restore_and_nested_refusal (tests.test_metamoe_checked_paired.CompositionControls.test_partial_full_restore_and_nested_refusal) ... ok\ntest_real_tie_legal_all_output_obligations (tests.test_metamoe_checked_paired.CompositionControls.test_real_tie_legal_all_output_obligations) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 1.203s\n\nOK\n"
+    },
+    {
+      "pattern": "test_checked_base_session.py",
+      "command": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_checked_base_session.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "tests": 15,
+      "seconds": 1.8677409198135138,
+      "output": "[ACT] Auto-detecting project root: .\n[WARN] Gurobi license not found: modules/gurobi/gurobi.lic\n[INFO] Please place gurobi.lic in: modules/gurobi\ntest_base_feasible_cannot_skip_unresolved_properties (test_checked_base_session.CheckedBaseControls.test_base_feasible_cannot_skip_unresolved_properties) ... ok\ntest_center_outside_guard_falls_back_on_same_deadline (test_checked_base_session.CheckedBaseControls.test_center_outside_guard_falls_back_on_same_deadline) ... ok\ntest_context_restores_on_exception_and_rejects_nesting (test_checked_base_session.CheckedBaseControls.test_context_restores_on_exception_and_rejects_nesting) ... ok\ntest_exception_keeps_partial_evidence_and_remaining_budget (test_checked_base_session.CheckedBaseControls.test_exception_keeps_partial_evidence_and_remaining_budget) ... ok\ntest_expired_no_proposal_no_native (test_checked_base_session.CheckedBaseControls.test_expired_no_proposal_no_native) ... ok\ntest_foreign_nonce_rejected (test_checked_base_session.CheckedBaseControls.test_foreign_nonce_rejected) ... ok\ntest_invalid_point_rejected (test_checked_base_session.CheckedBaseControls.test_invalid_point_rejected) ... ok\ntest_late_publication_rejects_valid_point_and_counts_time (test_checked_base_session.CheckedBaseControls.test_late_publication_rejects_valid_point_and_counts_time) ... ok\ntest_no_attempt_for_property_query (test_checked_base_session.CheckedBaseControls.test_no_attempt_for_property_query) ... ok\ntest_no_second_proposal_and_no_relaxed_tolerance (test_checked_base_session.CheckedBaseControls.test_no_second_proposal_and_no_relaxed_tolerance) ... ok\ntest_partial_point_rejected (test_checked_base_session.CheckedBaseControls.test_partial_point_rejected) ... ok\ntest_publication_exception_cannot_produce_certified (test_checked_base_session.CheckedBaseControls.test_publication_exception_cannot_produce_certified) ... ok\ntest_safe_differential_all_obligations_still_solved (test_checked_base_session.CheckedBaseControls.test_safe_differential_all_obligations_still_solved) ... ok\ntest_unsafe_still_needs_property_query_and_recoverable_input (test_checked_base_session.CheckedBaseControls.test_unsafe_still_needs_property_query_and_recoverable_input) ... ok\ntest_wrong_matrix_rejected (test_checked_base_session.CheckedBaseControls.test_wrong_matrix_rejected) ... ok\n\n----------------------------------------------------------------------\nRan 15 tests in 0.837s\n\nOK\n"
+    }
+  ],
+  "source_sha256": {
+    "act/back_end/solver/native_feasibility_worker.py": "193b9fceccba3a4597b39ffbd3653ef185a036038e495f068202020f698877e6",
+    "act/back_end/solver/receipt_reserve.py": "55ed38fbaf47fe0986a7e687e9f44d8e8e42603c430fbdb6b0fa4cef6d5000f0",
+    "scripts/metamoe_receipt_reserve.py": "b53bded3a2e59a23da0f7f84a2d08ae292ea27d724bd7e160fbed5015a35912b",
+    "scripts/audit_metamoe_receipt_reserve.py": "992b8361a0b982d4f4d0f958bfd2855129d21d7cd026a4c2631fd44aec17d5e3",
+    "tests/test_receipt_reserve.py": "7211874e3bc5a37729606f059e9cb570b4765c2ffdc0bdc4c0ac79f2ee9108b3",
+    "tests/test_receipt_reserve_protocol.py": "b2b390624792be07487547b1e65b36791a528a3f18ad4f025c903291627575dd",
+    "scripts/review_receipt_reserve_controls.py": "acc7fa79d5d4fb644592bf5adb1d3a749c84e139b6455416e12602d8a4002999",
+    "docs/metamoe_receipt_reserve_protocol_20260923_r1.md": "ee62baa3e4108e3eff666ccd26aa5a65c9e96bda2d7ae32d614c8f44794c6657"
+  },
+  "regression_sha256": {
+    "tests/test_receipt_reserve.py": "7211874e3bc5a37729606f059e9cb570b4765c2ffdc0bdc4c0ac79f2ee9108b3",
+    "tests/test_receipt_reserve_protocol.py": "b2b390624792be07487547b1e65b36791a528a3f18ad4f025c903291627575dd",
+    "tests/test_protected_hz_solver.py": "87a66043508b639d6663ae5f69595ed7eb7118da42f62e592c058600d197d87f",
+    "tests/test_metamoe_las_supervision.py": "64f523022c870c9caaeeaf268fbf209228d02f7f544b4c20fe63964cc8be6073",
+    "tests/test_metamoe_checked_paired.py": "9cf26b67c18cf1e646dabe1ba112b30f7e2ec204f56eec1ae1e68e1b57ee5de2",
+    "tests/test_checked_base_session.py": "5a5defe3727c6324fc114b55f26b1cae95e523e020c398346ecf5d6f484469a5"
+  },
+  "seconds": 10.963620327413082,
+  "trust": "control gate, not empirical performance or source proof"
+}

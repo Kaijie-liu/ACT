@@ -1,5 +1,30 @@
 # MoE project handoff
 
+TWO SEPARATE NEXT LINES PREPARED (2026-09-23):
+Read `metamoe_receipt_reserve_protocol_20260923_r1.md` and control gate
+`metamoe_receipt_reserve_controls_20260923_r1.json`: 55 controls PASS, no real
+requests run. Single factor: output expanded/contracted native soft cap 1.0 vs
+0.8; unchanged 300s request, 30s expert, equal-share row deadlines, native
+fallback, all obligations and numerical acceptance. Both arms pay identical
+new receipt instrumentation. Gate tests tiny native matrix/obligation equality,
+current-assignment composition, late/partial/exception rejection and outer
+terminal/cost accounting. Hypothesis only, no speedup/certificate claim.
+Next: separately freeze four observed prefix inputs (CIFAR1,2; MNIST1,3),
+eight ACT calls in a new root; DO NOT LAUNCH as part of freeze. No author arm,
+no comparison to old timing, no change of relaxation or default acceptance.
+
+Separate source/output line: `source_output_closure_scope_20260923_r1.md` and
+`configs/backend_controls/source_output_closure_scope_r1.json`. Protocol only,
+generic adapter/controls/execution gate PENDING. Deterministic seed0/rank0,
+CIFAR4088 label7, not input98 or success-selected. Bind old stored center/weights,
+derive NEW exact rational2/255 clipped domain and checked source; all28 pairs x
+9 output obligations=252, no historical bounds/facts/exclusions. New matrices
+require new certificates. No model load/propagation/solver executed in preparing
+the scope (hashing stored artifacts only). Input inclusion alone is insufficient;
+router/expert/guard and full output coverage must join on the same source. Keep
+trusted graph/program correspondence explicit; real graph is not native float.
+If bounded attempt cannot close, stop without sample substitution or input98.
+
 COMPETITION / GUARANTEE CLAIMS RECONCILED (2026-09-23):
 Read `competition_guarantee_disposition_20260923.md`. Saved-only manuscript
 revision, no new model/solver/propagation calls. Full MetaMoE followup4ACT vs

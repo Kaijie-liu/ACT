@@ -38,10 +38,18 @@ def finite_or_none(value):
     return float(value) if value is not None and math.isfinite(float(value)) else None
 
 
-def serve(model_file, model_hash):
+def native_fraction(scope, output_budget_fraction):
+    """One opt-in execution factor; base/router queries retain their old cap."""
+    if type(output_budget_fraction) not in (int, float) or output_budget_fraction not in (1.0, 0.8):
+        raise ValueError('registered output fractions are 1.0 and 0.8 only')
+    return output_budget_fraction if scope.get('phase') in ('expanded', 'contracted') else 1.0
+
+
+def serve(model_file, model_hash, *, output_budget_fraction=1.0):
     import numpy as np
     from scipy import sparse
     from scipy.optimize import milp, Bounds, LinearConstraint
+    native_fraction({}, output_budget_fraction)
     if digest(model_file) != model_hash:
         raise ValueError('base model binding')
     with np.load(model_file, allow_pickle=False) as z:
@@ -65,15 +73,28 @@ def serve(model_file, model_hash):
             if remaining <= .001:
                 raise TimeoutError('native entry exhausted')
             # This is still a soft native limit; the parent supplies the hard stop.
-            options = {'presolve': True, 'time_limit': remaining, 'mip_rel_gap': 0.0}
+            fraction = native_fraction(req['scope'], output_budget_fraction)
+            options = {'presolve': True, 'time_limit': remaining*fraction, 'mip_rel_gap': 0.0}
             publish(folder/'native_started.json', {'token': req['token'], 'model_sha256': model_hash,
                 'query_sha256': req['query_sha256'], 'options': options,
+                'output_budget_fraction': output_budget_fraction, 'applied_fraction': fraction,
                 'started_monotonic': time.monotonic(), 'n_integral': int(np.count_nonzero(model['integrality']))})
             remaining = req['deadline_monotonic']-time.monotonic()
             if remaining <= .001:
                 raise TimeoutError('publication exhausted')
             # Publication cost is conservatively subtracted, not extra native time.
-            options['time_limit'] = min(options['time_limit'], remaining)
+            options['time_limit'] = min(options['time_limit'], remaining*fraction)
+            # The parent deadline is NOT extended. This is a soft native cap,
+            # not a guarantee that HiGHS returns or that serialization fits.
+            publish(folder/'native_budget.json', {'token': req['token'], 'model_sha256': model_hash,
+                'query_sha256': req['query_sha256'], 'scope': req['scope'],
+                'deadline_monotonic': req['deadline_monotonic'],
+                'remaining_before_budget_publication': remaining,
+                'applied_fraction': fraction, 'proposed_native_seconds': options['time_limit']})
+            after_record = req['deadline_monotonic']-time.monotonic()
+            if after_record <= .001:
+                raise TimeoutError('budget receipt exhausted')
+            options['time_limit'] = min(options['time_limit'], after_record*fraction)
             native_start = time.monotonic()
             raw = milp(c=np.zeros(model['var_lb'].size), integrality=model['integrality'],
                 bounds=Bounds(model['var_lb'], model['var_ub']),
@@ -96,6 +117,7 @@ def serve(model_file, model_hash):
                 'mip_gap': finite_or_none(getattr(raw, 'mip_gap', None)),
                 'mip_node_count': int(getattr(raw, 'mip_node_count', 0) or 0),
                 'effective_options': options, 'native_seconds': ended-native_start,
+                'output_budget_fraction': output_budget_fraction, 'applied_fraction': fraction,
                 'finished_monotonic': time.monotonic()})
         except Exception as exc:
             publish(folder/'native_error.json', {'token': req.get('token'),
@@ -107,5 +129,6 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser()
     p.add_argument('--model', type=Path, required=True)
     p.add_argument('--sha256', required=True)
+    p.add_argument('--output-budget-fraction', type=float, choices=(1.0, 0.8), default=1.0)
     a = p.parse_args()
-    serve(a.model, a.sha256)
+    serve(a.model, a.sha256, output_budget_fraction=a.output_budget_fraction)
