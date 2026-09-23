@@ -1567,6 +1567,20 @@ class _LayerGraphBuilder:
     
     def _convert_batchnorm(self, mod: _BatchNorm) -> None:
         """Convert BatchNorm to SCALE + BIAS layers with restoration params."""
+        # FX maps this one node to the LAST emitted layer (BIAS). Its external
+        # predecessor must instead feed SCALE, and BIAS must read SCALE. Resolve
+        # by variable identity, not creation order: BN can start a later branch
+        # from an earlier activation or directly from the model placeholder.
+        inputs = list(self.prev_out)
+        producers = [layer.id for layer in self.layers if list(layer.out_vars) == inputs]
+        input_alias = any(self.node_to_layer_id.get(name) == -1 and values == inputs
+                          for name, values in self.node_outputs.items())
+        if len(producers) == 1:
+            scale_preds = producers
+        elif not producers and input_alias:
+            scale_preds = []  # wrapper subsequently connects this model root
+        else:
+            raise ValueError("BatchNorm has ambiguous or missing input-variable producer")
         gamma = mod.weight.detach() if mod.weight is not None else torch.ones(
             mod.num_features, dtype=mod.running_mean.dtype, device=mod.running_mean.device)
         beta = mod.bias.detach() if mod.bias is not None else torch.zeros(
@@ -1616,7 +1630,8 @@ class _LayerGraphBuilder:
                                  "affine": mod.affine, "track_running_stats": mod.track_running_stats},
             "batchnorm_state": batchnorm_state
         }
-        self._add_layer("SCALE", scale_params, self.prev_out, out_scale)
+        scale_id = self._add_layer("SCALE", scale_params, self.prev_out, out_scale)
+        self._fx_pred_override[scale_id] = scale_preds
         self.prev_out = out_scale
         
         # BIAS layer - marked as paired with SCALE
@@ -1627,7 +1642,8 @@ class _LayerGraphBuilder:
             "is_batchnorm_decomposition": True,
             "paired_with_scale": True
         }
-        self._add_layer("BIAS", bias_params, self.prev_out, out_bias)
+        bias_id = self._add_layer("BIAS", bias_params, self.prev_out, out_bias)
+        self._fx_pred_override[bias_id] = [scale_id]
         self.prev_out = out_bias
     
     def _convert_rnn_family(self, mod: Union[nn.RNN, nn.LSTM, nn.GRU], kind: LayerKind) -> None:

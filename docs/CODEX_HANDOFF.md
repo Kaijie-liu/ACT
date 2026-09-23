@@ -1,5 +1,18 @@
 # MoE project handoff
 
+BN EDGE REPAIR IMPLEMENTED / SAME-OBJECT CONTROL PREPARED (2026-09-23):
+User explicitly authorizes repair, same-object conformance, then fastbase.
+`torch2act.py` BN expansions now bind SCALE to exact input-variable producer
+and BIAS to that SCALE via existing graph overrides; no coefficient/support/
+numeric gate changes.14 initial source/IR controls PASS. Historical defective
+BN JSON retained; tests now assert repair. New protocol
+`metamoe_bn_repair_protocol_20260923_r1.md`: oldMNIST0/expert1,30s/8GiB,
+0nativequeries,one fresh proposal in3s,NEW matrix/assignment. Only converter
+gets an explicit source rebind; old manifests stay sealed and cannot be
+re-executed on this changed checkout without historical source. Next after
+controls commit/push,freeze,commit/push,runonce,audit. Fastbase not yet integrated;
+do not blame residual UNKNOWN on relaxation before corrected evidence exists.
+
 META SOURCE CONVERSION DEFECT LOCALIZED (2026-09-23):
 Read `metamoe_bn_edge_finding_20260923_r1.md` FIRST plus its layer archive and
 BN control JSON. Same-point layer R1 failed exclusive progress publication;
