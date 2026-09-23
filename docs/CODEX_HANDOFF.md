@@ -1,5 +1,29 @@
 # MoE project handoff
 
+SCOPED PROOF SUPERVISION / CANDIDATE AGGREGATION CONTROLLED (2026-09-24):
+Read `scoped_proof_supervision_protocol_20260924_r1.md` and control archive:
+53testsPASS (18new supervision/evidence +35unchanged source regressions).
+New separate `scoped_proof/` five-phase path: timed checkpoint/center intake,
+new source construction, independent source check, one LP candidate per row,
+fresh all-source/all-bound exact aggregation. Actual synthetic positive and
+nonpositive checkpoint-to-receipt runs pass fresh python-S saved-only audit.
+Controls cover exact residuals/nonoptimal candidates, wrong identities,
+missing/partial evidence, exception, low-RSS rejection, owned descendants,
+hard cutoff despite positive file, publication delay, and complete cost.
+No production gate/25%/MetaMoE settings changed; no real checkpoint/input read
+by controls and ZERO real proof requests run. Input98 remains sealed.
+
+Request budget300s, CPU2, sampled parent+owned-group8GiB; reserve2s INSIDE300
+for receipt; proposal stage gets half actual remaining work time, each native
+LP one equal-remaining-share attempt. No new budget per obligation. Exact
+candidate checker, not solver status/primal objective, licenses a bound.
+All252 strictly positive and timely complete receipt required; otherwise
+NOT_CLOSED/TIMEOUT/ERROR/RESOURCE_LIMIT, never bound-derived UNSAFE.
+Positive label is CHECKED_DECLARED_REAL_GRAPH_REQUEST; graph/program and
+preprocessing assumptions remain, native-float and route-change NOT proved.
+Next operation is independent real-request FREEZE ONLY after implementation
+commit; execution still requires a later explicit authorization.
+
 RECEIPT-RESERVE EXECUTED / SOURCE CONSTRUCTION CONTROLLED (2026-09-24):
 Started clean/synced at `f9898eb8e55916b999638d04dae6d0609fbc0173`; user
 authorized the frozen eight-call execution. Read
