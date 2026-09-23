@@ -1,5 +1,18 @@
 # MoE project handoff
 
+RECEIPT-RESERVE COMPARISON FROZEN / NOT RUN (2026-09-23):
+Implementation `cff54e000`,55controlsPASS. Config
+`configs/backend_controls/metamoe_receipt_reserve_r1.json` freezes eight calls,
+four observed prefix inputs, output native cap1.0vs0.8 ONLY. Independent saved-
+only freeze review PASS0 via `python -S scripts/review_receipt_reserve_freeze.py
+--check`; read `metamoe_receipt_reserve_freeze_review_20260923_r1.json` and
+`metamoe_receipt_reserve_freeze_20260923_r1.md`. Original obligations/gates and
+300s/30s budgets unchanged. New output root absent: ZERO real calls run/queued.
+User requested controls then a separate freeze, not automatic execution.
+Do not expand inputs, change fraction, retry failures or equate this with a
+source-proof repair. Separate source protocol still has adapter/control gate
+pending; all252 are PLANNED obligations, not completed checks/certificates.
+
 TWO SEPARATE NEXT LINES PREPARED (2026-09-23):
 Read `metamoe_receipt_reserve_protocol_20260923_r1.md` and control gate
 `metamoe_receipt_reserve_controls_20260923_r1.json`: 55 controls PASS, no real
