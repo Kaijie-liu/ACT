@@ -1,5 +1,20 @@
 # MoE project handoff
 
+SELECTED-SCORE NONZERO PRECHECK PREPARED (2026-09-23):
+User authorizes separate sign-only support study, no relaxation/time increase.
+Read `metamoe_nonzero_precheck_protocol_20260923_r1.md`. One source rebind
+extracts class-separated definedness-only hook (default unchanged); unresolved
+nonfinite bounds become null in records, never positives. Opt-in mode reads
+CURRENT complete guarded HZ and original generator enclosure, exact binary-
+rational sign check can only veto shortcut; no point-to-bound substitution.
+Fallback gets remaining original support allocation; outer300s unchanged.
+Both arms keep route+expert checked points ON. Same oldMNIST0/19properties,
+no new cohort/relaxation. 121 ACT/86 pinned-env tests PASS, including final
+null-record control. Initial uninitialized test invocation hit
+7 explicit CPU-entry refusals; harness now initializes required CPU/float64,
+not a source/test threshold change. Old manifests kept sealed after hook rebind.
+Next commit/push,freeze/commit/push,resources,run two requests once,audit/archive.
+
 GUARDED ROUTING CONTROL COMPLETE / SAME POSITIVE, LOWER COST (2026-09-23):
 Read `metamoe_checked_routing_result_20260923_r1.md` and saved audit. Impl
 32cfe732a / freeze104d22d90; exactly two oldMNIST0 executions, same repairedBN,

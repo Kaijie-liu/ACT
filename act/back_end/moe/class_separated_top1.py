@@ -150,6 +150,16 @@ def validate_replay(model, point, lower, upper, rows, thresholds):
     return bool(torch.isfinite(out).all() and ((out @ rows.T) < thresholds).any())
 
 
+def selected_score_support(hz, row, *, time_limit):
+    """Definedness-only callsite; default support policy is unchanged.
+
+    Separate opt-in controls may replace this binding, never the general
+    support interface used for expert/output or weighted-property bounds.
+    """
+    from act.back_end.solver.solver_hz import hz_support_bounds
+    return hz_support_bounds(hz, [row], time_limit=time_limit, relax_binaries=False)
+
+
 def verify_class_separated_box(model, *, center, lower, upper, rows, thresholds,
                                total_seconds=300.0, hybridz_config=None):
     """Tier-1 HZ-policy result for q @ output >= threshold on ALL legal top-1s.
@@ -159,7 +169,6 @@ def verify_class_separated_box(model, *, center, lower, upper, rows, thresholds,
     for a hard deadline (the deployment runner does so). No new solver gate.
     """
     from act.back_end.moe.route_a import RouteAEngine
-    from act.back_end.solver.solver_hz import hz_support_bounds
     from act.front_end.specs import OutKind, OutputSpec
     from act.util.stats import VerifyStatus
     from act.util.device_manager import get_default_device
@@ -231,11 +240,12 @@ def verify_class_separated_box(model, *, center, lower, upper, rows, thresholds,
         remaining = deadline - time.monotonic()
         if remaining <= 0:
             return finish("TIMEOUT", "nonzero_deadline")
-        support = hz_support_bounds(by_expert[i].conditioned_router, [i],
-                    time_limit=min(30.0, remaining / (len(candidates.candidates) - pos)), relax_binaries=False)
+        support = selected_score_support(by_expert[i].conditioned_router, i,
+                    time_limit=min(30.0, remaining / (len(candidates.candidates) - pos)))
         lo, hi = float(support.bounds.lb.item()), float(support.bounds.ub.item())
         proven = math.isfinite(lo) and math.isfinite(hi) and lo <= hi and (lo > 0 or hi < 0)
-        result["nonzero_obligations"].append({"expert": i, "lower": lo, "upper": hi,
+        result["nonzero_obligations"].append({"expert": i,
+            "lower": lo if math.isfinite(lo) else None, "upper": hi if math.isfinite(hi) else None,
             "lower_status": list(support.lower_status), "upper_status": list(support.upper_status),
             "accepted": proven})
     statuses = dict(report.expert_results)
