@@ -1,5 +1,25 @@
 # MoE project handoff
 
+META PROTECTED EXPERT CONTROL EXECUTED / BUDGET ACCESS FIXED (2026-09-23):
+Read `metamoe_protected_result_20260923_r1.md` + compact archive. Afterffdf8008a,
+ONE oldMNIST0 run,unchanged300s outer/30s expert: COMPLETED157.480s,UNKNOWN.
+Base capped10%,stopped3.007s→UNKNOWN; ALL19 properties reach native entry,
+3 complete/status2/exclusions(rows11,15,18),16 localTIMEOUT/UNKNOWN,0unvisited.
+Expert28.226s;no extra time/relaxation/tolerance/guard change. Base UNKNOWN
+does not licenseSAFE; historical feasible result NOT imported.18child launches,
+all reaped;maxlocal cleanup/publication overrun.012704s charged. Candidate path
+still92.173s,score support30.056s,unchanged. Coverage[1]/excluded[0],nonzero
+fast-range unchanged;1282integer factors retained.54pre-freeze+2archivecontrols
+PASS;504bindings/155rawfiles/124closedtraceevents; separateaudit+freshsaved
+reconstruction PASS. Audit launcher initially lackedPYTHONPATH,corrected without
+frozen-code edit or experiment retry; see result note. No SAFE/sourceproof,
+pairedspeed claim,newcohort or default backend replacement. STOPR1; do not
+confuse19entries with19completed calls or UNKNOWN withweakrelaxation. Next
+execution/evidence option requires newcontrols/freeze: current-request valid
+expert-factor witness avoiding redundantbase search; router/historicalwitness
+alone is insufficient. Candidate soft-limit isolation separately scoped.
+All older preparation/freeze descriptions below are historical.
+
 META PROTECTED EXPERT CONTROL FROZEN (2026-09-23):
 Implementation f2c872df7; config `configs/recent_moe/metamoe_protected_smoke_r1.json`
 SHA256 7a8e31de3412657a8d2d2fc9b5d19e5f7847c7aa3655e80f223da64710fe23e0.
