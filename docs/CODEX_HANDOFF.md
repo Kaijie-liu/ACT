@@ -1,5 +1,27 @@
 # MoE project handoff
 
+META CURRENT ASSIGNMENT / SOURCE MISMATCH AUDITED (2026-09-23):
+Read `metamoe_current_assignment_result_20260923_r1.md` and companion archive.
+Saved-only R2: one deterministic point, 6,918 variables / 3,847 rows, 0.01859s
+construction+full policy check, zero native queries. Independent scalar-row
+audit PASS: all16 historical UNKNOWN expanded queries contain this HZ point
+under unchanged float policy. Rows0..9 are byte-identical queries; 14.2717s
+total / 12.8390s repeated calls. No dedup/default integration or old relabel.
+IMPORTANT new bounded replay after751f58b76: fresh matrix hash matches; recovered
+input exactly old center; source/padded expert agree, source margin>=1.600795,
+but HZ output differs by up to3.203508 and violates16rows. Status
+HZ_SOURCE_POINT_MISMATCH, NOT original UNSAFE or new SAFE. Zero new native
+queries/proposals; replay9.728s charged /10.260s total. Independent saved-only
+audit PASS, no forward rerun; all raw failedR1/successR2/replay hashes archived.
+55 focused tests PASS in ACT;45 new tests PASS in pinned intake environment.
+NEXT: locate first source/conversion/propagation/factor-map divergence using a
+separately bounded same-point control, no optimizer/newseed. Do NOT blame a
+particular operator, unique relaxation cause or unsoundness without evidence.
+Do NOT integrate source witness shortcut before this check. Deduplication is
+a separate control; existing numerical/UNSAFE replay gates stay. R1 stopped;
+no certification experiment running or queued. Preparation entries below
+are historical.
+
 META ONE-POINT PROVENANCE REPLAY FROZEN (2026-09-23):
 Implementation0a1f871af,config `configs/recent_moe/metamoe_assignment_replay_r1.json`
 SHA256192f773968577dd21c990ff3faae8e04587566c235f43bdd8e6bcf5e56aed5bc.
