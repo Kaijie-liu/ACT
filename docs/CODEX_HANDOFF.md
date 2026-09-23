@@ -1,5 +1,21 @@
 # MoE project handoff
 
+SCOPED PROOF REAL REQUEST FROZEN / NOT RUN (2026-09-24):
+Impl `fe722caf33c7a22286084e51bdfd995206a3adae`; read
+`scoped_proof_execution_freeze_20260924_r1.md`. Config
+`configs/backend_controls/scoped_proof_execution_r1.json`, SHA256
+`0f2ada11d86ab74f923b42a8a057716aed2fa7b4ee31e26f06f0510168aeadc5`.
+Independent freeze reviewPASS0 checks494source files, unchanged original
+scope/assets,53passed controls, all252 obligations and absent new outputroot.
+One seed0/rank0 CIFAR4088 label7 only;300s/2CPU/sampled8GiB, no old proof
+reuse/pair exclusions/tuning. ZERO real requests executed or queued; freeze
+hashes assets only, no real model/tensor decode or native proof query.
+Next requires explicit execution authorization, then run ONCE and independently
+audit/archive whether positive, nonpositive, partial, timeout or error. Do not
+rerun difficult rows, increase time, claim route change from pair enumeration,
+reopeninput98 or upgrade historical23 source-gap gains. Commands in freeze doc.
+Earlier “next operation freeze” text below is superseded by this entry.
+
 SCOPED PROOF SUPERVISION / CANDIDATE AGGREGATION CONTROLLED (2026-09-24):
 Read `scoped_proof_supervision_protocol_20260924_r1.md` and control archive:
 53testsPASS (18new supervision/evidence +35unchanged source regressions).
