@@ -29,3 +29,18 @@ and negative representation controls; staged normalized top-k semantics across
 two gate families; artifact-level certification-gap auditing; and a replayable,
 hash-anchored MoE verification artifact. Numerical “outperformance” is reserved
 for the B3 common-task table.
+
+## MetaMoE intake repair control (2026-09-23; separate from the table)
+
+The author checkpoint intake exposed an ACT BN expansion edge defect. A new
+converter version restores SCALE -> BIAS and passes same-object source/IR/HZ
+point conformance; this is not an all-domain source equivalence proof. On
+one old MNIST0 request, both corrected-source arms exclude all 19 output
+violations, but native base feasibility times out. A new opt-in checked
+current assignment closes that nonvacuity gate, yielding
+`POSITIVE / HZ_POLICY_ACCEPTED` under unchanged budgets and numerical gates.
+See the [audited control](../docs/metamoe_checked_base_result_20260923_r1.md).
+This is one route-stable request, NOT route-changing or source-complete
+certification and NOT a new author-tool competition table. Historical defective
+runs are preserved, not retrospectively relabelled; any affected source claims
+must be reviewed using their actual converter/model identities.

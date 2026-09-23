@@ -1,5 +1,25 @@
 # MoE project handoff
 
+CHECKED BASE REAL CONTROL COMPLETE / ONE POLICY POSITIVE (2026-09-23):
+Read `metamoe_checked_base_result_20260923_r1.md`, saved audit and diagnosis.
+Impl b348e0254 / freeze754a43ef3: two oldMNIST0 requests, repairedBN both arms,
+300s/30s/.1base unchanged. Independent saved audit PASS0; identical matrix.
+Both arms exclude19/19outputviolations. NativebaseUNKNOWN3.0047s -> fullUNKNOWN;
+checked freshbase feasible0.03686s -> fullPOSITIVE/HZ_POLICY_ACCEPTED130.968s.
+Expert4.704s ->1.742s; fullnative135.027s. No relaxation change or extra budget.
+90 ACT /51 overlapping pinned-env tests pass. Candidate[1],excluded[0]: this
+is route-STABLE and policy-level, NOT source-complete or newroutechangingSAFE.
+Archive has all native evidence, traces, terminal/costs; no rawmodel committed.
+No experiment running/queued. Default solver unchanged, fastbase OPT-IN.
+Saved-only diagnosis: no remaining expert output obligations; router/candidate
+92.26s +nonzero support30.05s dominate93.4% cost. Stop chasing this solved
+expert's relaxation. If continuing, separately scope current-point feasibility
+for router/support with each extra constraint checked and unchanged budgets;
+do NOT mix dedup, tighter bounds, larger cohort, or trust-gate changes.
+BN source/IR/HZ point conformance is established only for frozen object;
+global source conversion proof and identity-specific historical impact review
+remain separate. All old defective runs and failed attempts are retained.
+
 CHECKED BASE OPT-IN / TWO OLD-INPUT CONTROL PREPARED (2026-09-23):
 After repaired same-object PASS, added `checked_base_session.py`; one current
 proposal, full stored-matrix check, serialization/publication INSIDE original

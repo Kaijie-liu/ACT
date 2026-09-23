@@ -1,0 +1,131 @@
+{
+  "analysis": "SAVED_ONLY_POSTHOC",
+  "archive_sha256": "271783aeae777c468a7f74ff04747472ed5312dd258f6df65ce6ad4b76c95885",
+  "rows": [
+    {
+      "variant": "native",
+      "full_status": "UNKNOWN",
+      "full_seconds": 135.02710969373584,
+      "stage_seconds": {
+        "act.back_end.moe.hz_routing.analyze_candidates": 92.98122520558536,
+        "ProtectedHZSolver.evaluate_spec": 4.70558824762702,
+        "act.back_end.solver.solver_hz.hz_support_bounds": 30.053963417187333
+      },
+      "base_status": "unknown",
+      "base_seconds": 3.004699967801571,
+      "property_query_seconds": 1.6725702956318855,
+      "completed_expanded_infeasibility": 19,
+      "remaining_expert_output_obligations": 0,
+      "distinct_expanded_queries": 10,
+      "identical_query_groups": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        [
+          10
+        ],
+        [
+          11
+        ],
+        [
+          12
+        ],
+        [
+          13
+        ],
+        [
+          14
+        ],
+        [
+          15
+        ],
+        [
+          16
+        ],
+        [
+          17
+        ],
+        [
+          18
+        ]
+      ],
+      "router_and_nonzero_observed_fraction": 0.9111887894352265
+    },
+    {
+      "variant": "checked",
+      "full_status": "POSITIVE",
+      "full_seconds": 130.96795227751136,
+      "stage_seconds": {
+        "act.back_end.moe.hz_routing.analyze_candidates": 92.26204367168248,
+        "ProtectedHZSolver.evaluate_spec": 1.7433127146214247,
+        "act.back_end.solver.solver_hz.hz_support_bounds": 30.0492174141109
+      },
+      "base_status": "feasible",
+      "base_seconds": 0.03686285950243473,
+      "property_query_seconds": 1.6794244889169931,
+      "completed_expanded_infeasibility": 19,
+      "remaining_expert_output_obligations": 0,
+      "distinct_expanded_queries": 10,
+      "identical_query_groups": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        [
+          10
+        ],
+        [
+          11
+        ],
+        [
+          12
+        ],
+        [
+          13
+        ],
+        [
+          14
+        ],
+        [
+          15
+        ],
+        [
+          16
+        ],
+        [
+          17
+        ],
+        [
+          18
+        ]
+      ],
+      "router_and_nonzero_observed_fraction": 0.9339022177473226
+    }
+  ],
+  "checked_base_minimum_safety_margin": 1.6007953459257875,
+  "expanded_queries_containing_checked_base_point": 0,
+  "new_solves": 0,
+  "new_forward_passes": 0,
+  "old_results_relabelled": false,
+  "conclusion": "All 19 output obligations close in both repaired arms under the frozen HZ/HiGHS policy. Native UNKNOWN is base nonvacuity only. Checked base removes that barrier. No remaining expert output relaxation deficit is observed on this request.",
+  "limits": "One old, route-stable request; non-outward-rounded policy, trusted network/guard lowering and native infeasibility. Not source-complete, route-changing or population speedup evidence.",
+  "next": "Do not tighten this solved expert representation. Remaining observed cost is router/candidate and nonzero support execution; investigate separately under fresh controls if pursued.",
+  "analysis_source_sha256": "363167c73ff613377c142d168788ca106bf7061700b6744926df96c2ffaa8b30"
+}
