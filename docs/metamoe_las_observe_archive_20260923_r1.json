@@ -1,0 +1,862 @@
+{
+  "audit": "PASS",
+  "issues": 0,
+  "config_sha256": "760ea72d071ce23f496ebffd75d51c48bbfb13c1864fc4b15b726f04aeb513df",
+  "summary_sha256": "fe049f392b7bcf10f95f61637f0a77ac69347117bb002a9006a2db55dd20f53a",
+  "initial_keys": [
+    "/100",
+    "/47",
+    "/50",
+    "/53",
+    "/56",
+    "/82",
+    "/88",
+    "/94",
+    "/input-40"
+  ],
+  "returned_keys": [
+    "/47",
+    "/50",
+    "/53",
+    "/56"
+  ],
+  "missing_initially_zero_keys": [
+    "/100",
+    "/82",
+    "/88",
+    "/94",
+    "/input-40"
+  ],
+  "C": [
+    [
+      [
+        -1.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    ]
+  ],
+  "events": [
+    {
+      "event": "GET_LA",
+      "monotonic": 8990017.257555002,
+      "lAs": {
+        "/47": {
+          "shape": [
+            1,
+            21,
+            20,
+            32,
+            32
+          ],
+          "nonzero": 40960,
+          "dtype": "torch.float64"
+        },
+        "/50": {
+          "shape": [
+            1,
+            21,
+            28,
+            16,
+            16
+          ],
+          "nonzero": 14336,
+          "dtype": "torch.float64"
+        },
+        "/53": {
+          "shape": [
+            1,
+            21,
+            40,
+            8,
+            8
+          ],
+          "nonzero": 5120,
+          "dtype": "torch.float64"
+        },
+        "/56": {
+          "shape": [
+            1,
+            21,
+            56,
+            4,
+            4
+          ],
+          "nonzero": 1792,
+          "dtype": "torch.float64"
+        },
+        "/82": {
+          "shape": [
+            1,
+            21,
+            20,
+            32,
+            32
+          ],
+          "nonzero": 389120,
+          "dtype": "torch.float64"
+        },
+        "/88": {
+          "shape": [
+            1,
+            21,
+            28,
+            16,
+            16
+          ],
+          "nonzero": 136192,
+          "dtype": "torch.float64"
+        },
+        "/94": {
+          "shape": [
+            1,
+            21,
+            40,
+            8,
+            8
+          ],
+          "nonzero": 48640,
+          "dtype": "torch.float64"
+        },
+        "/100": {
+          "shape": [
+            1,
+            21,
+            56,
+            4,
+            4
+          ],
+          "nonzero": 17024,
+          "dtype": "torch.float64"
+        },
+        "/input-40": {
+          "shape": [
+            1,
+            21,
+            64
+          ],
+          "nonzero": 1216,
+          "dtype": "torch.float64"
+        }
+      },
+      "nodes": [
+        {
+          "name": "/47",
+          "type": "BoundRelu",
+          "used": true,
+          "perturbed": true,
+          "lA_none": false,
+          "output_shape": [
+            1,
+            20,
+            32,
+            32
+          ]
+        },
+        {
+          "name": "/50",
+          "type": "BoundRelu",
+          "used": true,
+          "perturbed": true,
+          "lA_none": false,
+          "output_shape": [
+            1,
+            28,
+            16,
+            16
+          ]
+        },
+        {
+          "name": "/53",
+          "type": "BoundRelu",
+          "used": true,
+          "perturbed": true,
+          "lA_none": false,
+          "output_shape": [
+            1,
+            40,
+            8,
+            8
+          ]
+        },
+        {
+          "name": "/56",
+          "type": "BoundRelu",
+          "used": true,
+          "perturbed": true,
+          "lA_none": false,
+          "output_shape": [
+            1,
+            56,
+            4,
+            4
+          ]
+        },
+        {
+          "name": "/82",
+          "type": "BoundRelu",
+          "used": true,
+          "perturbed": true,
+          "lA_none": false,
+          "output_shape": [
+            1,
+            20,
+            32,
+            32
+          ]
+        },
+        {
+          "name": "/88",
+          "type": "BoundRelu",
+          "used": true,
+          "perturbed": true,
+          "lA_none": false,
+          "output_shape": [
+            1,
+            28,
+            16,
+            16
+          ]
+        },
+        {
+          "name": "/94",
+          "type": "BoundRelu",
+          "used": true,
+          "perturbed": true,
+          "lA_none": false,
+          "output_shape": [
+            1,
+            40,
+            8,
+            8
+          ]
+        },
+        {
+          "name": "/100",
+          "type": "BoundRelu",
+          "used": true,
+          "perturbed": true,
+          "lA_none": false,
+          "output_shape": [
+            1,
+            56,
+            4,
+            4
+          ]
+        },
+        {
+          "name": "/input-40",
+          "type": "BoundRelu",
+          "used": true,
+          "perturbed": true,
+          "lA_none": false,
+          "output_shape": [
+            1,
+            64
+          ]
+        }
+      ]
+    },
+    {
+      "event": "DOMAIN_INIT",
+      "monotonic": 8990017.421367446,
+      "lAs": {
+        "/47": {
+          "shape": [
+            1,
+            1,
+            20,
+            32,
+            32
+          ],
+          "nonzero": 20480,
+          "dtype": "torch.float64"
+        },
+        "/50": {
+          "shape": [
+            1,
+            1,
+            28,
+            16,
+            16
+          ],
+          "nonzero": 7168,
+          "dtype": "torch.float64"
+        },
+        "/53": {
+          "shape": [
+            1,
+            1,
+            40,
+            8,
+            8
+          ],
+          "nonzero": 2560,
+          "dtype": "torch.float64"
+        },
+        "/56": {
+          "shape": [
+            1,
+            1,
+            56,
+            4,
+            4
+          ],
+          "nonzero": 896,
+          "dtype": "torch.float64"
+        },
+        "/82": {
+          "shape": [
+            1,
+            1,
+            20,
+            32,
+            32
+          ],
+          "nonzero": 0,
+          "dtype": "torch.float64"
+        },
+        "/88": {
+          "shape": [
+            1,
+            1,
+            28,
+            16,
+            16
+          ],
+          "nonzero": 0,
+          "dtype": "torch.float64"
+        },
+        "/94": {
+          "shape": [
+            1,
+            1,
+            40,
+            8,
+            8
+          ],
+          "nonzero": 0,
+          "dtype": "torch.float64"
+        },
+        "/100": {
+          "shape": [
+            1,
+            1,
+            56,
+            4,
+            4
+          ],
+          "nonzero": 0,
+          "dtype": "torch.float64"
+        },
+        "/input-40": {
+          "shape": [
+            1,
+            1,
+            64
+          ],
+          "nonzero": 0,
+          "dtype": "torch.float64"
+        }
+      }
+    },
+    {
+      "event": "GET_LA",
+      "monotonic": 8990018.73039107,
+      "lAs": {
+        "/47": {
+          "shape": [
+            64,
+            1,
+            20,
+            32,
+            32
+          ],
+          "nonzero": 389120,
+          "dtype": "torch.float64"
+        },
+        "/50": {
+          "shape": [
+            64,
+            1,
+            28,
+            16,
+            16
+          ],
+          "nonzero": 136192,
+          "dtype": "torch.float64"
+        },
+        "/53": {
+          "shape": [
+            64,
+            1,
+            40,
+            8,
+            8
+          ],
+          "nonzero": 48640,
+          "dtype": "torch.float64"
+        },
+        "/56": {
+          "shape": [
+            64,
+            1,
+            56,
+            4,
+            4
+          ],
+          "nonzero": 17024,
+          "dtype": "torch.float64"
+        }
+      },
+      "nodes": [
+        {
+          "name": "/47",
+          "type": "BoundRelu",
+          "used": true,
+          "perturbed": true,
+          "lA_none": false,
+          "output_shape": [
+            19,
+            20,
+            32,
+            32
+          ]
+        },
+        {
+          "name": "/50",
+          "type": "BoundRelu",
+          "used": true,
+          "perturbed": true,
+          "lA_none": false,
+          "output_shape": [
+            19,
+            28,
+            16,
+            16
+          ]
+        },
+        {
+          "name": "/53",
+          "type": "BoundRelu",
+          "used": true,
+          "perturbed": true,
+          "lA_none": false,
+          "output_shape": [
+            19,
+            40,
+            8,
+            8
+          ]
+        },
+        {
+          "name": "/56",
+          "type": "BoundRelu",
+          "used": true,
+          "perturbed": true,
+          "lA_none": false,
+          "output_shape": [
+            19,
+            56,
+            4,
+            4
+          ]
+        },
+        {
+          "name": "/82",
+          "type": "BoundRelu",
+          "used": true,
+          "perturbed": true,
+          "lA_none": true,
+          "output_shape": [
+            1,
+            20,
+            32,
+            32
+          ]
+        },
+        {
+          "name": "/88",
+          "type": "BoundRelu",
+          "used": true,
+          "perturbed": true,
+          "lA_none": true,
+          "output_shape": [
+            1,
+            28,
+            16,
+            16
+          ]
+        },
+        {
+          "name": "/94",
+          "type": "BoundRelu",
+          "used": true,
+          "perturbed": true,
+          "lA_none": true,
+          "output_shape": [
+            1,
+            40,
+            8,
+            8
+          ]
+        },
+        {
+          "name": "/100",
+          "type": "BoundRelu",
+          "used": true,
+          "perturbed": true,
+          "lA_none": true,
+          "output_shape": [
+            1,
+            56,
+            4,
+            4
+          ]
+        },
+        {
+          "name": "/input-40",
+          "type": "BoundRelu",
+          "used": true,
+          "perturbed": true,
+          "lA_none": true,
+          "output_shape": [
+            1,
+            64
+          ]
+        }
+      ]
+    },
+    {
+      "event": "DOMAIN_ADD",
+      "monotonic": 8990018.732396197,
+      "stored_keys": [
+        "/100",
+        "/47",
+        "/50",
+        "/53",
+        "/56",
+        "/82",
+        "/88",
+        "/94",
+        "/input-40"
+      ],
+      "returned_lAs": {
+        "/47": {
+          "shape": [
+            64,
+            1,
+            20,
+            32,
+            32
+          ],
+          "nonzero": 389120,
+          "dtype": "torch.float64"
+        },
+        "/50": {
+          "shape": [
+            64,
+            1,
+            28,
+            16,
+            16
+          ],
+          "nonzero": 136192,
+          "dtype": "torch.float64"
+        },
+        "/53": {
+          "shape": [
+            64,
+            1,
+            40,
+            8,
+            8
+          ],
+          "nonzero": 48640,
+          "dtype": "torch.float64"
+        },
+        "/56": {
+          "shape": [
+            64,
+            1,
+            56,
+            4,
+            4
+          ],
+          "nonzero": 17024,
+          "dtype": "torch.float64"
+        }
+      },
+      "nodes": [
+        {
+          "name": "/47",
+          "type": "BoundRelu",
+          "used": true,
+          "perturbed": true,
+          "lA_none": false,
+          "output_shape": [
+            19,
+            20,
+            32,
+            32
+          ]
+        },
+        {
+          "name": "/50",
+          "type": "BoundRelu",
+          "used": true,
+          "perturbed": true,
+          "lA_none": false,
+          "output_shape": [
+            19,
+            28,
+            16,
+            16
+          ]
+        },
+        {
+          "name": "/53",
+          "type": "BoundRelu",
+          "used": true,
+          "perturbed": true,
+          "lA_none": false,
+          "output_shape": [
+            19,
+            40,
+            8,
+            8
+          ]
+        },
+        {
+          "name": "/56",
+          "type": "BoundRelu",
+          "used": true,
+          "perturbed": true,
+          "lA_none": false,
+          "output_shape": [
+            19,
+            56,
+            4,
+            4
+          ]
+        },
+        {
+          "name": "/82",
+          "type": "BoundRelu",
+          "used": true,
+          "perturbed": true,
+          "lA_none": true,
+          "output_shape": [
+            1,
+            20,
+            32,
+            32
+          ]
+        },
+        {
+          "name": "/88",
+          "type": "BoundRelu",
+          "used": true,
+          "perturbed": true,
+          "lA_none": true,
+          "output_shape": [
+            1,
+            28,
+            16,
+            16
+          ]
+        },
+        {
+          "name": "/94",
+          "type": "BoundRelu",
+          "used": true,
+          "perturbed": true,
+          "lA_none": true,
+          "output_shape": [
+            1,
+            40,
+            8,
+            8
+          ]
+        },
+        {
+          "name": "/100",
+          "type": "BoundRelu",
+          "used": true,
+          "perturbed": true,
+          "lA_none": true,
+          "output_shape": [
+            1,
+            56,
+            4,
+            4
+          ]
+        },
+        {
+          "name": "/input-40",
+          "type": "BoundRelu",
+          "used": true,
+          "perturbed": true,
+          "lA_none": true,
+          "output_shape": [
+            1,
+            64
+          ]
+        }
+      ],
+      "C": [
+        [
+          [
+            -1.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ]
+      ]
+    }
+  ],
+  "result": {
+    "status": "ERROR",
+    "reason": "backend_nonzero_exit",
+    "request_id": "mnist_7",
+    "arm": "author",
+    "config_sha256": "760ea72d071ce23f496ebffd75d51c48bbfb13c1864fc4b15b726f04aeb513df",
+    "tensor_file_sha256": "de5118a679de9e3c2c9ef8b34662a1705ff356c6dbd67ac0d00dbb251463558c",
+    "label": 19,
+    "clean_prediction": 19,
+    "clean_route": 1,
+    "numerical_object": "same stored coefficients lifted to float64 real abstraction; not source-float proof",
+    "worker_seconds": 252.15034665353596
+  },
+  "receipt": {
+    "status": "COMPLETED",
+    "exit_code": 0,
+    "error": null,
+    "command": [
+      "/data1/Kane/MOE/envs/metamoe-author-cpu-20260921-r2/bin/python",
+      "/data1/Kane/MOE/ACT/scripts/metamoe_las_diagnostic.py",
+      "--worker"
+    ],
+    "deadline_seconds": 300,
+    "execution_including_preflight_seconds": 253.2547682914883,
+    "peak_sampled_group_rss_bytes": 2347335680,
+    "group_rss_limit_bytes": 8589934592,
+    "rss_poll_seconds": 0.05,
+    "rss_is_sampled_not_instantaneous_cap": true,
+    "postflight_in_execution_budget": false,
+    "source_unchanged": null,
+    "stdout_sha256": "4fed75aef4060bb22241a9193f7c0d6796b86020f20d0cbfe6cba2be9ea883fb",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "total_with_postflight_seconds": 253.2548438999802,
+    "receipt_own_write_excluded_from_this_clock": true
+  },
+  "batch_seconds": 253.5790770854801,
+  "files": {
+    "launch.json": {
+      "sha256": "21260d53291ff4deac3bdbb135577a41849c5dd0f4e4afe1bebee9d35a664026",
+      "bytes": 217
+    },
+    "mnist_7_author/backend.stderr": {
+      "sha256": "0af7755a4464b7073721180e3b6461293679d738969435e8b27446593f92deaa",
+      "bytes": 4881
+    },
+    "mnist_7_author/backend.stdout": {
+      "sha256": "99e8cb9c8dc5c4a2008e05bd881159df76c11db6467ee45811fc603d877b4b5d",
+      "bytes": 28692
+    },
+    "mnist_7_author/backend.yaml": {
+      "sha256": "e0c302182cbddc0ff8a6fe0bdd1d5f0db140a2399091c898e7dc7101096a990e",
+      "bytes": 1049
+    },
+    "mnist_7_author/backend_launch.json": {
+      "sha256": "66b45c81bb0e305c1785f545659604c71e97584cbc36bb24928a9733c4917561",
+      "bytes": 885
+    },
+    "mnist_7_author/instances.csv": {
+      "sha256": "1d0785af624159c04f2a0dc8aff8bef407c761d4bb8dccdcc95ca2e9d95fe48e",
+      "bytes": 92
+    },
+    "mnist_7_author/las_events.jsonl": {
+      "sha256": "06be33697b4679f14c042c477f80aafef3168a706d8a789feb7dc2ab5da0f9fc",
+      "bytes": 5870
+    },
+    "mnist_7_author/obligation_identity.json": {
+      "sha256": "fa14221b46da89ecbc315bd60a0887de0b523c25f910873640e2c099fd3be94b",
+      "bytes": 743
+    },
+    "mnist_7_author/prepared.json": {
+      "sha256": "dce029645e71711154f6d498b16f3f01e4106ec63fe5cfecd5186f6ba1221acc",
+      "bytes": 398
+    },
+    "mnist_7_author/receipt.json": {
+      "sha256": "91d18d175519220611f905180d1bb77f87b9c810f639c15ac3b7ffe91a2e79c6",
+      "bytes": 832
+    },
+    "mnist_7_author/request.vnnlib": {
+      "sha256": "63bb550feab78fe0ffcd61dbb99ff0903f817285405083ef0d0afeafcc73fd25",
+      "bytes": 526506
+    },
+    "mnist_7_author/request.vnnlib.compiled": {
+      "sha256": "ade4fc7b2f02fb2fbc0899358d694bc6ea2bf0ef63693f71e1015cd8f8b10ddd",
+      "bytes": 67005
+    },
+    "mnist_7_author/result.json": {
+      "sha256": "10a5927943c1728419ad3ecd032fd93cd12be253ad99b6b867577b0e3ed6b81e",
+      "bytes": 495
+    },
+    "mnist_7_author/stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "mnist_7_author/stdout.txt": {
+      "sha256": "4fed75aef4060bb22241a9193f7c0d6796b86020f20d0cbfe6cba2be9ea883fb",
+      "bytes": 119
+    },
+    "summary.json": {
+      "sha256": "fe049f392b7bcf10f95f61637f0a77ac69347117bb002a9006a2db55dd20f53a",
+      "bytes": 1277
+    }
+  },
+  "audit_seconds": 0.3550434559583664,
+  "new_solves": 0,
+  "automatic_followup": false,
+  "scope": "Reproduced metadata schema mismatch; not an independent bound/source proof."
+}

@@ -1,5 +1,21 @@
 # MoE project handoff
 
+AUTHOR lAs REPAIR PREPARED / OLD ERROR REPRODUCED (2026-09-23):
+User authorizes repair/control then FREEZE-ONLY followup. One separately
+frozen observation (6057f90a2) reproduces MNIST7 ERROR in253.255s; saved review
+PASS0. Initial9lA keys, remaining router-only C[-1,1,0...];5expert keys were
+zero then omitted asNone on update, causing9vs4domain assertion. Read
+`metamoe_las_observe_archive_20260923_r1.json` and
+`metamoe_las_repair_protocol_20260923_r1.md`. New explicit wrapper restores
+ONLY initially-zero, currently-None nodes independently checked disconnected
+from all nonzero property blocks; schema/graph/C mismatches stillERROR.
+No externalrepo edits/dependency changes/bounds/acceptance changes.17controls
+PASS in ACT and pinnedauthor envs. Next commit/freeze two oldauthor controls
+MNIST1,7, run once300s each, audit/replay/archive. Gate requires actual original
+domain insertion after justified restoration, not merely absence of traceback;
+UNKNOWN/TIMEOUT may pass compatibility, not efficacy. Then freeze newfull20
+same-cohort twoarm version ONLY; do not execute it or splice oldR1results.
+
 FROZEN20 AUTHOR COMPARISON STOPPED / ARCHIVED (2026-09-23):
 Execution HEAD6aba571243, config97e9fcb8 unchanged. Read
 `metamoe_checked_small_result_20260923_r1.md`, independent archive/analysis.
