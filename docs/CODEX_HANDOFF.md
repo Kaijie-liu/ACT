@@ -1,5 +1,21 @@
 # MoE project handoff
 
+META CURRENT-ASSIGNMENT RESEARCH PREPARED (2026-09-23):
+Read `metamoe_current_assignment_protocol_20260923_r1.md`. User requests
+current-request feasible assignments,not time/relaxation changes. New pure
+solver-free proposal recognizes appended ReLU equalities,then separate checker
+validates ALL original model rows/bounds/integrality and request/input/nonce/
+model identity. No cache/default backend integration; failure notinfeasibility.
+20controls in both envs +6 exact-query identity controls PASS. Two initial test
+fixture failures corrected/disclosed,not numeric-policy changes. Next after
+commit/push: ONE saved-protected-matrix diagnostic,zero native queries,no model
+loading/forward/rerun,all-zero free seed,3s proposal+check limit. Code refuses
+existing result directory. Preserve oldUNKNOWNs; archive separate checker/costs.
+Saved-only preliminary identity inspection finds output rows0..9 have EXACT
+same sparse query/threshold hash;19properties correspond10uniquequeries.
+Duplicate scheduling is NOT implemented or combined with this control. Neither
+native timeout nor one feasible base point establishes output safety/LPweakness.
+
 META PROTECTED EXPERT CONTROL EXECUTED / BUDGET ACCESS FIXED (2026-09-23):
 Read `metamoe_protected_result_20260923_r1.md` + compact archive. Afterffdf8008a,
 ONE oldMNIST0 run,unchanged300s outer/30s expert: COMPLETED157.480s,UNKNOWN.
