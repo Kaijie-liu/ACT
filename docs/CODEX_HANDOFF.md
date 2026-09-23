@@ -1,5 +1,20 @@
 # MoE project handoff
 
+REPAIRED AUTHOR FOLLOWUP FROZEN / NOT RUN (2026-09-23):
+Read `metamoe_las_followup_freeze_20260923_r1.md` and PASS0 freeze review.
+Config `configs/backend_controls/metamoe_las_followup_r1.json`, SHA256
+af662082da17e953960ba1127d0f0fcf8783f0dd5810ce9b0bd8f43ab6aa031c.
+Same10observed inputs/full20rotating calls, SAMEACT/settings/model/boxes;
+author explicit scoped lAs metadata repair. OriginalR1 remains14normal+
+1ERROR+5notstarted. Control passed compatibility ONLY: MNIST1filter7.059s,
+MNIST7TIMEOUT300.063s after7restorations/7native inserts. No new certificate.
+Independent freeze audit repeats saved control review with production helpers
+disabled, verifies source/roster/budget equality and absent newoutputroot.
+Newbatch has ZERO requests executed/queued. User asked repair/control/freeze,
+NOT launch: wait for execution authorization. Then run once, preserve fail-stop,
+separate replay/audit/archive/commit/push. Do not splice oldresults, call this
+fresh holdout, change300s/30s/margins/relaxation, or hide repairedauthor label.
+
 AUTHOR lAs COMPATIBILITY CONTROL PASS / FOLLOWUP FREEZE NEXT (2026-09-23):
 Read `metamoe_las_repair_result_20260923_r1.md` and control archivePASS0.
 Impl1581e3cd9/freeze8d782b09d, exactly2oldauthor requests: MNIST1 numerical
