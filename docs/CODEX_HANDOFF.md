@@ -1,5 +1,40 @@
 # MoE project handoff
 
+RECEIPT-RESERVE EXECUTED / SOURCE CONSTRUCTION CONTROLLED (2026-09-24):
+Started clean/synced at `f9898eb8e55916b999638d04dae6d0609fbc0173`; user
+authorized the frozen eight-call execution. Read
+`metamoe_receipt_reserve_result_20260924_r1.md` and hash-bound archive.
+Both arms2HZ-policy positives/2UNKNOWN; gain/loss0, noUNSAFE/error/outertimeout.
+Full-native69.665s vs reserve67.547s, one run each, NOT stable speedup.
+Worker starts23vs23, missing native runtime20vs20: no observed mechanism gain.
+Independent auditPASS0; query-disabled saved-only re-audit/archive reproduce.
+STOP_THIS_FACTOR: keep experimental, no default change, fraction search,
+expansion or new relaxation inference. No author arm in this study.
+
+Separate proof line: `scoped_source/` implements generic declared
+Linear/ReLU/Flatten eval selected-softmax top2 source capture, checked outward
+input, exact affine/ReLU factor derivation, shared router/expert join, ALL
+tie-legal pair guards and fresh complete output LP construction. Read
+`scoped_source_conversion_20260924_r1.md` and controls JSON:35testsPASS
+(17new+18regressions), solver/producer-free python-S checker, synthetic8x10
+inventory252 checked constructions. ZERO real4088/checkpoint/data loads or
+new real bound queries; ZERO positive lower-bound certificates. Do not call
+synthetic constructions252 completed real proofs. Original closure protocol
+identities still pass; input98 and historical23 gains remain sealed.
+Next gate: separate outer300s/RSS supervisor, new-bound candidates/exact checks,
+full coverage aggregation, partial/late/exception and full-cost controls before
+any real execution freeze. Cooperative deadline is not a hard watchdog.
+Graph/program correspondence and native-float limits remain explicit.
+
+Baseline state now in `author_baselines_status_20260924.md`: Meta author9/10
+numerical filters vsACT4/10policy, ACT-only0; six-paper full reproductions and
+ACT same-object tables NOT complete. DualRS2-input certification, RobustExperts
+two200epoch/full10k evaluations, RoME12terminals are done but different grades/
+tasks. J-TLAT public README-only and FeatureNoise full artifact not obtained.
+RoME code/weights ARE published; old pending-code claim is obsolete. Source
+containment gaps affect all23 historical main gains; no stronger guarantee.
+Entries below, including “eight calls not run”, are historical stages.
+
 RECEIPT-RESERVE COMPARISON FROZEN / NOT RUN (2026-09-23):
 Implementation `cff54e000`,55controlsPASS. Config
 `configs/backend_controls/metamoe_receipt_reserve_r1.json` freezes eight calls,
