@@ -1,5 +1,13 @@
 # MoE project handoff
 
+META ONE-POINT PROVENANCE REPLAY FROZEN (2026-09-23):
+Implementation0a1f871af,config `configs/recent_moe/metamoe_assignment_replay_r1.json`
+SHA256192f773968577dd21c990ff3faae8e04587566c235f43bdd8e6bcf5e56aed5bc.
+One savedR2factorassignment/oldMNIST0/expert1,30souter,no nativequery/newproposal.
+Afterpush run `act-py312/bin/python scripts/metamoe_assignment_replay.py --run`
+once in NEWroot; then independent saved-point/input-map/terminal audit. Fresh
+matrix mismatch rejects beforewitnessuse. Freeze generatedno forward orsolver.
+
 META SAVED ASSIGNMENT R2 VALID / ONE PROVENANCE REPLAY PREPARED (2026-09-23):
 After20e8647de,R2 saved-only diagnostic constructs+checks6918factorvalues against
 3847constraints in0.01859s,0nativequeries,maxequalityresidual2.78e-17. Raw under
