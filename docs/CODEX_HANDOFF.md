@@ -1,5 +1,19 @@
 # MoE project handoff
 
+AUTHOR lAs COMPATIBILITY CONTROL PASS / FOLLOWUP FREEZE NEXT (2026-09-23):
+Read `metamoe_las_repair_result_20260923_r1.md` and control archivePASS0.
+Impl1581e3cd9/freeze8d782b09d, exactly2oldauthor requests: MNIST1 numerical
+positive7.059411s; MNIST7 outerTIMEOUT300.063271s AFTER7justified zero metadata
+restorations and7original domain insertions. Compatibility gateTRUE, NOT a
+new certificate or efficacy pass.307.123s charged/307.812s batch. Independent
+reachability/event check and second production-helper-disabled audit match;
+saved full VNNLIB/YAML equivalence checks include timeout case.17controlsPASS
+in ACT/pinnedauthor. External trees/weights/dependencies unchanged. Original
+20batch/observationERROR remain sealed. Next commit/archive then FREEZE new
+full20 on SAMEobserved10inputs under newcfg/outputroot, ACTunchanged and author
+explicit compatibility wrapper; do not launch or splice R1results. No new
+sample/time/relaxation/backend search or source-complete claim.
+
 AUTHOR lAs REPAIR PREPARED / OLD ERROR REPRODUCED (2026-09-23):
 User authorizes repair/control then FREEZE-ONLY followup. One separately
 frozen observation (6057f90a2) reproduces MNIST7 ERROR in253.255s; saved review

@@ -98,3 +98,13 @@ not a speedup ratio. On seven complete pairs ACT is slower by19.108s mean;
 the two common positive MNIST pairs differ by2.606s mean. Source/guard lowering
 and native numeric bounds remain trusted. See the
 [stopped-run result, audit and limits](../docs/metamoe_checked_small_result_20260923_r1.md).
+
+The subsequent separately frozen compatibility control reproduces the author
+BaB failure as9initial lA keys versus4updated keys:5disconnected expert entries
+were zero initially and omitted asNone after pruning to a router obligation.
+An explicitly labelled runtime wrapper restores only structurally justified
+zero branching metadata, retaining original bounds/assertions. Old MNIST1
+keeps its numerical filter; MNIST7 completes7original domain insertions, then
+hits300s outerTIMEOUT. AuditPASS0 opens a compatibility gate, not a coverage
+or performance claim. The failed original20batch is not relabelled or completed
+by these controls. See the [repair limits](../docs/metamoe_las_repair_result_20260923_r1.md).
