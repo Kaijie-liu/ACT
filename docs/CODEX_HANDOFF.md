@@ -1,5 +1,20 @@
 # MoE project handoff
 
+META SAVED ASSIGNMENT R2 VALID / ONE PROVENANCE REPLAY PREPARED (2026-09-23):
+After20e8647de,R2 saved-only diagnostic constructs+checks6918factorvalues against
+3847constraints in0.01859s,0nativequeries,maxequalityresidual2.78e-17. Raw under
+`metamoe_current_assignment_20260923_r2`; R1unsortedCSRrefusal preserved.
+IMPORTANT: represented output at this base point violates ALL16 unresolvedrows;
+NOT yet original-modelUNSAFE. Exactqueryidentity confirmsrows0..9samequery,
+14.2717s total/12.8390s repeats;19props=10uniquequeries,7uniqueUNKNOWN. No historical
+relabel,no productionintegration. Next bounded source-correspondence diagnostic
+per `metamoe_assignment_replay_protocol_20260923_r1.md`: sameoldMNIST0/savedpoint,
+fresh router+guardedexpert propagation,MATRIXHASHMATCH required,recoverinput,
+fulloriginal forward;ZERO nativequeries/newproposals.30souter/8GiB/2GiB unchanged
+resourcepolicies,no retry.6newreplay+10existingoutercontrols PASS. Commit/push,
+freeze replay config,commit/push,run once,separate audit/archive. This checks
+point correspondence,not a fullverifier or global source-to-HZ proof.
+
 META CURRENT-ASSIGNMENT SAVED R1 REFUSED / R2 CSR REPAIR (2026-09-23):
 R1 diagnostic afterdcfb61971 made0nativequeries. Base assignment rejected
 `unsupported model shape/storage` (baseA unsorted,value_matrix sorted); grouping
