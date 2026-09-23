@@ -1,5 +1,15 @@
 # MoE project handoff
 
+BN REPAIRED SAME-OBJECT CONFORMANCE PASS (2026-09-23):
+Read `metamoe_bn_corrected_result_20260923_r1.md` and archive first. Repair
+45f9a2094 / manifest cb91e48cd; one no-query run, saved-only audit PASS.
+Same physical object source/IR error5.73e-14, source/HZ5.46e-14; all26layers
+<=8.49e-14. Fresh7950-variable/4879-row matrix, new full-checked assignment
+0.024294s; outer7.218s, total7.805s. Old6918-variable matrix/points/results
+sealed. This is point conformance, NOT all-domain lowering or SAFE.54 focused
+ACT tests pass. Next opt-in base-feasibility integration with same deadline
+and all output obligations; no relaxation diagnosis from old defective graph.
+
 BN EDGE REPAIR IMPLEMENTED / SAME-OBJECT CONTROL PREPARED (2026-09-23):
 User explicitly authorizes repair, same-object conformance, then fastbase.
 `torch2act.py` BN expansions now bind SCALE to exact input-variable producer

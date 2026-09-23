@@ -1,0 +1,104 @@
+{
+  "audit": "PASS",
+  "issues": 0,
+  "status": "POINT_CONFORMANCE_PASS",
+  "errors": {
+    "layer_max": 8.482103908136196e-14,
+    "source_vs_padded": 0.0,
+    "source_vs_ir": 5.728750807065808e-14,
+    "source_vs_hz": 5.46229728115577e-14
+  },
+  "base_check": {
+    "variables": 7950,
+    "rows": 4879,
+    "tolerance": 1e-07,
+    "max_equality_residual_fsum": 2.7755575615628914e-17
+  },
+  "point_comparison": {
+    "source_violated_rows": [],
+    "represented_violated_rows": [],
+    "source_minimum_margin": 1.600795345925858,
+    "max_abs_output_difference": 5.46229728115577e-14,
+    "input_n_cont": 5592,
+    "input_n_bin": 1260,
+    "status": "NO_VIOLATION_AT_POINT",
+    "full_model_violation": false
+  },
+  "model_sha256": "832189bb57759bb5700b0217d743c5c578d13c53293bca98255b2beda64fd53e",
+  "config_sha256": "1292a0a6739beba0d1e903743b1835424bc9ebc3f6299434f365009f8dfd4f22",
+  "receipt": {
+    "status": "COMPLETED",
+    "exit_code": 0,
+    "error": null,
+    "command": [
+      "/data1/Kane/MOE/envs/moe-author-cpu-py312-20260921/bin/python",
+      "/data1/Kane/MOE/ACT/scripts/metamoe_bn_corrected_control.py",
+      "--worker"
+    ],
+    "deadline_seconds": 30.0,
+    "execution_including_preflight_seconds": 7.2182340659201145,
+    "peak_sampled_group_rss_bytes": 1795543040,
+    "group_rss_limit_bytes": 8589934592,
+    "rss_poll_seconds": 0.05,
+    "rss_is_sampled_not_instantaneous_cap": true,
+    "postflight_in_execution_budget": false,
+    "source_unchanged": null,
+    "stdout_sha256": "8d2976e7bd0cd8faf6154be552532f3be2e038debbe42fdf09237700ab3fbc9d",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "total_with_postflight_seconds": 7.218312203884125,
+    "receipt_own_write_excluded_from_this_clock": true
+  },
+  "total_seconds": 7.805484671145678,
+  "assignment_seconds": 0.024294009432196617,
+  "files": {
+    "launch.json": {
+      "sha256": "bdb2b52c314738da197cfd64368d29293ed51d61fc8efc2a021cf38870d34229",
+      "bytes": 140
+    },
+    "terminal.json": {
+      "sha256": "f69154222105ea6d9d71da02ae6ea5ea1edcfb6fda917355b2e54d5b7013e95c",
+      "bytes": 7652
+    },
+    "worker/assignment.json": {
+      "sha256": "a20765bed457625c63d0a48db7426ce095ddb1db23374565e29da66f49d04518",
+      "bytes": 1081
+    },
+    "worker/base_model.npz": {
+      "sha256": "bc9e9872d43de2a008cf49b3e63225bc76e96f74706ae97d8439b7f458fe69d0",
+      "bytes": 7476224
+    },
+    "worker/input_map.npz": {
+      "sha256": "19edb5b8e1e72bc9da56653efe8a8f0c932e187fcfbb5c3f9b6c8893ee1f2437",
+      "bytes": 88314
+    },
+    "worker/proposal.npz": {
+      "sha256": "5a450772ce039e3874498dabea5e01dc6bfa828e93c641242173570030d243f8",
+      "bytes": 63864
+    },
+    "worker/receipt.json": {
+      "sha256": "9f682fd9e4e9ace2e3972ab105493a9940629937db7266ba5335c4897c1bcfee",
+      "bytes": 839
+    },
+    "worker/result.json": {
+      "sha256": "4df7a90b85039be76bc199fea1d62a27728608e05ee2e0d8e3c3fb30f8c8471c",
+      "bytes": 5961
+    },
+    "worker/stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "worker/stdout.txt": {
+      "sha256": "8d2976e7bd0cd8faf6154be552532f3be2e038debbe42fdf09237700ab3fbc9d",
+      "bytes": 297
+    },
+    "worker/values.npz": {
+      "sha256": "cad368dfbde45aedc79b5d9ae88d5af2234eeedfa87ebd70a310844ac46efc10",
+      "bytes": 2343402
+    }
+  },
+  "source_forward_reexecuted_by_auditor": false,
+  "new_native_queries": 0,
+  "claim": "Point conformance on the same object only; not all-domain conversion proof, SAFE or relaxation attribution.",
+  "audit_seconds": 0.38172045908868313,
+  "audit_source_sha256": "a982e7f70478e92b22dcd0a1ebd778e70356c6eb7da2c1cc68691f6278978c4e"
+}
