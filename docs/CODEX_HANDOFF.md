@@ -1,5 +1,25 @@
 # MoE project handoff
 
+META SOURCE CONVERSION DEFECT LOCALIZED (2026-09-23):
+Read `metamoe_bn_edge_finding_20260923_r1.md` FIRST plus its layer archive and
+BN control JSON. Same-point layer R1 failed exclusive progress publication;
+recorder-only R2 after32f1cfc5d completed7.026s, 0newnativequeries/proposals.
+Independent saved audit PASS: all26 layers HZ vs concreteIR <9.67e-13,
+final2.31e-14, but IR vs originalsource3.203508. Matrix unchanged. NOT SAFE.
+Sourceinspection+5 tiny no-solver controls reproduce a converter defect:
+BN expandsSCALE/BIAS, but FX-derived BIAS edge bypasses SCALE. Toysource20,
+converted12, local-edge-correctedtoy20. Realmodel not repaired/replayed yet;
+do NOT claim this is the only real mismatch or generic relaxation weakness.
+73 focused ACT tests pass (includes5 tests DETECTING known defect, not fix).
+PRODUCTION CONVERTER UNCHANGED. All historical UNKNOWN/failures preserved.
+NEXT: separately version converter internal/external edge repair + branched/
+multi-BN/source-conformance controls; audit affected sourceclaims by identity.
+Then SAME physical request source/IR/HZ comparison with NEW matrix identity,
+fresh checked assignment, no reuse of oldproof/point as validated evidence.
+Only after that consider fastbase integration; identicalquery dedup separate.
+No experiment running/queued, no cohort/native solving authorized implicitly.
+This finding supersedes earlier unspecific factor/propagation hypotheses.
+
 META LAYER R1 RECORDER FAILURE / R2 PREPARATION (2026-09-23):
 R1 afterc30de592f stopped at second progress write (exclusive-create helper),
 no final matrix check/no accepted localization. Failed root fully retained.

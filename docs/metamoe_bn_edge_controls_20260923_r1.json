@@ -1,0 +1,169 @@
+{
+  "finding": "BN_BIAS_EDGE_BYPASSES_SCALE",
+  "cases": [
+    {
+      "scale": 2.0,
+      "bias": 1.0,
+      "spatial": 2,
+      "insert_conv": true,
+      "edges": [
+        {
+          "bias": 4,
+          "recorded_predecessors": [
+            2
+          ],
+          "declared_input_producer": 3,
+          "scale_bypassed": true
+        }
+      ],
+      "source": [
+        20.0,
+        20.0
+      ],
+      "converted": [
+        12.0,
+        12.0
+      ],
+      "toy_rewired": [
+        20.0,
+        20.0
+      ],
+      "source_vs_converted": 8.0,
+      "source_vs_toy_rewired": 0.0,
+      "production_code_changed": false,
+      "real_model_repaired": false
+    },
+    {
+      "scale": -2.0,
+      "bias": 1.0,
+      "spatial": 2,
+      "insert_conv": true,
+      "edges": [
+        {
+          "bias": 4,
+          "recorded_predecessors": [
+            2
+          ],
+          "declared_input_producer": 3,
+          "scale_bypassed": true
+        }
+      ],
+      "source": [
+        -12.0,
+        -12.0
+      ],
+      "converted": [
+        12.0,
+        12.0
+      ],
+      "toy_rewired": [
+        -12.0,
+        -12.0
+      ],
+      "source_vs_converted": 24.0,
+      "source_vs_toy_rewired": 0.0,
+      "production_code_changed": false,
+      "real_model_repaired": false
+    },
+    {
+      "scale": 1.0,
+      "bias": 1.0,
+      "spatial": 2,
+      "insert_conv": true,
+      "edges": [
+        {
+          "bias": 4,
+          "recorded_predecessors": [
+            2
+          ],
+          "declared_input_producer": 3,
+          "scale_bypassed": true
+        }
+      ],
+      "source": [
+        12.0,
+        12.0
+      ],
+      "converted": [
+        12.0,
+        12.0
+      ],
+      "toy_rewired": [
+        12.0,
+        12.0
+      ],
+      "source_vs_converted": 0.0,
+      "source_vs_toy_rewired": 0.0,
+      "production_code_changed": false,
+      "real_model_repaired": false
+    },
+    {
+      "scale": 2.0,
+      "bias": 1.0,
+      "spatial": 2,
+      "insert_conv": false,
+      "edges": [
+        {
+          "bias": 3,
+          "recorded_predecessors": [
+            1
+          ],
+          "declared_input_producer": 2,
+          "scale_bypassed": true
+        }
+      ],
+      "source": [
+        20.0,
+        20.0
+      ],
+      "converted": [
+        12.0,
+        12.0
+      ],
+      "toy_rewired": [
+        20.0,
+        20.0
+      ],
+      "source_vs_converted": 8.0,
+      "source_vs_toy_rewired": 0.0,
+      "production_code_changed": false,
+      "real_model_repaired": false
+    },
+    {
+      "scale": 2.0,
+      "bias": 1.0,
+      "spatial": 1,
+      "insert_conv": true,
+      "edges": [
+        {
+          "bias": 4,
+          "recorded_predecessors": [
+            2
+          ],
+          "declared_input_producer": 3,
+          "scale_bypassed": true
+        }
+      ],
+      "source": [
+        5.0,
+        5.0
+      ],
+      "converted": [
+        3.0,
+        3.0
+      ],
+      "toy_rewired": [
+        5.0,
+        5.0
+      ],
+      "source_vs_converted": 2.0,
+      "source_vs_toy_rewired": 0.0,
+      "production_code_changed": false,
+      "real_model_repaired": false
+    }
+  ],
+  "native_queries": 0,
+  "converter_sha256": "d6cb15ec6b0dedef0d30bd0441f1dc98e02f6202bcb1e279c337d219c7c33d44",
+  "diagnostic_sha256": "58e5667725f93aad640aa4ab8aff518307997839f5581074ebdbbf0b661510a0",
+  "limit": "Toy counterfactual only; no real-model repair, no source-complete proof."
+}
