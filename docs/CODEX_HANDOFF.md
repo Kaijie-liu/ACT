@@ -1,5 +1,22 @@
 # MoE project handoff
 
+AUTHOR-MATCHED SMALL COMPARISON FROZEN, NOT EXECUTED (2026-09-23):
+User's ordered task complete through freeze. Read
+`metamoe_checked_small_freeze_20260923_r1.md` and saved audit PASS0.
+Successful4call old smoke archived: MNIST ACT9.445801s vs author7.826143s,
+both positive under DIFFERENT numerical grades; CIFAR0 original UNSAFE both.
+New preregistered5+5clean-correct selection: CIFAR[1,2,4,5,7],MNIST[1,3,7,9,10],
+exclude priorindex0both,raw order,no route/bound selection. Separate original
+data/model replay checks exact physical boxes and first eligible prefixes.
+Config `configs/recent_moe/metamoe_checked_paired_small_r1.json` hash
+97e9fcb8fb9556ecef4bf0287510eb7bde690b3eef0c9bb3799e69e4b73aa069.
+20requests, same smoke methods/checkpoint/normalized2/255/300s; NO requests
+executed or queued. Next run this manifest once only, resourcecheck first;
+audit/replay/archive regardless outcome; no new sample/time/relaxation/tolerance.
+Final controls139ACT/104pinned PASS. Source BN identity ledger separately
+complete for its declared direct-config schema, not all historical schemas or
+full source proof. Do not count hashes/point conformance as all-domain safety.
+
 SMALL AUTHOR COMPARISON SELECTION PREPARED / BN EXPOSURE LEDGER (2026-09-23):
 Successful four-call smoke is archived. Next `freeze_metamoe_checked_small.py`
 --plan records5+5clean-correct,first1000raw-order,all prior MetaMoE indices
