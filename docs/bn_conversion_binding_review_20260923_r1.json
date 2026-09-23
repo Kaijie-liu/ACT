@@ -1,0 +1,436 @@
+{
+  "status": "SAVED_BINDING_REVIEW_COMPLETE",
+  "source": "act/pipeline/verification/torch2act.py",
+  "old_git_object": "22b4b2f60fdbde32bcae0cfda871ccaab3e196a6",
+  "old_sha256": "d6cb15ec6b0dedef0d30bd0441f1dc98e02f6202bcb1e279c337d219c7c33d44",
+  "repaired_sha256": "42f7d0bdcc8f3b6d7a869036c39c1d021d0c819d4b77bf9d582bee20703c784e",
+  "rows": [
+    {
+      "config": "configs/recent_moe/metamoe_bn_corrected_control_r1.json",
+      "config_sha256": "1292a0a6739beba0d1e903743b1835424bc9ebc3f6299434f365009f8dfd4f22",
+      "converter_sha256": "42f7d0bdcc8f3b6d7a869036c39c1d021d0c819d4b77bf9d582bee20703c784e",
+      "classification": "REPAIRED_SOURCE_BOUND_NOT_DOMAIN_PROOF",
+      "protocol": "bn_edges_same_mnist0_r1",
+      "output_root": "/data1/Kane/MOE/baseline_runs/metamoe_bn_corrected_control_20260923_r1",
+      "output_exists": true,
+      "worker_records": [],
+      "meaning": "binding exposure only; original author backend and original full-model replay do not execute ACT conversion"
+    },
+    {
+      "config": "configs/recent_moe/metamoe_checked_base_control_r1.json",
+      "config_sha256": "a4ff91d2662f01efa454711e7fb987adc026fc3a78c4f046533b53c7610937f8",
+      "converter_sha256": "42f7d0bdcc8f3b6d7a869036c39c1d021d0c819d4b77bf9d582bee20703c784e",
+      "classification": "REPAIRED_SOURCE_BOUND_NOT_DOMAIN_PROOF",
+      "protocol": "repaired_bn_checked_base_two_old_requests_r1",
+      "output_root": "/data1/Kane/MOE/baseline_runs/metamoe_checked_base_control_20260923_r1",
+      "output_exists": true,
+      "worker_records": [
+        {
+          "file": "/data1/Kane/MOE/baseline_runs/metamoe_checked_base_control_20260923_r1/checked/mnist_0_act/result.json",
+          "sha256": "1a77b04fa1a82f3274927d89aaf8b9df2036eec218d970bd96749614051ec305",
+          "request_id": "mnist_0",
+          "arm": "act",
+          "status": "POSITIVE",
+          "grade": "HZ_POLICY_ACCEPTED",
+          "exposure_applies_to_this_backend": true
+        },
+        {
+          "file": "/data1/Kane/MOE/baseline_runs/metamoe_checked_base_control_20260923_r1/native/mnist_0_act/result.json",
+          "sha256": "39a6b94c1916fab7de559d30ce7a6ce7a8ad3e263adcc9b5558a62e5c33f2fef",
+          "request_id": "mnist_0",
+          "arm": "act",
+          "status": "UNKNOWN",
+          "grade": "NONE",
+          "exposure_applies_to_this_backend": true
+        }
+      ],
+      "meaning": "binding exposure only; original author backend and original full-model replay do not execute ACT conversion"
+    },
+    {
+      "config": "configs/recent_moe/metamoe_checked_paired_smoke_r1.json",
+      "config_sha256": "b958c9aceb1e82592630e12dc7f452a6e95e6eabe73c72b43be3a13ef84c2ad9",
+      "converter_sha256": "42f7d0bdcc8f3b6d7a869036c39c1d021d0c819d4b77bf9d582bee20703c784e",
+      "classification": "REPAIRED_SOURCE_BOUND_NOT_DOMAIN_PROOF",
+      "protocol": "metamoe_checked_paired_smoke_r1",
+      "output_root": "/data1/Kane/MOE/baseline_runs/metamoe_checked_paired_20260923_r1_smoke",
+      "output_exists": true,
+      "worker_records": [
+        {
+          "file": "/data1/Kane/MOE/baseline_runs/metamoe_checked_paired_20260923_r1_smoke/cifar10_0_act/result.json",
+          "sha256": "7f8918dba20a59200a8f5c0f7a8d8e1c9f6304e20ae8984e99097f5550470f31",
+          "request_id": "cifar10_0",
+          "arm": "act",
+          "status": "UNSAFE_REPLAYED",
+          "grade": "FULL_MODEL_REPLAY",
+          "exposure_applies_to_this_backend": true
+        },
+        {
+          "file": "/data1/Kane/MOE/baseline_runs/metamoe_checked_paired_20260923_r1_smoke/cifar10_0_author/result.json",
+          "sha256": "ddb0e5c1cb11905fc3dbc8418200f81a40fc970bf87c0be9b45fc47db270386b",
+          "request_id": "cifar10_0",
+          "arm": "author",
+          "status": "UNSAFE_REPLAYED",
+          "grade": "FULL_MODEL_REPLAY",
+          "exposure_applies_to_this_backend": false
+        },
+        {
+          "file": "/data1/Kane/MOE/baseline_runs/metamoe_checked_paired_20260923_r1_smoke/mnist_0_act/result.json",
+          "sha256": "34d4650ff9c92160014794515929f30c2c22185d68367af738faf6168f2edfbf",
+          "request_id": "mnist_0",
+          "arm": "act",
+          "status": "POSITIVE",
+          "grade": "HZ_POLICY_ACCEPTED",
+          "exposure_applies_to_this_backend": true
+        },
+        {
+          "file": "/data1/Kane/MOE/baseline_runs/metamoe_checked_paired_20260923_r1_smoke/mnist_0_author/result.json",
+          "sha256": "2740f51f58f5b5922dad89e5b06033852334dc4b6fbee3915e3abd8569bd6ea9",
+          "request_id": "mnist_0",
+          "arm": "author",
+          "status": "BACKEND_POSITIVE",
+          "grade": "AUTHOR_BACKEND_NUMERICAL_SUFFICIENT_FILTER",
+          "exposure_applies_to_this_backend": false
+        }
+      ],
+      "meaning": "binding exposure only; original author backend and original full-model replay do not execute ACT conversion"
+    },
+    {
+      "config": "configs/recent_moe/metamoe_checked_routing_control_r1.json",
+      "config_sha256": "573bc68e5a62eff0ee7272d85421c82bdb99bb625e6cfbbfed120c098f2eb5a9",
+      "converter_sha256": "42f7d0bdcc8f3b6d7a869036c39c1d021d0c819d4b77bf9d582bee20703c784e",
+      "classification": "REPAIRED_SOURCE_BOUND_NOT_DOMAIN_PROOF",
+      "protocol": "metamoe_checked_guarded_routing_r1",
+      "output_root": "/data1/Kane/MOE/baseline_runs/metamoe_checked_routing_control_20260923_r1",
+      "output_exists": true,
+      "worker_records": [
+        {
+          "file": "/data1/Kane/MOE/baseline_runs/metamoe_checked_routing_control_20260923_r1/router_checked/mnist_0_act/result.json",
+          "sha256": "aac969f234ae75e2a33db15cb6cf44bc7cf26d4bcfd066587f1d2309c2e3f560",
+          "request_id": "mnist_0",
+          "arm": "act",
+          "status": "POSITIVE",
+          "grade": "HZ_POLICY_ACCEPTED",
+          "exposure_applies_to_this_backend": true
+        },
+        {
+          "file": "/data1/Kane/MOE/baseline_runs/metamoe_checked_routing_control_20260923_r1/router_native/mnist_0_act/result.json",
+          "sha256": "cab3b97dd02b5f665db807673bbf8d44a4e12509823a239ff70cc04c68c62fe7",
+          "request_id": "mnist_0",
+          "arm": "act",
+          "status": "POSITIVE",
+          "grade": "HZ_POLICY_ACCEPTED",
+          "exposure_applies_to_this_backend": true
+        }
+      ],
+      "meaning": "binding exposure only; original author backend and original full-model replay do not execute ACT conversion"
+    },
+    {
+      "config": "configs/recent_moe/metamoe_csr_diagnostic_r4.json",
+      "config_sha256": "ba6884d5644b6f77e46868963dd076347c1651102bca75e1ef113e33c8d73fd3",
+      "converter_sha256": "d6cb15ec6b0dedef0d30bd0441f1dc98e02f6202bcb1e279c337d219c7c33d44",
+      "classification": "PRE_REPAIR_SOURCE_EXPOSURE",
+      "protocol": "metamoe_csr_spatial_r4_old_input",
+      "output_root": "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r4_diagnostic",
+      "output_exists": true,
+      "worker_records": [],
+      "meaning": "binding exposure only; original author backend and original full-model replay do not execute ACT conversion"
+    },
+    {
+      "config": "configs/recent_moe/metamoe_csr_paired_smoke_r4.json",
+      "config_sha256": "e8de03d21172dca52a70db958b5725c2b1e6919242adf39e9752dd080a656143",
+      "converter_sha256": "d6cb15ec6b0dedef0d30bd0441f1dc98e02f6202bcb1e279c337d219c7c33d44",
+      "classification": "PRE_REPAIR_SOURCE_EXPOSURE",
+      "protocol": "metamoe_csr_spatial_r4_complete_old_input_smoke",
+      "output_root": "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r4_smoke",
+      "output_exists": true,
+      "worker_records": [
+        {
+          "file": "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r4_smoke/cifar10_0_act/result.json",
+          "sha256": "1627940b31b870c967b50b524868ae443327304608af72425cd77b34850b9371",
+          "request_id": "cifar10_0",
+          "arm": "act",
+          "status": "UNSAFE_REPLAYED",
+          "grade": "FULL_MODEL_REPLAY",
+          "exposure_applies_to_this_backend": true
+        },
+        {
+          "file": "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r4_smoke/cifar10_0_author/result.json",
+          "sha256": "f5b73cb75264cc5f9964a9165773a697c6eecdb975f63f0586fb93228f396c0a",
+          "request_id": "cifar10_0",
+          "arm": "author",
+          "status": "UNSAFE_REPLAYED",
+          "grade": "FULL_MODEL_REPLAY",
+          "exposure_applies_to_this_backend": false
+        },
+        {
+          "file": "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r4_smoke/mnist_0_act/result.json",
+          "sha256": "7665485e9af0bf72b773c1c004ec9a8bff04a749b83a37152ca3eafb86300704",
+          "request_id": "mnist_0",
+          "arm": "act",
+          "status": "UNKNOWN",
+          "grade": "NONE",
+          "exposure_applies_to_this_backend": true
+        },
+        {
+          "file": "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r4_smoke/mnist_0_author/result.json",
+          "sha256": "eb2ecf8f457319e577b2d457e856663601ce12bb3db69c079f7c43f7f2e26f5c",
+          "request_id": "mnist_0",
+          "arm": "author",
+          "status": "BACKEND_POSITIVE",
+          "grade": "AUTHOR_BACKEND_NUMERICAL_SUFFICIENT_FILTER",
+          "exposure_applies_to_this_backend": false
+        }
+      ],
+      "meaning": "binding exposure only; original author backend and original full-model replay do not execute ACT conversion"
+    },
+    {
+      "config": "configs/recent_moe/metamoe_csr_smoke_r3.json",
+      "config_sha256": "a7303a0535becd2915a575fffc775a9922227e758c2ff66779cec206d1d5bddf",
+      "converter_sha256": "d6cb15ec6b0dedef0d30bd0441f1dc98e02f6202bcb1e279c337d219c7c33d44",
+      "classification": "PRE_REPAIR_SOURCE_EXPOSURE",
+      "protocol": "metamoe_csr_r3_smoke",
+      "output_root": "/data1/Kane/MOE/baseline_runs/metamoe_csr_20260922_r3_smoke",
+      "output_exists": false,
+      "worker_records": [],
+      "meaning": "binding exposure only; original author backend and original full-model replay do not execute ACT conversion"
+    },
+    {
+      "config": "configs/recent_moe/metamoe_expert_trace_r1.json",
+      "config_sha256": "52406e625f87537e57e78c43d7a2f677d9ec734a1325adaa491ed81fb73e926e",
+      "converter_sha256": "d6cb15ec6b0dedef0d30bd0441f1dc98e02f6202bcb1e279c337d219c7c33d44",
+      "classification": "PRE_REPAIR_SOURCE_EXPOSURE",
+      "protocol": "metamoe_expert_observation_r1_one_old_mnist0",
+      "output_root": "/data1/Kane/MOE/baseline_runs/metamoe_expert_trace_20260922_r1",
+      "output_exists": true,
+      "worker_records": [
+        {
+          "file": "/data1/Kane/MOE/baseline_runs/metamoe_expert_trace_20260922_r1/mnist_0_act/result.json",
+          "sha256": "56a22e54bb051df242057501f5bc38ee461ff6dda26a764edd1ae0c880fb97c3",
+          "request_id": "mnist_0",
+          "arm": "act",
+          "status": "UNKNOWN",
+          "grade": "NONE",
+          "exposure_applies_to_this_backend": true
+        }
+      ],
+      "meaning": "binding exposure only; original author backend and original full-model replay do not execute ACT conversion"
+    },
+    {
+      "config": "configs/recent_moe/metamoe_full_intake_r1.json",
+      "config_sha256": "a7fbfe0b4adfc9b69454ab9dda19acc1af6d17ec8faaf30fdb9c674b3b976872",
+      "converter_sha256": "d6cb15ec6b0dedef0d30bd0441f1dc98e02f6202bcb1e279c337d219c7c33d44",
+      "classification": "PRE_REPAIR_SOURCE_EXPOSURE",
+      "protocol": "metamoe_full_class_separated_intake_r1",
+      "output_root": "/data1/Kane/MOE/baseline_runs/metamoe_full_intake_20260921_r1",
+      "output_exists": true,
+      "worker_records": [],
+      "meaning": "binding exposure only; original author backend and original full-model replay do not execute ACT conversion"
+    },
+    {
+      "config": "configs/recent_moe/metamoe_full_intake_r2.json",
+      "config_sha256": "789841111ad30e8e2c4eebcf477d51f89a7f0bf096fc597d20887564bd69bb0c",
+      "converter_sha256": "d6cb15ec6b0dedef0d30bd0441f1dc98e02f6202bcb1e279c337d219c7c33d44",
+      "classification": "PRE_REPAIR_SOURCE_EXPOSURE",
+      "protocol": "metamoe_full_class_separated_intake_r2",
+      "output_root": "/data1/Kane/MOE/baseline_runs/metamoe_full_intake_20260921_r2",
+      "output_exists": true,
+      "worker_records": [],
+      "meaning": "binding exposure only; original author backend and original full-model replay do not execute ACT conversion"
+    },
+    {
+      "config": "configs/recent_moe/metamoe_nonzero_precheck_control_r1.json",
+      "config_sha256": "7acce02cd428a5842e38668c1853b96dd4ed6e30d2e0970dce999f5e63351455",
+      "converter_sha256": "42f7d0bdcc8f3b6d7a869036c39c1d021d0c819d4b77bf9d582bee20703c784e",
+      "classification": "REPAIRED_SOURCE_BOUND_NOT_DOMAIN_PROOF",
+      "protocol": "selected_score_nonzero_precheck_r1",
+      "output_root": "/data1/Kane/MOE/baseline_runs/metamoe_nonzero_precheck_control_20260923_r1",
+      "output_exists": true,
+      "worker_records": [
+        {
+          "file": "/data1/Kane/MOE/baseline_runs/metamoe_nonzero_precheck_control_20260923_r1/support_native/mnist_0_act/result.json",
+          "sha256": "f20b70fcaef050ba807cbcdbfe7c1a14b27f3fa89ff706ba18d03e24011c3125",
+          "request_id": "mnist_0",
+          "arm": "act",
+          "status": "POSITIVE",
+          "grade": "HZ_POLICY_ACCEPTED",
+          "exposure_applies_to_this_backend": true
+        },
+        {
+          "file": "/data1/Kane/MOE/baseline_runs/metamoe_nonzero_precheck_control_20260923_r1/support_precheck/mnist_0_act/result.json",
+          "sha256": "8d32da9a6e5891030dbfaafd5ad552a659d18d6c7654071a506554acc32195b0",
+          "request_id": "mnist_0",
+          "arm": "act",
+          "status": "POSITIVE",
+          "grade": "HZ_POLICY_ACCEPTED",
+          "exposure_applies_to_this_backend": true
+        }
+      ],
+      "meaning": "binding exposure only; original author backend and original full-model replay do not execute ACT conversion"
+    },
+    {
+      "config": "configs/recent_moe/metamoe_paired_smoke_r1.json",
+      "config_sha256": "01f0a9117ee1deb89629cd6a1851a47434482561b09384044dd6d7afa7e514c7",
+      "converter_sha256": "d6cb15ec6b0dedef0d30bd0441f1dc98e02f6202bcb1e279c337d219c7c33d44",
+      "classification": "PRE_REPAIR_SOURCE_EXPOSURE",
+      "protocol": "metamoe_matched_full_request_smoke_r1",
+      "output_root": "/data1/Kane/MOE/baseline_runs/metamoe_paired_20260922_r1_smoke",
+      "output_exists": true,
+      "worker_records": [
+        {
+          "file": "/data1/Kane/MOE/baseline_runs/metamoe_paired_20260922_r1_smoke/cifar10_0_act/result.json",
+          "sha256": "9e39a482105a68e482d3be3b8dc8a14e15cd55d61f71f6599ca455dc33835a7a",
+          "request_id": "cifar10_0",
+          "arm": "act",
+          "status": "UNSAFE_REPLAYED",
+          "grade": "FULL_MODEL_REPLAY",
+          "exposure_applies_to_this_backend": true
+        },
+        {
+          "file": "/data1/Kane/MOE/baseline_runs/metamoe_paired_20260922_r1_smoke/mnist_0_author/result.json",
+          "sha256": "454037f497ad7c99a1121cf9655a5a6ff47e2db6ddcbab1e2bae1d1f96cc3fa2",
+          "request_id": "mnist_0",
+          "arm": "author",
+          "status": "BACKEND_POSITIVE",
+          "grade": "AUTHOR_BACKEND_NUMERICAL_SUFFICIENT_FILTER",
+          "exposure_applies_to_this_backend": false
+        }
+      ],
+      "meaning": "binding exposure only; original author backend and original full-model replay do not execute ACT conversion"
+    },
+    {
+      "config": "configs/recent_moe/metamoe_paired_smoke_r2.json",
+      "config_sha256": "68205c534017c375810d6c6159b6554f81b476368a307dbf02621664c8322d04",
+      "converter_sha256": "d6cb15ec6b0dedef0d30bd0441f1dc98e02f6202bcb1e279c337d219c7c33d44",
+      "classification": "PRE_REPAIR_SOURCE_EXPOSURE",
+      "protocol": "metamoe_matched_full_request_smoke_r2",
+      "output_root": "/data1/Kane/MOE/baseline_runs/metamoe_paired_20260922_r2_smoke",
+      "output_exists": true,
+      "worker_records": [
+        {
+          "file": "/data1/Kane/MOE/baseline_runs/metamoe_paired_20260922_r2_smoke/cifar10_0_act/result.json",
+          "sha256": "2e6d688229945b00289d5ac7f9ecccbffaeef80a807932ebed212175cc1e3cb7",
+          "request_id": "cifar10_0",
+          "arm": "act",
+          "status": "UNSAFE_REPLAYED",
+          "grade": "FULL_MODEL_REPLAY",
+          "exposure_applies_to_this_backend": true
+        },
+        {
+          "file": "/data1/Kane/MOE/baseline_runs/metamoe_paired_20260922_r2_smoke/cifar10_0_author/result.json",
+          "sha256": "e84e3edafb18be4d6ff50be6200b4fd03588f276e1fa9ce98cb3c4d49e4e9f6f",
+          "request_id": "cifar10_0",
+          "arm": "author",
+          "status": "UNSAFE_REPLAYED",
+          "grade": "FULL_MODEL_REPLAY",
+          "exposure_applies_to_this_backend": false
+        },
+        {
+          "file": "/data1/Kane/MOE/baseline_runs/metamoe_paired_20260922_r2_smoke/mnist_0_author/result.json",
+          "sha256": "d71ad21ceb52d312281c2be92baa5c0a23c14c5ef98260fc85052fc0d84811de",
+          "request_id": "mnist_0",
+          "arm": "author",
+          "status": "BACKEND_POSITIVE",
+          "grade": "AUTHOR_BACKEND_NUMERICAL_SUFFICIENT_FILTER",
+          "exposure_applies_to_this_backend": false
+        }
+      ],
+      "meaning": "binding exposure only; original author backend and original full-model replay do not execute ACT conversion"
+    },
+    {
+      "config": "configs/recent_moe/metamoe_protected_smoke_r1.json",
+      "config_sha256": "7a8e31de3412657a8d2d2fc9b5d19e5f7847c7aa3655e80f223da64710fe23e0",
+      "converter_sha256": "d6cb15ec6b0dedef0d30bd0441f1dc98e02f6202bcb1e279c337d219c7c33d44",
+      "classification": "PRE_REPAIR_SOURCE_EXPOSURE",
+      "protocol": "metamoe_protected_expert_old_mnist0_r1",
+      "output_root": "/data1/Kane/MOE/baseline_runs/metamoe_protected_20260923_r1",
+      "output_exists": true,
+      "worker_records": [
+        {
+          "file": "/data1/Kane/MOE/baseline_runs/metamoe_protected_20260923_r1/mnist_0_act/result.json",
+          "sha256": "f664193585d817548817a89b57b461cf3fced2babdf2d874b869174cb615df11",
+          "request_id": "mnist_0",
+          "arm": "act",
+          "status": "UNKNOWN",
+          "grade": "NONE",
+          "exposure_applies_to_this_backend": true
+        }
+      ],
+      "meaning": "binding exposure only; original author backend and original full-model replay do not execute ACT conversion"
+    }
+  ],
+  "config_inventory": {
+    "configs/recent_moe/dual_rs_certification_execution_r1.json": "cf30794ec20c525b46227811f7162325fb2703494afcc8319cf195b5dc8d287a",
+    "configs/recent_moe/dual_rs_certification_recipe_r1.json": "9b10a29fb1429463f1945250e866a9b5fddcf6f84e8974e14f4c7e6f56144dc4",
+    "configs/recent_moe/dual_rs_epoch_control_r1.json": "16c00252fdf5e892a8c45cf9851995349cd2f49d41a9224a66349f713bf6518f",
+    "configs/recent_moe/dual_rs_failed_step_diagnostic_r1.json": "e999e3baa47b285e66205d35f6194e8618c8a718503e891145c36f43eaf548e1",
+    "configs/recent_moe/dual_rs_training_control_r1.json": "3fc929454ffd516eaff884aaaa994a779e4c083d1b60cca30e0dac1db7f2ca18",
+    "configs/recent_moe/dual_rs_training_control_r2.json": "d5e6141b57d043b2830a55660b24270fde046348fef86c75dfe948773b8bafa1",
+    "configs/recent_moe/dual_rs_training_r1.json": "de9c3a9b7ff1346715e999e00821786e9c3dceb65aadea96ac0c900952bdf066",
+    "configs/recent_moe/metamoe_assignment_layers_r1.json": "d283a7948ac634c54749ec351dce923fc64a5cb597fc559f32395978b9e4e9a5",
+    "configs/recent_moe/metamoe_assignment_layers_r2.json": "e2ebb434d9cbc62ad4d81226290c0105937f25878ed21d5968e378afc02f7b0d",
+    "configs/recent_moe/metamoe_assignment_replay_r1.json": "192f773968577dd21c990ff3faae8e04587566c235f43bdd8e6bcf5e56aed5bc",
+    "configs/recent_moe/metamoe_bn_corrected_control_r1.json": "1292a0a6739beba0d1e903743b1835424bc9ebc3f6299434f365009f8dfd4f22",
+    "configs/recent_moe/metamoe_checked_base_control_r1.json": "a4ff91d2662f01efa454711e7fb987adc026fc3a78c4f046533b53c7610937f8",
+    "configs/recent_moe/metamoe_checked_paired_smoke_r1.json": "b958c9aceb1e82592630e12dc7f452a6e95e6eabe73c72b43be3a13ef84c2ad9",
+    "configs/recent_moe/metamoe_checked_routing_control_r1.json": "573bc68e5a62eff0ee7272d85421c82bdb99bb625e6cfbbfed120c098f2eb5a9",
+    "configs/recent_moe/metamoe_component_control_r1.json": "07698fcf5faca58dcac0c27f26aa7080fe0aa985822b32a2a4403b8777cf971d",
+    "configs/recent_moe/metamoe_component_control_r2.json": "dc9babb706225e1bebcf7ce0f5505a1c1cea2e6e51d92c3d3401a4a7a04ef6ff",
+    "configs/recent_moe/metamoe_component_control_r3.json": "23d8929e37b19d52125e12a68763819aec5263d1c634342dd03fec458a86d636",
+    "configs/recent_moe/metamoe_component_control_r4.json": "4694240e6bff85b7dd5da80022ada6f2a9c4b7119c3c6400fd0f15e34369184a",
+    "configs/recent_moe/metamoe_csr_diagnostic_r4.json": "ba6884d5644b6f77e46868963dd076347c1651102bca75e1ef113e33c8d73fd3",
+    "configs/recent_moe/metamoe_csr_paired_smoke_r4.json": "e8de03d21172dca52a70db958b5725c2b1e6919242adf39e9752dd080a656143",
+    "configs/recent_moe/metamoe_csr_smoke_r3.json": "a7303a0535becd2915a575fffc775a9922227e758c2ff66779cec206d1d5bddf",
+    "configs/recent_moe/metamoe_expert_trace_r1.json": "52406e625f87537e57e78c43d7a2f677d9ec734a1325adaa491ed81fb73e926e",
+    "configs/recent_moe/metamoe_full_intake_r1.json": "a7fbfe0b4adfc9b69454ab9dda19acc1af6d17ec8faaf30fdb9c674b3b976872",
+    "configs/recent_moe/metamoe_full_intake_r2.json": "789841111ad30e8e2c4eebcf477d51f89a7f0bf096fc597d20887564bd69bb0c",
+    "configs/recent_moe/metamoe_nonzero_precheck_control_r1.json": "7acce02cd428a5842e38668c1853b96dd4ed6e30d2e0970dce999f5e63351455",
+    "configs/recent_moe/metamoe_paired_smoke_r1.json": "01f0a9117ee1deb89629cd6a1851a47434482561b09384044dd6d7afa7e514c7",
+    "configs/recent_moe/metamoe_paired_smoke_r2.json": "68205c534017c375810d6c6159b6554f81b476368a307dbf02621664c8322d04",
+    "configs/recent_moe/metamoe_protected_smoke_r1.json": "7a8e31de3412657a8d2d2fc9b5d19e5f7847c7aa3655e80f223da64710fe23e0",
+    "configs/recent_moe/multilayer_author_history_control_r1.json": "8c8bce30b10892236faf7a37feb4a0c259876a42750fae2131c7ae710c10fc60",
+    "configs/recent_moe/robust_experts_gpu_step_r1.json": "ba35edabfebb47483791ad9e6660407a08f58ab4007007e5ecf3a31a1fe901e0",
+    "configs/recent_moe/robust_experts_gpu_step_r2.json": "0ae69d85f60593534a6abb4fcde6fbf86c4754debe5423207c08692a7227f7fa",
+    "configs/recent_moe/robust_experts_gpu_step_r3.json": "9663ca4a5fa4552ab883b2b871bc154831e55551797238d058ec696e4cb8c747",
+    "configs/recent_moe/robust_experts_paper_training_execution_r1.json": "7731f7ae144b3816d28b0dde7ee59dfcb4fac90f2c73b6e47cd36ceeca67954d",
+    "configs/recent_moe/robust_experts_paper_training_recipe_r1.json": "a2b6673c1317546c5c7febcb02d484ffc21ac00ed4ff43bf131a763eeb13d1d2",
+    "configs/recent_moe/robust_experts_pipeline_control_r1.json": "d4268e036e9d2cf12e60ca0b0ccf0c30a7c877667bcaee76ea6ca0dd5a2db870",
+    "configs/recent_moe/robust_experts_pipeline_control_r2.json": "d329d8138a2a100fede433670589e8864de172ef04deb02ff6ddb36be2fbbcc8",
+    "configs/recent_moe/robust_experts_resume_r1.json": "d86ae0417e24c83ebb36d0484ada888c08b80396b2e5356832c53625eea128a4",
+    "configs/recent_moe/robust_experts_workflow_r1.json": "4bebc9261515414cfb7f5d939a92b5a8ac19cf70622383bbbae4bed95763033f",
+    "configs/recent_moe/robust_experts_workflow_r2.json": "d41c3c547d68915bf83fae2035aa4c03a88dbf998dbcd74628b894eb5676836f",
+    "configs/recent_moe/robust_experts_workflow_r3.json": "b01a6d11d528b1725dfdd32dce12ef1f0bf1e765a57d3af6830dad9a49c169d5",
+    "configs/recent_moe/rome_autoattack_control_r1.json": "c819eed707ec5792d24aa4b07ffea9d1bef44e61e14fd56c4ffd28993d1aa648",
+    "configs/recent_moe/rome_multinorm_batch_r1.json": "40d6a348769aef5682c0bd4c4de3b470b64340685a9ceef56629897773b24920",
+    "configs/recent_moe/rome_multinorm_r1_1917_L1.json": "2de87a41bc206117b458b7836404ea25a544f773e2921acfe272bc8b3c8e0f37",
+    "configs/recent_moe/rome_multinorm_r1_1917_L2.json": "4b829c0dc18668aeaa553182a5fa7d0741227480abab57c1eb6e2cb38d4bcf47",
+    "configs/recent_moe/rome_multinorm_r1_1917_Linf.json": "86fe45cc9a4dee3f65694276af6c2f91821a79fbbc5ec1630f69e313427d2dfa",
+    "configs/recent_moe/rome_multinorm_r1_2890_L1.json": "81b9fa52896a2c40727f78b708c021fe189d0e205d3c79dcf90dbbbaf67e56a1",
+    "configs/recent_moe/rome_multinorm_r1_2890_L2.json": "6dd3ff10e4a43b77c4e37e78c5ffed84771306cbf66d6ed72ff57c829a97ae77",
+    "configs/recent_moe/rome_multinorm_r1_2890_Linf.json": "bc4ed6ad3f27a91b9b165e6ad27bb732a94d2b9e71df359d933ba2edf159f166",
+    "configs/recent_moe/rome_multinorm_r1_6044_L1.json": "8cfdc52933b6343662bd8c79d12a9b59c2af74d28eb29a284bd2b12a0fcc416f",
+    "configs/recent_moe/rome_multinorm_r1_6044_L2.json": "9b3f5a821ceca9b613d489048591cbcb1706d9ef694eb6301d0fd89589022db9",
+    "configs/recent_moe/rome_multinorm_r1_6044_Linf.json": "c996ce4e927628f7aee84c9e72e65eccfb9ce0ae61e2395c961e299ed9b647d5",
+    "configs/recent_moe/rome_multinorm_r1_9399_L1.json": "a0f2eca4d7984264a3bfd0fdc39cffad051126b6fa35ade386bbeca4418d28bb",
+    "configs/recent_moe/rome_multinorm_r1_9399_L2.json": "0c3fb92386dee36dfa3db389e8ad2d7d0873ae15d5cc1343a1772b574ea1361b",
+    "configs/recent_moe/rome_multinorm_r1_9399_Linf.json": "dc1324924a9671af1fb6e741a5e646f0a287a558a04dca407266905880af4485"
+  },
+  "counts": {
+    "REPAIRED_SOURCE_BOUND_NOT_DOMAIN_PROOF": 5,
+    "PRE_REPAIR_SOURCE_EXPOSURE": 9
+  },
+  "direct_point_evidence": {
+    "docs/metamoe_bn_edge_finding_20260923_r1.md": "87574ef3b8f93097e4944509dbcbb975f3f500b11b8240ad6f78bd46d68dcf96",
+    "docs/metamoe_assignment_layers_archive_20260923_r1.json": "458bd35b1cc56d4b5d829bd437a237c48b1e097e20bef3d1e90413481d7b764c",
+    "docs/metamoe_bn_corrected_archive_20260923_r1.json": "a37f50d24606350acde3b5812ad9c89c5e34f26fa04cda7661d489df808a671d"
+  },
+  "new_solver_calls": 0,
+  "new_model_forwards": 0,
+  "historical_files_modified": false,
+  "limits": [
+    "Direct config.files schema only; not every historical manifest format.",
+    "Source binding is not executed-graph proof. Known MNIST0 expert mismatch is independently localized.",
+    "Do not promote old affected-graph conclusions to source claims; preserve old UNKNOWN/failed results.",
+    "Repaired BN controls establish finite point conformance, not all-domain lowering.",
+    "No automatic retraction/endorsement of unrelated BN-free/other-converter results."
+  ]
+}

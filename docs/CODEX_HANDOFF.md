@@ -1,5 +1,19 @@
 # MoE project handoff
 
+SMALL AUTHOR COMPARISON SELECTION PREPARED / BN EXPOSURE LEDGER (2026-09-23):
+Successful four-call smoke is archived. Next `freeze_metamoe_checked_small.py`
+--plan records5+5clean-correct,first1000raw-order,all prior MetaMoE indices
+excluded BEFORE selection; commit/push plan. Then --select-freeze performs
+forward-only selection plus separately supervised independent original-source
+replay, materialized-box/prefix audit, and final20-call manifest. NO validation
+experiment is launched by selection. Same frozen paired runner/options/model,
+normalized2/255/300s; do not confuse normalized radius with pixel radius.
+5 selection controls PASS. Separate BN ledger inventories54configs:14direct
+converter bindings,9old/5repaired. Old-source binding is exposure,not executed-
+graph proof; captured oldACT records contain noPOSITIVE,but no global absence
+claim. Read `bn_conversion_binding_review_20260923_r1.md`; no oldrecord changed,
+no extra solver/model calls.2 ledger controlsPASS. Sourceproof remains separate.
+
 COMBINED CHECKED / AUTHOR SMOKE COMPLETE (2026-09-23):
 Read `metamoe_checked_paired_smoke_result_20260923_r1.md` and independent archive.
 Impla9f151804/freeeze603129df0; 4/4 old requests complete, audit PASS0,
