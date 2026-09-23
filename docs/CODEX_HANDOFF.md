@@ -1,5 +1,15 @@
 # MoE project handoff
 
+META EXPERT OBSERVATION FROZEN (2026-09-23):
+Config `configs/recent_moe/metamoe_expert_trace_r1.json`, SHA256
+52406e625f87537e57e78c43d7a2f677d9ec734a1325adaa491ed81fb73e926e;
+implementation985bae727. ONE oldMNIST0 ACT, unchanged300s/2GiB/8GiB/19rows;
+no old-source rebind. Freeze generated without model/solver execution.
+Run `act-py312/bin/python scripts/metamoe_expert_diagnostic.py --run` once
+after this freeze is committed/pushed and resource inspection. Separate
+`audit_metamoe_expert_diagnostic.py --config ... --output NEW.json` follows.
+Do not retry, expand queries or infer a formal-comparison gate from this trace.
+
 META EXPERT UNKNOWN OBSERVATION PREPARATION (2026-09-23):
 User requests distinguishing output solver limits from representation precision.
 Read `metamoe_expert_diagnostic_protocol_20260922_r1.md`. Three source-level
