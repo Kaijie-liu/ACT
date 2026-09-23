@@ -1,5 +1,20 @@
 # MoE project handoff
 
+COMBINED CHECKED / AUTHOR-MATCHED SMOKE PREPARED (2026-09-23):
+User authorizes optional composition, fresh same-object author smoke, then
+separate small-cohort freeze ONLY after the smoke passes. Read
+`metamoe_checked_paired_protocol_20260923_r1.md`. New explicit default-off
+`checked_execution` composes expert-base/route-point/nonzero hooks with
+unchanged fallback, all19properties,300s/8GiB/twoCPUthreads. New runner accepts
+frozen requests and independently executes both arms; author backend adapter
+unchanged. Smoke oldCIFAR0/MNIST0 four calls, newroot/config, no retry/resume.
+132 ACT/97 pinned tests PASS. Initial test observed wrong routing binding;
+fixed test and asserted general native function unchanged. Next commit/push,
+freeze/commit/push, resources, execute once, independent audit+original replay,
+archive. Then separately freeze small raw-order clean-correct selection, not
+automatically run it. Historical BN identities reviewed separately. No claim
+of source-complete proof, strict author dominance, or new route-changing SAFE.
+
 NONZERO PRECHECK COMPLETE / SUPPORT OPTIMIZATION AVOIDED (2026-09-23):
 Read `metamoe_nonzero_precheck_result_20260923_r1.md` and archive first.
 Impl2a12d5156 / freeze0f6f4beee, exactly two oldMNIST0 requests; route+expert
