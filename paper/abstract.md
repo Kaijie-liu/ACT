@@ -16,7 +16,10 @@ small inward-rounding gaps, so these counts are empirical policy outcomes,
 not source-complete real-network certificates. A separate shared-input ablation supports the role of
 retained correlation. An executable ACT-fronted CROWN comparison is cheaper and
 produces more numerical positive filters overall, while leaving complementary
-ACT-only results. We also reconstruct weighted LP obligations in rational
+ACT-only results. A separate repaired MetaMoE author-checkpoint comparison
+favors the author sufficient path: nine numerical filters versus four ACT
+policy acceptances, with no ACT-only positive. Compatibility repair does not
+establish a new certificate. We also reconstruct weighted LP obligations in rational
 arithmetic and independently check their bounds; the positive stored proofs
 retain explicit upstream assumptions. A separate declared-source checker
 covers a complete convolutional enclosure but yields no positive request on

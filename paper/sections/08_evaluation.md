@@ -54,7 +54,12 @@ unchanged before the new experiment. The primary comparison is matched
 monolithic, which independently obtains the same cheap scoped facts; legacy
 monolithic remains a secondary strong reference.
 
-| Model | Adaptive SAFE / solved | Matched monolithic SAFE / solved | Legacy monolithic SAFE / solved |
+Historical acceptance counts below are **not source-complete strict
+certificates**: all 23 primary gains have the audited input-containment gap.
+The counts are unchanged; a corrected-source experiment could have different
+route coverage and outcomes.
+
+| Model | Adaptive policy SAFE / solved | Matched policy SAFE / solved | Legacy policy SAFE / solved |
 |---|---:|---:|---:|
 | Seed 0 | 59 / 89 | 50 / 76 | 46 / 68 |
 | Seed 1 | 57 / 81 | 47 / 65 | 45 / 63 |
@@ -86,6 +91,48 @@ Evidence: `act/pipeline/moe/results/schedule_confirmation_100_review_20260914_r1
 The independent 30-input study and historical 2/3 composite result remain
 separate in the appendix. This is a new-input comparison of internal
 configurations, not a claim of superiority over independent public tools.
+
+## MetaMoE author-checkpoint comparison: an adverse external result
+
+This separate repaired follow-up executes all 20 calls on the same ten already
+observed inputs (five CIFAR-10, five MNIST), without splicing the stopped
+14-normal-return / one-error / five-not-started batch. Both arms use the same
+checkpoint, materialized input, normalized-space `2/255` box clipped to
+`[-10,10]`, 19 global output margins, and 300-second total request budget.
+This is class-separated raw-score top-1, not the main weighted top-2 task or
+a pixel-space radius. The author path is **author backend + disclosed lAs
+compatibility wrapper + strict route-invariance sufficient adapter**.
+
+| Arm / positive evidence grade | N | Positive | Replayed UNSAFE | Complete UNKNOWN | Outer TIMEOUT | ERROR | Mean charged seconds |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| ACT / HZ policy acceptance | 10 | 4 | 0 | 6 | 0 | 0 | 28.56 |
+| Repaired author adapter / numerical sufficient filter | 10 | 9 | 0 | 0 | 1 | 0 | 36.54 |
+
+Four positives are shared, none are ACT-only, and all five CIFAR-10 inputs are
+author-only. Every ACT positive is route-stable. There is no new route-changing
+or source-complete certificate, and no evidence of ACT competitive advantage
+on this cohort. Different grades do not erase the practical coverage deficit;
+they also do not justify calling the author positives strict certificates.
+
+All-request mean cost favors ACT only because the author has one unresolved
+300-second timeout. On nine normally returned pairs ACT costs 16.03 seconds
+more on average; on the four common positives costs average 10.55 versus
+7.17 seconds. Earlier UNKNOWN is not faster successful verification. The
+repaired MNIST/7 request performs seven checked metadata restorations and
+native insertions before timeout: compatibility is fixed, proof completion is
+not. No sample, time, threshold or relaxation was changed to rescue results.
+
+Saved logs show 209 ACT output obligations: 116 violation regions excluded
+under the policy and 93 local timeouts. For four CIFAR requests, roughly
+1.5-second per-property slices repeatedly pay worker/setup overhead. MNIST/7
+also has unresolved route coverage and base feasibility. These are execution
+stopping points, not proof that the relaxation is insufficient or that extra
+time would prove safety. No new solving accompanies this analysis.
+
+Evidence: [full result and saved-only diagnosis](../../docs/metamoe_las_followup_result_20260923_r1.md).
+This finite, observed-cohort result favors the author sufficient path; it does
+not establish general author-tool superiority. It remains separate from the
+historical MetaMoE-style reimplementation and the ACT-fronted CROWN comparison.
 
 ## Direct relationship ablation
 

@@ -6,7 +6,7 @@
 \newcommand{\R}{\mathbb{R}}
 \title{Relational Verification of Weighted Mixture-of-Experts Programs:\\Scoped Reuse and Explicit Proof Contracts}
 \author{Author details omitted for pre-submission review}
-\date{Technical review draft, 21 September 2026}
+\date{Technical review draft, 23 September 2026}
 \begin{document}
 \maketitle
 \begin{abstract}
@@ -25,6 +25,8 @@ input audit finds containment gaps, and the historical bounds lack a complete
 source-to-output proof. A separate ablation supports the contribution of shared
 expert relationships. An ACT-fronted plain CROWN path is much cheaper and has
 more numerical positive filters overall, with complementary ACT-only outcomes.
+A separate repaired MetaMoE author-checkpoint comparison gives nine author
+numerical filters versus four ACT policy acceptances, with no ACT-only positive.
 Independent rational checking establishes complete positive results for some
 supplied-HZ requests under upstream assumptions. A newer declared-source
 construction checks a convolutional enclosure but does not obtain a complete
@@ -65,7 +67,9 @@ The main comparison shows new-input gains over two internal configurations,
 not a population-wide certified accuracy or independent-tool dominance. We
 retain the external path's lower cost, the second family's absence of positive
 production results, and the source-containment obstruction in the main text.
-These findings limit the practical and formal claims of the method.
+These findings limit the practical and formal claims of the method. The
+separate class-separated top-1 author-model comparison below is an adapter
+evaluation, not an expansion of the weighted top-2 theorem's empirical scope.
 
 \section{Semantics and conditional proof rule}
 Let $X$ be the \emph{declared} perturbation set, $r:X\to\R^E$ the router,
@@ -299,6 +303,34 @@ equally. This establishes limited complementarity and a real cost challenge,
 not ACT dominance; grades differ, and counterexample counts are not extra
 safety certificates or a matched attack comparison.
 
+\paragraph{RQ3: repaired MetaMoE author-model comparison.}
+A separate 20-call follow-up uses ten already observed inputs (five CIFAR-10,
+five MNIST) and the same author checkpoint, materialized inputs and properties
+in both arms. The task is class-separated raw-score top-1 with 19 global
+output margins, normalized-space radius $2/255$ clipped to $[-10,10]$, and a
+300-second whole-request budget. It is not the main weighted top-2 cohort or
+a pixel-radius comparison. The author arm runs its backend with a disclosed
+lAs compatibility wrapper and strict route-invariance sufficient adapter,
+not an unchanged author-tool execution. The original stopped run remains
+separate; no old and new results are spliced.
+
+Table~\ref{tab:metamoe} has four ACT policy acceptances versus nine author
+numerical filters: four shared, zero ACT-only, and five author-only CIFAR-10
+cases. All ACT positives are route-stable. The formerly crashing author
+request now times out after seven checked metadata restorations and native
+insertions; compatibility is improved, but no new certificate follows.
+This observed cohort provides no ACT competitive advantage. Distinct evidence
+grades are not a reason to dismiss the practical coverage deficit.
+
+The smaller all-request ACT mean is driven by the unresolved author timeout.
+On nine normally returned pairs ACT is 16.03 seconds slower on average;
+on four common positives the means are 10.55 versus 7.17 seconds. Saved logs
+record 116 excluded output violation regions and 93 local timeouts, out of
+209 obligations. Repeated setup and short per-property budgets are observable;
+the hard MNIST request also lacks completed route/base obligations. None of
+this establishes a relaxation impossibility or a counterfactual success with
+more time. No new solve or tuning is used in this diagnosis.
+
 \paragraph{RQ4: transfer and proof completion.}
 A separately fixed four-expert convolutional family has 155,052 parameters
 and 67.06\% full-test accuracy. Checkpoint selection uses validation accuracy,
@@ -324,10 +356,12 @@ Hybrid zonotopes already represent ReLU networks~\cite{hz}; our contribution
 is not that representation alone. DNNV supports property reduction and
 cross-verifier interfaces~\cite{dnnv}. We specialize obligation formation to
 tie-legal dispatch, normalized weighted outputs and shared-factor identity.
-MetaMoE studies compositional MoE verification~\cite{metamoe}; our
-route-invariance comparator is a labeled reimplementation, not execution of
-its authors' verifier. Route changes not necessarily implying output errors
-are not claimed as a new observation.
+MetaMoE studies compositional MoE verification~\cite{metamoe}. Our historical
+route-invariance baseline is a labeled reimplementation. The new, separate
+author-checkpoint/backend comparison uses an explicitly repaired sufficient
+adapter and favors the author path; these are not the same experiment.
+Route changes not necessarily implying output errors are not claimed as a
+new observation.
 
 CROWN provides static-network bounds~\cite{crown}; modern constraint-driven
 methods such as Clip-and-Verify exploit constraints within branch-and-bound
@@ -383,8 +417,9 @@ Retaining dispatch conditions and common-input expert relationships gives a
 useful organization of weighted MoE verification obligations. Scoped reuse
 and structural scheduling improve frozen-policy outcomes against registered
 internal alternatives on new inputs, and a direct ablation identifies a
-relational precision benefit. A cheaper external path, negative convolutional
-transfer, and an exact source-containment obstruction limit stronger claims.
+relational precision benefit. A cheaper external path, the adverse MetaMoE
+author-path comparison, negative convolutional transfer, and an exact
+source-containment obstruction limit stronger claims.
 Conditional positive proofs and checked source construction are both real
 progress, but have not yet joined into the claimed stronger positive guarantee.
 The result is a scoped verification method and an explicit evidence contract,

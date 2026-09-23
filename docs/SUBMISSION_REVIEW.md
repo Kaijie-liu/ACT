@@ -24,6 +24,7 @@ review is a valid outcome; no proposed acceptance score is supplied.
 | New-input internal gain | Committed confirmation review; generated tables | 23 gained / 0 lost policy SAFE, 100 input clusters and three fixed models; not independently proved real-box coverage or 300 independent images. |
 | Relation precision | Committed relationship ablation | Two completed-relaxation failures support a precision mechanism; a third solver-limit case has a cost confound. Not casewise attribution of all 23 gains. |
 | External value | Committed external review | ACT 11 policy positives vs CROWN 13 numerical filters, 8 shared / 3 ACT-only / 5 CROWN-only; means 138.11 / 4.23 s. Explain complementarity without hiding the cost disadvantage or equating grades. |
+| MetaMoE author-path competition | Repaired full20 archive and result (2026-09-23) | ACT 4 policy positives vs author 9 numerical filters, 4 shared / 0 ACT-only / 5 author-only. All ACT positives route-stable. Repaired request times out; this is compatibility, not a new certificate. Common-positive means 10.55 / 7.17 s. Adapter/repair disclosed; do not pool with weighted top-2 experiments or call it unchanged author execution. |
 | Applicability of historical main table | Input source ledger and composed-input addendum | Requested/formula sets are not nested on all 100 inputs. No network counterexample follows, but no source-complete real-box certificate follows either. |
 | Independent proof | Old portable-proof review; new full-source/property-range reviews | Old same-HZ conditional 9/9 positive is not a positive result on newer source-checked matrices. No cross-source splicing. |
 | Generality | Conv V2 and general evidence reviews | Conv 30-input HZ positives: zero. New 20-input evidence positives: zero. High-accuracy/cross-family strict gains remain open. |
@@ -64,7 +65,9 @@ the neural model nor independently proves its safety bounds.
 Links to longer sections, implementation files and ancillary histories refer
 to the full repository and are not all included in this bounded kit. Its
 manifest is the exact inventory, not a claim that every linked object has
-been distributed. The short paper and both generated tables are self-contained.
+been distributed. The short paper and three generated tables are self-contained.
+The new MetaMoE table is reconstructed from all 20 archived rows, not a
+partial-run summary. See [current claim disposition](competition_guarantee_disposition_20260923.md).
 
 From an existing suitable Python installation, after receiving a complete kit
 and its manifest hash **through a separately trusted channel**:

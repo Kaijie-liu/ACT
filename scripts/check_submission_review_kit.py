@@ -92,6 +92,7 @@ def check(root, expected):
     return {'status': 'PASS', 'evidence_grade': 'ARCHIVED_ACCOUNTING_ONLY',
             'manifest_sha256': expected, 'files': len(manifest['files']), 'bytes': size,
             'seconds': time.monotonic() - started, 'table_rows': 21,
+            'additional_metamoe_rows': 2,
             'limitations': LIMITATIONS,
             'meaning': 'Captured-file integrity and archived accounting only; no independent network reproof.'}
 

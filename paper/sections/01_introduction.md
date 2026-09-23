@@ -52,7 +52,8 @@ of saved input boxes and the frozen input-HZ formula finds inward-rounding
 gaps, including on all 23 gains. The results are not independently established
 real-box certificates; downstream source conversion remains unverified for
 these historical outputs. This finding does not exhibit a network
-counterexample or change the observed comparison. The input-clustered
+counterexample or change the observed comparison; it does not establish that
+correcting the enclosure would preserve the result sets or gains. The input-clustered
 descriptive interval for the mean primary gain is [4.67, 11.00] percentage
 points. A separate relationship ablation yields three additional safety
 results when shared expert input factors are retained, including two cases
@@ -66,7 +67,16 @@ There are three ACT-only and five CROWN-only positives. These evidence levels
 are not interchangeable, but the cheaper path is a real usability challenge,
 not a frontend-rejection straw man. Our claim is therefore scoped net benefit
 and complementary verification capability, not domination of generic neural
-network verifiers.
+network verifiers. A separate 20-call comparison on the MetaMoE author
+checkpoint is more adverse: ACT obtains four policy acceptances, all shared
+with nine author-backend numerical sufficient filters. ACT has no unique
+positive. The author path includes a disclosed compatibility wrapper and
+strict route-invariance adapter; this is not unchanged author execution.
+The formerly crashing request now times out, establishing compatibility but
+not a new certificate. On the four common positives ACT is also slower
+(10.55 versus 7.17 seconds on average). Thus the earlier external-path
+complementarity must not be generalized to every author-model comparison.
+See the [complete repaired comparison](../../docs/metamoe_las_followup_result_20260923_r1.md).
 
 Finally, we separate evidence consistency from independent bound checking.
 A rational checker validates supplied HZ-to-LP projections, direct McCormick

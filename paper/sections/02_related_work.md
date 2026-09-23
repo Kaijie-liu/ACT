@@ -22,8 +22,14 @@ centered comparison, not a claim that static routing is intrinsically invalid.
 MetaMoE studies disjoint-class hard top-1 composition: establish one route
 throughout the perturbation region, then verify the selected expert. The
 2026-09-21 follow-up located its author repository, pretrained artifacts and
-alpha-beta-CROWN runners at `PMQ9/Mixture-of-Experts_Research`; author-tool
-comparison is pending, not unavailable. Our already-run historical baseline
+alpha-beta-CROWN runners at `PMQ9/Mixture-of-Experts_Research`. A separate
+author-checkpoint/backend comparison is now complete: with a disclosed lAs
+compatibility wrapper and strict route-invariance sufficient adapter, the
+author path gives nine numerical positives versus four ACT policy acceptances
+on ten observed inputs, with no ACT-only positive. This is neither literal
+unchanged author execution nor a strict-certificate comparison; the repaired
+hard case times out. See the [full report](../../docs/metamoe_las_followup_result_20260923_r1.md).
+Our already-run historical baseline
 remains explicitly a `MetaMoE-style reimplementation`. Its applicability is definition-level and
 uses the same exact router feasibility analysis as Route A. On applicable
 inputs, both methods invoke the identical downstream verifier with the same

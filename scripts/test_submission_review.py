@@ -46,11 +46,36 @@ class SubmissionReview(unittest.TestCase):
     def test_accounting_rendering_and_grades(self):
         result = checker.check(self.kit, self.digest)
         self.assertEqual(result['table_rows'], 21)
+        self.assertEqual(result['additional_metamoe_rows'], 2)
         self.assertEqual(result['evidence_grade'], 'ARCHIVED_ACCOUNTING_ONLY')
         self.assertEqual(result['limitations'], builder.LIMITS)
         self.assertEqual(tables.render(), (ROOT / tables.OUTPUT).read_text())
         for phrase in ('59 / 89', '57 / 81', '63 / 86', '138.11', '4.23'):
             self.assertIn(phrase, tables.render())
+        for phrase in ('not source-complete strict certificates',
+                       'All 23 primary gains', 'No ACT-only positive',
+                       'ACT & HZ & 10 & 4 & 0 & 6 & 0 & 0 & 28.56',
+                       'Repaired author & AF & 10 & 9 & 0 & 0 & 1 & 0 & 36.54'):
+            self.assertIn(phrase, tables.render())
+
+    def test_metamoe_missing_duplicate_grade_and_cost_rejected(self):
+        original = json.loads((ROOT / tables.METAMOE_ARCHIVE).read_bytes())
+        rows = tables.metamoe_accounting(original)
+        self.assertEqual([(r['positive'], r['unknown'], r['timeout']) for r in rows],
+                         [(4, 6, 0), (9, 0, 1)])
+        mutations = [lambda d: d['rows'].pop(),
+                     lambda d: d['rows'].__setitem__(0, copy.deepcopy(d['rows'][2])),
+                     lambda d: d['rows'][0].update(grade='FORMAL_SAFE'),
+                     lambda d: d['rows'][0].update(seconds=None),
+                     lambda d: d['rows'][0].update(seconds=float('nan')),
+                     lambda d: d['rows'][0].update(status='ERROR'),
+                     lambda d: d.update(act_only_positive=['cifar10_1']),
+                     lambda d: d.update(numerical_guarantees_equated=True)]
+        for mutation in mutations:
+            changed = copy.deepcopy(original)
+            mutation(changed)
+            with self.assertRaises(ValueError):
+                tables.metamoe_accounting(changed)
 
     def test_isolated_relocated_cli_without_git_or_models(self):
         moved = self.base / 'relocated'
@@ -150,7 +175,10 @@ class SubmissionReview(unittest.TestCase):
         for phrase in ('Conditional complete-output composition', 'not nested',
                        '179, 156 and 141', 'zero complete positive',
                        '13 numerical positive filters', '138.11',
-                       'not an exact', 'human independent method review remain open'):
+                       'not an exact', 'human independent method review remain open',
+                       'four ACT policy acceptances versus nine author',
+                       'zero ACT-only', 'compatibility is improved, but no new certificate',
+                       'Corrected construction could change both route coverage and outcomes'):
             self.assertIn(phrase, paper.replace('\n', ' '))
         self.assertNotIn('\\write18', paper)
         import re

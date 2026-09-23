@@ -1,5 +1,12 @@
 # Path-Conditioned Verification for Routed Mixture-of-Experts
 
+Current competition update (2026-09-23): the repaired author-checkpoint
+comparison is now complete, with ACT 4 HZ-policy acceptances versus 9 author
+numerical filters and no ACT-only positive. The earlier 2-versus-7 stopped
+comparison is historical. See the [claim disposition](../docs/competition_guarantee_disposition_20260923.md).
+Neither compatibility repair nor historical 23 policy gains is a new
+source-complete certificate. This qualification governs the old index below.
+
 Current qualification (2026-09-21): this is a historical claim/provenance index,
 not the current abstract. Use [the manuscript](README.md) and the
 [main-table source-applicability audit](../docs/main_table_source_applicability_20260921.md).

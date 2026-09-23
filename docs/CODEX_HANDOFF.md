@@ -1,5 +1,26 @@
 # MoE project handoff
 
+COMPETITION / GUARANTEE CLAIMS RECONCILED (2026-09-23):
+Read `competition_guarantee_disposition_20260923.md`. Saved-only manuscript
+revision, no new model/solver/propagation calls. Full MetaMoE followup4ACT vs
+9author supersedes stopped2vs7 for CURRENT comparison; zeroACT-only, all4
+route-stable, no new strict certificate. Repaired hard author request remains
+TIMEOUT. Do not turn lower all-request mean (timeout-driven) into speedup.
+All23 primary main-table gains retain empirical-policy status: audited input
+containment fails, downstream source/native bounds remain unclosed; no source-
+complete certificate and no inference of model unsafety. Corrected-source
+outcomes/ranking unknown. Abstract/body/tables/reviewer kit now show both gaps.
+No new experiment or stronger guarantee: execution-budget/setup research and
+same-object source/output closure require separately scoped future decisions.
+Do not reopen input98 or alter old counts. ValidationR2 PASS:57controls,
+739-package saved-input reread and100-representative composition match;
+relocated23-file table-only kit passes isolatedPython, PDF compiles cleanly.
+Read `competition_claims_validation_20260923_r2.json`. R1failure retained:
+oldaudit --check also bound live hybridz_tf hashes changed by prior repairs;
+separate replay validates those two live fields and EVERY historical field.
+Oldaudit unchanged. Prior R5 manuscript inventory is verified at its historical
+commit; this revision's checks do not substitute for human technical review.
+
 REPAIRED METAMOE FOLLOWUP EXECUTED / ARCHIVED (2026-09-23):
 Read `metamoe_las_followup_result_20260923_r1.md`, archive and saved analysis.
 User authorized full20; execution442e08d5a, cfgaf662082 unchanged.20/20 calls,

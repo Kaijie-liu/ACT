@@ -50,6 +50,16 @@ sufficient condition, even though it omits pair-guard conditioning. Its failure
 cannot establish a violation of the guarded model. Its lower cost and larger
 positive set in the observed cohort must nevertheless be reported directly.
 
+The repaired MetaMoE author-checkpoint comparison adds a direct adverse case:
+four ACT policy acceptances versus nine author numerical sufficient filters,
+four shared and zero ACT-only. All ACT positives are route-stable. The repair
+only turns the failing author request into a timeout; it produces no new
+certificate. ACT's smaller all-request mean is driven by that unresolved
+timeout, while its four common-positive requests are slower. Different
+guarantee grades require separate labels, not dismissal of this competition.
+The adapter and compatibility modification must be disclosed; the result
+neither measures unchanged author execution nor implies universal superiority.
+
 Observed average cost includes unsuccessful capped requests; lower cost is not
 synonymous with faster solving of the same outcome. Cross-environment import
 and handoff costs are included in the external request budget. Shared raw-input
@@ -72,6 +82,13 @@ must be read as comparative policy-accepted outcomes rather than independently
 proved real-network certificates. No old counts are replaced and no old
 positive bounds are attached to newly repaired source matrices. Evidence:
 [main-table source applicability](../../docs/main_table_source_applicability_20260921.md).
+The composed-input check directly shows nonnested requested and reconstructed
+boxes on all 100 inputs, under both rational and binary64 radius semantics.
+An input-only repair cannot upgrade the old bounds: omitted inputs may change
+route obligations, and downstream conversion and numerical bounds still need
+their own evidence on the same new object. The relative gains after such a
+repair are unknown. Nor does the absence of a strict certificate imply an
+unsafe model.
 
 All tie-legal top-k sets are obligations in the registered real-valued model.
 This is stronger than one particular library's tie-breaking choice. It does

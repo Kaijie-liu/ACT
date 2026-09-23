@@ -1,5 +1,14 @@
 # Claims-to-Evidence Registry
 
+Current competition disposition (2026-09-23): the repaired MetaMoE comparison
+is complete, ACT 4 policy acceptances versus 9 author numerical sufficient
+filters, no ACT-only positive. This replaces a pending/partial comparison in
+current claims, not the preserved historical records below. See
+[result](../docs/metamoe_las_followup_result_20260923_r1.md) and
+[guarantee/competition limits](../docs/competition_guarantee_disposition_20260923.md).
+All 23 primary main-table gains remain empirical policy outcomes; the audited
+input-containment obstruction prevents a source-complete strict reading.
+
 Scope update (2026-09-21 review response): historical HZ SAFE and certificate-
 yield terminology denotes frozen-policy outcomes, not independently proved
 requested-real-box certificates. CROWN positives remain numerical filters.

@@ -1,7 +1,17 @@
 # Manuscript reading order
 
+Current claim disposition (2026-09-23): read the
+[competition and guarantee response](../docs/competition_guarantee_disposition_20260923.md).
+The repaired MetaMoE full comparison is complete: ACT 4 policy acceptances
+versus 9 author numerical filters, 0 ACT-only positives. All 23 historical
+primary gains remain empirical policy outcomes with audited input-containment
+gaps, not source-complete strict certificates. The abstract, main text and
+table captions report both limitations. Closing reporting gaps does not close
+the performance or source-proof research gaps; no new experiment is launched.
+
 For the latest author-baseline results, actual execution gates, and unresolved
-submission claims, read the [2026-09-22 completion plan](../docs/submission_execution_plan_20260922.md).
+submission claims, use the response above and `docs/CODEX_HANDOFF.md`; the
+[2026-09-22 completion plan](../docs/submission_execution_plan_20260922.md) is an earlier snapshot.
 Its executable ledger separates deployment, pilot, full training and formal
 comparison; passing this accounting check does not establish paper readiness.
 
@@ -81,9 +91,11 @@ PDF layout gate; R4 reflows those sentences without weakening that gate.
 R4's successful validation is preserved; R5 clarifies that it is positive
 output completion, not source checking, that failed, and states the requested
 radius explicitly. The protected experiment results and table are unchanged.
-Short-paper tables are rebuilt from the same four
-committed reviews as the unchanged historical main table, not copied from a
-new run or substituted for empirical reproduction.
+The original short-paper tables are rebuilt from the same four committed
+reviews as the unchanged historical main table. A separate MetaMoE table now
+reconstructs all 20 rows from its archived follow-up audit. Neither table
+reconstruction substitutes for empirical reproduction. The R5 inventory is a
+historical manuscript snapshot, not an identity for this later revision.
 
 The positive portable input98 proof is conditional on its stored expert HZ.
 The later declared-source path checks a complete new enclosure but has no
