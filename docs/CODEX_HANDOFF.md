@@ -1,5 +1,17 @@
 # MoE project handoff
 
+META PROTECTED EXPERT CONTROL FROZEN (2026-09-23):
+Implementation f2c872df7; config `configs/recent_moe/metamoe_protected_smoke_r1.json`
+SHA256 7a8e31de3412657a8d2d2fc9b5d19e5f7847c7aa3655e80f223da64710fe23e0.
+ONE oldMNIST0 ACT, same300s outer/<=30s expert/2GiB/8GiB/19properties;
+base10% cap, hard-supervised native children, fixed remaining-row allocation.
+No original source rebind. Freeze made no model/solver call. After this commit
+is pushed, execute `act-py312/bin/python scripts/metamoe_protected_smoke_r1.py --run`
+ONCE, then separate saved-only audit and archive. New directory
+`/data1/Kane/MOE/baseline_runs/metamoe_protected_20260923_r1` only. Resource check:
+91GiB available,433GiB disk free; another HyZor CPU job observed, not touched.
+No paired speed claim or automatic newcohort follows. Preparation below is historical.
+
 META PROTECTED EXPERT BUDGET PREPARATION (2026-09-23):
 Read `metamoe_protected_protocol_20260923_r1.md`. User prioritizes base-query
 budget starvation, NOT extra time/relaxation. Opt-in one-lane LINEAR_LE keeps
