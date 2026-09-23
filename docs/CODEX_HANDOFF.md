@@ -1,5 +1,20 @@
 # MoE project handoff
 
+GUARDED ROUTING CHECKED-POINT CONTROL PREPARED (2026-09-23):
+See `metamoe_checked_routing_protocol_20260923_r1.md`. Separate opt-in hook on
+route feasibility ONLY, full incoming guarded matrix checked, fresh per-query
+identity/no cache, original native fallback deadline. Support is optimization
+and UNCHANGED; no feasible-point substitution for bounds. Expert checked-base
+ON in both arms. Freeze two oldMNIST0 requests, native-first then checked;
+same300s/30s/19properties and repairedBN. Native local limit remains soft;
+overruns explicit, outer300s hard. 100 focused ACT /58 pinned-env tests pass,
+including final timestamp/audit accounting tightening.
+Broad historical tests refuse old BN source hashes (5 errors including setup),
+as intended: no old manifest rebinding or sealed rerun. New outer controls
+cover deadline/partial/exception/no-overwrite/full cost. Next commit/push,
+freeze/commit/push,resourcecheck,execute ONCE and saved-only audit/archive.
+No formal cohort, support shortcut, relaxation adjustment or new solver gate.
+
 CHECKED BASE REAL CONTROL COMPLETE / ONE POLICY POSITIVE (2026-09-23):
 Read `metamoe_checked_base_result_20260923_r1.md`, saved audit and diagnosis.
 Impl b348e0254 / freeze754a43ef3: two oldMNIST0 requests, repairedBN both arms,
