@@ -55,3 +55,14 @@ routing/expert matrices and complete obligations pass the saved-only audit.
 This is a single-input engineering cost control, not a new certificate gain,
 population speedup, source-complete guarantee or author-tool comparison.
 See the [result and limitations](../docs/metamoe_checked_routing_result_20260923_r1.md).
+
+The subsequent, separately frozen nonzero-precheck control kept both checked
+feasibility paths on. The already available generator enclosure excluded zero;
+an independently recomputed rational sign of the stored row confirmed it.
+Both arms retained 19/19 output queries and identical routed/expert/source
+matrices; complete policy-positive endpoints were unchanged. Request costs
+were 39.407 versus 8.764 seconds, with one versus zero support optimization
+calls. This demonstrates avoidance of unnecessary optimization on one old
+request, not tighter relaxation, new coverage or author-tool superiority.
+The upstream source/guard assumptions and native infeasibility trust remain.
+See the [separate result](../docs/metamoe_nonzero_precheck_result_20260923_r1.md).

@@ -1,5 +1,22 @@
 # MoE project handoff
 
+NONZERO PRECHECK COMPLETE / SUPPORT OPTIMIZATION AVOIDED (2026-09-23):
+Read `metamoe_nonzero_precheck_result_20260923_r1.md` and archive first.
+Impl2a12d5156 / freeze0f6f4beee, exactly two oldMNIST0 requests; route+expert
+checked points ON both. Full HZ_POLICY_ACCEPTED both:39.407129 ->8.763545s.
+Nonzero query30.053890 ->.012939s; native support calls1 ->0, same original
+fallback range[3.345338179462453,4.30685851511294]. Independent exact sign of
+4332 stored generator entries positive. Audit PASS0, same routed/expert/source
+matrices; 19/19 output violations excluded both. 121 ACT/86 pinned tests PASS.
+Existing source/helper rebind explicit; old manifests not changed. Nonfinite
+unresolved records use null; native fallback/solver/numerical gates unchanged.
+This is route-STABLE single-input cost control, no new SAFE/route-changing/
+source-complete or population superiority claim. Upstream lowering and native
+infeasibility remain trusted. Keep precheck OPT-IN. Do not further optimize
+this closed input or its expert relaxation. A broader author-matched test
+requires a separate scope/freeze; source proof is a separate line. No running
+or queued experiment, no new cohort opened.
+
 SELECTED-SCORE NONZERO PRECHECK PREPARED (2026-09-23):
 User authorizes separate sign-only support study, no relaxation/time increase.
 Read `metamoe_nonzero_precheck_protocol_20260923_r1.md`. One source rebind
