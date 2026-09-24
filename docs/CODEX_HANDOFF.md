@@ -1,5 +1,28 @@
 # MoE project handoff
 
+FULL PROOF PARSE REUSE INTEGRATED / CONTROLS PASSED (2026-09-24):
+Read `scoped_parse_proof_protocol_20260924_r1.md` and controls JSON.
+New `scoped_parse_proof/` uses the original hard five-phase supervisor and
+unchanged intake/proposal/aggregate. Only construction and timed construction-
+receipt validation are versioned. Cache is opt-in, bounded and request-local;
+source/bound checkers remain original, uncached and fresh-process python-S.
+85 controls PASS:15 new full-pipeline/batch controls +70 unchanged regressions,
+53.446s wall time. Both synthetic complete arms produced identical source,
+matrices and checked bounds. Nonpositive, partial timeout/error, late complete
+proof, publication overrun, invalid binding/matrix and missing batch terminals
+are fail-closed; partial candidates are retained, not promoted. These controls
+include synthetic native LPs but ZERO real checkpoint/input loads or requests.
+
+User authorizes integration/controls then FREEZE ONLY. Proposed bounded next
+comparison: seed0/rank1 CIFAR4096 label8 (next old manifest rank, not an outcome
+predicate), exact2/255, all252 fresh obligations per arm, disabled/enabled
+adapter once each,300s each,2 threads/8GiB. No source/old-bound borrowing,
+production gate/25% changes,4088 retry or input98 reopening. This observed
+engineering input is not a new holdout or high-accuracy model. The disabled
+adapter is not the original uninstrumented builder; earlier overhead remains
+disclosed. After a clean implementation commit, freeze and independently
+review; do NOT execute without a later explicit user authorization.
+
 SOURCE CONSTRUCTION PARSING STUDY COMPLETE / OPT-IN ONLY (2026-09-24):
 Read `source_construction_parse_result_20260924_r1.md` and results JSON.
 Clean launch `85a8e4374462e7ed083658a441917d61a5a44048`: all 18 frozen synthetic
