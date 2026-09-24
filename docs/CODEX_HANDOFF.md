@@ -1,5 +1,33 @@
 # MoE project handoff
 
+FULL PROOF PARSE COMPARISON EXECUTED / BOTH TIMEOUT / SEALED (2026-09-24):
+User authorized execution; started clean at
+`5c4fe2fe1203339b0bf5cb01c3d07e460cccfeb0`. Read
+`scoped_parse_proof_execution_result_20260924_r1.md`, audit and archive.
+Unchanged frozen CIFAR4096 seed0/rank1,2arms/all252/300s each. Cache off/on
+returned TIMEOUT at298.2577/298.3777s; intake8.5295/8.3706s,
+construction289.7230/289.9538s. Peak sampled RSS5.3875/7.2275GiB, NOT memory
+stops. Both captured identical source; neither published a construction bundle
+or source-check receipt. ZERO LP proposals/candidates/checked bounds/positive
+requests. Each arm still lacks all252 checked bounds; no UNSAFE conclusion.
+
+Trace: off stopped in first-pair property projection/CSR parsing; on completed
+two `output_lp` construction calls ({0,1},{0,2}) and stopped in {0,3} guard/CSR.
+Those returns are in-memory progress, NOT saved/independently checked LPs or
+certificates. Cached last expert affine finished181.2383s vs263.2554s off, but
+total cost is deadline-censored; no full-request speedup. Real cache statistics
+were not published, and greater RSS mixes cache plus more pair state.
+
+Saved-only python-S reviewPASS0, archive reproduces;12 receipt and4 trace
+corruptions rejected. All28raw files retained (149,009,613bytes),515 frozen
+sources unchanged. Keep adapter opt-in; SEAL both calls, no retry/extra time,
+capacity tuning, new sample or old proof reuse. Further work, if authorized,
+starts from saved traces/constructor analysis only. No solver/relaxation
+failure attribution. Historical23 source-gap gains,input98 and4088 unchanged.
+Freeze audit CLI needs absolute root (relative example in old note mismatches
+identity); archive uses configured absolute root, no execution code changed.
+The NOT RUN entries below describe superseded pre-execution stages.
+
 FULL PROOF PARSE REUSE COMPARISON FROZEN / NOT RUN (2026-09-24):
 Read `scoped_parse_proof_freeze_20260924_r1.md`, protocol and freeze review.
 Implementation `7c3a8915891498285e294fb50ca67b9867601f4b`;85controlsPASS.
