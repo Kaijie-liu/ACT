@@ -1,5 +1,26 @@
 # MoE project handoff
 
+SHARED RESIDUAL FULL-PROOF INTEGRATION PASSED / FREEZE NEXT (2026-09-25):
+Read `residual_proof_protocol_20260925_r1.md` and controls JSON. New opt-in
+`residual_proof/` integrates shared potentials through seven phases under one
+300s clock, retaining original 252 duties and unchanged expert/guard/output LP
+math. Both pairwise and shared use checked exclusions, same native proposals,
+half-remaining output proposal budget, source rechecks and exact aggregation.
+No cache, threshold, extra query or production-policy change.121controlsPASS
+(23integration+98unchanged),53.257s; synthetic full checkpoint intake/proof,
+same retained matrices, ties, bad binding, partial/late/error/RSS, owned cleanup,
+full-cost/terminal audits and solver-free saved replay tested. Initial migrated
+test used old report key; fixed before freeze, not a math/real-run failure.
+
+User authorized integration plus a test of complete output gains. Next freeze:
+seed0 next sequential old manifest rank3/CIFAR4099,label4,2/255, pairwise then
+shared once each at300s/2threads/sampled8GiB in a NEW directory. Commit tested
+implementation, freeze/review/commit before execution. Center-only reuse, no old
+proofs or outcome-based selection. Sealed98/4088/4096/4098 remain unchanged.
+No real requests/new certificates yet in this integration stage. Whole-request
+certificate utility, external superiority and deployed-float claims remain
+unestablished. Keep all failures and inspect saved evidence after the two calls.
+
 SHARED ROUTER RESIDUAL SYNTHETIC STUDY COMPLETED / OPT-IN (2026-09-24):
 Read `shared_route_residual_result_20260924_r1.md`, exact audit and archive.
 Freeze/launch fa19ce7afa0c68d50a475140f24edff678a195d2;18/18calls completed,
