@@ -1,5 +1,28 @@
 # MoE project handoff
 
+REAL CHECKED FRONTIER INTEGRATED / CONTROLS PASSED / FREEZE NEXT (2026-09-24):
+Read `frontier_proof_protocol_20260924_r1.md`, integration note and controls JSON.
+New `frontier_proof/` connects unchanged real intake/native output proposals to
+fixed router proposals, independent route receipt, lazy source construction,
+fresh source checking and original-roster exact aggregation. One300s clock,
+2threads/sampled8GiB, no cache/relaxation/production-gate changes. Full route
+receipt required before pruning; partial/failed output evidence cannot close.
+94controlsPASS (21new+73unchanged),50.689s. Synthetic actual-checkpoint pipelines
+and fresh python-S audits cover ties, exclusions, original-index gaps, partial
+route/output files, deadlines, errors, RSS, receipt overrun and batch costs.
+538source/protocol bindings; all prior frozen sources unchanged. No real model
+or input decoding, ZERO real calls/positive certificates in this stage.
+
+Synthetic nuance: original exhaustive native proposer has no checked Farkas
+path for infeasible guards; those NO_CANDIDATE rows remain missing. New checked
+strict router exclusions can close them while retaining identical output
+matrices. This is proof-frontier + construction selection, NOT speed-only reuse.
+Real scope proposed for freeze: seed0/rank2 CIFAR4098 label9, next old manifest
+rank after sealed4088/4096, radius2/255,252original duties, exhaustive then
+checked_frontier once each. Observed engineering input, not fresh holdout.
+Freeze/review after clean implementation commit; do not run real calls yet.
+Do not reopen98/4088/4096 or upgrade historical23, external or native-float claims.
+
 CHECKED ROUTE FRONTIER SYNTHETIC STUDY COMPLETE / OPT-IN (2026-09-24):
 Read `checked_route_frontier_result_20260924_r1.md` and exact review JSON.
 Clean execution1f86072af: all12 fixed calls completed, fresh source/route/output
