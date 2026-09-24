@@ -1,5 +1,26 @@
 # MoE project handoff
 
+CHECKED ROUTE FRONTIER SYNTHETIC STUDY COMPLETE / OPT-IN (2026-09-24):
+Read `checked_route_frontier_result_20260924_r1.md` and exact review JSON.
+Clean execution1f86072af: all12 fixed calls completed, fresh source/route/output
+recheckPASS0, retained traces/matrices identical to exhaustive. Prunable E8/C10
+fixture:2instead8 experts,1instead28 pairs,9 positive output bounds+243 checked
+route-excluded duties still account for all252. Full median3.5342→0.6200s
+(-82.46%). All-tied fixture: no omissions,3.5405→3.8906s(+9.89%). Keep overhead
+visible; no trained-model speedup or external win. Same analytic positive
+conclusions, ZERO real requests/native solver calls; no matrix/threshold tuning.
+73controlsPASS,10 actual saved-package mutations rejected; missing output stays
+NOT_CLOSED. Raw158files/69,088,670bytes retained; all515 old frozen sources
+unchanged. Source/request/guard/math boundaries remain explicit.
+
+Next: separately versioned full-proof-supervisor integration for real intake,
+router candidate receipt, lazy construction, output candidates and exact all-
+original-obligation aggregation; controls for partial route evidence and all
+300s costs, then a new bounded real freeze. Synthetic-only worker cannot load
+checkpoints and does not authorize a sealed real retry. Inputs98,4088,4096,
+historical23 gains, production gates and external comparison tables unchanged.
+Prior FROZEN/NOT RUN entry below is superseded only for SYNTHETIC timing.
+
 CHECKED ROUTE FRONTIER IMPLEMENTED / SYNTHETIC TIMING FROZEN (2026-09-24):
 User requested an actual method improvement toward stronger results. New opt-in
 `checked_route_frontier/` checks whole-domain strict router-margin evidence
