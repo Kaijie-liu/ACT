@@ -1,5 +1,31 @@
 # MoE project handoff
 
+BOUNDED EVIDENCE PUBLICATION CONTROLS COMPLETE / OPTIONAL ONLY (2026-09-25):
+Read `bounded_evidence_result_20260925_r1.md`, protocol, controls and replay.
+New `bounded_evidence/` changes only construction publication in a SYNTHETIC
+control adapter; no production/frozen file change and no real execute hookup.
+137testsPASS (16new+121unchanged), fresh saved-only audit/replayPASS0. Complete
+synthetic300s pipeline still checks all6duties (4route-excluded,2exact outputs),
+relocation/identity/partial/missing-obligation/exception/cutoff/cost checks kept.
+36corrupted costs rejected;573bindings checked incl565sealed;310rawfiles retained.
+
+Canonical bytes/hash identical; streamed escape/write/hash/fsync/exclusive link.
+64KiB max output block, bounded depth/key workspace; large scalar strings also
+fragmented. Resident bundle, downstream load()/identity() and all mathematical
+construction/checks UNCHANGED. Do not call64KiB a total request memory bound.
+Two fixed synthetic probe sizes: large6,553,322byte artifact traced additional
+serialization peak13,107,874→207,862bytes; SMALL207,847bytes streaming peak.
+Memory controlPASS but serialization SLOWER:large0.06394→0.64461s,small
+0.00911→0.08128s with tracing enabled. No untraced/real speedup claim. Full
+generation/import/publication/cleanup/reception cost retained; later audit
+separately charged. Old4099 remains sealed;ZERO real requests/new certificates.
+
+Next separate construction/source-check/publication cost evidence before any
+real freeze. Existing~283s construction leaves~15s; publication fix alone does
+not imply closure, especially with the measured throughput tradeoff. Optional
+encoder work must preserve exact bytes/all checks/budget accounting; no new
+real query/time/memory, math change, historical23 upgrade or external-win claim.
+
 FULL SHARED-RESIDUAL COMPARISON EXECUTED / ZERO OUTPUT CERTIFICATES (2026-09-25):
 Read `residual_proof_execution_result_20260925_r1.md`, audit/archive/replay.
 Clean launch2c7f9deed7ad894d780ad68ac82dc56ad268a1a9;seed0/rank3/CIFAR4099,
