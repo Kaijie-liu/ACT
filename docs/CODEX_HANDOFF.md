@@ -1,5 +1,21 @@
 # MoE project handoff
 
+BATCHED BOUNDED PUBLICATION IMPLEMENTED / SYNTHETIC STUDY NEXT (2026-09-25):
+Read `batched_evidence_protocol_20260925_r1.md` and controlsJSON:158testsPASS
+(21new/on-new-writer+137unchanged),75.011s. New optional `batched_evidence/`
+groups short scalar arrays into<=128items/16KiB escaped batches, keeps64KiB
+write cap and all exact byte/identity/source/output/deadline/partial controls.
+This is publication engineering, not new mathematical certification ability.
+No frozen source/production default change and no real execution hookup.
+
+Next freeze/commit/execute finite SYNTHETIC study:36 rotated publication calls
+(2sizes x3writers x3repeats x tracing ON/OFF) at30s each; separate2 unchanged
+source construction/check profiles at300s each. All sampled8GiB/2threads;
+no GPU, real models, native LP solves, sealed4099 recovery or retuning.
+Use fresh output and report failures, byte identities and complete costs.
+Profiles keep OLD R1 serialization; their component measurements are NOT mixed
+with encoder comparison. No real speedup/strict-certificate/ISSTA promise.
+
 BOUNDED EVIDENCE PUBLICATION CONTROLS COMPLETE / OPTIONAL ONLY (2026-09-25):
 Read `bounded_evidence_result_20260925_r1.md`, protocol, controls and replay.
 New `bounded_evidence/` changes only construction publication in a SYNTHETIC
