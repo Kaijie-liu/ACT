@@ -1,5 +1,33 @@
 # MoE project handoff
 
+REAL CHECKED FRONTIER COMPARISON EXECUTED / BOTH TIMEOUT / SEALED (2026-09-24):
+Read `frontier_proof_execution_result_20260924_r1.md`, exact batch audit and
+hash-bound archive. Clean launchde874d06ea3bf26094578f0961fdbb32b4967cc2;
+unchanged seed0/rank2/CIFAR4098,label9,2/255,2calls,252original duties each,
+300s/2threads/sampled8GiB. Exhaustive TIMEOUT298.1853s (intake8.5335,
+construct289.6466); frontier TIMEOUT298.0495s (intake8.6283,route proposal104.3811,
+route check185.0334). Peak RSS5.4894/0.8705GiB; not RSS stops. No complete
+construction, output query/candidate/bound or positive request in either arm.
+ZERO new complete certificates; no runtime/external superiority. Same captured
+source SHA256d55b1e73f00889d5475a2cfbc09305d3a2f0fa2bb83d72b995412530beed5e9c.
+
+Important split: online frontier saves router prefix/all56 candidate files but
+NO route_check receipt. Later frozen saved-only exact audit checks those56 and
+finds24/28 pairs excludable, retaining4(36output duties) mathematically. This is
+partial router evidence, NOT retroactive within-budget acceptance or full MoE
+proof. Budgeted pipeline accepted zero exclusions and never started the
+remaining expert/output work. Retained pairs do not prove actual route change.
+Offline audit186.5758s is separately charged/reported, not added to request time.
+
+AuditPASS0 and fresh saved-only reproductionPASS, all538frozen bindings intact,
+89raw files/219,641,063bytes retained.
+12actual cost corruptions+4trace corruptions rejected; no model/solver loaded
+by archive. Seal both calls; no retry, extra time, extra samples or recovered
+output proof. Keep98/4088/4096,historical23 source-gap claims,production and
+external tables unchanged. Any later improvement needs a new scoped decision;
+logs support router preparation/check cost, NOT output-relaxation diagnosis.
+The frozen/not-run and integration entries below are historical stages now.
+
 REAL CHECKED FRONTIER TWO-ARM COMPARISON FROZEN / NOT RUN (2026-09-24):
 Read `frontier_proof_freeze_20260924_r1.md`, protocol and independent review.
 Implementation8154a62810fc04c9e3037e20770418584c1d1fd4,94controlsPASS.
