@@ -1,5 +1,23 @@
 # MoE project handoff
 
+FULL PROOF PARSE REUSE COMPARISON FROZEN / NOT RUN (2026-09-24):
+Read `scoped_parse_proof_freeze_20260924_r1.md`, protocol and freeze review.
+Implementation `7c3a8915891498285e294fb50ca67b9867601f4b`;85controlsPASS.
+Config `configs/backend_controls/scoped_parse_proof_compare_r1.json`, SHA256
+`0bfe49e812d3eefebce3d48ceb313571e33613baa96a49210e6ff6ccb044c908`.
+Independent python-S freeze reviewPASS0;515files and raw asset hashes checked,
+no real model/tensor decoding. Exactly2calls: same seed0/rank1 CIFAR4096 label8,
+adapter-disabled then adapter-enabled, each300s/2thread/sampled8GiB, all252
+fresh duties. Cache changes parsing only; all checking/aggregation remains.
+Observed engineering object, not new holdout/high-accuracy or route-change proof.
+
+Real output root ABSENT; ZERO real requests run, queued or scheduled. User
+authorized freeze only. Next needs explicit execution authorization, then execute
+once using the command in freeze doc and saved-only batch audit/archive. No
+resume/retry/expansion, old proof borrowing,4088/input98 reopening, threshold,
+budget or math change. Missing/partial/late evidence is never a full proof.
+The implementation/control entry below is the completed preceding stage.
+
 FULL PROOF PARSE REUSE INTEGRATED / CONTROLS PASSED (2026-09-24):
 Read `scoped_parse_proof_protocol_20260924_r1.md` and controls JSON.
 New `scoped_parse_proof/` uses the original hard five-phase supervisor and
