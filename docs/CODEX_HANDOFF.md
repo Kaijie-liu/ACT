@@ -1,5 +1,28 @@
 # MoE project handoff
 
+SHARED ROUTER RESIDUAL EVIDENCE IMPLEMENTED / SYNTHETIC FREEZE (2026-09-24):
+Read `shared_route_residual_protocol_20260924_r1.md` and controls JSON. New opt-in
+`shared_route_residual/` represents E equality potentials rather than E(E-1)
+independent full LP candidates. Independently reconstruct shared score residual
+vectors, subtract BEFORE box bounding; inequality potentials are not identities
+and are forbidden. Same fixed last-affine candidates, source checks and strict
+tie-safe acceptance. 45 controls PASS (25 new +20 unchanged); exact old/new
+bound/residual/route differential, binary factors, malformed/transplanted input,
+fresh python-S, relocation, partial/deadline/error/full cost controls covered.
+
+Config `configs/backend_controls/shared_route_residual_synthetic_r1.json`, SHA256
+537ec8821b7fbb094d591929d7fa3d5d1c136842e4e53b236df314acfb8145fe.
+18 fixed synthetic router-segment calls: E8/C10,width32,depth3,seed724,three
+fixtures x3 repeats x2 arms, rotated order,30s/2threads/sampled8GiB each. Commit
+freeze before execution. Full router construction/proposal/source-check/import/
+serialization cost included; expert/output work explicitly absent. This is NOT
+a full-MoE runtime or real certificate claim. All538 old identities unchanged.
+Next: execute exact synthetic roster and saved-only audit/archive. A cost signal
+can motivate separately versioned full300s integration, not a retry of sealed
+98/4088/4096/4098 or reuse of their results. No real calls have been made here.
+External superiority, high-accuracy strict certificates and ISSTA outcome are
+not established. Last real timeout below remains unchanged.
+
 REAL CHECKED FRONTIER COMPARISON EXECUTED / BOTH TIMEOUT / SEALED (2026-09-24):
 Read `frontier_proof_execution_result_20260924_r1.md`, exact batch audit and
 hash-bound archive. Clean launchde874d06ea3bf26094578f0961fdbb32b4967cc2;
