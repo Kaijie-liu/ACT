@@ -1,5 +1,30 @@
 # MoE project handoff
 
+SHARED ROUTER RESIDUAL SYNTHETIC STUDY COMPLETED / OPT-IN (2026-09-24):
+Read `shared_route_residual_result_20260924_r1.md`, exact audit and archive.
+Freeze/launch fa19ce7afa0c68d50a475140f24edff678a195d2;18/18calls completed,
+9/9paired comparisons have exactly equal56bounds/residuals and28route decisions.
+Prunable router-segment median2.6503→0.4219s(-84.08%);tied2.6667→0.4465s
+(-83.26%);random2.6965→0.4480s(-83.39%). Retained1/28,28/28,3/28 respectively.
+Candidate payload95,929→760bytes; source/trace still present (not99%whole-package
+reduction).45controlsPASS;source/bound auditPASS0,16.696s separately timed;
+all551frozen bindings intact,including538historical.236rawfiles/31,353,534bytes
+retained. Fresh saved-only replay uses no producer/model/native solver.
+
+Mechanism: E equality potentials compose E(E-1) bounds by subtracting shared
+residual VECTORS before the box correction. Same final-affine candidates and
+same checked source, not independent-score intervals or weaker checking.
+All time results are SYNTHETIC ROUTER SEGMENTS, not full MoE latency. ZERO new
+real requests/native solves/complete output certificates. No external advantage
+or high-accuracy/ISSTA guarantee. Sealed98/4088/4096/4098 unchanged.
+
+Next bounded engineering step: separately versioned full300s supervisor
+integration, including complete route receipt, retained expert/output source
+construction/checking, candidate bounds and all-original-duty aggregation.
+Cutoff/error/partial-evidence/full-cost controls BEFORE any new real freeze.
+Do not claim the old4098 timeout would now succeed or automatically rerun it.
+The FROZEN/NOT RUN entry below is superseded for this SYNTHETIC study only.
+
 SHARED ROUTER RESIDUAL EVIDENCE IMPLEMENTED / SYNTHETIC FREEZE (2026-09-24):
 Read `shared_route_residual_protocol_20260924_r1.md` and controls JSON. New opt-in
 `shared_route_residual/` represents E equality potentials rather than E(E-1)
