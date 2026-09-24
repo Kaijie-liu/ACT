@@ -1,5 +1,25 @@
 # MoE project handoff
 
+SOURCE CONSTRUCTION PARSING STUDY COMPLETE / OPT-IN ONLY (2026-09-24):
+Read `source_construction_parse_result_20260924_r1.md` and results JSON.
+Clean launch `85a8e4374462e7ed083658a441917d61a5a44048`: all 18 frozen synthetic
+calls completed; all three modes have byte-identical source/construction/check
+identities per fixture. Fresh original uncached checking and saved-only review
+PASS; no actual lower-bound proof, real request or solver call in this study.
+Original-to-cached build-process medians fall 19.9%/23.9%; complete-call medians
+fall 7.1%/9.8% at widths16/32. Disabled-adapter overhead is disclosed; memory
+rises; unchanged checking dominates cached full cost. Three repeats per mode,
+two synthetic graphs: NOT a real-model speedup or an external-baseline victory.
+Raw 236 files retained locally (184,793,257bytes), compact hash/timing review
+archived. All 494 sealed implementation sources unchanged; 17 new controls and
+53 unchanged regressions passed. Previous NOT RUN entry below is superseded.
+
+Decision: retain separate opt-in adapter, no capacity tuning or expansion.
+Next, if pursued, is separately versioned full-proof-supervisor integration and
+synthetic deadline/partial-evidence/cost controls, BEFORE any real comparison
+freeze. No automatic rerun of sealed4088, input98 or old 23 source-gap gains.
+No math/25%/solver acceptance changes; no SAFE upgrade from faster construction.
+
 SOURCE CONSTRUCTION PARSING CONTROLS PASSED / SYNTHETIC TIMING FROZEN (2026-09-24):
 Read `source_construction_parse_protocol_20260924_r1.md` and controls JSON.
 New separate `source_construction_lab/` adapter reuses exact CSR parses within
