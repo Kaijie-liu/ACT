@@ -1,5 +1,30 @@
 # MoE project handoff
 
+SCOPED PROOF ONE REQUEST EXECUTED / TIMEOUT / SEALED (2026-09-24):
+Started clean at `bc1716e706cb0ded60d6c941bc3aadabe3946520`; explicit user
+authorization was for this ONE frozen request. Read
+`scoped_proof_execution_result_20260924_r1.md`, independent audit and archive.
+Unchanged config `0f2ada11d86ab74f923b42a8a057716aed2fa7b4ee31e26f06f0510168aeadc5`,
+seed0/rank0 CIFAR4088 label7, all252 fresh obligations,300s/2CPU/8GiB.
+Actual terminal TIMEOUT at298.217s including final ledger publication (2s
+publication reserve INSIDE300). Intake9.078s completed; construction289.133s
+did NOT complete. Peak sampled parent+worker RSS5.268GiB; NOT a memory stop.
+New declared source saved74,304,755bytes; no construction bundle, source-check
+receipt, LP calls, candidates or checked bounds. ALL252 obligations remain
+without checked bounds. No SAFE/UNSAFE, route-change or native-float claim.
+Saved-only python-S auditPASS0; six receipt corruptions rejected, unchanged
+receipt accepted; hash-bound archive independently reproduces with zero new
+solves. All12 raw files retained (74,365,366bytes), no retry or limit change.
+
+Decision: seal this attempt. Observable bottleneck is BEFORE lower-bound
+generation, in the broad source/guard/output-construction event; current logs
+do NOT locate the exact layer, algebra, copy or serialization sub-operation.
+Do not infer solver/relaxation failure or model unsafety. Further work would
+need a separately scoped construction-cost/instrumentation study with controls,
+not added time or another execution of this frozen request. Historical23
+source-gap gains and input98 remain sealed; no production acceptance changed.
+The NOT RUN / authorization-pending entries below are historical stages.
+
 SCOPED PROOF REAL REQUEST FROZEN / NOT RUN (2026-09-24):
 Impl `fe722caf33c7a22286084e51bdfd995206a3adae`; read
 `scoped_proof_execution_freeze_20260924_r1.md`. Config
