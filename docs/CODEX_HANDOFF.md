@@ -1,5 +1,39 @@
 # MoE project handoff
 
+FULL SHARED-RESIDUAL COMPARISON EXECUTED / ZERO OUTPUT CERTIFICATES (2026-09-25):
+Read `residual_proof_execution_result_20260925_r1.md`, audit/archive/replay.
+Clean launch2c7f9deed7ad894d780ad68ac82dc56ad268a1a9;seed0/rank3/CIFAR4099,
+label4,2/255,252original duties per arm,300s/2threads/sampled8GiB unchanged.
+Pairwise TIMEOUT298.0496s: intake8.3016,route preparation103.8555,route check
+185.8853unfinished. Shared RESOURCE_LIMIT287.5545s: intake8.2608,route prepare
+18.2279,route check23.8906completed,construct/publication237.1674resource stop.
+Peak sampled RSS0.8805/8.0567GiB. ZERO native output calls/candidates/bounds or
+complete positive requests. No full-request speedup or external win claimed.
+
+Shared online check excludes25/28pairs (225original duties),retains{4,7},{5,7},
+{6,7},needs experts4–7;27output duties remain. Retained != witnessed reachable.
+Important localization: untrusted in-memory construction RETURNS at282.9478s;
+stop is inside serialize_construction at~287.55s, before even a partial output
+file. Whole-buffer json.dumps(...).encode coexists with live bundle. No saved
+construction/source-check/output proof; cannot compare retained matrices.
+Even removing that peak leaves~15s work budget with source/output work undone.
+Do not mislabel this as output solver/relaxation failure or network unsafety.
+
+Saved-only auditPASS0;fresh replayPASS0. All56real ordered bounds/residuals and
+28pair decisions exactly equal between representations offline. This does NOT
+retroactively accept the pairwise timeout. Same source SHA256
+312a60342d30f86576a4baa32038ae355b4597fa950a947d1d35edc51a1e9093.
+565frozen bindings intact;99rawfiles/290,397,400bytes retained. Audit210.100s and
+replay208.498s separately costed;12actual cost+4trace corruptions rejected.
+
+Seal both requests;add4099 to98/4088/4096/4098 sealed set. Next bounded control:
+memory-bounded canonical evidence publication with exact byte/identity checks,
+cutoff/partial/atomic acceptance and complete cost; no deleted checks. Need
+separate construction/source-check cost evidence before expecting a full300s
+closure. No automatic real rerun/extra sample/time/memory, historical23 source-
+gap upgrade, production/external/high-accuracy claim change. Earlier freeze/
+not-run entries below are now historical for this batch.
+
 FULL SHARED-RESIDUAL TWO-ARM COMPARISON FROZEN / NOT RUN (2026-09-25):
 Implementationcc55c2ed8ba3425f6e4b0a508dadc16ae5efee52;121controlsPASS.
 Read `residual_proof_freeze_20260925_r1.md` and reviewJSON:PASS0,565bindings.
