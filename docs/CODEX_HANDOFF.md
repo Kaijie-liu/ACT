@@ -1,5 +1,27 @@
 # MoE project handoff
 
+CHECKED ROUTE FRONTIER IMPLEMENTED / SYNTHETIC TIMING FROZEN (2026-09-24):
+User requested an actual method improvement toward stronger results. New opt-in
+`checked_route_frontier/` checks whole-domain strict router-margin evidence
+BEFORE expert construction; only proved-empty pair guards are discharged.
+Unknown/zero/tie cases remain. Retained join/guard/McCormick matrices are exactly
+the exhaustive originals; no relaxation/gate/25%/production acceptance change.
+Router proposals use final-affine equality duals only, no native query/tuning.
+All original pair/property rows stay in the full coverage ledger. Full source
+and exact aggregation controls close synthetic positives, NOT real certificates.
+
+Read `checked_route_frontier_protocol_20260924_r1.md` and controls JSON:
+73controlsPASS (20new +53unchanged), including hard deadline/exception/partial/
+late-positive/publication cost controls and producer-free python-S checking.
+Config `configs/backend_controls/checked_route_frontier_synthetic_r1.json`
+freezes12 calls: two analytic E8/C10 fixtures (prunable/all-tied), two methods,
+three rotated repeats,30s/2CPU/8GiB each, no data/checkpoint/native solver.
+After this clean implementation commit, execute the fixed synthetic study and
+saved-only review; report no-pruning overhead as well as useful-pruning cost.
+This is not a real-request freeze/authorization. Real intake/candidate lifecycle
+integration still needs separate controls and a separately frozen protocol.
+Keep inputs98,4088,4096, old matrices/results and all23 source-gap gains sealed.
+
 FULL PROOF PARSE COMPARISON EXECUTED / BOTH TIMEOUT / SEALED (2026-09-24):
 User authorized execution; started clean at
 `5c4fe2fe1203339b0bf5cb01c3d07e460cccfeb0`. Read
