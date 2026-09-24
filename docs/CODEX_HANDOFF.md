@@ -1,5 +1,30 @@
 # MoE project handoff
 
+SOURCE CONSTRUCTION PARSING CONTROLS PASSED / SYNTHETIC TIMING FROZEN (2026-09-24):
+Read `source_construction_parse_protocol_20260924_r1.md` and controls JSON.
+New separate `source_construction_lab/` adapter reuses exact CSR parses within
+ONE construction only. Original affine/ReLU/guard/output algebra and the fresh,
+uncached checker remain unchanged. Source validation, every pair/property and
+all checks still execute; no bound or verdict is cached. Content/scope binding,
+fresh returned containers, bounded retention and deadline cleanup are tested.
+17 new controls PASS; 53 unchanged scoped-proof/source regressions also PASS.
+The old 494-file frozen implementation is unchanged. Byte-exact differential
+includes shape/depth variation, ties, zero radius and all 252 synthetic duties.
+
+Config `configs/backend_controls/source_construction_parse_r1.json` freezes
+18 synthetic calls: two E4/C4/depth2 widths, three rotated orders of original,
+adapter-disabled and adapter-enabled. Each call charges construction AND fresh
+independent checking, imports/serialization/cleanup/publication under 30s,
+2 CPU threads and sampled 8GiB. No real data/model, solver or positive bound.
+Timing has NOT RUN at this entry; after clean implementation commit execute
+`python -S -m source_construction_lab.study --execute-frozen-synthetic`, then
+`python -S -m source_construction_lab.review` and its `--check` mode. Report
+original-vs-cache as well as disabled-vs-cache, with every timeout retained.
+The user's method-improvement request covers this bounded synthetic study;
+it does NOT reopen the sealed 4088 request, input98 or historical 23 gains.
+Synthetic parsing cost is not a demonstrated cause of the real timeout, and
+faster construction is not a new certificate or external-baseline victory.
+
 SCOPED PROOF ONE REQUEST EXECUTED / TIMEOUT / SEALED (2026-09-24):
 Started clean at `bc1716e706cb0ded60d6c941bc3aadabe3946520`; explicit user
 authorization was for this ONE frozen request. Read
