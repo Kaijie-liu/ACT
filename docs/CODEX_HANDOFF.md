@@ -1,5 +1,18 @@
 # MoE project handoff
 
+FULL SHARED-RESIDUAL TWO-ARM COMPARISON FROZEN / NOT RUN (2026-09-25):
+Implementationcc55c2ed8ba3425f6e4b0a508dadc16ae5efee52;121controlsPASS.
+Read `residual_proof_freeze_20260925_r1.md` and reviewJSON:PASS0,565bindings.
+Config `configs/backend_controls/residual_proof_compare_r1.json`,SHA256
+e06061d1eacd0164dca1a0473c7945a01832614c35dc2de8caf8f2b9cf2113c8.
+Exactly2calls: pairwise then shared, same seed0/rank3/CIFAR4099,label4,2/255,
+252original duties each,300s/2threads/sampled8GiB. Same fixed route bounds,
+expert/output construction, native proposals, exact checks and all-duty
+aggregation; only route evidence organization changes. Output absent at review.
+Current user requested the full-budget test. After committing this freeze,
+execute once, then saved-only audit/archive regardless of outcome. No retries,
+extra sample/time, old proof reuse or sealed98/4088/4096/4098 reopening.
+
 SHARED RESIDUAL FULL-PROOF INTEGRATION PASSED / FREEZE NEXT (2026-09-25):
 Read `residual_proof_protocol_20260925_r1.md` and controls JSON. New opt-in
 `residual_proof/` integrates shared potentials through seven phases under one
