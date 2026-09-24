@@ -1,5 +1,32 @@
 # MoE project handoff
 
+BATCHED PUBLICATION STUDY ARCHIVED / LOCAL GAIN, PROFILE ERRORS (2026-09-25):
+Read `batched_evidence_result_20260925_r1.md` and audit JSON. Frozen launch
+839e6cd6d, config52882499…:36/36publication probes complete,0/2source profiles
+complete (ERROR), all38terminals retained.158controls before execution;582frozen
+bindings intact;190rawfiles;114cost corruptions rejected; saved-only auditPASS0
+is NOT execution38/38 success. No real requests/native solves/new certificates.
+
+Untraced large6.55MB serialization median (3rotated repeats):legacy0.01912s,
+boundedR1 0.08006s,new bounded-batch0.03191s (60.1%less thanR1). Small51.9%less.
+Legacy is still faster. Traced new additional peak<=209,835bytes (~0.20MiB);
+bounded memory retained. Do not pool traced/untraced or claim MoE speedup.
+Keep optional; stop tuning these batch parameters/fixtures.
+
+Both source profiles failed at certificate binding: OUR diagnostic R1 wrapped
+shared dict as[dict]. No valid construction/source-check timing obtained; NOT
+solver/relaxation/model difficulty. Frozen script/results unchanged, no rerun.
+Separate `source_cost_controls/` V2 passes bound dict correctly;4tiny E2/C2/w1/
+d0controlsPASS,fresh solver-free source check; no checker weakening, no R1
+profile repetition. Before any finite profile follow-up, bind V2 to outer
+deadline/partial/full-cost supervision and freeze it explicitly as a repair.
+
+No automatic real4099 retry or recovery of unsaved matrices, time/memory
+increase, historical23 source-gap upgrade, external-win or ISSTA guarantee.
+Core contribution remains relational MoE verification, not JSON batching.
+Use valid construction/check cost evidence to choose the next single-factor
+research intervention. The implementation/study-NEXT entry below is historical.
+
 BATCHED BOUNDED PUBLICATION IMPLEMENTED / SYNTHETIC STUDY NEXT (2026-09-25):
 Read `batched_evidence_protocol_20260925_r1.md` and controlsJSON:158testsPASS
 (21new/on-new-writer+137unchanged),75.011s. New optional `batched_evidence/`
