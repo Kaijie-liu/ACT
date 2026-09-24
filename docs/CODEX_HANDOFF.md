@@ -1,5 +1,25 @@
 # MoE project handoff
 
+REAL CHECKED FRONTIER TWO-ARM COMPARISON FROZEN / NOT RUN (2026-09-24):
+Read `frontier_proof_freeze_20260924_r1.md`, protocol and independent review.
+Implementation8154a62810fc04c9e3037e20770418584c1d1fd4,94controlsPASS.
+Config `configs/backend_controls/frontier_proof_compare_r1.json`, SHA256
+`b640a366fdce1ec9a746956eb4532560b5a9907434c5b2129d87f17b6d56b012`.
+Fresh python-S freeze reviewPASS0;538source/protocol files and raw asset hashes
+bound. Exactly2calls, original exhaustive then checked_frontier; same seed0,
+rank2/CIFAR4098,label9,2/255;300s/2threads/sampled8GiB each;252original duties.
+Checked exclusions do not shrink the accounting denominator. No cache, output
+relaxation, threshold, extra query, prior-proof reuse or production change.
+
+Output ABSENT; ZERO real calls, queued jobs or real certificates. Freeze is
+complete; later explicit execution runs the fixed roster once, followed by
+saved-only batch audit/archive as in the freeze note. No resume/retry/expansion
+or reopening98/4088/4096. Compare all statuses/costs, fresh source and retained
+matrix identities, and report original baseline's missing infeasibility-proof
+path. This tests checked route discharge + lazy construction, not speed alone.
+No external advantage, actual route-change or native-float guarantee claimed.
+The previous integration entry below is now complete, not an outstanding task.
+
 REAL CHECKED FRONTIER INTEGRATED / CONTROLS PASSED / FREEZE NEXT (2026-09-24):
 Read `frontier_proof_protocol_20260924_r1.md`, integration note and controls JSON.
 New `frontier_proof/` connects unchanged real intake/native output proposals to
