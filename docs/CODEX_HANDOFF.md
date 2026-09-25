@@ -1,5 +1,20 @@
 # MoE project handoff
 
+READ-ONLY FULL UPSTREAM READY / RESOURCE NOT ADMITTED, 0/4 STARTED (2026-09-25):
+Read `readonly_upstream_readiness_20260925_r1.md`. Implementationf916ac82f,
+freeze4b369cae5/config325f544f…;264controlsPASS,619bindings intact.
+Formal execution refused BEFORE directory creation:load1~26–33 on20CPUs,
+above unchanged admission limit10. Later read-only check~28 still refused;
+memory ample.0/4launched, no formal cost table, no request timeout/SAFE claim.
+No background process left running or other users' jobs interrupted.
+
+Next:resource admission then execute the EXISTING4-call freeze once, followed
+by saved-only original-checker audit+fresh replay and archive. No new freeze,
+extra sample/repeat, changed300s budget or borrowed saved matrices. Tiny
+integration controls are complete, but are NOT the formal4-call observation.
+Full upstream covers propagation/construction/serialization/checks and total
+cost, NOT native output bound solves or new full-MoE certificates. DefaultOFF.
+
 READ-ONLY FULL UPSTREAM INTEGRATION FROZEN / NOT EXECUTED (2026-09-25):
 Read `readonly_upstream_freeze_20260925_r1.md`. Implementationf916ac82f;
 config325f544f…;264controlsPASS;619bindings. Exactly4fresh whole-upstream
