@@ -1,5 +1,14 @@
 # MoE project handoff
 
+SOURCE-COST REPAIR FOLLOW-UP FROZEN / NOT EXECUTED (2026-09-25):
+Read `source_cost_supervised_freeze_20260925_r1.md`. Implementationd88e7c9f4;
+180controlsPASS;593bindings. Confige9f8e267… binds exactly2synthetic profiles
+(E4/C3/w4/d1;E8/C10/w8/d2;seed724),300s each,2sreserve,8GiB,2threads.
+Separate new directory, unchanged V2+OLD R1 publication; zero real/native
+output queries. Freeze verificationPASS. After committing/pushing this
+freeze, execute once and audit/archive valid component costs; no retries.
+The prior implementation-NEXT entry below is superseded by this freeze.
+
 REPAIRED SOURCE-COST SUPERVISION CONTROLLED / FREEZE NEXT (2026-09-25):
 Read `source_cost_supervised_protocol_20260925_r1.md` and controls JSON:
 180testsPASS (18new+4unchanged interface+21batch+137earlier),84.105s;
