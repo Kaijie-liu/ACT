@@ -1,5 +1,26 @@
 # MoE project handoff
 
+READ-ONLY FULL UPSTREAM ARCHIVED / 4 OF 4, MIXED TOTAL COST (2026-09-25):
+Read `readonly_upstream_result_20260925_r1.md` and audit/replay.
+Launchf3b38c0d6,freeze4b369cae5/config325f544f…;264controlsPASS,619bindings.
+All4fresh complete upstream calls finished; source/construction bytes and
+original-checker verdicts identical between arms. No borrowed saved matrices.
+Both independent saved-only audit and fresh python-S replayPASS0;16cost
+corruptions rejected;70rawfiles/4,106,037B. All processes finished; no experiment
+needs the laptop/session kept open. Prelaunch refusals below are historical.
+
+Direct→readonly whole costs:small0.240712→0.221606s,medium0.406803→0.438045s.
+Source checks0.041738→0.039764 and0.127897→0.121716s. Local checking improved,
+but whole observations are one win/one loss; ONCE per arm,not median/speedproof.
+All propagation/construction/serialization/receiver/terminal costs retained.
+12/12small constructions,252=225excluded+27retained medium;ZERO output lower
+bounds or new real SAFE. Original acceptance/trust/old23source-gap unchanged.
+
+Decision: integration validated;keep opt-in/defaultOFF,stop this finite study.
+No microbenchmark expansion/repeat/capacity tuning or automatic real-request
+freeze. Next research must justify complete MoE obligation benefit,not another
+timing variant. Follow original scoped safeguards for any later experiment.
+
 READ-ONLY FULL UPSTREAM READY / RESOURCE NOT ADMITTED, 0/4 STARTED (2026-09-25):
 Read `readonly_upstream_readiness_20260925_r1.md`. Implementationf916ac82f,
 freeze4b369cae5/config325f544f…;264controlsPASS,619bindings intact.
