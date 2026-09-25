@@ -1,5 +1,14 @@
 # MoE project handoff
 
+READ-ONLY VIEW SAVED-CHECK STUDY FROZEN / NOT RUN (2026-09-25):
+Read `readonly_source_freeze_20260925_r1.md`. Implementation3f13d07d7,
+configdbbcc3bf…;240controlsPASS,611bindings. Exactly18saved checks, two
+synthetic objects x none/copy/readonly x3rotated repeats.300s/2sreserve/
+8GiB/2threads;zero new propagation/nativequeries/realcertificates. Commit/push
+freeze then execute once; compare complete checker and outer cost. Independent
+original-checker audit+fresh replay, no new parser. Keep previous failures and
+defaults. This entry supersedes the pre-freeze entry below, not old results.
+
 READ-ONLY EXACT SOURCE VIEW CONTROLLED / FINITE COMPARISON NEXT (2026-09-25):
 Read `readonly_source_protocol_20260925_r1.md` and controls JSON.
 240controlsPASS (33new+207prior). Optional `readonly_source/` keeps the exact
