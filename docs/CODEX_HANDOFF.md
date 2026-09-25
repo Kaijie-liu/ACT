@@ -1,5 +1,24 @@
 # MoE project handoff
 
+EXACT PARSED-SOURCE REUSE CONTROLLED / SAVED-CHECK FREEZE NEXT (2026-09-25):
+Read `parsed_source_reuse_protocol_20260925_r1.md` and controls JSON.
+207testsPASS (27new+180unchanged),601bindings intact. Optional
+`parsed_source_reuse/` caches ONLY exact parsed source representations in
+join/guard/projection/output-construction checks, not acceptance facts/bounds.
+Unchanged function bytecode/private globals; network/router checks untouched.
+Complete source bytes+fresh invocation identity; bounded retained entries;
+immutable storage and fresh containers AND Fractions prevent alias poisoning.
+Source mutation, hash collision, wrong scope, malformed CSR, warm missing
+property, cutoff/partial/error/late/RSS and full cost controls passed.
+
+Existing300s/2sreserve/8GiB/2threads supervisor integrated for a SAVED checking
+segment only; all loading/binding/copy/check/reception/publication charged.
+No new source construction, native query or real certificate. Next commit,
+freeze and run exactly12saved checks of the two prior synthetic objects:
+off/on x3 rotated repeats each. Compare whole/checker cost, including snapshot,
+hash/freeze/copy, not just parsing counts. If overhead consumes savings, stop
+and keep nondefault; no weaker checks, cache tuning or real4099 reopening.
+
 REPAIRED SOURCE-COST DIAGNOSIS ARCHIVED / 2 OF 2 VALID (2026-09-25):
 Read `source_cost_supervised_result_20260925_r1.md`, audit/replay and reuse
 inventory JSON.180controlsPASS;freeze launch10451b678,confige9f8e267…;
