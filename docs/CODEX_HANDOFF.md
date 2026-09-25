@@ -1,5 +1,28 @@
 # MoE project handoff
 
+REPAIRED SOURCE-COST DIAGNOSIS ARCHIVED / 2 OF 2 VALID (2026-09-25):
+Read `source_cost_supervised_result_20260925_r1.md`, audit/replay and reuse
+inventory JSON.180controlsPASS;freeze launch10451b678,confige9f8e267…;
+593bindings intact. Exactly2synthetic calls,300s each, no retries or real/native
+output solves. Whole0.226111/0.438149s; construction0.026537/0.078350;
+source check0.040708/0.126003; OLD R1 publication0.028654/0.064969.
+Original12/252duties = excluded0/225 + retained12/27 checked CONSTRUCTIONS;
+ZERO output lower-bound certificates. The prior study remains0/2 errors.
+Saved-only audit+fresh python-S replayPASS0;8cost corruptions rejected;
+34rawfiles/2,081,612bytes. Audit/replay costs separately0.189418/0.191286s.
+
+Decision: no more encoder or relaxation tuning, no profile expansion/real4099
+retry. Source checking is the largest of the3measured phases, but distributed
+across several components, not a proven parser/real-model bottleneck. Read-only
+pair-check unpack-site inventory:60sites/24identities(small),30/15(medium).
+Repeated joint/guarded/projected sources give a concrete next control direction:
+invocation-local immutable exact parsed-SOURCE reuse, with complete identity,
+factor/guard binding, poisoning/deadline/no-cache differential tests; retain ALL
+acceptance predicates. Measure hash/copy/freeze/parse/check overhead separately
+before any new timing freeze. Not a default change or demonstrated speedup.
+No new realcertificates, historical23 source-gap upgrades or venue promises.
+The FROZEN/NOT EXECUTED entry immediately below is superseded by these results.
+
 SOURCE-COST REPAIR FOLLOW-UP FROZEN / NOT EXECUTED (2026-09-25):
 Read `source_cost_supervised_freeze_20260925_r1.md`. Implementationd88e7c9f4;
 180controlsPASS;593bindings. Confige9f8e267… binds exactly2synthetic profiles
