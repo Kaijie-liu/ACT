@@ -47,6 +47,7 @@ class SubmissionReview(unittest.TestCase):
         result = checker.check(self.kit, self.digest)
         self.assertEqual(result['table_rows'], 21)
         self.assertEqual(result['additional_metamoe_rows'], 2)
+        self.assertEqual(result['additional_proof_frontier_calls'], 7)
         self.assertEqual(result['evidence_grade'], 'ARCHIVED_ACCOUNTING_ONLY')
         self.assertEqual(result['limitations'], builder.LIMITS)
         self.assertEqual(tables.render(), (ROOT / tables.OUTPUT).read_text())
@@ -163,6 +164,19 @@ class SubmissionReview(unittest.TestCase):
         (self.kit / 'manifest.json').write_bytes(data)
         with self.assertRaisesRegex(ValueError, 'duplicate JSON key'):
             checker.check(self.kit, hashlib.sha256(data).hexdigest())
+
+    def test_proof_frontier_report_upgrade_rejected_after_rehash(self):
+        manifest = self.manifest()
+        name = 'docs/proof_closure_20260925_r1.json'
+        path = self.kit / name
+        report = json.loads(path.read_bytes())
+        report['real_summary']['complete_positive_requests'] = 1
+        data = json.dumps(report).encode()
+        path.write_bytes(data)
+        record, = [r for r in manifest['files'] if r['path'] == name]
+        record.update(bytes=len(data), sha256=hashlib.sha256(data).hexdigest())
+        with self.assertRaisesRegex(ValueError, 'derived report drift'):
+            checker.check(self.kit, self.rewrite_manifest(manifest))
 
     def test_existing_output_not_overwritten(self):
         before = (self.kit / 'manifest.json').read_bytes()

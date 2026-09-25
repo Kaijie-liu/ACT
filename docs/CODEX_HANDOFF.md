@@ -1,5 +1,32 @@
 # MoE project handoff
 
+COMPLETE-PROOF FRONTIER CONSOLIDATED / NO NEW EXPERIMENT (2026-09-25):
+Read `proof_closure_decision_20260925_r1.md`, its derived JSON and validation.
+Saved-only recount of FIVE pinned archives: SEVEN real engineering calls on
+FOUR old inputs, six TIMEOUT and one RESOURCE_LIMIT, zero output LP calls,
+output bounds or complete source-to-output positives. Do not confuse offline
+24/25 pair exclusions with accepted online receipts. Only4099/shared accepted
+225/252 route-excluded duties online;27 remain, no published construction.
+Retained{4,7}/{5,7}/{6,7} are potential routes, not reachability witnesses.
+
+Four recent synthetic upstream calls check constructions, NOT output bounds.
+Their one-win/one-loss whole cost cannot justify real closure extrapolation.
+Decision: STOP timing/cache line,keep optional/defaultOFF; NO automatic real
+freeze/new sample. No specific new complete-obligation intervention was
+identified in this analysis. Existing sealed98/4088/4096/4098/4099 stay sealed.
+Continue manuscript and human-review preparation per ee.md; new real proof
+research needs a concrete hypothesis, controls and separately scoped decision.
+Do not loop back through another serializer/parser study as the default next task.
+
+Short paper and reviewer brief updated, old tables/source-gap records intact.
+57accounting/review controlsPASS;619frozen implementation bindings unchanged.
+New31-file table/ledger kit relocated and checked with -I -S;9-page PDF builds
+without unresolved references/overfull boxes. Receipt records local paths and
+identities. This is accounting reproduction, NOT a fresh empirical install,
+raw network reproof, human review or anonymous release. PI-managed reviewer/
+access and clean empirical reproduction remain open. No jobs launched/queued;
+no new strict certificate, external victory or submission readiness upgrade.
+
 READ-ONLY FULL UPSTREAM ARCHIVED / 4 OF 4, MIXED TOTAL COST (2026-09-25):
 Read `readonly_upstream_result_20260925_r1.md` and audit/replay.
 Launchf3b38c0d6,freeze4b369cae5/config325f544f…;264controlsPASS,619bindings.

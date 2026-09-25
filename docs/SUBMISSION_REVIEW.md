@@ -27,6 +27,7 @@ review is a valid outcome; no proposed acceptance score is supplied.
 | MetaMoE author-path competition | Repaired full20 archive and result (2026-09-23) | ACT 4 policy positives vs author 9 numerical filters, 4 shared / 0 ACT-only / 5 author-only. All ACT positives route-stable. Repaired request times out; this is compatibility, not a new certificate. Common-positive means 10.55 / 7.17 s. Adapter/repair disclosed; do not pool with weighted top-2 experiments or call it unchanged author execution. |
 | Applicability of historical main table | Input source ledger and composed-input addendum | Requested/formula sets are not nested on all 100 inputs. No network counterexample follows, but no source-complete real-box certificate follows either. |
 | Independent proof | Old portable-proof review; new full-source/property-range reviews | Old same-HZ conditional 9/9 positive is not a positive result on newer source-checked matrices. No cross-source splicing. |
+| Latest same-source execution frontier | [Seven-call ledger and decision](proof_closure_decision_20260925_r1.md) | Six timeouts and one resource stop; no output LP query or bound. One online router receipt discharges 225/252 duties, leaving 27. Four synthetic source-construction controls are not output proofs or a reason to unseal real requests. |
 | Generality | Conv V2 and general evidence reviews | Conv 30-input HZ positives: zero. New 20-input evidence positives: zero. High-accuracy/cross-family strict gains remain open. |
 
 ## Minimum human review report (leave unanswered until actually reviewed)
@@ -66,6 +67,9 @@ Links to longer sections, implementation files and ancillary histories refer
 to the full repository and are not all included in this bounded kit. Its
 manifest is the exact inventory, not a claim that every linked object has
 been distributed. The short paper and three generated tables are self-contained.
+The additional proof-frontier ledger is rebuilt from five pinned compact
+archives without following raw server paths. It is also accounting only, not
+a new mathematical check.
 The new MetaMoE table is reconstructed from all 20 archived rows, not a
 partial-run summary. See [current claim disposition](competition_guarantee_disposition_20260923.md).
 

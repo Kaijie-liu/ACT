@@ -1,0 +1,151 @@
+{
+  "schema": "PROOF_CLOSURE_REVIEW_VALIDATION_R1",
+  "status": "PASS",
+  "starting_head": "6f35863b327b6bc74b970fe456d31f0afb00a37c",
+  "evidence_grade": "ARCHIVED_ACCOUNTING_NOT_REPROOF",
+  "tests": [
+    {
+      "name": "closure",
+      "command": "PYTHONDONTWRITEBYTECODE=1 /data1/Kane/miniconda3/envs/act-py312/bin/python -I -S scripts/test_proof_closure.py",
+      "exit_code": 0,
+      "output": ".........\n----------------------------------------------------------------------\nRan 9 tests in 0.100s\n\nOK\n"
+    },
+    {
+      "name": "kit",
+      "command": "PYTHONDONTWRITEBYTECODE=1 /data1/Kane/miniconda3/envs/act-py312/bin/python -I -S scripts/test_submission_review.py",
+      "exit_code": 0,
+      "output": "............\n----------------------------------------------------------------------\nRan 12 tests in 0.392s\n\nOK\n"
+    },
+    {
+      "name": "handoff",
+      "command": "PYTHONDONTWRITEBYTECODE=1 /data1/Kane/miniconda3/envs/act-py312/bin/python -I -S scripts/test_review_handoff.py",
+      "exit_code": 0,
+      "output": "....\n----------------------------------------------------------------------\nRan 4 tests in 0.082s\n\nOK\n"
+    },
+    {
+      "name": "source",
+      "command": "PYTHONDONTWRITEBYTECODE=1 /data1/Kane/miniconda3/envs/act-py312/bin/python -I -S scripts/test_moe_main_source.py",
+      "exit_code": 0,
+      "output": "..............\n----------------------------------------------------------------------\nRan 14 tests in 0.008s\n\nOK\n"
+    },
+    {
+      "name": "contract",
+      "command": "PYTHONDONTWRITEBYTECODE=1 /data1/Kane/miniconda3/envs/act-py312/bin/python -I -S scripts/test_manuscript_source_contract.py",
+      "exit_code": 0,
+      "output": "......\n----------------------------------------------------------------------\nRan 6 tests in 0.005s\n\nOK\n"
+    },
+    {
+      "name": "composition",
+      "command": "PYTHONDONTWRITEBYTECODE=1 /data1/Kane/miniconda3/envs/act-py312/bin/python -I -S scripts/test_moe_input_composition.py",
+      "exit_code": 0,
+      "output": ".........\n----------------------------------------------------------------------\nRan 9 tests in 0.001s\n\nOK\n"
+    },
+    {
+      "name": "tables",
+      "command": "PYTHONDONTWRITEBYTECODE=1 /data1/Kane/miniconda3/envs/act-py312/bin/python -S scripts/test_rebuild_moe_main_tables.py",
+      "exit_code": 0,
+      "output": "...\n----------------------------------------------------------------------\nRan 3 tests in 0.045s\n\nOK\n"
+    }
+  ],
+  "tests_passed": 57,
+  "frozen_execution_bindings_unchanged": 619,
+  "tables_rebuilt_unchanged": [
+    "paper/results/main_tables.md",
+    "paper/results/submission_tables.tex"
+  ],
+  "source_scope_ledgers_unchanged": [
+    "docs/main_table_source_applicability_20260921.json",
+    "docs/main_table_input_composition_20260921.json"
+  ],
+  "kit": {
+    "files": 31,
+    "manifest_sha256": "b50c7daf93d9461e05669a6482897dd4e13901bf7a139606bbc7ee4fd65ce135",
+    "output": "/data1/Kane/MOE/proof-closure-review-tRf539/kit",
+    "total_bytes": 3565462
+  },
+  "relocated_check": {
+    "additional_metamoe_rows": 2,
+    "additional_proof_frontier_calls": 7,
+    "bytes": 3565462,
+    "evidence_grade": "ARCHIVED_ACCOUNTING_ONLY",
+    "files": 31,
+    "limitations": {
+      "clean_environment_empirical_rerun": false,
+      "human_review_completed": false,
+      "independent_network_reproof": false,
+      "new_model_forwards": 0,
+      "new_solver_calls": 0,
+      "public_or_anonymous_release": false,
+      "raw_models_inputs_or_proofs_bundled": false
+    },
+    "manifest_sha256": "b50c7daf93d9461e05669a6482897dd4e13901bf7a139606bbc7ee4fd65ce135",
+    "meaning": "Captured-file integrity and archived accounting only; no independent network reproof.",
+    "seconds": 0.025547077879309654,
+    "status": "PASS",
+    "table_rows": 21
+  },
+  "pdf": {
+    "path": "/data1/Kane/MOE/proof-closure-review-tRf539/pdf/review_main.pdf",
+    "bytes": 210886,
+    "sha256": "ee696dbb761f80f8d205f5be763194978563a8d70d9665db8153837061b58542",
+    "pages": 9,
+    "unresolved_references_or_overfull_boxes": false
+  },
+  "revision": [
+    {
+      "path": "scripts/summarize_proof_closure.py",
+      "bytes": 14176,
+      "sha256": "638c71555cb83cd8edb6a3d072c405ff19c25a7eeac50fa2626aa1804c4d93a4"
+    },
+    {
+      "path": "scripts/test_proof_closure.py",
+      "bytes": 5702,
+      "sha256": "cfaa09428b5a5ad512eb82179f74cf679ca7cf362387f0579f05f3eb3f368e6c"
+    },
+    {
+      "path": "scripts/build_submission_review_kit.py",
+      "bytes": 3986,
+      "sha256": "f69224f1ac31f5851312ecd8f567c028870e5bd8ace7b99f6adf12b60762e3b8"
+    },
+    {
+      "path": "scripts/check_submission_review_kit.py",
+      "bytes": 5614,
+      "sha256": "561a684646c8720ae7d4f465bf05522f6acb1141bfdb97a7abac8023c7025890"
+    },
+    {
+      "path": "scripts/test_submission_review.py",
+      "bytes": 9995,
+      "sha256": "80e966b7aa4337fd450ea6caadd14db200ea53c7259daa6bf1d6a096fcbd7342"
+    },
+    {
+      "path": "docs/proof_closure_20260925_r1.json",
+      "bytes": 14327,
+      "sha256": "78f3b5fdc97ea50a9ddb80a74822adbf840286d53c9361370e877c6a39caf174"
+    },
+    {
+      "path": "docs/proof_closure_decision_20260925_r1.md",
+      "bytes": 6240,
+      "sha256": "ac546f42afda996c704a2292dfd114eda9a4d3b0a0c7b8d654d57c21f3be2b22"
+    },
+    {
+      "path": "docs/SUBMISSION_REVIEW.md",
+      "bytes": 9972,
+      "sha256": "0695ab9e0e10f3e9ada25bcd289ae94b8e057daa2891dfa997108f1df28db3b6"
+    },
+    {
+      "path": "paper/review_main.tex",
+      "bytes": 29005,
+      "sha256": "9e772a817f8493561bbf85c8d71175e1f094ef28c82cecfb05051c0829b7ab8e"
+    }
+  ],
+  "latex_passes": 2,
+  "pdf_location_note": "Local review output, not a released or venue-formatted artifact.",
+  "new_model_calls": 0,
+  "new_solver_calls": 0,
+  "new_propagations": 0,
+  "human_review_completed": false,
+  "empirical_clean_install": false,
+  "experiment_launched": false,
+  "complete_positive_certificates_added": 0,
+  "note": "Recounts five committed archives; does not reload raw evidence or independently reprove original LP bounds."
+}

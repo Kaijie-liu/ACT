@@ -24,6 +24,14 @@ FILES = (
     'act/pipeline/moe/results/relation_ablation_review_20260914_r1.json',
     'act/pipeline/moe/results/conv_full_v2_review_20260915.json',
     'docs/general_evidence_execution_v1_results.json',
+    'scripts/summarize_proof_closure.py',
+    'docs/proof_closure_20260925_r1.json',
+    'docs/proof_closure_decision_20260925_r1.md',
+    'docs/scoped_proof_execution_archive_20260924_r1.json',
+    'docs/scoped_parse_proof_execution_archive_20260924_r1.json',
+    'docs/frontier_proof_execution_archive_20260924_r1.json',
+    'docs/residual_proof_execution_archive_20260925_r1.json',
+    'docs/readonly_upstream_audit_20260925_r1.json',
 )
 LIMITS = {
     'new_solver_calls': 0, 'new_model_forwards': 0,

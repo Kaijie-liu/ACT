@@ -6,7 +6,7 @@
 \newcommand{\R}{\mathbb{R}}
 \title{Relational Verification of Weighted Mixture-of-Experts Programs:\\Scoped Reuse and Explicit Proof Contracts}
 \author{Author details omitted for pre-submission review}
-\date{Technical review draft, 23 September 2026}
+\date{Technical review draft, 25 September 2026}
 \begin{document}
 \maketitle
 \begin{abstract}
@@ -350,6 +350,29 @@ noncompletion in
 Section~\ref{sec:contracts} further separate checking coverage from positive
 coverage. A checked nonpositive lower bound is neither an unsafe witness
 nor proof that the LP optimum cannot be positive.
+
+\paragraph{Where the later same-source pipeline stops.}
+Seven separately frozen engineering calls on four observed MLP inputs
+(4088, 4096, 4098, 4099) end in six timeouts and one sampled-memory limit.
+All retain 252 original output obligations. None reaches a native output LP
+query or publishes a complete retained expert/output construction; there are
+zero new output bounds or complete positive proofs. In the latest shared-router
+run, checked exclusions discharge 225 duties online, leaving 27 on three
+potential pairs. Potential pairs do not establish actual route change.
+Offline router checks on other stopped calls are not retroactive online
+discharges. The last real in-memory construction returns at 282.95 seconds,
+before a publication-stage resource stop; only about 15 seconds remain before
+the work cutoff, with source and output checks still outstanding.
+
+A subsequent four-call synthetic control completes fresh upstream construction
+and checking, but intentionally generates no output bounds. Readonly parsing
+lowers whole cost on one object (0.241 to 0.222 seconds) and increases it on
+the other (0.407 to 0.438 seconds), with one observation per arm. It remains
+optional, with no real-request speed or proof-completion claim. These records
+locate an execution frontier before output solving; they do not diagnose
+insufficient output relaxation or justify another sample automatically.
+The saved-only proof-frontier ledger accompanies the artifact; it is accounting,
+not an independent reproof or an additional confirmation cohort.
 
 \section{Related work and novelty boundary}
 Hybrid zonotopes already represent ReLU networks~\cite{hz}; our contribution

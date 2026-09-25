@@ -89,10 +89,17 @@ def check(root, expected):
     spec.loader.exec_module(renderer)
     require(renderer.render(root) == (root / 'paper/results/submission_tables.tex').read_text(),
             'stale review-paper table')
+    closure_path = root / 'scripts/summarize_proof_closure.py'
+    require(str(closure_path.relative_to(root)) in {r['path'] for r in manifest['files']}, 'missing proof-frontier recount')
+    closure_spec = importlib.util.spec_from_file_location('proof_closure', closure_path)
+    closure = importlib.util.module_from_spec(closure_spec)
+    closure_spec.loader.exec_module(closure)
+    frontier = closure.check(root)
     return {'status': 'PASS', 'evidence_grade': 'ARCHIVED_ACCOUNTING_ONLY',
             'manifest_sha256': expected, 'files': len(manifest['files']), 'bytes': size,
             'seconds': time.monotonic() - started, 'table_rows': 21,
             'additional_metamoe_rows': 2,
+            'additional_proof_frontier_calls': frontier['real_summary']['calls'],
             'limitations': LIMITATIONS,
             'meaning': 'Captured-file integrity and archived accounting only; no independent network reproof.'}
 
