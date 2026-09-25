@@ -1,5 +1,14 @@
 # MoE project handoff
 
+READ-ONLY FULL UPSTREAM INTEGRATION FROZEN / NOT EXECUTED (2026-09-25):
+Read `readonly_upstream_freeze_20260925_r1.md`. Implementationf916ac82f;
+config325f544f…;264controlsPASS;619bindings. Exactly4fresh whole-upstream
+calls, two prior synthetic recipes once per direct/readonly arm, opposite
+order.300s/2sreserve/8GiB/2threads. No microbenchmark expansion, saved-source
+shortcut, native output solver, real request or new certificate. Commit/push
+freeze before execution; audit/archive all phases and whole cost with original
+source checker. Defaults/old failures/source-gap boundaries stay unchanged.
+
 READ-ONLY FULL UPSTREAM INTEGRATION CONTROLLED / FREEZE NEXT (2026-09-25):
 Read `readonly_upstream_protocol_20260925_r1.md` and controls JSON.
 264testsPASS (24new+240prior),101.810s;619source bindings unchanged.
