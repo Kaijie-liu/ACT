@@ -1,5 +1,28 @@
 # MoE project handoff
 
+PARSED-SOURCE REUSE STUDY ARCHIVED / CORRECT BUT SLOWER, STOP R1 (2026-09-25):
+Read `parsed_source_reuse_result_20260925_r1.md` and audit/replay.
+207controlsPASS;freeze launch4baf88eb9,configf499fb93…;601bindings intact.
+Exactly12saved synthetic source checks completed with identical original
+checker conclusions;zero new propagation/native queries/real certificates.
+Parses60→24(small),30→15(medium),but checker median0.042491→0.045886s and
+0.124504→0.134216s (~8.0%/7.8% slower). ALL6paired checker costs increased.
+Whole medians0.146132→0.147105s,0.253130→0.257398s;not full MoE timing.
+Snapshot/freeze/defensive fresh containers+Fractions consume the parse saving.
+
+Decision: keep opt-in/default OFF;seal this comparison,do not tune capacity,
+expand repeats/sizes,remove checks or reopen real4099. Saved-only original
+checker audit+fresh replayPASS0;36cost mutations rejected;158rawfiles/349,804B
+plus bound parent source files. No new positive output bounds/certificates.
+
+Possible separately scoped next design: read-only checked-source views to
+avoid the mutable-consumer copy interface, with all predicate/identity/alias/
+deadline guarantees retained. Not implemented or authorized as a real request
+study by this negative table; requires own controls/freeze,not exposed cache
+internals. Do not let supporting microbenchmarks displace full MoE evidence.
+Historical23 gaps/real strict closure/external advantage/venue limits unchanged.
+The FROZEN/NOT RUN and FREEZE NEXT entries below are historical for R1.
+
 PARSED-SOURCE REUSE SAVED-CHECK STUDY FROZEN / NOT RUN (2026-09-25):
 Read `parsed_source_reuse_freeze_20260925_r1.md`. Implementationf98e3f5d0;
 configf499fb93…;207controlsPASS,601bindings. Exactly12saved-source checks
