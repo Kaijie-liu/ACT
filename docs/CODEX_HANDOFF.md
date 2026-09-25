@@ -1,5 +1,27 @@
 # MoE project handoff
 
+READ-ONLY VIEW STUDY ARCHIVED / MODEST LOCAL GAIN, STILL OPT-IN (2026-09-25):
+Read `readonly_source_result_20260925_r1.md` and audit/replay.240controlsPASS;
+freeze launch5ddfa5db6,configdbbcc3bf…;611bindings intact. Exactly18saved checks
+(two prior synthetic objects x none/copy/readonly x3rotated repeats),allcomplete
+and identical original-checker conclusions. No new propagation/nativequeries/
+realcertificates. Independent original-checker audit+fresh python-SPASS0;
+54cost mutations rejected;236rawfiles/494,048B plus parent source files.
+
+Checker medians none/copy/readonly:small0.047690/0.053103/0.046946s;
+medium0.129698/0.140404/0.126301s. Readonly vs none only1.6%/2.6% lower;
+vs copy11.6%/10.0%. Whole medians vs none only0.9%/1.0% lower.5/6paired
+checker differences favorable, smallrepeat2 loses. No universal speed claim.
+Borrow removes repeated materialization (small0.007582→0.000014s,
+medium0.020087→0.000008s),but sealing/content binding/all predicates remain.
+
+Decision: keep optional/nondefault; no tuning/expansion/real reruns. Separately
+scoped full source-generation/checking integration controls would be the next
+useful step, including all upstream costs, not more saved-parse microbenchmarks.
+Read-only is trusted-runtime data protection, not hostile-reflection isolation.
+No main23 source-gap upgrade, complete output proof or ISSTA readiness claim.
+FROZEN/NOT RUN and NEXT entries below are historical after this result.
+
 READ-ONLY VIEW SAVED-CHECK STUDY FROZEN / NOT RUN (2026-09-25):
 Read `readonly_source_freeze_20260925_r1.md`. Implementation3f13d07d7,
 configdbbcc3bf…;240controlsPASS,611bindings. Exactly18saved checks, two
