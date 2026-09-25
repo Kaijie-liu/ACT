@@ -1,5 +1,24 @@
 # MoE project handoff
 
+READ-ONLY FULL UPSTREAM INTEGRATION CONTROLLED / FREEZE NEXT (2026-09-25):
+Read `readonly_upstream_protocol_20260925_r1.md` and controls JSON.
+264testsPASS (24new+240prior),101.810s;619source bindings unchanged.
+Optional `readonly_upstream/` freshly generates the source, propagates router/
+experts, constructs joins/guards/properties/weighted LPs, serializes with the
+unchanged R1 publisher, checks everything and receives the complete candidate
+under ONE300s clock. No saved-source shortcut, producer cache, native output
+solve, gate/math/ordering change or new real certificate. Mode differences
+only affect exact pair-check parsing; fresh invocation binds the cache.
+
+Tiny bytewise original-pipeline differential, ties/dimensions, relocation and
+cutoff/partial/error/cost controls passed. First full-regression admission was
+refused at~6.2GiB available before directory creation; resumed only when the
+unchanged resource gate passed (~110GiB), never interrupted other jobs.
+Next commit/push implementation; freeze exactly4whole upstream integration
+calls:two prior synthetic recipes once off/on,opposite order across recipes.
+No extra sizes/repeats/microbenchmark expansion or sealed real reruns.
+Keep defaultOFF; report phases and total costs, audit original source checker.
+
 READ-ONLY VIEW STUDY ARCHIVED / MODEST LOCAL GAIN, STILL OPT-IN (2026-09-25):
 Read `readonly_source_result_20260925_r1.md` and audit/replay.240controlsPASS;
 freeze launch5ddfa5db6,configdbbcc3bf…;611bindings intact. Exactly18saved checks
