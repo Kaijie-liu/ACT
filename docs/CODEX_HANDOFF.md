@@ -1,5 +1,13 @@
 # MoE project handoff
 
+PARSED-SOURCE REUSE SAVED-CHECK STUDY FROZEN / NOT RUN (2026-09-25):
+Read `parsed_source_reuse_freeze_20260925_r1.md`. Implementationf98e3f5d0;
+configf499fb93…;207controlsPASS,601bindings. Exactly12saved-source checks
+of the two prior synthetic objects,3rotated off/on pairs each.300s/2sreserve/
+8GiB/2threads. No new source construction/native solve/real request/certificate.
+Commit/push freeze before execution. Audit with original no-cache checker;
+compare entire segment, not just hit rates. Stop/nondefault if overhead wins.
+
 EXACT PARSED-SOURCE REUSE CONTROLLED / SAVED-CHECK FREEZE NEXT (2026-09-25):
 Read `parsed_source_reuse_protocol_20260925_r1.md` and controls JSON.
 207testsPASS (27new+180unchanged),601bindings intact. Optional
