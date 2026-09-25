@@ -1,5 +1,24 @@
 # MoE project handoff
 
+READ-ONLY EXACT SOURCE VIEW CONTROLLED / FINITE COMPARISON NEXT (2026-09-25):
+Read `readonly_source_protocol_20260925_r1.md` and controls JSON.
+240controlsPASS (33new+207prior). Optional `readonly_source/` keeps the exact
+scope/content/LRU/deadline logic and original checker predicates, but stores
+owned mapping proxies/read-only sequences/assignment-protected Fractions;
+hits borrow instead of rebuilding containers and rational objects. Detached
+slices preserve projection-checker behavior. No acceptance fact/bound cached.
+Normal alias/slot/container mutation blocked; trusted Python runtime remains
+explicit (not a ctypes/object.__setattr__ security sandbox). Full source bytes
+are rebound on every lookup. Relocation/python-S, identity, poisoning, warm
+missing duty, cutoff/partial/error/late/RSS and complete segment cost passed.
+
+Next commit/push implementation, then independently freeze exactly18 checks:
+two prior saved synthetic constructions x three arms (none/copy/readonly)
+x three rotated repeats. Same300s/2sreserve/8GiB/2threads; no new source/native
+query/real request. Compare whole/checker cost, not hit rate. Old cache negative
+R1 remains sealed/defaultOFF. Audit using original checker without new parser.
+No real certificate, historical23 source-gap or submission-guarantee upgrade.
+
 PARSED-SOURCE REUSE STUDY ARCHIVED / CORRECT BUT SLOWER, STOP R1 (2026-09-25):
 Read `parsed_source_reuse_result_20260925_r1.md` and audit/replay.
 207controlsPASS;freeze launch4baf88eb9,configf499fb93…;601bindings intact.
