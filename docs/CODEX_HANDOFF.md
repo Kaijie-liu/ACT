@@ -1,5 +1,24 @@
 # MoE project handoff
 
+REPAIRED SOURCE-COST SUPERVISION CONTROLLED / FREEZE NEXT (2026-09-25):
+Read `source_cost_supervised_protocol_20260925_r1.md` and controls JSON:
+180testsPASS (18new+4unchanged interface+21batch+137earlier),84.105s;
+593bindings intact including582old frozen and4repaired source files.
+New optional `source_cost_supervised/` wraps unchanged V2 profiler and OLD R1
+serialization. Profile+separate receiver share one300s clock,2sreserve,
+sampled8GiB/2threads. Large receipt hashes/reads remain under watchdog.
+Partial component journals survive cutoff; durations are censored, notzero.
+Cost includes all checks/publication/reception/owned cleanup and terminal write;
+late ledger/terminal invalidates completion. Relocated fresh python-S source
+recheck and malicious/missing/late receipts controlled. No output bound solves.
+
+Next independently freeze the exact2synthetic repair-follow-up objects:
+E4/C3/w4/d1 andE8/C10/w8/d2,seed724,once each300s,newdirectory. Commit freeze
+before execution, then audit saved outcomes and valid component costs. This
+does NOT repair the old0/2 result or authorize sealed real requests. Do not
+retune encoder/relaxation; use valid data to propose one bounded intervention.
+No real/newcompletecertificates, historical23 upgrades or venue promises.
+
 BATCHED PUBLICATION STUDY ARCHIVED / LOCAL GAIN, PROFILE ERRORS (2026-09-25):
 Read `batched_evidence_result_20260925_r1.md` and audit JSON. Frozen launch
 839e6cd6d, config52882499…:36/36publication probes complete,0/2source profiles
