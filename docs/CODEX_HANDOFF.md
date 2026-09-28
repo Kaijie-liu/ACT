@@ -1,12 +1,15 @@
 # MoE project handoff — current entry point
 
-Navigation refresh: 2026-09-28. Scientific status remains the audited 2026-09-25
-decision; this edit launches no experiment and changes no research conclusion.
+Goal/navigation refresh: 2026-09-28. Scientific status remains the audited
+2026-09-25 decision; the new goal launches no real experiment and changes no
+research conclusion.
 
 ## Start here
 
 - [Project navigation / 工程总入口](PROJECT_INDEX.md): code, protocols, results,
   manuscript, author baselines, data and environments.
+- [Algorithm improvement goal / 算法改进目标](ALGORITHM_RESEARCH_GOAL.md): the
+  user's new research objective, baseline contracts and bounded next mechanism.
 - [Complete directory catalogue](organization/DIRECTORY_CATALOG.md): all tracked
   top-level directory families and the local workspace's retention categories.
 - [Working agreements](../AGENTS.md): use only `feat/moe-route-verification`;
@@ -14,7 +17,24 @@ decision; this edit launches no experiment and changes no research conclusion.
 - Existing ACT Python: `/data1/Kane/miniconda3/envs/act-py312/bin/python`.
   Do not install or upgrade dependencies as part of housekeeping.
 
-## Current decision: stop the timing line, continue manuscript/review preparation
+## Current decision: stop the timing line; design one new algorithm mechanism
+
+On 2026-09-28 the user explicitly requested an algorithm-improvement goal aimed
+at external competitiveness and a software-engineering A-venue submission.
+The [goal contract](ALGORITHM_RESEARCH_GOAL.md) separates same-source proof,
+algorithmic benefit, external comparison and independent review. Acceptance at
+a venue is not a promised outcome. None of the six related works is to receive
+a fabricated or semantically mismatched ACT win/loss entry.
+
+Next bounded task: design/control H1, source-checked sparse property obligations
+with an explicit dependency closure, keeping every required route/property.
+This is a hypothesis, not an implementation or observed improvement. It must
+be distinguished from existing sparse affine lifting, scalar F0, input-98 row
+selection and parser caching. Only after complete synthetic controls and total-
+budget controls may a separate real-request freeze be proposed. No real inputs
+are authorized by the goal document; all seals below remain effective.
+
+## Audited stop decision retained
 
 Read [proof-closure decision](proof_closure_decision_20260925_r1.md),
 [derived ledger](proof_closure_20260925_r1.json) and
