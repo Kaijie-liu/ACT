@@ -1,0 +1,233 @@
+{
+  "schema": 1,
+  "organized_on": "2026-09-28",
+  "baseline_commit": "711dae7a8",
+  "history": {
+    "path": "docs/CODEX_HANDOFF_HISTORY_20260928.md",
+    "sha256": "9681affe28c4b400c444a77df74255bd37c58ffc3801a10e397ba4bffe9a005a",
+    "lines": 4632
+  },
+  "frozen_bindings": "docs/readonly_upstream_controls_20260925_r1.json",
+  "groups": [
+    {
+      "id": "core",
+      "title": "ACT 主实现",
+      "policy": "当前方法及通用 ACT；支持范围以具体入口合同为准",
+      "roots": [
+        "act",
+        "modules",
+        "data",
+        "vnncomp",
+        "ipynb"
+      ]
+    },
+    {
+      "id": "project",
+      "title": "协议、论文、文档与测试",
+      "policy": "维护入口；日期化协议/结果不可覆盖",
+      "roots": [
+        "configs",
+        "docs",
+        "paper",
+        "scripts",
+        "tests",
+        ".github",
+        ".vscode"
+      ]
+    },
+    {
+      "id": "evidence",
+      "title": "证据格式、LP 检查与通用请求",
+      "policy": "已存在的分阶段证据研究；不等于完整网络证明",
+      "roots": [
+        "moe_evidence",
+        "portable_proof",
+        "checked_gate",
+        "exact_matrix_cache",
+        "exact_primal",
+        "lp_sandwich",
+        "lp_diagnostic",
+        "lp_diagnostic_archive",
+        "nonpositive_analysis",
+        "property_diagnosis",
+        "property_ranges",
+        "range_diagnosis",
+        "range_pipeline",
+        "evidence_cohort",
+        "cohort_analysis",
+        "batched_evidence",
+        "bounded_evidence",
+        "cached_portable",
+        "single_check_portable",
+        "evidence_handoff"
+      ]
+    },
+    {
+      "id": "upstream",
+      "title": "上游、缓存与证据模式集成",
+      "policy": "保留旧执行/比较；不是自动扩样队列",
+      "roots": [
+        "upstream_portable",
+        "upstream_archive",
+        "upstream_cost_analysis",
+        "upstream_reuse",
+        "reuse_supervised",
+        "reuse_archive",
+        "source_cache_ablation",
+        "source_cache_archive"
+      ]
+    },
+    {
+      "id": "source",
+      "title": "来源与变换检查",
+      "policy": "检查范围必须连接到同一对象的新输出义务",
+      "roots": [
+        "router_source",
+        "source_enclosure",
+        "upstream_source",
+        "source_ranges",
+        "full_source",
+        "full_bounds"
+      ]
+    },
+    {
+      "id": "real_proof",
+      "title": "真实请求证明研究",
+      "policy": "旧输入封存；来源到完整正输出仍未闭合",
+      "roots": [
+        "frontier_proof",
+        "checked_route_frontier",
+        "residual_proof",
+        "shared_route_residual",
+        "scoped_parse_proof",
+        "scoped_proof",
+        "scoped_source"
+      ]
+    },
+    {
+      "id": "source_cost",
+      "title": "来源构造与解析成本研究",
+      "policy": "本轮研究已停止；可选项保留、默认关闭",
+      "roots": [
+        "source_construction_lab",
+        "source_cost_controls",
+        "source_cost_supervised",
+        "parsed_source_reuse",
+        "readonly_source",
+        "readonly_upstream"
+      ]
+    },
+    {
+      "id": "arithmetic",
+      "title": "精确基、稀疏消元与原生工具对照",
+      "policy": "历史有限研究，保留控制和失败；不自动继续自研消元",
+      "roots": [
+        "amortized_basis",
+        "basis_compatibility",
+        "basis_supervised",
+        "exact_basis",
+        "fidelity_diagnostic_archive",
+        "fidelity_supervised",
+        "modular_basis",
+        "modular_diagnostic",
+        "modular_supervised",
+        "native_basis",
+        "native_import_audit",
+        "plan_basis",
+        "primitive_basis",
+        "primitive_diagnostic",
+        "primitive_supervised",
+        "soplex_compat",
+        "soplex_detached",
+        "soplex_execution",
+        "soplex_fidelity",
+        "sparse_basis",
+        "sparse_diagnostic_archive",
+        "sparse_supervised"
+      ]
+    }
+  ],
+  "workspace_rules": [
+    {
+      "category": "主仓库与导航",
+      "policy": "代码与导航；仅在指定分支修改",
+      "patterns": [
+        "ACT",
+        "README.md"
+      ]
+    },
+    {
+      "category": "研究指导",
+      "policy": "保留原文；晚期审计可修正较早指导的事实判断",
+      "patterns": [
+        "Advice"
+      ]
+    },
+    {
+      "category": "作者制品与环境",
+      "policy": "不移动，不直接升级，不提交到 ACT 仓库",
+      "patterns": [
+        "baselines",
+        "envs"
+      ]
+    },
+    {
+      "category": "数据与权重",
+      "policy": "不删除/去重；身份、许可、引用和恢复方案须先核实",
+      "patterns": [
+        "baseline_data",
+        "baseline_weights",
+        "datasets"
+      ]
+    },
+    {
+      "category": "作者运行与本地服务",
+      "policy": "保留失败、终态、日志与运行路径；socket 不代表任务在运行",
+      "patterns": [
+        "baseline_runs",
+        "run"
+      ]
+    },
+    {
+      "category": "审阅与可搬迁制品",
+      "policy": "冻结/评审来源，原位保留；不是临时垃圾",
+      "patterns": [
+        "competition_claims_review_*",
+        "submission-review-*",
+        "proof-closure-review-*",
+        "review-artifact-*",
+        "portable_conv98_*"
+      ]
+    },
+    {
+      "category": "缓存与工具状态",
+      "policy": "仅列为核查候选；不能据名称删除",
+      "patterns": [
+        "cache",
+        ".pycache",
+        ".tmp",
+        ".tmux",
+        ".vscode",
+        "codex-stage2-cache.*",
+        "tmp"
+      ]
+    },
+    {
+      "category": "控制测试遗留目录",
+      "policy": "可能含失败证据；单独检查引用和进程后才可提出回收清单",
+      "patterns": [
+        "test_*",
+        "parsed_source_controls_*",
+        "soplex_life_*",
+        "mainline_integration_*"
+      ]
+    }
+  ],
+  "navigation_files": [
+    "README.md",
+    "docs/PROJECT_INDEX.md",
+    "docs/CODEX_HANDOFF.md",
+    "docs/organization/DIRECTORY_CATALOG.md"
+  ],
+  "workspace_file": "MOE.code-workspace"
+}

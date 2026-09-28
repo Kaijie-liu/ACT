@@ -2,6 +2,17 @@
 
 A testing and verification framework for AI models based on neural networks, built on a three-tier architecture (front-end, back-end, and pipeline), with native PyTorch support and an ACT intermediate representation (IR) that enables refinement-based precision and supports diverse model architectures, input formats, and specification types.
 
+## MoE research branch
+
+For the `feat/moe-route-verification` project, start with the
+[project index / 工程总导航](docs/PROJECT_INDEX.md) and
+[current handoff](docs/CODEX_HANDOFF.md). The
+[directory catalogue](docs/organization/DIRECTORY_CATALOG.md) separates the
+core verifier, evidence research, author baselines and preserved experiments.
+Open [MOE.code-workspace](MOE.code-workspace) for the local VS Code view.
+Historical protocols are not an automatic execution queue; scientific claims
+are governed by the linked audited results and source-contract limitations.
+
 ## Quick Start
 
 

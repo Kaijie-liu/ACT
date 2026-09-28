@@ -1,0 +1,109 @@
+# ACT / MoE 工程总导航
+
+整理日期：2026-09-28。**本页负责找东西，不是新的实验协议或结果表。**
+主仓库 `/data1/Kane/MOE/ACT`；唯一工作分支 `feat/moe-route-verification`。
+
+## 先看哪一份？
+
+| 你要做什么 | 第一入口 | 注意 |
+|---|---|---|
+| 接手工程、决定下一步 | [当前交接](CODEX_HANDOFF.md) | 已压缩；封存边界优先于旧 NEXT |
+| 看完整工程目录 | [目录分类](organization/DIRECTORY_CATALOG.md) | 目录还在原位；分类不是删除许可 |
+| 看当前实验对比 | [比较与保证裁决](competition_guarantee_disposition_20260923.md) | 内部优势不等于外部优势，策略接受不等于严格证书 |
+| 看六篇作者基线跑到了哪 | [作者基线实际状态](author_baselines_status_20260924.md) | 分开部署、控制、训练与完整匹配比较 |
+| 看最新证明研究结论 | [证明闭合决策](proof_closure_decision_20260925_r1.md) | 停止自动缓存/计时循环，不再重开封存输入 |
+| 看论文 | [论文阅读顺序](../paper/README.md)、[短稿](../paper/review_main.tex) | 短稿不是已完成的匿名投稿版本 |
+| 做独立评审 | [人类技术审阅与复现地图](SUBMISSION_REVIEW.md) | AI 自检和 JSON 审计不替代独立人类审阅 |
+| 查旧讨论和执行历史 | [原始交接全文](CODEX_HANDOFF_HISTORY_20260928.md) | 原样保留 4,632 行，不是待执行队列 |
+
+## 工作区的逻辑分层
+
+```text
+/data1/Kane/MOE/
+├── README.md                  本机总入口
+├── ACT/                       唯一主仓库
+│   ├── MOE.code-workspace     VS Code 分区视图
+│   ├── act/                   ACT 主实现、MoE 入口、历史管线
+│   ├── configs/               顶层冻结协议；MoE 内部另有 configs/
+│   ├── scripts/ + tests/      执行、审计、控制（启动前先看冻结协议）
+│   ├── docs/                  当前导航、日期化报告、紧凑归档
+│   ├── paper/                 论文正文、主表、附录、审阅材料
+│   ├── data/moe/results/      大型本地证据，保持原位
+│   └── 各证明研究包/           按目录分类表索引，不批量改 import
+├── Advice/                    PI 原始指导
+├── baselines/                 外部作者仓库与显式兼容版本
+├── baseline_runs/             作者训练、认证、攻击与比较运行
+├── baseline_weights/          公开与本地产生权重
+├── baseline_data/ + datasets/  数据集
+├── envs/                      隔离环境；ACT 使用既有 act-py312
+├── run/                       本地服务端点等运行资产
+└── review / cache / test_*     分别是审阅制品、缓存与控制遗留，不能混删
+```
+
+这次采用**导航分层，不做冻结路径迁移**。协议、候选证据、审计和包导入绑定了现有路径；
+把几十个研究包简单搬进 `archive/` 会破坏可执行性和来源绑定。详细目录逐项列在分类表中。
+
+## 代码从哪里读？
+
+| 层 | 入口 | 作用 |
+|---|---|---|
+| ACT / HybridZ | [HybridZ 变换](../act/back_end/hybridz_tf)、[MoE 后端说明](../act/back_end/moe/README.md) | 传播、路由域、加权松弛等基本语义 |
+| 主验证请求 | [staged_verifier.py](../act/pipeline/moe/staged_verifier.py) | `verify_staged_linf` 与请求证据包 |
+| 调度 | [route_complexity_schedule.py](../act/pipeline/moe/route_complexity_schedule.py) | 按路由复杂度组织剩余预算 |
+| 作用域复用 | [scoped_f0_proofs.py](../act/pipeline/moe/scoped_f0_proofs.py) | 有身份与域绑定的逐性质事实 |
+| 加权输出 / monolithic | [weighted_top2.py](../act/back_end/moe/weighted_top2.py)、[monolithic_f0.py](../act/back_end/moe/monolithic_f0.py) | 两种求解组织，不能把差异全归因于关系保留 |
+| 外部加权路径 | [external_pair_comparison.py](../act/pipeline/moe/external_pair_comparison.py) | ACT 前端＋plain CROWN，不是完整独立动态 MoE 工具 |
+| 作者基线 | [近期基线设计](recent_moe_baselines_20260921.md)、[实际完成状态](author_baselines_status_20260924.md) | 先看实际状态，再按协议找 runner |
+| 来源 / LP / 精确证据 | [证明模块分类](organization/DIRECTORY_CATALOG.md) | 不把所有实验性模块当作生产入口能力 |
+
+主要已评估入口的范围仍是 eval、CPU/float64、输出层 selected-softmax top-2。
+存在 top-1、多层或作者适配模块，不等于这些范围已有完整严格认证或论文规模比较。
+
+## 实验证据如何找、如何读？
+
+按 **协议/选择 → 执行终态 → 独立审计 → 派生分析 → 论文主张** 读取。
+不要只看一个 `PASS`，也不要在失败后修改冻结的阈值、分母或对象。
+
+- 当前主结果：[主表](../paper/results/main_tables.md)、[论文证据表](../paper/evidence_table.md)。
+- 数值保证修正：[主表输入来源审计](main_table_source_applicability_20260921.md)。
+- 最新真实证明终态：[闭合账本](proof_closure_20260925_r1.json)。
+- 顶层协议：[configs/](../configs)；原 MoE 管线协议：[act/pipeline/moe/configs/](../act/pipeline/moe/configs)。
+- 紧凑报告：[docs/](.) 与 [MoE 管线文档](../act/pipeline/moe/docs)。
+- 大型本地证据：`data/moe/results/`、`baseline_runs/`；权重/数据不提交到 Git。
+
+**状态优先级：对应执行的审计终态 > 较早的冻结/计划 > 聊天中的意向。**
+同一工作线用当前交接定位最新裁决；旧日期文档的“下一步”不会自动复活。
+
+## 日常操作与维护
+
+在 VS Code 用“从文件打开工作区”打开 [MOE.code-workspace](../MOE.code-workspace)。
+这只提供分区视图，隐藏 Python 缓存，并从默认搜索排除部分大型生成目录；
+没有改变本机全局设置，没有隐藏失败状态或删除证据。需要搜原始结果时可关闭搜索排除。
+
+```sh
+cd /data1/Kane/MOE/ACT
+git status --short --branch
+/data1/Kane/miniconda3/envs/act-py312/bin/python -I -S scripts/check_project_layout.py --workspace
+/data1/Kane/miniconda3/envs/act-py312/bin/python -I -S scripts/summarize_proof_closure.py --check
+```
+
+第一项检查目录分类、导航、历史交接字节和 619 个已记录实现绑定；第二项重算已归档账本。
+它们不加载模型、不训练、不求解，也不是完整数学证明检查。
+新增顶层研究目录时，更新 [layout.json](organization/layout.json)，再重生成并检查目录分类表。
+生成命令为 `scripts/check_project_layout.py --render`（仅输出文本，不自动写文件）。
+
+## 保留与清理边界
+
+| 类型 | 本次处理 / 后续规则 |
+|---|---|
+| 冻结配置、原始结果、失败、证据和 checkpoint | **原位保留**；禁止凭文件名/年龄批量删除 |
+| 外部仓库、隔离环境、数据、权重 | 原位保留；迁移或去重需单独核对引用、许可、恢复方案 |
+| `test_*`、`parsed_source_controls_*` 等遗留 | 仅分类；先查引用和运行进程，可能包含失败现场 |
+| pip/解析/Python 缓存、巨大日志 | 是核查候选，不是全部冗余；本轮不批量清理 |
+| `act/pipeline/log/pipeline_tests.log` | 用户确认有意删除；已单独提交 `711dae7a8`，可从 Git 历史恢复 |
+| 4632 行旧交接 | 原样存入同目录历史文件，SHA-256 绑定；当前交接只保留有效状态 |
+
+新控制应使用自动清理的专用临时目录；确需保留的失败必须进入有身份与说明的运行目录。
+这只是今后的目录约定，不修改旧测试、冻结脚本或历史路径。整理不会升级任何科学主张。
+
+本次变更范围与验证结果见 [整理记录](organization/ORGANIZATION_20260928.md)。
