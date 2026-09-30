@@ -11,6 +11,7 @@
 | 看算法改进目标与下一门 | [研究目标合同](ALGORITHM_RESEARCH_GOAL.md) | 对外竞争、同源证明和投稿复核分开；不是新的真实执行冻结 |
 | 看 H1 代码与合成证明 | [来源依赖控制](h1_sparse_source_controls_20260930.md) | 新直接变量 LP；尚无硬预算集成、真实增益或自包含搬迁包 |
 | 看完整工程目录 | [目录分类](organization/DIRECTORY_CATALOG.md) | 目录还在原位；分类不是删除许可 |
+| 清理磁盘与防止缓存堆积 | [存储维护规则](organization/STORAGE_MAINTENANCE.md) | 只清经过核对的可重建缓存；实验、失败证据和权重保留 |
 | 看当前实验对比 | [比较与保证裁决](competition_guarantee_disposition_20260923.md) | 内部优势不等于外部优势，策略接受不等于严格证书 |
 | 看六篇作者基线跑到了哪 | [作者基线实际状态](author_baselines_status_20260924.md) | 分开部署、控制、训练与完整匹配比较 |
 | 看最新证明研究结论 | [证明闭合决策](proof_closure_decision_20260925_r1.md) | 停止自动缓存/计时循环，不再重开封存输入 |
@@ -101,7 +102,7 @@ git status --short --branch
 | 冻结配置、原始结果、失败、证据和 checkpoint | **原位保留**；禁止凭文件名/年龄批量删除 |
 | 外部仓库、隔离环境、数据、权重 | 原位保留；迁移或去重需单独核对引用、许可、恢复方案 |
 | `test_*`、`parsed_source_controls_*` 等遗留 | 仅分类；先查引用和运行进程，可能包含失败现场 |
-| pip/解析/Python 缓存、巨大日志 | 是核查候选，不是全部冗余；本轮不批量清理 |
+| pip/解析/Python 缓存、巨大日志 | 按[存储维护规则](organization/STORAGE_MAINTENANCE.md)逐项核对；仅 allowlist 下载/字节码缓存可计划删除，数据缓存和日志不混删 |
 | `act/pipeline/log/pipeline_tests.log` | 用户确认有意删除；已单独提交 `711dae7a8`，可从 Git 历史恢复 |
 | 4632 行旧交接 | 原样存入同目录历史文件，SHA-256 绑定；当前交接只保留有效状态 |
 

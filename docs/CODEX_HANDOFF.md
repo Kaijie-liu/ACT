@@ -15,6 +15,10 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   stop on unexplained dirty worktrees; no concurrent writers.
 - Existing ACT Python: `/data1/Kane/miniconda3/envs/act-py312/bin/python`.
   Do not install or upgrade dependencies as part of housekeeping.
+- User requested storage maintenance on 2026-09-30. Follow the
+  [cache-only maintenance rules](organization/STORAGE_MAINTENANCE.md), checking
+  disk growth at completed-stage handoff. Never age-delete scientific evidence,
+  quarantine failures, checkpoints or environments. No automatic purge daemon.
 
 ## Current decision: H1 synthetic proofs work; hard-budget integration is next
 
