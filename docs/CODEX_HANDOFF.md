@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-H2 model-intake and capacity update: 2026-09-30. Real-model scientific status remains
+H2 factored representation update: 2026-09-30. Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
 ## Start here
@@ -20,7 +20,7 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: H2 model intake passes; real capacity is not admitted
+## Current decision: H2 factored controls pass; real capacity is not admitted
 
 On 2026-09-28 the user explicitly requested an algorithm-improvement goal aimed
 at external competitiveness and a software-engineering A-venue submission.
@@ -83,13 +83,24 @@ large pair bases for all properties. No checkpoints or datasets were loaded.
 The convolutional family has unsupported capture operators. Do not bump limits
 and blindly launch, or choose an easier model/sample to bypass this finding.
 
-Next bounded task: a versioned source/block/pair obligation representation,
-with independent semantic expansion equal to the current LP on fixed controls.
-Store source coefficients/constraints once, reference pair guards/maps, and
-rebuild every property, gate, endpoint or MC addition independently; hash equality
-alone is not a proof. Preserve complete duties and bounded per-pair processing.
-Then portable/hard-budget controls and capacity admission must pass before any
-separate real freeze. This is not H1 dependency pruning or another cache study.
+[Factored source and pair representation](h2_factored_representation_20260930.md)
+now passes 23 new controls and 73 regressions. Eight fixed synthetic packages
+independently expand to the same source, base/gate/reuse and 75 target LPs as the
+old format. All complete outcomes are unchanged; this is not a new certificate
+gain. R1's test-fixture failure and implementation snapshots remain preserved;
+R2 also fixes inventory closure and adds exact archive-level semantic comparison.
+
+Coefficients are chunked; each source constraint block is stored once. The core
+processes one pair basis at a time, but retains node bounds/refs and temporarily
+copies a pair for proposals. This is not constant-memory or measured capacity.
+The writer still starts from a full declaration. New format admission is stricter
+than the old schema, and small bundles can be larger. No performance claim.
+
+Next bounded task: the new format's portable checker and hard-budget integration,
+including complete capture, publication, reception, partial evidence and costs.
+Cooperative deadlines and repo-backed `python -I -S` checks are not that gate.
+Then full-path capacity admission must pass before any separate real freeze.
+This is not H1 dependency pruning or another cache study.
 No sealed input/holdout is reopened. H2 targets weighted top-2; MetaMoE top-1 remains open.
 
 ## H1 stop decision retained

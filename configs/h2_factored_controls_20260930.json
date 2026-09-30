@@ -1,0 +1,22 @@
+{
+  "schema": "H2_FACTORED_CONTROL_PROTOCOL_V1",
+  "source_protocol_sha256": "154e6171c8c2ffad14b6394ae19419827f22184214522a64a27cd3a727a7180a",
+  "cases": ["weighted_sign", "tied_partial_reuse", "unsafe_tied", "unresolved_sign"],
+  "arms": ["endpoints", "mccormick"],
+  "factor": "chunked source and once-stored node blocks; one pair base at a time",
+  "input_source": "unchanged fixed declarations, not trained checkpoints",
+  "control_chunk_bytes": 64,
+  "maximum_source_chunk_bytes": 1048576,
+  "maximum_header_bytes": 4194304,
+  "maximum_member_bytes": 16777216,
+  "maximum_source_bytes": 268435456,
+  "maximum_package_bytes": 2147483648,
+  "maximum_tensor_elements": 1000000,
+  "maximum_classes": 1024,
+  "same": ["source coefficients", "input domain", "all unordered pairs", "all output properties", "gate ranges", "reuse", "exact acceptance threshold"],
+  "acceptance_threshold": "1/10000000",
+  "maximum_cooperative_seconds": 300,
+  "hard_budget_supervision": false,
+  "real_requests": 0,
+  "stop": "semantic or coverage difference rejects this format; no true-model run or automatic limit increase"
+}
