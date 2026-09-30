@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-H2 row-wise supervision update: 2026-10-01 (controls completed 2026-09-30).
+H2 full-size source identity update: 2026-10-01.
 Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
@@ -21,7 +21,7 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: capacity identity preparation controlled; full path remains open
+## Current decision: full-size source identity prepared; full proof capacity remains open
 
 On 2026-09-28 the user explicitly requested an algorithm-improvement goal aimed
 at external competitiveness and a software-engineering A-venue submission.
@@ -135,10 +135,13 @@ passes 16 controls and 16 static regressions. Eleven tiny calls retain all termi
 Owned preparation and reception share a bounded API budget; chunk bytes are rebuilt
 into the independently matched full declaration identity. Null hashes, partial and
 late candidates cannot prepare an identity. R1/R2 remain preserved; R3 is accepted.
-No full-size model has yet been instantiated. The next single preparation call is
-fixed in that document, with no LP solve or real admission. Successful preparation
-must be followed by separately frozen timed runs that recreate the object, not read
-the prepared source for free. This does not replace the full-path capacity gate.
+The single frozen full-size synthetic preparation has now completed in 29.5957 s,
+with sampled parent/child peak RSS 906,829,824 bytes. The [archived identity](h2_capacity_identity_20261001_r1.json)
+binds 6,961,368 parameters, 95 chunks, 53 tensors and 9,560 checked source nodes.
+Both full declaration and chunk-manifest identities were independently reconstructed.
+This generated no output LPs, bounds or complete output proof. No real model/data
+was loaded. Preparation is not free: each later timed arm must recreate/capture
+and charge everything, matching the frozen identities. Full-path capacity remains open.
 
 Next bounded task: separately freeze a full-size synthetic capacity control shaped
 like the registered architecture, covering creation/capture, chunking, construction,
