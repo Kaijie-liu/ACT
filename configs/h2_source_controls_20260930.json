@@ -1,0 +1,31 @@
+{
+  "schema": "H2_SOURCE_CONTROL_PROTOCOL_V1",
+  "scope": "declared synthetic real Linear/ReLU/Flatten top2 graphs",
+  "arms": ["endpoints", "mccormick"],
+  "cases": ["weighted_sign", "tied_partial_reuse", "unsafe_tied", "unresolved_sign"],
+  "weighted_sign": {
+    "router_weights": [[1.0], [0.0], [-1.0]],
+    "router_bias": [-1.0, 0.0, -2.0],
+    "hidden_weights": [[1.0], [-1.0], [1.0]],
+    "hidden_bias": [0.0, 0.0, 2.0],
+    "output_relu_coefficients": [0.25, 0.25],
+    "output_carry_coefficients": [0.75, -0.25, -0.25],
+    "output_bias_binary64": [-1.4, 0.6, 0.6],
+    "classes": 2,
+    "label": 0,
+    "radius": "1",
+    "clip": ["-1", "1"],
+    "margin": "0",
+    "coefficient_semantics": "exact rational value of stored binary64, not ideal decimal"
+  },
+  "gate_rule": "forward source interval; exact zero then nonpositive then nonnegative else universal",
+  "reuse_scope": "GLOBAL_INPUT_BOX",
+  "empty_guards": "all duties retained; new exact conflict duals in each arm",
+  "base": "all source inputs and full router and both selected expert node blocks",
+  "acceptance_threshold": "1/10000000",
+  "maximum_seconds_per_inprocess_arm": 300,
+  "hard_supervision": false,
+  "performance_claim": false,
+  "real_requests": 0,
+  "stopping_rule": "preserve all cases and errors; no fixture retuning, gate search, real input or budget expansion"
+}

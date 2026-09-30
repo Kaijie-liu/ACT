@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-H2 endpoint-control update: 2026-09-30. Real-model scientific status remains
+H2 declared-source control update: 2026-09-30. Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
 ## Start here
@@ -20,7 +20,7 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: H2 endpoint algebra passes; source integration is next
+## Current decision: H2 source controls pass; hard supervision is next
 
 On 2026-09-28 the user explicitly requested an algorithm-improvement goal aimed
 at external competitiveness and a software-engineering A-venue submission.
@@ -44,12 +44,26 @@ The [proof](../act/back_end/moe/proofs/gate_interval_endpoint_support.md) and
 analytic argument from the generic API's trusted base/gate premises. The
 cooperative deadline is not a hard-budget supervisor.
 
-Next bounded task: connect this endpoint representation to independently checked
-source rows and justified router-sign/gate ranges, with complete synthetic
-source controls. Only after those pass, separately integrate and test the full
-300-second supervisor. Preserve same P/gate and all pair/property obligations;
+[Declared-source integration](h2_source_controls_20260930.md) now independently
+rebuilds input, affine/ReLU rows, private nodes, all pair guards, properties and
+sign-derived gate ranges. Four fixed synthetic requests use the same P/gate in
+both arms: endpoint/MC positive obligations are 3/2 of 3, 18/18 of 18, 0/0 of 6,
+and 6/6 of 6. The first closes a declared-source route-changing request, while
+its MC relaxation has an exactly feasible negative objective on the new matrix.
+Actual stored binary64 coefficients differ from the preceding ideal toy.
+
+Nineteen new controls pass. The solver-free archive checker reconstructs all
+eight packages; source/program correspondence and native floating execution
+remain outside the guarantee. This is a direct-node LP control, not a production
+HybridZ differential or performance result. No real request was launched.
+All new records are in a separate directory; user explicitly authorized taking
+over the four unfinished source files before this stage was completed.
+
+Next bounded task: separately integrate and test the full 300-second supervisor.
+Charge intake, source/gate construction, all candidates, serialization, checking,
+aggregation and publication. Preserve same P/gate and all pair/property duties;
 do not change the threshold, tune gates or launch real requests. H2 targets the
-weighted top-2 line; MetaMoE top-1 competitiveness remains a separate open goal.
+weighted top-2 line; MetaMoE top-1 competitiveness remains separately open.
 
 ## H1 stop decision retained
 
