@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-H2 full-size source identity update: 2026-10-01.
+H2 full-path capacity supervision update: 2026-10-01.
 Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
@@ -21,7 +21,7 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: full-size source identity prepared; full proof capacity remains open
+## Current decision: complete capacity supervision controlled; full-size execution frozen
 
 On 2026-09-28 the user explicitly requested an algorithm-improvement goal aimed
 at external competitiveness and a software-engineering A-venue submission.
@@ -143,9 +143,22 @@ This generated no output LPs, bounds or complete output proof. No real model/dat
 was loaded. Preparation is not free: each later timed arm must recreate/capture
 and charge everything, matching the frozen identities. Full-path capacity remains open.
 
-Next bounded task: separately freeze a full-size synthetic capacity control shaped
-like the registered architecture, covering creation/capture, chunking, construction,
-proposals, portable checking, reception and terminal cost. Measure actual stop
+[Full-path capacity supervision](h2_capacity_execution_20261001.md) now passes
+17 controls and one solver-free observation control on eight fixed scenarios.
+All 35 tiny execution terminals are archived and five complete flow packages are
+independently rechecked. Missing checker output retains the executed stage cost;
+resource/cleanup contracts and complete test/source inventories are audited.
+R1/R2 are preserved but superseded by R3, which also covers process launch failure.
+Old mathematical and portable modules are
+unchanged; versioned producer observers have AST and exact artifact differentials.
+No full-size proof execution or real request has occurred in this control stage.
+
+Next bounded task: execute the separately frozen two full-size synthetic capacity
+calls in `baseline_runs/h2_capacity_full_execution_20261001_r1`, one endpoint and
+one McCormick, via `scripts/h2_capacity_full.py --run`. They cover creation/capture,
+chunking, construction, proposals, portable checking, reception and terminal cost.
+Both use 300 seconds and 2 GiB, with fresh capture matching prepared identities.
+Measure actual stop
 points and resource sizes; do not choose positive/easy instances. Preserve all
 identities, residual compensation, structure checks and obligations. Do not claim
 the removed copies were the dominant bottleneck or capture streaming alone suffices.
