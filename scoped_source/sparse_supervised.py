@@ -1,4 +1,4 @@
-"""Opt-in SYNTHETIC H1 request supervision. No real-model intake or new holdout.
+"""Opt-in SYNTHETIC H1 request supervision. No real-request intake/new holdout.
 
 Single API-entry clock; worker startup, all imports, fixture loading/creation,
 construction/proposals, packaging, checking, reception and cleanup are charged.
@@ -37,20 +37,38 @@ def bind_checker(root, manifest, expected):
 
 def validate_spec(spec):
     if (set(spec) != {'schema','fixture','mode','reuse','source_sha256','control'} or
-            spec['schema'] != 'H1_SYNTHETIC_SUPERVISION_V1' or
+            spec['schema'] not in ('H1_SYNTHETIC_SUPERVISION_V1','H1_CAPTURE_CONTROL_V1') or
             spec['mode'] not in ('dependency','full') or
             not isinstance(spec['fixture'], dict) or not isinstance(spec['control'], str) or
             len(spec['source_sha256']) != 64):
         raise ValueError('synthetic-only execution specification')
-    allowed = {'experts','classes','width','tied','unsafe','dense','relu_bias','constant','relational','router_coordinate'}
-    if not set(spec['fixture']) <= allowed: raise ValueError('not a synthetic fixture option')
-    if any(type(spec['fixture'].get(k, default)) is not int or not lo <= spec['fixture'].get(k, default) <= hi
-           for k, default, lo, hi in [('experts',3,2,5), ('classes',3,2,5), ('width',3,1,16)]):
-        raise ValueError('bounded synthetic fixture only')
+    if spec['schema'] == 'H1_CAPTURE_CONTROL_V1':
+        from scoped_source.sparse_intake import validate_fixture
+        validate_fixture(spec['fixture'])
+    else:
+        allowed = {'experts','classes','width','tied','unsafe','dense','relu_bias','constant','relational','router_coordinate'}
+        if not set(spec['fixture']) <= allowed: raise ValueError('not a synthetic fixture option')
+        if any(type(spec['fixture'].get(k, default)) is not int or not lo <= spec['fixture'].get(k, default) <= hi
+               for k, default, lo, hi in [('experts',3,2,5), ('classes',3,2,5), ('width',3,1,16)]):
+            raise ValueError('bounded synthetic fixture only')
     if spec['control'] not in ('','produce_delay','check_delay','receive_delay','partial_output',
             'exception_after_bundle','missing_certificate','omit_property','wrong_invocation',
-            'late_publish','descendant','memory','rebind_checker_context'):
+            'late_publish','descendant','memory','rebind_checker_context',
+            'capture_delay','capture_exception','mutate_model'):
         raise ValueError('unknown synthetic fault control')
+    if spec['control'] in ('capture_delay','capture_exception','mutate_model') and spec['schema'] != 'H1_CAPTURE_CONTROL_V1':
+        raise ValueError('capture-specific fault control')
+
+
+def producer_sources(spec):
+    if spec['schema'] != 'H1_CAPTURE_CONTROL_V1': return {}
+    from scoped_source.sparse_intake import PRODUCER_FILES
+    return {name:sha(ROOT/name) for name in PRODUCER_FILES}
+
+
+def bind_producer(spec, inv):
+    if spec['schema'] == 'H1_CAPTURE_CONTROL_V1' and inv.get('producer_sources') != producer_sources(spec):
+        raise ValueError('captured-object producer implementation changed')
 
 
 def receive(root, spec, invocation, invocation_sha256):
@@ -62,6 +80,7 @@ def receive(root, spec, invocation, invocation_sha256):
             manifest['source_sha256'] != spec['source_sha256']): raise ValueError('manifest context')
     inv = load(root/'invocation.json',invocation_sha256)
     if inv['invocation'] != invocation: raise ValueError('receiver invocation')
+    bind_producer(spec,inv)
     bind_checker(root,manifest,inv['checker_sources'])
     required_files = {'source.json','proof.json','verify.py'} | {'code/'+n for n in CODE}
     if set(manifest['files']) != required_files: raise ValueError('bundle file coverage')
@@ -72,6 +91,12 @@ def receive(root, spec, invocation, invocation_sha256):
     if proof['mode'] != spec['mode'] or proof['omitted_blocks'] != []: raise ValueError('frozen construction arm')
     doc = load(root/'bundle/source.json', manifest['files']['source.json'], limit=64*2**20)
     if identity(doc) != spec['source_sha256']: raise ValueError('receiver source binding')
+    if spec['schema'] == 'H1_CAPTURE_CONTROL_V1':
+        capture = load(root/'captured_source_identity.json',limit=1024**2)
+        if capture != {'source_sha256':spec['source_sha256'],'model_state':doc['request']['model_state'],
+                'request':doc['request'],'invocation':invocation,'producer_sources':inv['producer_sources'],
+                'native_float_proof':False,'real_requests_started':0}:
+            raise ValueError('captured object receipt binding')
     checked = load(root/'check.stdout', limit=8*2**20)
     if (checked['schema'] != 'H1_PORTABLE_CHECK_RESULT_V1' or
             checked['invocation'] != invocation or checked['source_sha256'] != spec['source_sha256'] or
@@ -116,13 +141,14 @@ def supervise(root, spec, *, budget=300., rss_limit=2*2**30):
     invocation_record = save(root/'invocation.json', {'schema':'H1_INVOCATION_V1', 'invocation':invocation,
         'spec_sha256':identity(spec), 'start':start, 'deadline':deadline,
         'work_deadline':work_deadline, 'budget':budget, 'rss_limit':rss_limit,
-        'checker_sources':trusted_checker_sources()})
+        'checker_sources':trusted_checker_sources(),'producer_sources':producer_sources(spec)})
     env = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', OMP_NUM_THREADS='1',
                OPENBLAS_NUM_THREADS='1', MKL_NUM_THREADS='1', CUDA_VISIBLE_DEVICES='')
     stages = []; accepted = None; status = 'ERROR'; error = None
     try:
         for phase in PHASES:
-            load(root/'invocation.json',invocation_record['sha256'])
+            anchored_inv = load(root/'invocation.json',invocation_record['sha256'])
+            bind_producer(spec,anchored_inv)
             before = time.monotonic()
             phase_deadline = work_deadline-min(5.,budget/4) if phase == 'produce' else work_deadline
             command = [PYTHON,'-B']+(['-S'] if phase != 'produce' else [])+[

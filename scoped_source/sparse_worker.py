@@ -6,13 +6,14 @@ import subprocess
 import time
 from scoped_proof.io import ROOT, PYTHON, Events, load, save, sha, tick
 from source_enclosure.format import identity
-from scoped_source.sparse_supervised import validate_spec, receive, bind_checker
+from scoped_source.sparse_supervised import validate_spec, receive, bind_checker, bind_producer
 
 
 def run(phase, root, deadline, invocation_sha):
     inv = load(root/'invocation.json',invocation_sha); spec = load(root/'spec.json'); validate_spec(spec)
     if identity(spec) != inv['spec_sha256'] or deadline > inv['work_deadline']:
         raise ValueError('invocation/deadline identity')
+    bind_producer(spec,inv)
     events = Events(root,phase,inv['start']); fault = spec['control']; tick(deadline)
     if fault == phase+'_delay':
         save(root/(phase+'_partial.json'), {'state':'CONTROL_DELAY_NO_ACCEPTANCE'})
@@ -23,8 +24,25 @@ def run(phase, root, deadline, invocation_sha):
             return
         if fault == 'memory':
             large = bytearray(128*2**20); time.sleep(10); return
-        from scoped_source.sparse_controls import source
-        doc = events.call('source_creation',lambda:source(**spec['fixture']))
+        if spec['schema'] == 'H1_CAPTURE_CONTROL_V1':
+            from scoped_source.sparse_intake import model_fixture, capture_bound
+            model, center, request = events.call('model_creation_imports',lambda:model_fixture(spec['fixture']))
+            if fault in ('capture_delay','capture_exception'):
+                save(root/'capture_partial.json',{'status':'UNACCEPTED_MODEL_CREATED'})
+                if fault == 'capture_delay': time.sleep(10)
+                else: raise RuntimeError('controlled capture exception')
+            if fault == 'mutate_model':
+                import torch
+                with torch.no_grad(): next(model.parameters()).add_(1)
+            doc = events.call('capture_and_validate',lambda:capture_bound(model,center,request,
+                expected_source_sha256=spec['source_sha256'],deadline=deadline))
+            save(root/'captured_source_identity.json',{'source_sha256':identity(doc),
+                'model_state':doc['request']['model_state'],'request':doc['request'],
+                'invocation':inv['invocation'],'producer_sources':inv['producer_sources'],
+                'native_float_proof':False,'real_requests_started':0})
+        else:
+            from scoped_source.sparse_controls import source
+            doc = events.call('source_creation',lambda:source(**spec['fixture']))
         if identity(doc) != spec['source_sha256']: raise ValueError('frozen synthetic source')
         def importer():
             from act.back_end.solver.lp_certificate import propose

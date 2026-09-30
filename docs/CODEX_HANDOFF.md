@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-H1 supervised/portable-control update: 2026-09-30. Real-model scientific status remains
+H1 model-intake/stop-decision update: 2026-09-30. Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
 ## Start here
@@ -20,7 +20,7 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: H1 synthetic supervision and relocation pass; intake is next
+## Current decision: H1 intake passes; dense dependency-pruning gate does not
 
 On 2026-09-28 the user explicitly requested an algorithm-improvement goal aimed
 at external competitiveness and a software-engineering A-venue submission.
@@ -44,11 +44,21 @@ overrun and producer attempts to rebind the trusted checker. The relocated
 checkpoint or solver. API costs are charged; offline files alone cannot establish
 budget-compliant execution without an observed completed outer call.
 
-Next bounded task: reuse the existing source capture interface and validate
-supported model-object intake into H1, including non-tailored dense structure
-and whole-flow costs. Do not rebuild the existing capture module or expand this
-tiny synthetic timing table. No real-request freeze or competitive speed claim
-is authorized by the controls. All seals below remain.
+[Model-object intake and dense control](h1_model_intake_20260930.md) now pass
+14 new controls plus 60 regressions. Supported object creation/capture, complete
+source validation and proof generation are charged inside the existing supervisor.
+Method/serialization hooks and tensor-instance overrides are rejected.
+The fixed untrained dense model retains all 68 input/hidden dependencies; only
+12 final-affine endpoints disappear. Both arms have 4 missing proposals and 2
+checked negative bounds, not a complete positive proof. Offline checked range
+conflicts explain empty guards for the missing pairs but do not repair acceptance.
+
+Apply the registered stop rule: do not advance dense dependency pruning into
+real experiments, or tune this fixture until positive. Retain the source/proof
+infrastructure. Next bounded task is a read-only algorithm-design review,
+separating source-LP representation from dependency pruning and identifying a
+concrete complete-obligation mechanism before another control protocol. Do not
+restart cache/serializer timing or sealed inputs. No real freeze is authorized.
 
 ## Audited stop decision retained
 
