@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-H2 factored capacity update: 2026-09-30. Real-model scientific status remains
+H2 row-wise checking update: 2026-09-30. Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
 ## Start here
@@ -20,7 +20,7 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: static capacity audited; real capacity is not admitted
+## Current decision: row-wise kernels controlled; full supervision comes next
 
 On 2026-09-28 the user explicitly requested an algorithm-improvement goal aimed
 at external competitiveness and a software-engineering A-venue submission.
@@ -112,13 +112,21 @@ outer envelope bounded by 1,136,168 bytes, but body sizes, exact arithmetic
 memory, native workspace and full 300-second completion remain unknown.
 The current supervisor still accepts only fixed synthetic cases, not real intake.
 
-Next bounded task: a separate opt-in version of row-wise native CSR validation and independent
-exact bound checking, removing known temporary full-matrix rational rows. Preserve
-all structure checks, identities, residual compensation and obligations. First
-differential/mutation/deadline controls, then a separate complete supervised capacity
-control. Do not claim this is the measured dominant bottleneck or that capture
-streaming alone suffices. Do not expand this static ledger, raise limits or change
-the 64-byte synthetic protocol. Full-path capacity admission still precedes real freeze.
+[Row-wise native validation and exact checking](h2_rowwise_controls_20260930.md)
+now pass 15 new controls and 35 regressions. All 75 archived target LPs are validated;
+72 dual certificates match old exact bounds and residuals (59 positive, 13 negative),
+and 3 source-box facts remain separate. No new solves, model/data loads or real gains.
+R1's row-lifetime test failure is retained; final R3 uses at most two tracked rows,
+not a constant-memory or speed claim. Ordinary input pollution and late candidates
+are rejected. The new APIs are opt-in and still have only cooperative deadlines.
+
+Next bounded task: a separate complete supervised integration and capacity control
+for these kernels, including capture, construction, proposals, portable checking,
+reception and terminal cost. Preserve all identities, residual compensation,
+structure checks and obligations. No real intake is admitted yet. Do not claim the
+removed copies were the measured dominant bottleneck or that capture streaming
+alone suffices. Do not expand the static ledger, raise limits or change the old
+64-byte synthetic protocol. Full-path capacity admission still precedes real freeze.
 This is not H1 dependency pruning or another cache study.
 No sealed input/holdout is reopened. H2 targets weighted top-2; MetaMoE top-1 remains open.
 

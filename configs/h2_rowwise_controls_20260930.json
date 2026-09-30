@@ -1,0 +1,19 @@
+{
+  "schema": "H2_ROWWISE_CONTROL_PROTOCOL_V1",
+  "scope": "opt-in supplied-LP kernels only; no production integration or real intake",
+  "parent_archive": "docs/h2_factored_controls_20260930_r2.json",
+  "parent_archive_sha256": "86631e0da2ae662800fdecc15238401f9fe94a0666922ec7b2ea5f559afaa755",
+  "parent_root": "/data1/Kane/MOE/baseline_runs/h2_factored_controls_20260930_r2",
+  "expected_packages": 8,
+  "expected_target_lps": 75,
+  "expected_dual_certificates": 72,
+  "expected_box_facts": 3,
+  "all_packages_in_parent_order": true,
+  "no_new_solves": true,
+  "fake_native_backend_only": true,
+  "per_control_deadline_seconds": 30,
+  "maximum_deadline_seconds": 300,
+  "changes": ["row-wise native exact CSR prevalidation", "row-wise independent exact residual checking"],
+  "unchanged": ["original LP identity", "dual signs", "every row including zero-dual rows", "residual compensation", "all obligations", "frozen old implementations"],
+  "not_claimed": ["real capacity admission", "end-to-end cost improvement", "new output certificate", "hard-budget supervision", "solver performance"]
+}
