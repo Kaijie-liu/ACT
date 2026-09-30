@@ -1,0 +1,80 @@
+# H2 全尺寸合成来源的身份准备
+
+当前阶段完成有硬预算的身份准备入口及接收控制，尚未完成全尺寸输出验证。
+它为下一次容量调用提前固定来源身份，避免正式 worker 把自己生成的哈希直接当作
+外部预期值。成功的准备结果始终标为 `NOT_A_PROOF`，不能增加 SAFE 计数。
+
+## 固定对象与执行范围
+
+[配方](../configs/h2_capacity_recipe_20261001.json)固定普通工厂初始化的合成模型：
+输入 `3×32×32`，router `3072→128→8`，八个专家各为
+`3072→256→128→10`，selected-softmax top-2。固定 seed `20261001`，默认 CPU
+float32 初始化后提升为 CPU float64、eval；不重写权重，不执行 forward，不加载
+checkpoint 或数据集，不按预测正确、路由数或正界选择对象。
+
+中心全部为 `1/2`，半径 `2/255`，裁剪 `[0,1]`，目标类别事前固定为 0。
+该形状有 6,961,368 个参数、52 个参数张量；未来完整请求必须覆盖 28 个 unordered
+pair 和 252 条分类性质，endpoint 臂最多 504 个 LP。准备阶段不构造或求解任何 LP。
+
+新协议固定已有的 1 MiB 分块策略，旧 64 字节控制协议不变。来源头 4 MiB、来源总量
+256 MiB、每张量最多 1,000,000 元素等原限制均不提高。接口上限为 300 秒及 2 GiB
+抽样 RSS 阈值；抽样峰值不是操作系统强制的瞬时内存上限。
+
+## 监督和独立接收
+
+[入口](../scoped_source/capacity_prepare.py)从 API 开始计时。创建、捕获、全图校验和
+分块在第一个所属进程完成；[来源身份重验](../scoped_source/capacity_sourcecheck.py)
+在第二个所属进程完成，不把大规模接收藏在无监督父进程中。每个进程接到的 deadline
+与外层执行监督完全一致。300 秒调用中，准备截止为第 239 秒，接收截止为第 299 秒；
+余量用于最终发布。准备提前结束时，接收可使用全部实际剩余时间。
+
+接收器检查 chunk 覆盖、张量与 state 身份、全部层序与形状、中心实际值，并完整遍历
+来源节点。随后从分块字节恢复原捕获声明，重算 canonical SHA；分块 manifest SHA
+与声明 SHA 因而对应同一对象，而不是两个并列自报的字符串。末尾再次检查 manifest
+和完整文件清单。这里仍信任被绑定的 factory/capture 执行产生了这些权重；不独立证明
+PRNG 实现或部署浮点执行语义。正式容量调用必须重新创建和捕获，匹配冻结身份。
+
+父进程绑定实际 candidate 与接收文件字节。所有终态链哈希必须非空、合法；发布超时
+覆盖先前成功。异常、部分文件、迟到候选原位保留，不形成可用身份。
+[审计器](../scoped_source/capacity_prep_audit.py)要求外部实际观察到的完整 API 返回，
+再核对终态、阶段、清理、接收和成本。嵌套事件不重复相加。行政归档与后续重审单列，
+不是免费准备成本；正式证明请求不能免费读取本阶段的来源树。
+
+## 控制结果
+
+最终 R3 的 **16 项控制通过**；静态分块容量及模型容量 **16 项回归通过**。
+[紧凑归档](h2_capacity_preparation_controls_20261001_r3.json)独立重查固定 11 次调用：
+
+| 终态 | 数量 |
+|---|---:|
+| 微型来源身份准备完成 | 1 |
+| 异常拒绝 | 4 |
+| 超时 | 5 |
+| 资源限制 | 1 |
+
+控制覆盖错误域/来源/调用身份、空哈希、重哈希后的错 offset/shape/state/算子、
+额外文件、检查途中污染、接收截止、部分及迟到结果、最终发布截止和全部成本。
+std-library 检查不导入 torch、numpy、scipy 或 highspy；来源树搬迁后身份一致。
+这不是完整证明包的独立搬迁测试，更不是新的真实模型比较。
+
+R1 的目录重复控制正确拒绝覆盖，但测试错误地期待 `ValueError` 而非
+`FileExistsError`，13/14 通过，失败原样保留在
+`/data1/Kane/MOE/runs/h2_capacity_preparation_controls_20261001_r1`。
+R2 的 14 项测试通过；随后只读复核发现 null 哈希可能绕过通用读取校验，因此不作为
+最终冻结门。R3 补强制哈希与检查途中污染控制。R2/R3 原始文件位于
+`baseline_runs/h2_capacity_preparation_controls_20261001_r2` 和 `_r3`，不覆盖前次结果。
+
+```sh
+/data1/Kane/miniconda3/envs/act-py312/bin/python -B -I -S scripts/archive_h2_capacity_preparation.py /data1/Kane/MOE/baseline_runs/h2_capacity_preparation_controls_20261001_r3 --check docs/h2_capacity_preparation_controls_20261001_r3.json
+```
+
+## 下一次唯一准备调用
+
+本阶段提交推送后，允许固定配方的 **一次**全尺寸来源准备调用，目录为
+`baseline_runs/h2_capacity_preparation_full_20261001_r1`，300 秒、2 GiB、CPU 单线程。
+保留实际终态、最后事件、源体积和完整 API 成本。失败则停止这个调用，不换 seed、
+输入、预算、限制或阈值；没有接收的部分源不能成为冻结身份。
+
+即便准备成功，也只准许据此另行完成并冻结全尺寸 endpoint/McCormick 的容量执行
+入口；本文件不宣告输出构造、求解、独立证明或真实模型准入已经通过。
+所有封存输入、holdout、H1 稠密剪枝与旧后端搜索保持不动。

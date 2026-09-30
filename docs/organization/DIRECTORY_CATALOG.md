@@ -137,7 +137,7 @@
 | 研究指导 | `Advice` | 保留原文；晚期审计可修正较早指导的事实判断 |
 | 作者制品与环境 | `baselines`、`envs` | 不移动，不直接升级，不提交到 ACT 仓库 |
 | 数据与权重 | `baseline_data`、`baseline_weights`、`datasets` | 不删除/去重；身份、许可、引用和恢复方案须先核实 |
-| 作者运行与本地服务 | `baseline_runs`、`run` | 保留失败、终态、日志与运行路径；socket 不代表任务在运行 |
+| 作者运行与本地服务 | `baseline_runs`、`run`、`runs` | 保留失败、终态、日志与运行路径；socket 不代表任务在运行 |
 | 审阅与可搬迁制品 | `competition_claims_review_*`、`submission-review-*`、`proof-closure-review-*`、`review-artifact-*`、`portable_conv98_*` | 冻结/评审来源，原位保留；不是临时垃圾 |
 | 缓存与工具状态 | `cache`、`.pycache`、`.tmp`、`.tmux`、`.vscode`、`codex-stage2-cache.*`、`tmp` | 仅列为核查候选；不能据名称删除 |
 | 控制测试遗留目录 | `test_*`、`parsed_source_controls_*`、`soplex_life_*`、`mainline_integration_*` | 可能含失败证据；单独检查引用和进程后才可提出回收清单 |

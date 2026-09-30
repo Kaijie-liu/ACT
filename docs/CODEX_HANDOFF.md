@@ -21,7 +21,7 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: row-wise supervision controlled; full-size capacity comes next
+## Current decision: capacity identity preparation controlled; full path remains open
 
 On 2026-09-28 the user explicitly requested an algorithm-improvement goal aimed
 at external competitiveness and a software-engineering A-venue submission.
@@ -129,6 +129,16 @@ use one produce deadline; both independent dual sites receive the check deadline
 R1's duplicate test-entry driver retained all calls but omitted the test outcome;
 R2 corrects it and binds all 18 passing tests at final acceptance. This remains
 fixed synthetic intake, not performance or real capacity admission.
+
+The [capacity identity preparation](h2_capacity_preparation_20261001.md) entry now
+passes 16 controls and 16 static regressions. Eleven tiny calls retain all terminals.
+Owned preparation and reception share a bounded API budget; chunk bytes are rebuilt
+into the independently matched full declaration identity. Null hashes, partial and
+late candidates cannot prepare an identity. R1/R2 remain preserved; R3 is accepted.
+No full-size model has yet been instantiated. The next single preparation call is
+fixed in that document, with no LP solve or real admission. Successful preparation
+must be followed by separately frozen timed runs that recreate the object, not read
+the prepared source for free. This does not replace the full-path capacity gate.
 
 Next bounded task: separately freeze a full-size synthetic capacity control shaped
 like the registered architecture, covering creation/capture, chunking, construction,
