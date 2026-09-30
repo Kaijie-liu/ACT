@@ -1,6 +1,7 @@
 # MoE project handoff — current entry point
 
-H2 row-wise checking update: 2026-09-30. Real-model scientific status remains
+H2 row-wise supervision update: 2026-10-01 (controls completed 2026-09-30).
+Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
 ## Start here
@@ -20,7 +21,7 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: row-wise kernels controlled; full supervision comes next
+## Current decision: row-wise supervision controlled; full-size capacity comes next
 
 On 2026-09-28 the user explicitly requested an algorithm-improvement goal aimed
 at external competitiveness and a software-engineering A-venue submission.
@@ -120,13 +121,24 @@ R1's row-lifetime test failure is retained; final R3 uses at most two tracked ro
 not a constant-memory or speed claim. Ordinary input pollution and late candidates
 are rejected. The new APIs are opt-in and still have only cooperative deadlines.
 
-Next bounded task: a separate complete supervised integration and capacity control
-for these kernels, including capture, construction, proposals, portable checking,
-reception and terminal cost. Preserve all identities, residual compensation,
-structure checks and obligations. No real intake is admitted yet. Do not claim the
-removed copies were the measured dominant bottleneck or that capture streaming
-alone suffices. Do not expand the static ledger, raise limits or change the old
-64-byte synthetic protocol. Full-path capacity admission still precedes real freeze.
+[Row-wise complete supervision and portable checking](h2_rowwise_supervision_20260930.md)
+now pass 18 controls and 50 regressions. All 38 fixed calls retain complete terminal
+accounting; 19 packages are rechecked without a solver. Five paired sources keep
+the same base/guard/gate/reuse and old mathematical results. Actual native proposals
+use one produce deadline; both independent dual sites receive the check deadline.
+R1's duplicate test-entry driver retained all calls but omitted the test outcome;
+R2 corrects it and binds all 18 passing tests at final acceptance. This remains
+fixed synthetic intake, not performance or real capacity admission.
+
+Next bounded task: separately freeze a full-size synthetic capacity control shaped
+like the registered architecture, covering creation/capture, chunking, construction,
+proposals, portable checking, reception and terminal cost. Measure actual stop
+points and resource sizes; do not choose positive/easy instances. Preserve all
+identities, residual compensation, structure checks and obligations. Do not claim
+the removed copies were the dominant bottleneck or capture streaming alone suffices.
+Do not expand the static ledger, raise limits or change the old 64-byte control
+protocol. An existing default chunk policy belongs to a separate new protocol.
+Full-path capacity admission still precedes any new real freeze.
 This is not H1 dependency pruning or another cache study.
 No sealed input/holdout is reopened. H2 targets weighted top-2; MetaMoE top-1 remains open.
 

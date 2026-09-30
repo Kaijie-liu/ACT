@@ -1,0 +1,83 @@
+{
+  "schema": "HR_SUPERVISION_PROTOCOL_V1",
+  "maximum_budget_seconds": 300,
+  "ordinary_control_seconds": 30,
+  "source_chunk_bytes": 64,
+  "arms": [
+    "endpoints",
+    "mccormick"
+  ],
+  "real_requests": 0,
+  "capture": "existing fixed synthetic object; full declaration charged, not streaming model capture",
+  "same": [
+    "source",
+    "base LP",
+    "gate",
+    "reuse",
+    "all pairs and properties",
+    "acceptance threshold",
+    "old supervision deadlines and complete cost rules",
+    "old source/pair reconstruction"
+  ],
+  "acceptance_threshold": "1/10000000",
+  "cases": [
+    {
+      "case": "weighted_sign",
+      "intake": "declared",
+      "declared_source_sha256": "b50e6ac79b92ac1d25e6a2ad8d83d1958353e90eeba869663e3d9d7c9eff0de2",
+      "source_manifest_sha256": "f6f38de29809fa6237e41f58790adcacb0406a98728fdfaa4b0b1d1e586907cd",
+      "reuse": []
+    },
+    {
+      "case": "tied_partial_reuse",
+      "intake": "declared",
+      "declared_source_sha256": "de8ddb321d0d7016ea9d61e8898b9c72a0fb66833aa6cdb28adfb598bf221a5f",
+      "source_manifest_sha256": "6188fe27594aa3d5f5a32b95d92ea1d2854beaebca93e5e1194d5db2bb669784",
+      "reuse": [
+        [
+          [
+            0,
+            1
+          ],
+          1
+        ],
+        [
+          [
+            0,
+            2
+          ],
+          2
+        ],
+        [
+          [
+            2,
+            3
+          ],
+          3
+        ]
+      ]
+    },
+    {
+      "case": "unsafe_tied",
+      "intake": "declared",
+      "declared_source_sha256": "36898a6957fe529ad5b43306c721f9d51b077f05ee5f71c8f9fd6de49e238c1e",
+      "source_manifest_sha256": "2a0b41e6d3da0049fe2b1e6ec9cc3f9d5d09bf3651e30a7ff4bae5e1c9261872",
+      "reuse": []
+    },
+    {
+      "case": "unresolved_sign",
+      "intake": "declared",
+      "declared_source_sha256": "b01dded09de8c72f4350e50ee9ed4a924f6cbfe2eb34821915e4a3e58465a1de",
+      "source_manifest_sha256": "17bfb663faca50d6d2306e36fb6829c7744dfa3a7968512ef0e68a90649f5b6c",
+      "reuse": []
+    },
+    {
+      "case": "weighted_sign",
+      "intake": "model",
+      "declared_source_sha256": "d4d33ce1e9c56cb264e27b5325f51559423f9797deb75315a624641e85b38a2e",
+      "source_manifest_sha256": "b4858477625ccf354fdd3b75fc1b49b367b214ce66a3ca67d0641ee954c621de",
+      "reuse": []
+    }
+  ],
+  "kernel": "row-wise CSR native validation and exact independent checking"
+}
