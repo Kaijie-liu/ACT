@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-H2 full-path capacity supervision update: 2026-10-01.
+H2 full-path capacity results update: 2026-10-01.
 Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
@@ -21,7 +21,7 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: complete capacity supervision controlled; full-size execution frozen
+## Current decision: both full-size capacity calls timed out during output proposals
 
 On 2026-09-28 the user explicitly requested an algorithm-improvement goal aimed
 at external competitiveness and a software-engineering A-venue submission.
@@ -151,20 +151,32 @@ resource/cleanup contracts and complete test/source inventories are audited.
 R1/R2 are preserved but superseded by R3, which also covers process launch failure.
 Old mathematical and portable modules are
 unchanged; versioned producer observers have AST and exact artifact differentials.
-No full-size proof execution or real request has occurred in this control stage.
+The separately frozen full-size synthetic calls have now executed at pushed HEAD
+`8233f6a20`, in `baseline_runs/h2_capacity_full_execution_20261001_r1`.
+[Independent accounting](h2_capacity_full_execution_20261001_r1.json) accepts both
+TIMEOUT records, not proofs: API times 294.0753/294.0888 seconds, at the registered
+294-second produce cutoff inside each 300-second budget. Both freshly captured
+the fixed source, constructed all 9,560 source blocks and the first pair basis.
+Endpoint/MC published 3/4 native-side checked candidates, all negative; complete
+property records are 1/4, complete pairs 0/0. Neither reached whole portable checking
+or reception. Peak RSS 1.375/1.445 GB stayed below 2 GiB; this was not a memory stop.
 
-Next bounded task: execute the separately frozen two full-size synthetic capacity
-calls in `baseline_runs/h2_capacity_full_execution_20261001_r1`, one endpoint and
-one McCormick, via `scripts/h2_capacity_full.py --run`. They cover creation/capture,
-chunking, construction, proposals, portable checking, reception and terminal cost.
-Both use 300 seconds and 2 GiB, with fresh capture matching prepared identities.
-Measure actual stop
-points and resource sizes; do not choose positive/easy instances. Preserve all
+[Prefix analysis](h2_capacity_prefix_analysis_20261001_r1.json) records matrix
+validation, conversion, native boundaries/returns, exact evaluation and checking
+separately. Seven negative lower bounds do not establish LP impossibility or model
+unsafety; no exact feasible upper evidence was checked. Full capacity remains failed,
+and no real request or new complete real certificate is admitted.
+
+Next bounded task: analyze only these saved prefixes for the distinction between
+necessary distinct objectives and repeated structure. Propose another finite
+algorithm control only with a concrete obligation-preserving hypothesis. No new
+solve, rerun, larger budget or easier synthetic/real source is authorized by this
+result. Preserve all
 identities, residual compensation, structure checks and obligations. Do not claim
 the removed copies were the dominant bottleneck or capture streaming alone suffices.
 Do not expand the static ledger, raise limits or change the old 64-byte control
 protocol. An existing default chunk policy belongs to a separate new protocol.
-Full-path capacity admission still precedes any new real freeze.
+Full-path capacity admission still precedes any new real freeze; it has not passed.
 This is not H1 dependency pruning or another cache study.
 No sealed input/holdout is reopened. H2 targets weighted top-2; MetaMoE top-1 remains open.
 
