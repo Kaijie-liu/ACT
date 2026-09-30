@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-H2 declared-source control update: 2026-09-30. Real-model scientific status remains
+H2 supervised-control update: 2026-09-30. Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
 ## Start here
@@ -20,7 +20,7 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: H2 source controls pass; hard supervision is next
+## Current decision: H2 hard supervision passes; model-object intake is next
 
 On 2026-09-28 the user explicitly requested an algorithm-improvement goal aimed
 at external competitiveness and a software-engineering A-venue submission.
@@ -59,11 +59,21 @@ HybridZ differential or performance result. No real request was launched.
 All new records are in a separate directory; user explicitly authorized taking
 over the four unfinished source files before this stage was completed.
 
-Next bounded task: separately integrate and test the full 300-second supervisor.
-Charge intake, source/gate construction, all candidates, serialization, checking,
-aggregation and publication. Preserve same P/gate and all pair/property duties;
-do not change the threshold, tune gates or launch real requests. H2 targets the
-weighted top-2 line; MetaMoE top-1 competitiveness remains separately open.
+[H2 supervision and portable checks](h2_supervision_20260930.md) now pass 18 new
+controls and 72 regressions. Thirty-one fixed synthetic calls retain every
+terminal and full API cost; the relocated checker uses `python -I -S` without
+the repository, model or solver. Same P/gate/reuse in both arms is checked.
+The parent anchors checker stdout before reception; self-consistent replacements
+and null hash references are rejected. R1/R2 remain preserved, not final acceptance.
+This is declared-fixture intake, not a captured/trained model or a performance win.
+
+Next bounded task: reuse existing capture/validation for an actual supported
+model object with the same fixed weighted_sign coefficients. Charge creation,
+capture, all source work, candidates, serialization, check and publication;
+freeze a new captured-source identity and generate new evidence. Do not rerun
+H1 dense pruning or tune the fixture. After this one interface gate, inspect
+existing model metadata before separately proposing any real freeze. No sealed
+input/holdout is reopened. H2 targets weighted top-2; MetaMoE top-1 remains open.
 
 ## H1 stop decision retained
 
