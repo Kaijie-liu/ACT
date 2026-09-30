@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-H2 factored supervision update: 2026-09-30. Real-model scientific status remains
+H2 factored capacity update: 2026-09-30. Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
 ## Start here
@@ -20,7 +20,7 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: H2 factored supervision passes; real capacity is not admitted
+## Current decision: static capacity audited; real capacity is not admitted
 
 On 2026-09-28 the user explicitly requested an algorithm-improvement goal aimed
 at external competitiveness and a software-engineering A-venue submission.
@@ -104,13 +104,21 @@ and final publication are charged. A relocated `python -I -S` checker needs no
 repository/model/solver; parent anchors the actual checker stdout. R1/R2 test
 failures remain preserved; only R3 is the accepted control stage. No new real gain.
 
-Next bounded task: independent full-path capacity accounting, not a real run.
-Keep the 64-byte synthetic protocol unchanged; evaluate an existing supported
-production chunk policy without raising limits. Account for complete capture,
-source headers, node/pair members, exact rows, candidate copies and checking.
-Do not assume streaming capture alone resolves the larger pair/native-adapter
-residency. Metadata cannot establish actual peak RAM or 300-second completion.
-Full-path capacity admission must pass before any separate real freeze.
+[Factored full-path capacity audit](h2_factored_capacity_20260930.md) is complete:
+12 new controls and 23 regressions pass. Metadata only: no model/data/solver.
+The frozen 64-byte control layout needs 870,561 chunks; reference bytes alone
+exceed the 4 MiB source header. Existing 1 MiB default needs 95 chunks and an
+outer envelope bounded by 1,136,168 bytes, but body sizes, exact arithmetic
+memory, native workspace and full 300-second completion remain unknown.
+The current supervisor still accepts only fixed synthetic cases, not real intake.
+
+Next bounded task: a separate opt-in version of row-wise native CSR validation and independent
+exact bound checking, removing known temporary full-matrix rational rows. Preserve
+all structure checks, identities, residual compensation and obligations. First
+differential/mutation/deadline controls, then a separate complete supervised capacity
+control. Do not claim this is the measured dominant bottleneck or that capture
+streaming alone suffices. Do not expand this static ledger, raise limits or change
+the 64-byte synthetic protocol. Full-path capacity admission still precedes real freeze.
 This is not H1 dependency pruning or another cache study.
 No sealed input/holdout is reopened. H2 targets weighted top-2; MetaMoE top-1 remains open.
 

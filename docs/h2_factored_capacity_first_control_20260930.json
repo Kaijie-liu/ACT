@@ -1,0 +1,14 @@
+{
+  "schema": "H2_STATIC_CAPACITY_DEVELOPMENT_FAILURE_V1",
+  "starting_head": "c4b3a927c2e1df07c9a785fd0e7a794cc0342d22",
+  "command": "/data1/Kane/miniconda3/envs/act-py312/bin/python -B -I -S scripts/test_h2_factored_capacity.py -v",
+  "tests": 11,
+  "passed": 10,
+  "failed": 1,
+  "failure": "test_64_byte_protocol_definite_rejection expected 126, actual 125 bytes per minimal chunk reference",
+  "cause": "The implementation uses a generic 8-byte aligned chunk lower bound, while the test expected the 2-digit chunk-size bound applicable to this recipe.",
+  "disposition": "Retain the weaker generic lower bound; correct only the expected test values to 125 and 108820125. Header rejection remains definite. No production policy changed.",
+  "new_model_loads": 0,
+  "new_solves": 0,
+  "real_requests_started": 0
+}

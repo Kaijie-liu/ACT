@@ -1,0 +1,522 @@
+{
+  "conv_status": "NOT_ADMITTED_UNSUPPORTED_CONV_POOL_CAPTURE",
+  "default_manifest_structure": {
+    "actual_bundle_bytes": null,
+    "actual_inner_proof_header_bytes": null,
+    "actual_node_member_bytes": null,
+    "actual_pair_member_bytes": null,
+    "actual_source_header_bytes": null,
+    "assumptions": [
+      "current fixed names/CODE",
+      "32-hex supervisor invocation",
+      "members must individually satisfy existing member limit",
+      "canonical compact JSON"
+    ],
+    "descriptor_list_is_not_entire_source_manifest": true,
+    "node_references_are_not_entire_inner_proof_manifest": true,
+    "portable_envelope_bytes_upper_bound": 1136168,
+    "portable_envelope_necessary_test_passed": true,
+    "portable_members_excluding_outer_manifest": 9698,
+    "source_node_reference_list_bytes_upper_bound": 1411311,
+    "tensor_descriptor_list_bytes": 18045
+  },
+  "existing_1_mib_default_policy": {
+    "actual_peak_rss_bytes": null,
+    "actual_request_seconds": null,
+    "actual_source_total_bytes": null,
+    "chunk_bytes": 1048576,
+    "chunks": 95,
+    "full_path_admitted": false,
+    "largest_tensor_elements": 786432,
+    "minimum_bytes_per_chunk_reference": 125,
+    "raw_tensor_bytes_with_center": 55715520,
+    "source_header_definitely_rejected": false,
+    "source_header_ref_bytes_lower_bound": 11875,
+    "source_raw_bytes_definitely_rejected": false,
+    "tensor_element_necessary_test_passed": true
+  },
+  "frozen_64_byte_control_policy": {
+    "actual_peak_rss_bytes": null,
+    "actual_request_seconds": null,
+    "actual_source_total_bytes": null,
+    "chunk_bytes": 64,
+    "chunks": 870561,
+    "full_path_admitted": false,
+    "largest_tensor_elements": 786432,
+    "minimum_bytes_per_chunk_reference": 125,
+    "raw_tensor_bytes_with_center": 55715520,
+    "source_header_definitely_rejected": true,
+    "source_header_ref_bytes_lower_bound": 108820125,
+    "source_raw_bytes_definitely_rejected": false,
+    "tensor_element_necessary_test_passed": true
+  },
+  "full_path_admitted": false,
+  "mathematical_certificate": false,
+  "models": {
+    "seed0": {
+      "checkpoint_opened": false,
+      "checkpoint_sha256": "fbaa7c871d28763ac5acb29a9502dc5d146e1d5af0b4a03e9911899251bd43f7",
+      "model_state": {
+        "parameter_count": 6961368,
+        "sha256": "40e184c22e4f6c63fe4187a21df13b1ca9c74b296a59f2d6e32dd3f963e61c22",
+        "tensor_count": 52
+      },
+      "native_topology_revalidated": false
+    },
+    "seed1": {
+      "checkpoint_opened": false,
+      "checkpoint_sha256": "cfd5fb07b1c426c5b98309d56a5d0439f8a99dc52ff936bcbea43d4fe641139a",
+      "model_state": {
+        "parameter_count": 6961368,
+        "sha256": "8e8c459eb70c17cad6185808460c0b40ef978f798a214646fe124360384a12c4",
+        "tensor_count": 52
+      },
+      "native_topology_revalidated": false
+    },
+    "seed2": {
+      "checkpoint_opened": false,
+      "checkpoint_sha256": "a60517c7964177858d10303bc7b306293c8da3cde6caa93a5d8f442968e97758",
+      "model_state": {
+        "parameter_count": 6961368,
+        "sha256": "c1297bd70d5e72aa7d4de3cff325f3bccec637b43cf90126d9e40ee2e3f2f3d9",
+        "tensor_count": 52
+      },
+      "native_topology_revalidated": false
+    }
+  },
+  "new_input_selections": 0,
+  "new_model_loads": 0,
+  "new_solves": 0,
+  "next_gate": "No real freeze and no further static-ledger expansion. Separately test row-wise consumption of native CSR validation and independent exact bound checks, preserving every structural check, identity and residual. This removes a known temporary full-matrix copy, not a measured dominant bottleneck. Differential/mutation/deadline controls precede a bounded full-path capacity control; existing limits and the 64-byte synthetic protocol stay unchanged.",
+  "parameter_tensors": 52,
+  "parameters": 6961368,
+  "performance_measurement": false,
+  "phase_accounting": "sequential producer/check/receive peaks are not summed; include parent plus active children; serialized size is not heap size",
+  "policy": {
+    "checked_callsite_contracts": 30,
+    "control_chunk_bytes": 64,
+    "core_bytes": {
+      "BLOCK_LIMIT": 1048576,
+      "HEADER_LIMIT": 4194304,
+      "MEMBER_LIMIT": 16777216,
+      "TOTAL_LIMIT": 2147483648
+    },
+    "dimension_contract": {
+      "classes": [
+        2,
+        1024
+      ],
+      "experts": [
+        2,
+        64
+      ]
+    },
+    "existing_pack_default_bytes": 1048576,
+    "portable_bytes": {
+      "ENVELOPE_LIMIT": 4194304,
+      "MEMBER_LIMIT": 16777216,
+      "TOTAL_LIMIT": 2147483648
+    },
+    "source": {
+      "SOURCE_TOTAL_LIMIT": 268435456,
+      "TENSOR_ELEMENTS": 1000000
+    },
+    "supervisor": {
+      "built_and_capture_receipt_bytes": 1048576,
+      "default_rss_bytes": 2147483648,
+      "fixed_synthetic_cases_only": 5,
+      "maximum_seconds": 300,
+      "ordinary_synthetic_seconds": 30,
+      "real_intake_supported_by_protocol": false,
+      "rss_default_is_not_a_global_hard_maximum": true,
+      "stdout_and_accepted_bytes": 8388608
+    }
+  },
+  "real_requests_started": 0,
+  "recipe_counts": {
+    "all_unordered_pairs": 28,
+    "classes": 10,
+    "duties": 252,
+    "expert_widths": [
+      3072,
+      256,
+      128,
+      10
+    ],
+    "experts": 8,
+    "input_dimensions": 3072,
+    "maximum_endpoint_LPs": 504,
+    "pair_affine_entries_if_dense": 2036124,
+    "pair_affine_equalities": 924,
+    "pair_guard_rows": 12,
+    "pair_relu_entries_if_all_unstable": 4480,
+    "pair_relu_inequalities_if_all_unstable": 2688,
+    "pair_relu_nodes": 896,
+    "pair_variables": 4892,
+    "properties_per_pair": 9,
+    "router_widths": [
+      3072,
+      128,
+      8
+    ],
+    "scope": "recipe-derived counts; dense affine/all-unstable counts are scenarios, not actual nnz or memory",
+    "source_nodes": 9560
+  },
+  "remaining_unknowns": [
+    "actual rational digit lengths, weights nnz and stable/unstable ReLU rows",
+    "complete source and proof headers, node/pair members, total bundle bytes",
+    "process Python heap and native workspace peak; sampled RSS is not an upper bound",
+    "full capture, construction, proposal, checking, reception and publication within 300 seconds"
+  ],
+  "residency_by_stage": [
+    {
+      "file": "scoped_source/capture.py",
+      "first_line": 10,
+      "function": "capture",
+      "last_line": 60,
+      "measured_peak_bytes": null,
+      "observation": "Live model plus all base64 tensors; per tensor raw/encoding buffers and float/Fraction lists. Contiguous detach need not copy.",
+      "phase": "capture"
+    },
+    {
+      "file": "scoped_source/graph.py",
+      "first_line": 22,
+      "function": "validate",
+      "last_line": 59,
+      "measured_peak_bytes": null,
+      "observation": "Whole declaration and live model; parameter identity decoding plus operator() full affine row dictionaries.",
+      "phase": "capture_validation"
+    },
+    {
+      "file": "scoped_source/factored_source.py",
+      "first_line": 22,
+      "function": "pack",
+      "last_line": 52,
+      "measured_peak_bytes": null,
+      "observation": "Whole declaration plus metadata, current decoded tensor and chunk slice; worker deletes model before pack and doc after pack.",
+      "phase": "pack"
+    },
+    {
+      "file": "scoped_source/factored_source.py",
+      "first_line": 123,
+      "function": "Source.tensor",
+      "last_line": 135,
+      "measured_peak_bytes": null,
+      "observation": "Chunk bytes are streamed, but Fraction numbers accumulates a whole tensor; nodes holds a whole affine layer.",
+      "phase": "tensor_parser"
+    },
+    {
+      "file": "scoped_source/factored_ir.py",
+      "first_line": 15,
+      "function": "assemble",
+      "last_line": 21,
+      "measured_peak_bytes": null,
+      "observation": "All named rows/bounds plus CSR containers during lp_record; immutable strings may be shared, not necessarily duplicated bytes.",
+      "phase": "pair_assembly"
+    },
+    {
+      "file": "scoped_source/factored_build.py",
+      "first_line": 20,
+      "function": "build",
+      "last_line": 110,
+      "measured_peak_bytes": null,
+      "observation": "Global node bounds/refs, one pair base, objectives, deepcopy(lp) containers and returned candidate; immutable values may be shared.",
+      "phase": "proposal_copy"
+    },
+    {
+      "file": "scoped_source/endpoint_source_build.py",
+      "first_line": 81,
+      "function": "mc_lp",
+      "last_line": 99,
+      "measured_peak_bytes": null,
+      "observation": "Base CSR plus exact row dictionaries plus reconstructed augmented constraints/CSR.",
+      "phase": "mccormick"
+    },
+    {
+      "file": "act/back_end/solver/sparse_lp_certificate.py",
+      "first_line": 52,
+      "function": "propose",
+      "last_line": 70,
+      "measured_peak_bytes": null,
+      "observation": "list(rows()) materializes all rational rows before float CSR. HiGHS/SciPy internal workspace unknown.",
+      "phase": "native_adapter"
+    },
+    {
+      "file": "act/back_end/solver/sparse_lp_certificate.py",
+      "first_line": 22,
+      "function": "evaluate",
+      "last_line": 40,
+      "measured_peak_bytes": null,
+      "observation": "Row iteration with residual/dual vectors; propose calls evaluation then check evaluates again.",
+      "phase": "exact_candidate_evaluation"
+    },
+    {
+      "file": "scoped_source/sparse_check.py",
+      "first_line": 15,
+      "function": "check_bound",
+      "last_line": 36,
+      "measured_peak_bytes": null,
+      "observation": "csr() returns full rational row dictionaries per endpoint. Previous A rows can coexist while the full E row dictionaries are constructed.",
+      "phase": "independent_bound_check"
+    },
+    {
+      "file": "source_enclosure/format.py",
+      "first_line": 13,
+      "function": "identity",
+      "last_line": 13,
+      "measured_peak_bytes": null,
+      "observation": "compact() materializes canonical JSON string and bytes before hashing; not streaming LP hashing.",
+      "phase": "identity_serialization"
+    },
+    {
+      "file": "scoped_source/factored_portable.py",
+      "first_line": 8,
+      "function": "publish",
+      "last_line": 29,
+      "measured_peak_bytes": null,
+      "observation": "Full file descriptor map, sorted paths and envelope JSON; save serializes envelope again.",
+      "phase": "portable_publication"
+    },
+    {
+      "file": "scoped_source/factored_verify.py",
+      "first_line": 110,
+      "function": "verify",
+      "last_line": 124,
+      "measured_peak_bytes": null,
+      "observation": "Envelope byte hashing streams twice, but descriptors and inner exact check remain resident.",
+      "phase": "portable_verification"
+    },
+    {
+      "file": "scoped_source/factored_supervised.py",
+      "first_line": 92,
+      "function": "receive",
+      "last_line": 174,
+      "measured_peak_bytes": null,
+      "observation": "Source/proof headers and full bounded checker stdout; per-pair records, without rebuilding LPs.",
+      "phase": "reception"
+    }
+  ],
+  "schema": "H2_FACTORED_STATIC_CAPACITY_V1",
+  "scope": "registered dense recipe only; seed0 count match is not native topology revalidation; no source values read",
+  "source_bindings": {
+    "act/back_end/moe/factory.py": "da472b2bbb3d8f684cb9c9916a735fd7105ceaab925911e1cbc983785a4c7d2d",
+    "act/back_end/solver/sparse_lp_certificate.py": "2088c4cac420bcaffcadbcf4531fb4492bae49c99ca1f4379cc27057e5102f66",
+    "act/pipeline/moe/configs/experiment1_multiseed_training_r1.json": "1ad3cfcc4aaa181d29320dfea57f40d4113e67943684e352edb8da5cbae04f4b",
+    "act/pipeline/moe/configs/schedule_confirmation_100_selection_r1.json": "b4167d8ab501df06570bfb49ad646263962c79736c2252f1398dc0499d3a7ee6",
+    "configs/h2_factored_supervision_20260930.json": "bfdfdb0c449357685141cfa056cba116e93b52cb1c2efdb743e17ab8037f72bd",
+    "router_source/checker.py": "ddbd8fe642fee7b96abea917d5a95cce5b2336fcccde9d2119829c5947207c84",
+    "scoped_proof/io.py": "ee080902b729bcc0ce50ead5696538b687302358f143b039a6f9bdee2256569d",
+    "scoped_proof/supervisor.py": "a935cf6bf03d3604e2e2ce581939ca8c9ba120715ef8f289ba3fde59f7a8f14c",
+    "scoped_source/capture.py": "d3ca9b562c9840ace096d790d0fd6eb12d7105560a3c38767c85244c65f651e2",
+    "scoped_source/endpoint_check.py": "5399df18302750d801194364e73426d9cc3b7121b86868d3a6a9ea180f59c851",
+    "scoped_source/endpoint_source_build.py": "dc7f62b5de3aa8a4bf0b5e5088ff39a80ba1307afa40dd27f6595f1bd8ca4ce4",
+    "scoped_source/endpoint_source_check.py": "7fe3b6fe178c656abb4b2445dc44f6586186e6adc381b7a78d0c0df28f84ce00",
+    "scoped_source/factored_build.py": "4eb6cba7b1b5dd407fcd567477eea4fec0bc25213fad6e4c72cdc1024ee5d96c",
+    "scoped_source/factored_check.py": "176fe1985c829112e3ee9dc10f91e0a767afa78cfe7e2c17f7286888827fd5bc",
+    "scoped_source/factored_io.py": "d51bcd7eae6734fe6cd676f584a9e9f2220eeea4400d497ccb1dc6950dce120d",
+    "scoped_source/factored_ir.py": "0620dc0a2947442008f0a8260c4fa73098d17a2d795d1cce95d0c7551abfbf63",
+    "scoped_source/factored_portable.py": "df99082d564b57204749e87aa47e2bd6205087cb4da48dcb37b67f6d05cea808",
+    "scoped_source/factored_source.py": "f7f04c64989a179c36759876edc425ffd3efad4eeb9fbf8118ea2934f4a385cc",
+    "scoped_source/factored_supervised.py": "435297a89797d307bb0d0a5e4bd67c27499fd04eaafe7fe1d7dc176000bc7bde",
+    "scoped_source/factored_verify.py": "f4f21c303123dbb67d607caabcc7c7ad6528fd24b8dd18f1d9bd4f147e533d2a",
+    "scoped_source/factored_worker.py": "f71c7dd7294811860786fbc696374cd0b7a81f7dae7fa795e24a0ab0ca3f785d",
+    "scoped_source/graph.py": "49b43d74785cf80a6fa98afafe864374b311c925146f6d172bee55f2203d060c",
+    "scoped_source/sparse_check.py": "bc3538f2b09852fac61aab231a96649c3babeb737bc7aa9586fefe1f5414b606",
+    "scoped_source/sparse_intake.py": "82af5f5a0bc45d316909c8e6e5a7b3e3e36effb7f604cc02b2be3f0849dc7cdf",
+    "scoped_source/sparse_ir.py": "6af0ba57c5f4b8e9d12dd156bf339b49d2b9e7cb32963c07e76398cdf8fabb89",
+    "scripts/audit_h2_factored_capacity.py": "ca44da8a5689e4e879bab3eb62e6ce0aee2a786dee3af1d0c0da4d710fcb94a0",
+    "source_enclosure/format.py": "ba79d394824abc84aac1509518bf9416be3510a4eecef5b107ba60e63418f7ef",
+    "upstream_source/checker.py": "d14f75fd660d7ecab44994c24371d055407f5ca911e64867d94094b212a8c47c"
+  },
+  "status": "NO_REAL_FREEZE_CAPACITY_NOT_ADMITTED",
+  "tensor_shapes_including_center": {
+    "@center": [
+      1,
+      3,
+      32,
+      32
+    ],
+    "experts.0.1.bias": [
+      256
+    ],
+    "experts.0.1.weight": [
+      256,
+      3072
+    ],
+    "experts.0.3.bias": [
+      128
+    ],
+    "experts.0.3.weight": [
+      128,
+      256
+    ],
+    "experts.0.5.bias": [
+      10
+    ],
+    "experts.0.5.weight": [
+      10,
+      128
+    ],
+    "experts.1.1.bias": [
+      256
+    ],
+    "experts.1.1.weight": [
+      256,
+      3072
+    ],
+    "experts.1.3.bias": [
+      128
+    ],
+    "experts.1.3.weight": [
+      128,
+      256
+    ],
+    "experts.1.5.bias": [
+      10
+    ],
+    "experts.1.5.weight": [
+      10,
+      128
+    ],
+    "experts.2.1.bias": [
+      256
+    ],
+    "experts.2.1.weight": [
+      256,
+      3072
+    ],
+    "experts.2.3.bias": [
+      128
+    ],
+    "experts.2.3.weight": [
+      128,
+      256
+    ],
+    "experts.2.5.bias": [
+      10
+    ],
+    "experts.2.5.weight": [
+      10,
+      128
+    ],
+    "experts.3.1.bias": [
+      256
+    ],
+    "experts.3.1.weight": [
+      256,
+      3072
+    ],
+    "experts.3.3.bias": [
+      128
+    ],
+    "experts.3.3.weight": [
+      128,
+      256
+    ],
+    "experts.3.5.bias": [
+      10
+    ],
+    "experts.3.5.weight": [
+      10,
+      128
+    ],
+    "experts.4.1.bias": [
+      256
+    ],
+    "experts.4.1.weight": [
+      256,
+      3072
+    ],
+    "experts.4.3.bias": [
+      128
+    ],
+    "experts.4.3.weight": [
+      128,
+      256
+    ],
+    "experts.4.5.bias": [
+      10
+    ],
+    "experts.4.5.weight": [
+      10,
+      128
+    ],
+    "experts.5.1.bias": [
+      256
+    ],
+    "experts.5.1.weight": [
+      256,
+      3072
+    ],
+    "experts.5.3.bias": [
+      128
+    ],
+    "experts.5.3.weight": [
+      128,
+      256
+    ],
+    "experts.5.5.bias": [
+      10
+    ],
+    "experts.5.5.weight": [
+      10,
+      128
+    ],
+    "experts.6.1.bias": [
+      256
+    ],
+    "experts.6.1.weight": [
+      256,
+      3072
+    ],
+    "experts.6.3.bias": [
+      128
+    ],
+    "experts.6.3.weight": [
+      128,
+      256
+    ],
+    "experts.6.5.bias": [
+      10
+    ],
+    "experts.6.5.weight": [
+      10,
+      128
+    ],
+    "experts.7.1.bias": [
+      256
+    ],
+    "experts.7.1.weight": [
+      256,
+      3072
+    ],
+    "experts.7.3.bias": [
+      128
+    ],
+    "experts.7.3.weight": [
+      128,
+      256
+    ],
+    "experts.7.5.bias": [
+      10
+    ],
+    "experts.7.5.weight": [
+      10,
+      128
+    ],
+    "router.1.bias": [
+      128
+    ],
+    "router.1.weight": [
+      128,
+      3072
+    ],
+    "router.3.bias": [
+      8
+    ],
+    "router.3.weight": [
+      8,
+      128
+    ]
+  }
+}
