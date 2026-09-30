@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-H1 synthetic-control update: 2026-09-30. Real-model scientific status remains
+H1 supervised/portable-control update: 2026-09-30. Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
 ## Start here
@@ -20,7 +20,7 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: H1 synthetic proofs work; hard-budget integration is next
+## Current decision: H1 synthetic supervision and relocation pass; intake is next
 
 On 2026-09-28 the user explicitly requested an algorithm-improvement goal aimed
 at external competitiveness and a software-engineering A-venue submission.
@@ -37,12 +37,18 @@ where interval facts alone do not suffice. This is not a real-model gain or an
 old binary-HZ differential: both arms use the new direct-variable ReLU LP.
 The dense control still needs every input/hidden node in the dependency union.
 
-Next bounded task: integrate this optional synthetic path with a complete
-300-second hard-budget supervisor and relocatable checker, accounting for
-startup/source loading, construction, proposals, serialization and checking.
-Currently only cooperative deadlines and moved JSON checking are controlled;
-there is no self-contained relocated checker or competitive timing result.
-No real-request freeze is authorized by this stage. All seals below remain.
+[Supervision and portable-check controls](h1_supervision_20260930.md) now pass
+22 new tests, including deadlines, exceptions, partial evidence, publication
+overrun and producer attempts to rebind the trusted checker. The relocated
+`python -I -S` bundle checks all synthetic obligations without the repository,
+checkpoint or solver. API costs are charged; offline files alone cannot establish
+budget-compliant execution without an observed completed outer call.
+
+Next bounded task: reuse the existing source capture interface and validate
+supported model-object intake into H1, including non-tailored dense structure
+and whole-flow costs. Do not rebuild the existing capture module or expand this
+tiny synthetic timing table. No real-request freeze or competitive speed claim
+is authorized by the controls. All seals below remain.
 
 ## Audited stop decision retained
 
