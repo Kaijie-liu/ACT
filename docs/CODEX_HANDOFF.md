@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-H1 model-intake/stop-decision update: 2026-09-30. Real-model scientific status remains
+H2 endpoint-control update: 2026-09-30. Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
 ## Start here
@@ -20,7 +20,7 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: H1 intake passes; dense dependency-pruning gate does not
+## Current decision: H2 endpoint algebra passes; source integration is next
 
 On 2026-09-28 the user explicitly requested an algorithm-improvement goal aimed
 at external competitiveness and a software-engineering A-venue submission.
@@ -28,6 +28,30 @@ The [goal contract](ALGORITHM_RESEARCH_GOAL.md) separates same-source proof,
 algorithmic benefit, external comparison and independent review. Acceptance at
 a venue is not a promised outcome. None of the six related works is to receive
 a fabricated or semantically mismatched ACT win/loss entry.
+
+[H2 gate endpoint support](h2_gate_endpoint_20260930.md) now implements a small
+given-LP rational endpoint builder and independent checker. On a frozen analytic
+three-expert example, all 3 pair/property duties and 6 endpoints are positive;
+the same-base McCormick relaxation has an exactly feasible negative objective
+(-1/40). Private expert ReLU factors stay private. Distinct route witnesses and
+both tie-legal routes are checked. Pair {0,2} is empty but not dropped: its
+endpoint bounds use the conflicting guard. Nineteen solver-free controls pass.
+
+This is `CHECKED_POSITIVE_GIVEN_BASE_AND_GATE`, **not a source-complete generic
+network verifier**, native-float SAFE, performance benchmark or external gain.
+The [proof](../act/back_end/moe/proofs/gate_interval_endpoint_support.md) and
+[compact archive](h2_endpoint_algebra_20260930_r1.json) distinguish the fixed
+analytic argument from the generic API's trusted base/gate premises. The
+cooperative deadline is not a hard-budget supervisor.
+
+Next bounded task: connect this endpoint representation to independently checked
+source rows and justified router-sign/gate ranges, with complete synthetic
+source controls. Only after those pass, separately integrate and test the full
+300-second supervisor. Preserve same P/gate and all pair/property obligations;
+do not change the threshold, tune gates or launch real requests. H2 targets the
+weighted top-2 line; MetaMoE top-1 competitiveness remains a separate open goal.
+
+## H1 stop decision retained
 
 [H1 synthetic implementation and controls](h1_sparse_source_controls_20260930.md)
 now have complete source/output positive proofs on four synthetic controls;
@@ -55,9 +79,8 @@ conflicts explain empty guards for the missing pairs but do not repair acceptanc
 
 Apply the registered stop rule: do not advance dense dependency pruning into
 real experiments, or tune this fixture until positive. Retain the source/proof
-infrastructure. Next bounded task is a read-only algorithm-design review,
-separating source-LP representation from dependency pruning and identifying a
-concrete complete-obligation mechanism before another control protocol. Do not
+infrastructure. The ensuing design review selected H2 as a distinct weighted
+representation factor, not another dependency-pruning or cache study. Do not
 restart cache/serializer timing or sealed inputs. No real freeze is authorized.
 
 ## Audited stop decision retained

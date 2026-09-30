@@ -1,0 +1,27 @@
+{
+  "schema": "H2_ENDPOINT_ALGEBRA_CONTROL_V1",
+  "stage": "synthetic_exact_algebra_not_real_experiment",
+  "source": {
+    "input": ["-1", "1"],
+    "router": [["1", "-1"], ["0", "0"], ["-1", "-2"]],
+    "expert_relu_coefficients": ["1/4", "1/4"],
+    "expert_input_coefficients": ["3/4", "-1/4", "-1/4"],
+    "expert_margin_constant": "1/10",
+    "experts": 3,
+    "classes": 2,
+    "label": 0,
+    "private_relu_factors": true,
+    "tie_policy": "ANY_LEGAL_TOPK"
+  },
+  "pair_gate_intervals": [["0", "1/2"], ["0", "1"], ["1/2", "1"]],
+  "arms": ["given_base_endpoint_support", "same_base_mccormick"],
+  "retained_pairs": [[0, 1], [0, 2], [1, 2]],
+  "pair_exclusions": [],
+  "acceptance_threshold": "1/10000000",
+  "candidate_source": "explicit_rational_duals_and_feasible_relaxation_point",
+  "native_solver_calls": 0,
+  "real_model_requests": 0,
+  "production_integration": false,
+  "budget": "cooperative 300-second deadline only; hard supervision is a later control gate",
+  "stop_rule": "If complete analytic coverage or same-P separation fails, retain failure; do not change this fixture, enlarge gate search or run real inputs."
+}

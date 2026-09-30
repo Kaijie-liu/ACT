@@ -1,0 +1,190 @@
+{
+  "endpoint_check": {
+    "deployed_float_SAFE": false,
+    "duties": [
+      {
+        "competitor": 1,
+        "endpoint_bounds": [
+          "1/10",
+          "1/10"
+        ],
+        "lower_bound": "1/10",
+        "pair": [
+          0,
+          1
+        ],
+        "positive": true
+      },
+      {
+        "competitor": 1,
+        "endpoint_bounds": [
+          "47/20",
+          "27/20"
+        ],
+        "lower_bound": "27/20",
+        "pair": [
+          0,
+          2
+        ],
+        "positive": true
+      },
+      {
+        "competitor": 1,
+        "endpoint_bounds": [
+          "1/10",
+          "1/10"
+        ],
+        "lower_bound": "1/10",
+        "pair": [
+          1,
+          2
+        ],
+        "positive": true
+      }
+    ],
+    "endpoint_bounds_checked": 6,
+    "hard_budget_supervision": false,
+    "missing": 0,
+    "positive": 3,
+    "remaining_trust": [
+      "given_guarded_LP_contains_declared_network",
+      "given_affine_properties_correspond_to_experts",
+      "given_gate_intervals_cover_selected_softmax",
+      "parser_and_exact_checker_implementation"
+    ],
+    "request_sha256": "2ea905a82590b7577e65780a6aac186c2609f0b857045effdcca7b0f8ee0281d",
+    "required": 3,
+    "source_complete": false,
+    "status": "CHECKED_POSITIVE_GIVEN_BASE_AND_GATE"
+  },
+  "expert_only_margin_at_legal_tie": "-3/20",
+  "implementation_files": {
+    "configs/h2_endpoint_algebra_20260930.json": "0be0e1eabdcbfb3fad9078b3d17e7ed61f4dfdca109ee1a1fba6e65bd71ec284",
+    "scoped_source/endpoint_build.py": "1f89de2639540e0465dc5907496bea0ab01a242e9608b1c862946b35e2793711",
+    "scoped_source/endpoint_check.py": "5399df18302750d801194364e73426d9cc3b7121b86868d3a6a9ea180f59c851",
+    "scoped_source/endpoint_controls.py": "00926bf7f3ce59e543bbfc42ddd8c0f3bd4d9d932a2e1ecc43ed4b1660386ef9",
+    "scoped_source/endpoint_tests.py": "ae7a3952f03a01754c8ea4fc56839be6a4750004e2e73a7d9cd967f40586bd69",
+    "scoped_source/graph.py": "49b43d74785cf80a6fa98afafe864374b311c925146f6d172bee55f2203d060c",
+    "scoped_source/sparse_check.py": "bc3538f2b09852fac61aab231a96649c3babeb737bc7aa9586fefe1f5414b606",
+    "scoped_source/sparse_ir.py": "6af0ba57c5f4b8e9d12dd156bf339b49d2b9e7cb32963c07e76398cdf8fabb89",
+    "scripts/check_h2_endpoint.py": "a3bd0b9ca3f2dd5f71131643b3e6fb03d60548195d0571962f5ebd43e0d79d39",
+    "source_enclosure/format.py": "ba79d394824abc84aac1509518bf9416be3510a4eecef5b107ba60e63418f7ef",
+    "upstream_source/checker.py": "d14f75fd660d7ecab44994c24371d055407f5ca911e64867d94094b212a8c47c"
+  },
+  "mccormick": {
+    "checked_objective": "-1/40",
+    "difference_range": [
+      "-3/2",
+      "3/2"
+    ],
+    "exact_optimum_claimed": false,
+    "feasible_point": [
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "1/4",
+      "-1/8"
+    ],
+    "lp_sha256": "5d700a134ad69553976053a9b41be5de49cc3341b5ee9229f6afb86695c0a9a5",
+    "narrowest_witness_compatible_range_objective": "-1/40",
+    "network_counterexample": false,
+    "same_gate": true,
+    "same_guarded_base": true,
+    "true_difference_witness_values": [
+      "-1/2",
+      "1"
+    ]
+  },
+  "native_solver_calls": 0,
+  "proof_sha256": "8cd41fc2a873b5a73aff43d0d797a64e3f39567e8291c20ff71e6b19faf6e28f",
+  "protocol_sha256": "11345d6ad4dcc92b9bc014391f55877cc51b91461d0f7245d04ab2247e958b97",
+  "real_model_requests": 0,
+  "request_sha256": "2ea905a82590b7577e65780a6aac186c2609f0b857045effdcca7b0f8ee0281d",
+  "route_witnesses": [
+    {
+      "pairs": [
+        [
+          1,
+          2
+        ]
+      ],
+      "x": "-1"
+    },
+    {
+      "pairs": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "x": "-1/2"
+    },
+    {
+      "pairs": [
+        [
+          0,
+          1
+        ]
+      ],
+      "x": "1"
+    }
+  ],
+  "runtime_or_external_gain_claimed": false,
+  "schema": "H2_ENDPOINT_ALGEBRA_RESULT_V1",
+  "source_adapter_integrated": false,
+  "synthetic_gate_sign_checks": [
+    {
+      "gate": [
+        "0",
+        "1/2"
+      ],
+      "pair": [
+        0,
+        1
+      ],
+      "router_margin": [
+        "-2",
+        "0"
+      ],
+      "rule": "sigmoid_monotonicity_and_sigmoid_zero_equals_half"
+    },
+    {
+      "gate": [
+        "0",
+        "1"
+      ],
+      "pair": [
+        0,
+        2
+      ],
+      "router_margin": [
+        "-1",
+        "3"
+      ],
+      "rule": "sigmoid_monotonicity_and_sigmoid_zero_equals_half"
+    },
+    {
+      "gate": [
+        "1/2",
+        "1"
+      ],
+      "pair": [
+        1,
+        2
+      ],
+      "router_margin": [
+        "1",
+        "3"
+      ],
+      "rule": "sigmoid_monotonicity_and_sigmoid_zero_equals_half"
+    }
+  ]
+}
