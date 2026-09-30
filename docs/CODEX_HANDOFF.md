@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-H2 factored representation update: 2026-09-30. Real-model scientific status remains
+H2 factored supervision update: 2026-09-30. Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
 ## Start here
@@ -20,7 +20,7 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: H2 factored controls pass; real capacity is not admitted
+## Current decision: H2 factored supervision passes; real capacity is not admitted
 
 On 2026-09-28 the user explicitly requested an algorithm-improvement goal aimed
 at external competitiveness and a software-engineering A-venue submission.
@@ -96,10 +96,21 @@ copies a pair for proposals. This is not constant-memory or measured capacity.
 The writer still starts from a full declaration. New format admission is stricter
 than the old schema, and small bundles can be larger. No performance claim.
 
-Next bounded task: the new format's portable checker and hard-budget integration,
-including complete capture, publication, reception, partial evidence and costs.
-Cooperative deadlines and repo-backed `python -I -S` checks are not that gate.
-Then full-path capacity admission must pass before any separate real freeze.
+[Factored portable checking and supervision](h2_factored_supervision_20260930.md)
+now pass 17 new controls and 96 regressions. The archive requires all 38 fixed
+calls, rechecks 19 available packages without a solver and compares five source
+pairs. Capture, chunking, construction, proposals, checking, reception, cleanup
+and final publication are charged. A relocated `python -I -S` checker needs no
+repository/model/solver; parent anchors the actual checker stdout. R1/R2 test
+failures remain preserved; only R3 is the accepted control stage. No new real gain.
+
+Next bounded task: independent full-path capacity accounting, not a real run.
+Keep the 64-byte synthetic protocol unchanged; evaluate an existing supported
+production chunk policy without raising limits. Account for complete capture,
+source headers, node/pair members, exact rows, candidate copies and checking.
+Do not assume streaming capture alone resolves the larger pair/native-adapter
+residency. Metadata cannot establish actual peak RAM or 300-second completion.
+Full-path capacity admission must pass before any separate real freeze.
 This is not H1 dependency pruning or another cache study.
 No sealed input/holdout is reopened. H2 targets weighted top-2; MetaMoE top-1 remains open.
 

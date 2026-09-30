@@ -10,7 +10,7 @@
 | 接手工程、决定下一步 | [当前交接](CODEX_HANDOFF.md) | 已压缩；封存边界优先于旧 NEXT |
 | 看算法改进目标与下一门 | [研究目标合同](ALGORITHM_RESEARCH_GOAL.md) | 对外竞争、同源证明和投稿复核分开；不是新的真实执行冻结 |
 | 看 H1 代码与合成证明 | [来源依赖控制](h1_sparse_source_controls_20260930.md)、[完整监督与搬迁](h1_supervision_20260930.md)、[对象适配及停止裁决](h1_model_intake_20260930.md) | 适配控制完成；稠密隐藏依赖未缩小，不自动推进真实比较 |
-| 看 H2 加权义务机制 | [gate 端点支持](h2_gate_endpoint_20260930.md)、[声明来源控制](h2_source_controls_20260930.md)、[监督与搬迁](h2_supervision_20260930.md)、[对象接入与容量](h2_model_intake_20260930.md)、[分块来源与 pair 表示](h2_factored_representation_20260930.md)、[数学证明](../act/back_end/moe/proofs/gate_interval_endpoint_support.md) | 分块表示控制通过；新版可搬迁、硬监督及真实容量尚未完成，不是新增真实证书 |
+| 看 H2 加权义务机制 | [gate 端点支持](h2_gate_endpoint_20260930.md)、[声明来源控制](h2_source_controls_20260930.md)、[监督与搬迁](h2_supervision_20260930.md)、[对象接入与容量](h2_model_intake_20260930.md)、[分块来源与 pair 表示](h2_factored_representation_20260930.md)、[分块监督与搬迁](h2_factored_supervision_20260930.md)、[数学证明](../act/back_end/moe/proofs/gate_interval_endpoint_support.md) | 分块可搬迁及硬监督通过；真实全路径容量仍未准入，不是新增真实证书 |
 | 看完整工程目录 | [目录分类](organization/DIRECTORY_CATALOG.md) | 目录还在原位；分类不是删除许可 |
 | 清理磁盘与防止缓存堆积 | [存储维护规则](organization/STORAGE_MAINTENANCE.md) | 只清经过核对的可重建缓存；实验、失败证据和权重保留 |
 | 看当前实验对比 | [比较与保证裁决](competition_guarantee_disposition_20260923.md) | 内部优势不等于外部优势，策略接受不等于严格证书 |
