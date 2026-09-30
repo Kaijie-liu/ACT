@@ -46,6 +46,9 @@ def bind_checker(root, manifest, expected):
 
 
 def validate_spec(spec):
+    if spec.get('schema') == 'H2_CAPTURE_CONTROL_V1':
+        from scoped_source.endpoint_intake import validate_spec as validate_capture
+        validate_capture(spec); return
     if (set(spec) != {'schema','case','mode','reuse','source_sha256','control','protocol_sha256'} or
             spec['schema'] != 'H2_SYNTHETIC_SUPERVISION_V1' or
             spec['mode'] not in ('endpoints','mccormick') or spec['case'] not in CASE_REUSE or
@@ -68,7 +71,11 @@ def validate_spec(spec):
 
 
 def producer_sources(spec):
-    return {name:sha(ROOT/name) for name in PRODUCER_FILES}
+    names = PRODUCER_FILES
+    if spec['schema'] == 'H2_CAPTURE_CONTROL_V1':
+        from scoped_source.endpoint_intake import PRODUCER_FILES as CAPTURE_FILES
+        names += CAPTURE_FILES
+    return {name:sha(ROOT/name) for name in names}
 
 
 def bind_producer(spec, inv):
@@ -149,10 +156,17 @@ def receive(root, spec, invocation, invocation_sha256, checker_stdout_sha256):
     if (len(proof['origins']) != len(rows) or result['positive'] != positive or result['status'] != status or
             result['missing'] != missing or result['lp_bounds_checked'] != checked_lps or result['origins'] != proof['origins']):
         raise ValueError('whole-request aggregation disagreement')
-    return {'schema':'H2_ACCEPTED_CHECK_V1', 'status':status, 'invocation':invocation,
+    accepted = {'schema':'H2_ACCEPTED_CHECK_V1', 'status':status, 'invocation':invocation,
             'source_sha256':spec['source_sha256'], 'manifest_sha256':build['sha256'],
             'checker_stdout_sha256':checker_stdout_sha256, 'required':len(expected),
             'positive':positive, 'missing':missing, 'mode':spec['mode'], 'result':result}
+    if spec['schema'] == 'H2_CAPTURE_CONTROL_V1':
+        from scoped_source.endpoint_intake import receipt
+        captured = load(root/'model_intake.json',limit=1024**2)
+        if captured != receipt(doc,invocation,inv['producer_sources']):
+            raise ValueError('captured model/source receipt binding')
+        accepted['model_capture_receipt_content_sha256'] = identity(captured)
+    return accepted
 
 
 def supervise(root, spec, *, budget=300., rss_limit=2*2**30):

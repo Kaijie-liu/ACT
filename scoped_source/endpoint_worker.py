@@ -24,10 +24,33 @@ def run(phase, root, deadline, invocation_sha, checker_stdout_sha=None):
             subprocess.Popen([PYTHON,'-B','-c','import time; time.sleep(10)']); return
         if fault == 'memory':
             large = bytearray(128*2**20); time.sleep(10); return
-        def create():
-            from scoped_source.endpoint_source_controls import cases
-            return next(doc for name,doc,reuse in cases() if name == spec['case'])
-        doc = events.call('source_creation_imports', create)
+        if spec['schema'] == 'H2_CAPTURE_CONTROL_V1':
+            def create_object():
+                from scoped_source.endpoint_intake import model_fixture
+                return model_fixture()
+            model,center,request = events.call('model_creation_imports',create_object)
+            def take():
+                from scoped_source.sparse_intake import capture_bound
+                if fault == 'capture_delay':
+                    save(root/'capture_partial.json',{'accepted':False,'source_sha256':spec['source_sha256']})
+                    time.sleep(10)
+                if fault == 'capture_exception': raise RuntimeError('controlled H2 capture failure')
+                if fault in ('mutate_model','mutate_input'):
+                    import torch
+                    with torch.no_grad():
+                        if fault == 'mutate_model': next(model.parameters()).add_(1)
+                        else: center.add_(.25)
+                return capture_bound(model,center,request,expected_source_sha256=spec['source_sha256'],deadline=deadline)
+            doc = events.call('capture_and_validate',take)
+            from scoped_source.endpoint_intake import receipt
+            events.call('capture_receipt_publication',lambda:save(root/'model_intake.json',
+                receipt(doc,inv['invocation'],inv['producer_sources'])))
+            del model,center
+        else:
+            def create():
+                from scoped_source.endpoint_source_controls import cases
+                return next(doc for name,doc,reuse in cases() if name == spec['case'])
+            doc = events.call('source_creation_imports', create)
         if identity(doc) != spec['source_sha256']: raise ValueError('frozen synthetic source')
         events.call('source_publication', lambda:save(root/'declared_source.json',doc))
         def importer():

@@ -1,0 +1,17 @@
+{
+  "schema": "H2_MODEL_INTAKE_PROTOCOL_V1",
+  "case": "weighted_sign",
+  "source_protocol_sha256": "154e6171c8c2ffad14b6394ae19419827f22184214522a64a27cd3a727a7180a",
+  "expected_source_sha256": "d4d33ce1e9c56cb264e27b5325f51559423f9797deb75315a624641e85b38a2e",
+  "handwritten_source_sha256": "b50e6ac79b92ac1d25e6a2ad8d83d1958353e90eeba869663e3d9d7c9eff0de2",
+  "factory": "fixed_weighted_sign_cpu_float64_eval_output_top2",
+  "arms": ["endpoints", "mccormick"],
+  "reuse": [],
+  "maximum_api_seconds": 300,
+  "normal_control_seconds": 30,
+  "capture_cutoff_control_seconds": 8,
+  "acceptance_threshold": "1/10000000",
+  "trained_model_experiments": 0,
+  "scope": "live object intake control for previously fixed synthetic coefficients; no training or checkpoint",
+  "stop": "no retuning, new source selection, sealed inputs or real execution; mismatch/cutoff remains failure"
+}

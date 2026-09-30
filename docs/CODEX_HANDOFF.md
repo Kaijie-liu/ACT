@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-H2 supervised-control update: 2026-09-30. Real-model scientific status remains
+H2 model-intake and capacity update: 2026-09-30. Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
 ## Start here
@@ -20,7 +20,7 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: H2 hard supervision passes; model-object intake is next
+## Current decision: H2 model intake passes; real capacity is not admitted
 
 On 2026-09-28 the user explicitly requested an algorithm-improvement goal aimed
 at external competitiveness and a software-engineering A-venue submission.
@@ -67,13 +67,30 @@ The parent anchors checker stdout before reception; self-consistent replacements
 and null hash references are rejected. R1/R2 remain preserved, not final acceptance.
 This is declared-fixture intake, not a captured/trained model or a performance win.
 
-Next bounded task: reuse existing capture/validation for an actual supported
-model object with the same fixed weighted_sign coefficients. Charge creation,
-capture, all source work, candidates, serialization, check and publication;
-freeze a new captured-source identity and generate new evidence. Do not rerun
-H1 dense pruning or tune the fixture. After this one interface gate, inspect
-existing model metadata before separately proposing any real freeze. No sealed
-input/holdout is reopened. H2 targets weighted top-2; MetaMoE top-1 remains open.
+[Model-object intake and capacity](h2_model_intake_20260930.md) now pass 13 new
+intake controls, 18 supervision regressions, 69 other regressions and 4 static
+capacity controls. The same fixed synthetic coefficients become a live supported
+model, captured under a new source identity. Both arms create new evidence;
+endpoint/MC remain 3/3 and 2/3. Nine calls retain one positive, two UNKNOWNs,
+five controlled errors and one timeout. Creation/capture and all proof costs
+are charged; relocated checking needs no model/repository/solver. This is not
+a trained-model gain, generic native-float proof or timing result.
+
+The metadata-only capacity audit identifies a definite real intake blocker:
+bal010 parameter base64 alone needs at least 74,254,592 bytes, above the current
+67,108,864-byte source reader limit. The registered dense recipe also repeats
+large pair bases for all properties. No checkpoints or datasets were loaded.
+The convolutional family has unsupported capture operators. Do not bump limits
+and blindly launch, or choose an easier model/sample to bypass this finding.
+
+Next bounded task: a versioned source/block/pair obligation representation,
+with independent semantic expansion equal to the current LP on fixed controls.
+Store source coefficients/constraints once, reference pair guards/maps, and
+rebuild every property, gate, endpoint or MC addition independently; hash equality
+alone is not a proof. Preserve complete duties and bounded per-pair processing.
+Then portable/hard-budget controls and capacity admission must pass before any
+separate real freeze. This is not H1 dependency pruning or another cache study.
+No sealed input/holdout is reopened. H2 targets weighted top-2; MetaMoE top-1 remains open.
 
 ## H1 stop decision retained
 

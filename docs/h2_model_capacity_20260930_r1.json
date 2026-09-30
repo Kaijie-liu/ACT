@@ -1,0 +1,128 @@
+{
+  "conv_metadata": {
+    "checkpoint_opened": false,
+    "checkpoint_sha256": "f5781a792f844a68de941f1a6b314d0e627ad5dd30e262088e6c1864d6bc5289",
+    "factory": {
+      "channels": [
+        16,
+        32
+      ],
+      "hidden": 64,
+      "input_shape": [
+        3,
+        32,
+        32
+      ],
+      "num_classes": 10,
+      "num_experts": 4,
+      "router_pool": 4,
+      "seed": 17
+    },
+    "recorded_test_accuracy": 0.6706,
+    "status": "UNSUPPORTED_CONV_AND_POOL_OPERATORS"
+  },
+  "dense_recipe_scenario": {
+    "all_unordered_pairs": 28,
+    "classes": 10,
+    "duties": 252,
+    "expert": {
+      "affine_outputs": 394,
+      "parameters": 820874,
+      "relu_outputs": 384,
+      "tensors": 6,
+      "weights": 820480
+    },
+    "experts": 8,
+    "input_dimensions": 3072,
+    "maximum_endpoint_LPs": 504,
+    "pair_affine_equality_entries_if_all_weights_nonzero": 2036124,
+    "pair_variables": 4892,
+    "properties_per_pair": 9,
+    "repeated_affine_entries_in_duty_bases_if_dense": 513103248,
+    "router": {
+      "affine_outputs": 136,
+      "parameters": 394376,
+      "relu_outputs": 128,
+      "tensors": 4,
+      "weights": 394240
+    },
+    "scope": "affine contribution only under dense weights; not measured nnz, RAM or runtime; ReLU/guard rows additional"
+  },
+  "new_input_selections": 0,
+  "new_model_loads": 0,
+  "new_solves": 0,
+  "next_gate": "source/pair factorization with independent semantic expansion controls; no limit bump or real run implied",
+  "read_limits_bytes": {
+    "portable_member": 67108864,
+    "receiver_proof.json": 67108864,
+    "receiver_source.json": 67108864
+  },
+  "recipe_scope": "seed1/2 registered training; seed0 metadata counts match, topology not reloaded",
+  "recorded_models": [
+    {
+      "base64_bytes_lower_bound": 74254592,
+      "binary64_bytes": 55690944,
+      "checkpoint_opened": false,
+      "checkpoint_sha256": "fbaa7c871d28763ac5acb29a9502dc5d146e1d5af0b4a03e9911899251bd43f7",
+      "model": "seed0",
+      "native_topology_revalidated": false,
+      "registered_model_state": {
+        "parameter_count": 6961368,
+        "sha256": "40e184c22e4f6c63fe4187a21df13b1ca9c74b296a59f2d6e32dd3f963e61c22",
+        "tensor_count": 52
+      },
+      "source_exceeds_limits": {
+        "portable_member": true,
+        "receiver_source.json": true
+      }
+    },
+    {
+      "base64_bytes_lower_bound": 74254592,
+      "binary64_bytes": 55690944,
+      "checkpoint_opened": false,
+      "checkpoint_sha256": "cfd5fb07b1c426c5b98309d56a5d0439f8a99dc52ff936bcbea43d4fe641139a",
+      "model": "seed1",
+      "native_topology_revalidated": false,
+      "registered_model_state": {
+        "parameter_count": 6961368,
+        "sha256": "8e8c459eb70c17cad6185808460c0b40ef978f798a214646fe124360384a12c4",
+        "tensor_count": 52
+      },
+      "source_exceeds_limits": {
+        "portable_member": true,
+        "receiver_source.json": true
+      }
+    },
+    {
+      "base64_bytes_lower_bound": 74254592,
+      "binary64_bytes": 55690944,
+      "checkpoint_opened": false,
+      "checkpoint_sha256": "a60517c7964177858d10303bc7b306293c8da3cde6caa93a5d8f442968e97758",
+      "model": "seed2",
+      "native_topology_revalidated": false,
+      "registered_model_state": {
+        "parameter_count": 6961368,
+        "sha256": "c1297bd70d5e72aa7d4de3cff325f3bccec637b43cf90126d9e40ee2e3f2f3d9",
+        "tensor_count": 52
+      },
+      "source_exceeds_limits": {
+        "portable_member": true,
+        "receiver_source.json": true
+      }
+    }
+  ],
+  "schema": "H2_STATIC_MODEL_CAPACITY_V1",
+  "source_bindings": {
+    "act/back_end/moe/conv_factory.py": "29e74d39614fce82416e840635cb8717086ee3518e08416af2bd591cd19d3aae",
+    "act/back_end/moe/factory.py": "da472b2bbb3d8f684cb9c9916a735fd7105ceaab925911e1cbc983785a4c7d2d",
+    "act/pipeline/moe/configs/experiment1_multiseed_training_r1.json": "1ad3cfcc4aaa181d29320dfea57f40d4113e67943684e352edb8da5cbae04f4b",
+    "act/pipeline/moe/configs/schedule_confirmation_100_selection_r1.json": "b4167d8ab501df06570bfb49ad646263962c79736c2252f1398dc0499d3a7ee6",
+    "act/pipeline/moe/results/conv_training_review_20260915_r1.json": "7d3dba5423ae825cc84321d10d653f80f39ed1cc520c9a844d84c68325b4b737",
+    "scoped_source/capture.py": "d3ca9b562c9840ace096d790d0fd6eb12d7105560a3c38767c85244c65f651e2",
+    "scoped_source/endpoint_source_build.py": "dc7f62b5de3aa8a4bf0b5e5088ff39a80ba1307afa40dd27f6595f1bd8ca4ce4",
+    "scoped_source/endpoint_supervised.py": "96d4012982fe6b8ad93738e84603bcf1ec2a4f8a2da2c30ac9a74cd1bbaae788",
+    "scoped_source/endpoint_verify.py": "17298b713a7e3039e8c7fc198904577dd48b46aadc125f95d8e1cb6f6cd31a90",
+    "scripts/audit_h2_model_capacity.py": "e347cd97ecbdc5b10df88b547c67e0454ed340831795ba3373b54eb76688aec3"
+  },
+  "status": "NO_REAL_FREEZE_CAPACITY_NOT_ADMITTED"
+}
