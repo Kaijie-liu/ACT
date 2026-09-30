@@ -1,8 +1,7 @@
 # MoE project handoff — current entry point
 
-Goal/navigation refresh: 2026-09-28. Scientific status remains the audited
-2026-09-25 decision; the new goal launches no real experiment and changes no
-research conclusion.
+H1 synthetic-control update: 2026-09-30. Real-model scientific status remains
+the audited 2026-09-25 decision. No new real experiment has been launched.
 
 ## Start here
 
@@ -17,7 +16,7 @@ research conclusion.
 - Existing ACT Python: `/data1/Kane/miniconda3/envs/act-py312/bin/python`.
   Do not install or upgrade dependencies as part of housekeeping.
 
-## Current decision: stop the timing line; design one new algorithm mechanism
+## Current decision: H1 synthetic proofs work; hard-budget integration is next
 
 On 2026-09-28 the user explicitly requested an algorithm-improvement goal aimed
 at external competitiveness and a software-engineering A-venue submission.
@@ -26,13 +25,20 @@ algorithmic benefit, external comparison and independent review. Acceptance at
 a venue is not a promised outcome. None of the six related works is to receive
 a fabricated or semantically mismatched ACT win/loss entry.
 
-Next bounded task: design/control H1, source-checked sparse property obligations
-with an explicit dependency closure, keeping every required route/property.
-This is a hypothesis, not an implementation or observed improvement. It must
-be distinguished from existing sparse affine lifting, scalar F0, input-98 row
-selection and parser caching. Only after complete synthetic controls and total-
-budget controls may a separate real-request freeze be proposed. No real inputs
-are authorized by the goal document; all seals below remain effective.
+[H1 synthetic implementation and controls](h1_sparse_source_controls_20260930.md)
+now have complete source/output positive proofs on four synthetic controls;
+the negative control remains UNKNOWN. All five full/dependency comparisons
+agree on checked bounds. A relation-dependent control closes six obligations
+where interval facts alone do not suffice. This is not a real-model gain or an
+old binary-HZ differential: both arms use the new direct-variable ReLU LP.
+The dense control still needs every input/hidden node in the dependency union.
+
+Next bounded task: integrate this optional synthetic path with a complete
+300-second hard-budget supervisor and relocatable checker, accounting for
+startup/source loading, construction, proposals, serialization and checking.
+Currently only cooperative deadlines and moved JSON checking are controlled;
+there is no self-contained relocated checker or competitive timing result.
+No real-request freeze is authorized by this stage. All seals below remain.
 
 ## Audited stop decision retained
 

@@ -9,6 +9,7 @@
 |---|---|---|
 | 接手工程、决定下一步 | [当前交接](CODEX_HANDOFF.md) | 已压缩；封存边界优先于旧 NEXT |
 | 看算法改进目标与下一门 | [研究目标合同](ALGORITHM_RESEARCH_GOAL.md) | 对外竞争、同源证明和投稿复核分开；不是新的真实执行冻结 |
+| 看 H1 代码与合成证明 | [来源依赖控制](h1_sparse_source_controls_20260930.md) | 新直接变量 LP；尚无硬预算集成、真实增益或自包含搬迁包 |
 | 看完整工程目录 | [目录分类](organization/DIRECTORY_CATALOG.md) | 目录还在原位；分类不是删除许可 |
 | 看当前实验对比 | [比较与保证裁决](competition_guarantee_disposition_20260923.md) | 内部优势不等于外部优势，策略接受不等于严格证书 |
 | 看六篇作者基线跑到了哪 | [作者基线实际状态](author_baselines_status_20260924.md) | 分开部署、控制、训练与完整匹配比较 |
