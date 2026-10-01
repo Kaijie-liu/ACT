@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-H2 full-path capacity results and HybridZ/GPU goal update: 2026-10-01.
+H2 full-path capacity and HybridZ batched CPU support controls: 2026-10-01.
 Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
@@ -21,17 +21,18 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: both full-size capacity calls timed out during output proposals
+## Current decision: CPU batch-support controls pass; hard supervision and GPU are next gates
 
 The user's 2026-10-01 [refined goal](ALGORITHM_RESEARCH_GOAL.md) explicitly requires
 MoE-specific algorithms integrated into HybridZ and separately measured GPU
 acceleration. The prioritized proposal is multi-objective support with shared
 pair matrices, GPU candidate duals and CPU independent exact acceptance; guarded
 shared/private block decomposition and H2-to-HybridZ integration are separate
-representation studies. These are hypotheses, not implemented GPU features or
-new results. The prior goal is [preserved verbatim](ALGORITHM_RESEARCH_GOAL_HISTORY_20261001.md).
-The next action remains saved-prefix/interface analysis and a bounded control
-design, not a new solve or real run. No sealed object is reopened. Six acceptance
+representation studies. The CPU support interface now has controls below; GPU
+execution and complete-model benefit remain unestablished. The prior goal is
+[preserved verbatim](ALGORITHM_RESEARCH_GOAL_HISTORY_20261001.md).
+The next action is a separately versioned hard-budget support supervisor with
+finite synthetic controls, not a real or full-size rerun. No sealed object is reopened. Six acceptance
 gates now distinguish HybridZ integration, GPU end-to-end benefit, same-source
 proof, external competition, external validity and independent submission review.
 Read the new hardware/guarantee contract before proposing execution: same-algorithm
@@ -46,6 +47,18 @@ proposals and independent exact reception. GPU execution is explicitly disabled
 in this first protocol. Structural sharing is supported for saved endpoint
 objectives, not automatically for property-specific MC matrices. This freeze
 does not authorize new real or full-size runs.
+
+[Actual SparseHZono batch support](hz_batch_support_controls_20261001.md) now passes
+16 CPU controls, 15 exact-kernel regressions and an independent saved-evidence
+audit. It shares sparse matrices across objective columns, generates projected
+dual candidates and checks every original objective exactly. Private binary
+columns remain distinct and are explicitly relaxed to [-1,1]. Six stored complete
+batches contain 14 support bounds; a 3-of-4 partial batch is rejected and preserved.
+R1 is retained; R2 adds a control for mandatory archive inventory closure.
+Only given-HZ continuous-relaxation support is established, not a new abstract
+domain, production propagation integration, whole-MoE proof or speedup. No GPU,
+native solve, real input or training was executed. GPU resource admission and
+same-algorithm CPU/GPU cost measurements remain mandatory and separate.
 
 On 2026-09-28 the user explicitly requested an algorithm-improvement goal aimed
 at external competitiveness and a software-engineering A-venue submission.
