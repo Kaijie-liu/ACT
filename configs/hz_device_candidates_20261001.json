@@ -1,0 +1,30 @@
+{
+  "schema": "HZ_DEVICE_CANDIDATE_CONTROLS_V1",
+  "reference_head": "de56eeb603a37ef917fa27c0530ada9e10bc2062",
+  "scope": "device-parametric given-HZ proposals; CPU reference and simulated failures only in this stage",
+  "algorithm": "projected_dual_subgradient_multiobjective_v1",
+  "iterations": 128,
+  "step_size": 0.125,
+  "dtype": "float64",
+  "threads": 1,
+  "devices_implemented": ["cpu", "cuda:0"],
+  "devices_executed": ["cpu"],
+  "cuda_execution_authorized": false,
+  "cuda_allocator_limit_bytes": 1073741824,
+  "max_variables": 128,
+  "max_rows": 256,
+  "max_objectives": 8,
+  "per_control_deadline_seconds": 30,
+  "normal_cases": ["guarded_two_sides_positive", "guarded_nonpositive", "equality_coupled", "private_binary_relaxation", "constant_objective", "zero_width_shared_private"],
+  "failures": ["wrong_device_or_context", "expired_context", "initialization_exception_stub", "oom_stub", "synchronization_exception_stub", "late_transfer_stub", "missing_or_nonfinite_columns", "cross_request_pollution", "wrong_sign_or_claim", "partial_certificate"],
+  "fixed_bound_tolerance": "1/10000000000",
+  "native_fallback": "disabled in controls; production fallback unchanged",
+  "stop_rule": "preserve failures; no budget, iteration, fixture, dtype or acceptance changes to obtain positives; physical GPU needs a separate supervised and resource-admitted protocol",
+  "frozen_dependencies": {
+    "act/back_end/moe/batched_support.py": "fa923ee46466c29abfb76a1cb1f114dd70a70a52e9ce48ffcd7c9d9abee8aaf4",
+    "act/back_end/moe/check_batched_support.py": "0edbca1a49cc2821a4cda512cfba51add3129f60c2e7a2d8caba723eb1305ecf",
+    "act/back_end/solver/hz_lp_export.py": "e9658c0c3ce986bfc6fb611f3f9c2fe872f44b4cda912e8e2c6d9fda2e5327ee",
+    "act/back_end/solver/check_hz_lp_export.py": "1c7b34ccce9c88a58e4d0d551c2b2da6e338d279b46a474730e0907f00919287",
+    "scoped_source/rowwise_bound.py": "9a90e630be10f6eae5f60f56a3005db18af5e745c77dd31aa5996e2f5b969aa3"
+  }
+}
