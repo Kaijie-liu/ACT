@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-HybridZ small physical-device execution freeze: 2026-10-01.
+HybridZ small physical-device execution refused by resource admission: 2026-10-01.
 Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
@@ -21,7 +21,7 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: small physical-device controls frozen after CPU tests; admission remains
+## Current decision: CPU controls pass; physical batch not admitted; no GPU benefit result
 
 The user's 2026-10-01 [refined goal](ALGORITHM_RESEARCH_GOAL.md) explicitly requires
 MoE-specific algorithms integrated into HybridZ and separately measured GPU
@@ -59,8 +59,14 @@ All device observations here are simulated; no physical CUDA or real request ran
 The later [small physical-device stage](hz_physical_device_20261001.md) now passes
 eight controls, six CPU/stub calls, independent archive audit and 67 regressions.
 Its separately frozen execution binds the same four HZ cases and eight CPU/GPU
-slots, 30 seconds each, no warmups/retries. One bounded batch preflight is next;
-busy means all eight remain unstarted. It is not physical CUDA evidence yet.
+slots, 30 seconds each, no warmups/retries. Its one physical preflight returned
+NOT_ADMITTED: two compute PIDs, 12,550 MiB used, 20% utilization. The independent
+[terminal audit](hz_physical_execution_20261001_r1.json) passes with all eight
+slots unstarted and no CUDA initialization. This is not device compatibility or
+speedup evidence. Preserve the refusal; no poll/retry loop. A future physical
+attempt needs separately recorded fresh admission. Meanwhile the bounded next
+algorithm task is the A2 H2-to-guarded-HZ interface/control contract, not a real
+request: same base, gate and properties, new matrices need new exact evidence.
 Do not skip directly to real/full-size experiments. All six
 goal gates remain OPEN; these are engineering controls, not a GPU speedup result.
 
