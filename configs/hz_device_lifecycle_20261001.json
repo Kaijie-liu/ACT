@@ -1,0 +1,40 @@
+{
+  "schema": "HZ_DEVICE_LIFECYCLE_CONTROLS_V1",
+  "starting_head": "f81a437358509a01298a04541b3e43a792672d16",
+  "scope": "CPU candidate execution and explicitly simulated release observations; no physical CUDA",
+  "reference_protocol": "configs/hz_device_supervision_20261001.json",
+  "reference_protocol_sha256": "81009d4874e0f6b18ae700878cea6e5638494d9b312085e2755d3790eaffc131",
+  "cases": ["guarded_two_sides_positive", "guarded_nonpositive", "equality_coupled", "private_binary_relaxation"],
+  "normal_budget_seconds": 30,
+  "max_request_seconds": 300,
+  "rss_limit": 2147483648,
+  "threads": 1,
+  "gpu_uuid_for_simulation": "GPU-f491c2c6-a093-590a-6b8a-13b5f76aadcc",
+  "phases": ["admit", "produce", "release", "check", "receive"],
+  "work_reserve": "min(1 second,budget/5)",
+  "produce_reserve": "min(6 seconds,budget/2)",
+  "release_allowance": "min(2 seconds,budget/4) within remaining work budget",
+  "phase_cleanup_reserve": "min(0.25 second,budget/20)",
+  "release_observations": 2,
+  "release_observation_separation_seconds": 0.05,
+  "payload_limit": 4194304,
+  "faults": {
+    "producer_exception": [30, "ERROR"],
+    "readback_stall": [8, "TIMEOUT"],
+    "release_owned_stays": [30, "DEVICE_RELEASE_UNCONFIRMED"],
+    "release_probe_error": [30, "DEVICE_RELEASE_UNCONFIRMED"],
+    "release_deadline": [8, "DEVICE_RELEASE_UNCONFIRMED"],
+    "cleanup_unconfirmed": [30, "CLEANUP_INCOMPLETE"],
+    "release_foreign_tenant": [30, "CHECKED_GIVEN_HZ_CPU_DEVICE_LIFECYCLE"],
+    "release_wrong_request": [30, "DEVICE_RELEASE_UNCONFIRMED"]
+  },
+  "frozen_dependencies": {
+    "scoped_proof/owned_bounded.py": "482f9c1d783cd5e3291b4056c7c57a90e42d3305cb92b240b536061042f8ff40",
+    "act/back_end/moe/batched_support_device.py": "d791850003d8f2658b09ebfae09f97285b3db573417da40430dec347645709b4"
+  },
+  "physical_cuda_calls": 0,
+  "native_solves": 0,
+  "real_requests": 0,
+  "complete_moe_proofs": 0,
+  "stop_rule": "Do not change algorithms, fixtures, budgets or exact acceptance. CPU/stub release does not admit physical CUDA. Stop subsequent work on unconfirmed actual cleanup."
+}
