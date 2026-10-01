@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-H2 full-path capacity and HybridZ batched CPU support controls: 2026-10-01.
+H2 full-path capacity and supervised HybridZ batched CPU support controls: 2026-10-01.
 Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
@@ -21,7 +21,7 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: CPU batch-support controls pass; hard supervision and GPU are next gates
+## Current decision: CPU batch support and hard supervision pass controls; GPU is a separate next gate
 
 The user's 2026-10-01 [refined goal](ALGORITHM_RESEARCH_GOAL.md) explicitly requires
 MoE-specific algorithms integrated into HybridZ and separately measured GPU
@@ -31,8 +31,10 @@ shared/private block decomposition and H2-to-HybridZ integration are separate
 representation studies. The CPU support interface now has controls below; GPU
 execution and complete-model benefit remain unestablished. The prior goal is
 [preserved verbatim](ALGORITHM_RESEARCH_GOAL_HISTORY_20261001.md).
-The next action is a separately versioned hard-budget support supervisor with
-finite synthetic controls, not a real or full-size rerun. No sealed object is reopened. Six acceptance
+The hard-budget support supervisor now passes finite synthetic controls below.
+The next action is a separate same-algorithm CPU/GPU candidate contract and control
+implementation, with resource admission before GPU execution; not a real or full-size
+rerun. No sealed object is reopened. Six acceptance
 gates now distinguish HybridZ integration, GPU end-to-end benefit, same-source
 proof, external competition, external validity and independent submission review.
 Read the new hardware/guarantee contract before proposing execution: same-algorithm
@@ -59,6 +61,19 @@ Only given-HZ continuous-relaxation support is established, not a new abstract
 domain, production propagation integration, whole-MoE proof or speedup. No GPU,
 native solve, real input or training was executed. GPU resource admission and
 same-algorithm CPU/GPU cost measurements remain mandatory and separate.
+
+[Hard-budget support supervision](hz_batch_supervision_20261001.md) now passes
+14 new controls plus 16 CPU algorithm and 15 exact-kernel regressions. Its separately
+frozen 20 calls retain 4 complete given-HZ support executions and 16 expected fault
+terminals; 8 exact support bounds match the previous CPU stage. Completed support
+execution is not all-positive or MoE SAFE. Parent output hashes, full obligation
+rosters, observed API return, cleanup and publication cost are bound and checked.
+R1 is pre-hardening; R2 failed because one delayed-receiver control timed out before
+reaching its intended injection, and is preserved. R3 checks actual fault witnesses,
+explicit launch identities and consistent deadline/cost clock samples. Budgets,
+algorithm and original acceptance formula did not change. Final saved-evidence audit
+passes; no native solves, GPU, real input, portable-checker or production-fallback
+claim is made. G1/G2 remain open, as do the real proof and external comparison gates.
 
 On 2026-09-28 the user explicitly requested an algorithm-improvement goal aimed
 at external competitiveness and a software-engineering A-venue submission.
@@ -204,12 +219,11 @@ separately. Seven negative lower bounds do not establish LP impossibility or mod
 unsafety; no exact feasible upper evidence was checked. Full capacity remains failed,
 and no real request or new complete real certificate is admitted.
 
-Next bounded task under the refined goal: analyze only these saved prefixes and
-the production HybridZ support interface for necessary distinct objectives versus
-shared structure. Specify the batched candidate/exact acceptance contract and a
-finite control only with a concrete obligation-preserving hypothesis. No new
-solve, rerun, larger budget or easier synthetic/real source is authorized by this
-result. Preserve all
+That saved-prefix analysis led to the separately frozen CPU batch-support and
+supervision controls at the top of this handoff. It did not admit this full-size
+source for a rerun. Follow the current CPU/GPU control gate above, not this older
+analysis task. No new real/full-size solve, larger budget or easier source is
+authorized by this capacity result. Preserve all
 identities, residual compensation, structure checks and obligations. Do not claim
 the removed copies were the dominant bottleneck or capture streaming alone suffices.
 Do not expand the static ledger, raise limits or change the old 64-byte control
