@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-Checked block-native HybridZ support and source connection completed: 2026-10-02.
+Block capacity assessment and sparse row design completed: 2026-10-02.
 Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
@@ -21,7 +21,33 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: block support checked but performance and capacity open
+## Current decision: address sparse row source checking before another wrapper
+
+[Remaining block capacity](hz_block_capacity_20261002.md) has been checked from
+registered metadata and current code only. Eight standard-library controls pass;
+no model/data/HZ/solver/GPU was loaded. Block support still rejects real source
+dimensions, complete class/property inventories and package sizes. Conv/pooling
+remain unsupported. Its 28-pair recipe still means 252 duties and 252–504 endpoints,
+not fewer obligations. Source template snapshots still repeat per pair.
+
+Two concrete findings set the next task. The old 6684-factor scenario excludes
+new output/equality enclosure compensation and is not a bound for this path.
+The row checker also reparses the whole reference R+1 times on a complete R-row
+check. Its local eight-factor gate is a finite contract, not a corner-enumeration
+necessity; exact coefficient L1 residual checking works at arbitrary row width.
+Actual trained row widths and final source sizes are still unknown.
+
+Next implement the separately [frozen sparse row design](hz_sparse_rows_design_20261002.md):
+independent one-pass source/target parsing, sparse union residual accumulation,
+one outward rounding/compensation per row, preserved shared/private identities.
+Use the eight old references/two overflow cases plus the one fixed 3072-factor
+mixed row; no new network, support solve or timing search. All old source,
+block, query and production limits stay unchanged. The new row-only contract
+does not admit real models. Preserve exact checks and failure/cost inventories.
+Its implementation, source integration and full-request benefit are not done.
+No extra supervisor, physical GPU retry or sealed-input rerun is next.
+
+## Block support checked but performance and capacity open
 
 [Block-native support](hz_blocks_20261002.md) now passes 18 frozen controls,
 independent R4 archive audit and 134 existing algorithm/source regressions.
@@ -40,10 +66,10 @@ All eight normal mathematical packages are unchanged across four attempts.
 
 Three of four tiny total intervals are worse; block proposals are slower in all
 four. No speedup or peak-memory claim. Templates/snapshots still repeat per pair.
-Keep opt-in, stop tiny timing/positive-count tuning. Next assess the remaining
-source/operator/row/global/package capacity obstacles from recorded metadata,
-without loading models or launching solves; omitting joint allocation alone is
-not real admission. Any later full-budget/portable stage must bind this schema.
+Keep opt-in, stop tiny timing/positive-count tuning. The subsequent metadata-only
+assessment above identifies the remaining source/operator/row/global/package
+obstacles; omitting joint allocation alone is not real admission. Any later
+full-budget/portable stage must bind this schema.
 The block GPU kernel is not implemented; flat device controls do not cover it.
 No native solve, real input, CUDA or sealed request ran. All six gates stay OPEN.
 

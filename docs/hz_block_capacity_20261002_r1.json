@@ -1,0 +1,273 @@
+{
+  "actual_end_to_end_seconds": null,
+  "actual_peak_memory": null,
+  "all_six_goal_gates_remain_open": true,
+  "conv": {
+    "all_pairs": 6,
+    "checkpoint_loaded": false,
+    "checkpoint_sha256": "f5781a792f844a68de941f1a6b314d0e627ad5dd30e262088e6c1864d6bc5289",
+    "duties": 54,
+    "factory": {
+      "channels": [
+        16,
+        32
+      ],
+      "hidden": 64,
+      "input_shape": [
+        3,
+        32,
+        32
+      ],
+      "num_classes": 10,
+      "num_experts": 4,
+      "router_pool": 4,
+      "seed": 17
+    },
+    "input_dimensions": 3072,
+    "recorded_test_accuracy": 0.6706,
+    "unsupported_operators": [
+      "Conv2d",
+      "AvgPool2d"
+    ]
+  },
+  "cuda_calls": 0,
+  "decision": "separately design one-pass sparse row enclosure/checking with exact residual accumulation; no cap bump or real admission",
+  "definite_refusals": {
+    "conv_operators": [
+      "Conv2d",
+      "AvgPool2d"
+    ],
+    "even_degenerate_pair_queries": 9,
+    "full_properties_per_pair": 9,
+    "input_factors_and_output_rows": 3072,
+    "portable_bytes": {
+      "actual_source_or_proof_bytes": null,
+      "parameter_base64_lower_bound": 74254592,
+      "portable_bundle_limit": 33554432,
+      "portable_member_limit": 4194304,
+      "source_lower_bound_exceeds_both": true
+    },
+    "source_expert_class_inventory": [
+      8,
+      10
+    ]
+  },
+  "dense_recipe": {
+    "all_unstable_row_scenario": {
+      "common_rows": 384,
+      "entry_rows": 396,
+      "executed_local_block_rows": 2700,
+      "expert_template_rows_each": 1536,
+      "repeated_stored_prefix_rows": 1152,
+      "scope": "same all-unstable recipe scenario, not measured rows/nnz/RAM/time; excludes traces and row proofs",
+      "stored_rows_in_four_snapshots": 3852
+    },
+    "classes": 10,
+    "duties": 252,
+    "endpoints_max": 504,
+    "endpoints_min": 252,
+    "experts": 8,
+    "new_lift_factors": null,
+    "old_factor_count_is_bound_for_new_lifts": false,
+    "old_factor_scenario": 6684,
+    "old_layer_records": 340,
+    "old_per_pair_expert_propagations": 56,
+    "pair_queries_max": 18,
+    "pair_queries_min": 9,
+    "pairs": 28,
+    "properties_per_pair": 9,
+    "scope": "registered recipe arithmetic only; all pairs conservatively retained; no actual feasible-pair count",
+    "snapshots_per_expert": 7,
+    "support_snapshot_occurrences": {
+      "common": 28,
+      "entry": 28,
+      "expert_templates": 56,
+      "total": 112
+    },
+    "template_expert_propagations": 8,
+    "template_layer_records": 52
+  },
+  "literal_contracts": [
+    {
+      "expression": "2 <= e <= 4",
+      "file": "scoped_source/hz_source_check.py",
+      "function": "properties",
+      "line": 136
+    },
+    {
+      "expression": "2 <= c <= 5",
+      "file": "scoped_source/hz_source_check.py",
+      "function": "properties",
+      "line": 136
+    },
+    {
+      "expression": "1 <= len(c) + len(b) <= 128",
+      "file": "scoped_source/hz_source_check.py",
+      "function": "checked_state",
+      "line": 32
+    },
+    {
+      "expression": "len(h['c']) > 128",
+      "file": "scoped_source/hz_source_check.py",
+      "function": "checked_state",
+      "line": 32
+    },
+    {
+      "expression": "len(h['b']) + len(h['ub']) > 256",
+      "file": "scoped_source/hz_source_check.py",
+      "function": "checked_state",
+      "line": 32
+    },
+    {
+      "expression": "1 <= len(props) <= 4",
+      "file": "act/back_end/moe/check_hz_endpoints.py",
+      "function": "validate_request",
+      "line": 100
+    },
+    {
+      "expression": "1 <= len(queries) <= 8",
+      "file": "act/back_end/moe/check_batched_support.py",
+      "function": "validated_records",
+      "line": 36
+    },
+    {
+      "expression": "len(c) + len(b) > (16 if target else 8)",
+      "file": "scoped_source/check_hz_binary64.py",
+      "function": "parse",
+      "line": 28
+    },
+    {
+      "expression": "len(c) + len(b) > 128",
+      "file": "scoped_source/check_hz_row_enclosure.py",
+      "function": "parse",
+      "line": 17
+    },
+    {
+      "expression": "1 <= len(h['c']) <= 128",
+      "file": "scoped_source/check_hz_row_enclosure.py",
+      "function": "parse",
+      "line": 17
+    },
+    {
+      "expression": "len(h['b']) + len(h['ub']) > 256",
+      "file": "scoped_source/check_hz_row_enclosure.py",
+      "function": "parse",
+      "line": 17
+    },
+    {
+      "expression": "1 <= hz.n_cont + hz.n_bin <= 128",
+      "file": "act/back_end/moe/block_support.py",
+      "function": "snapshot",
+      "line": 20
+    },
+    {
+      "expression": "1 <= hz.n_out <= 128",
+      "file": "act/back_end/moe/block_support.py",
+      "function": "snapshot",
+      "line": 20
+    },
+    {
+      "expression": "1 <= nc + nb <= 128",
+      "file": "act/back_end/moe/check_block_support.py",
+      "function": "structure",
+      "line": 39
+    },
+    {
+      "expression": "sum((len(p['b']) + len(p['h']) for p in parts)) > 256",
+      "file": "act/back_end/moe/check_block_support.py",
+      "function": "structure",
+      "line": 60
+    },
+    {
+      "expression": "1 <= len(queries) <= 8",
+      "file": "act/back_end/moe/check_block_support.py",
+      "function": "validate_batch",
+      "line": 96
+    },
+    {
+      "expression": "2 <= e <= 4",
+      "file": "act/back_end/moe/check_block_endpoints.py",
+      "function": "validate_request",
+      "line": 18
+    },
+    {
+      "expression": "1 <= len(props) <= 4",
+      "file": "act/back_end/moe/check_block_endpoints.py",
+      "function": "validate_request",
+      "line": 19
+    }
+  ],
+  "new_input_selections": 0,
+  "new_model_loads": 0,
+  "new_propagations": 0,
+  "new_solves": 0,
+  "prior_metadata_sha256": "9f5f7f240bbe6757206b52ea2754d30051ebd98d829ab8d6341823f25c87a8ab",
+  "remaining_live_arrays": [
+    "global objective/residual/argmin N by K",
+    "local sparse matrices and transposes",
+    "local duals and best duals M by K",
+    "all live pairs before request preparation",
+    "four parsed snapshots per pair plus copied local row dictionaries"
+  ],
+  "row_check_repetition": {
+    "initial_parse_line": 47,
+    "projection_parse_line": 35,
+    "row_projection_line": 60,
+    "scope": "syntactic path; excludes final target parses, hashes and local checks; no timing estimate",
+    "whole_reference_parses_for_R_rows": "R+1"
+  },
+  "schema": "HZ_BLOCK_CAPACITY_METADATA_V1",
+  "source_bindings": {
+    "act/back_end/moe/batched_support.py": "fa923ee46466c29abfb76a1cb1f114dd70a70a52e9ce48ffcd7c9d9abee8aaf4",
+    "act/back_end/moe/block_endpoints.py": "788677f19cf5947ea6b740a94678beaa4dd9543510decc4f17cfe359e6417234",
+    "act/back_end/moe/block_support.py": "3becfbb63ef099974662d1af51d2a5fd79dfeb8fabc73b461f6d5160ebfa33b9",
+    "act/back_end/moe/check_batched_support.py": "0edbca1a49cc2821a4cda512cfba51add3129f60c2e7a2d8caba723eb1305ecf",
+    "act/back_end/moe/check_block_endpoints.py": "8c31115a2dc3cbdbdb84bbc54de9c04a81a5c995d616b80582d88b4c139e5334",
+    "act/back_end/moe/check_block_support.py": "fde876633c03c72fcb01a016562351f7a1c585c04008554e3f59d81e8d8979d6",
+    "act/back_end/moe/check_hz_endpoints.py": "d23716d2d19e34b21bfede7d8c2da01634665f53e1702c8a0200fc3dfcd8c823",
+    "act/back_end/moe/conv_factory.py": "29e74d39614fce82416e840635cb8717086ee3518e08416af2bd591cd19d3aae",
+    "act/back_end/moe/factory.py": "da472b2bbb3d8f684cb9c9916a735fd7105ceaab925911e1cbc983785a4c7d2d",
+    "act/back_end/moe/hz_endpoints.py": "0bf1779cd6367972a7b0e2f0b916e02e07d91d869cf6e8dbe345b4c15ce5d32c",
+    "act/pipeline/moe/configs/experiment1_multiseed_training_r1.json": "1ad3cfcc4aaa181d29320dfea57f40d4113e67943684e352edb8da5cbae04f4b",
+    "act/pipeline/moe/configs/schedule_confirmation_100_selection_r1.json": "b4167d8ab501df06570bfb49ad646263962c79736c2252f1398dc0499d3a7ee6",
+    "act/pipeline/moe/results/conv_training_review_20260915_r1.json": "7d3dba5423ae825cc84321d10d653f80f39ed1cc520c9a844d84c68325b4b737",
+    "docs/hz_real_intake_20261001_r1.json": "9f5f7f240bbe6757206b52ea2754d30051ebd98d829ab8d6341823f25c87a8ab",
+    "router_source/checker.py": "ddbd8fe642fee7b96abea917d5a95cce5b2336fcccde9d2119829c5947207c84",
+    "scoped_source/capture.py": "d3ca9b562c9840ace096d790d0fd6eb12d7105560a3c38767c85244c65f651e2",
+    "scoped_source/check_hz_binary64.py": "c52da0f3a31a675d2e5c020028bd14fc9ecb9e8f3bceb2a3f454cddd241551c9",
+    "scoped_source/check_hz_block_source.py": "60ee5efad64c8b2c8b3ebe06c737ce60291cbdf5c0ecd5a2817f8aab23540f15",
+    "scoped_source/check_hz_lifted_source.py": "b9ff63331800b4a58ced123794335e7dbab8ef0a16782d81cee29e86eb446ce7",
+    "scoped_source/check_hz_row_enclosure.py": "0e1320565b28f903b20e9c1fffcb1aa8684fcee4f12ef1a1ddd5210474fc5586",
+    "scoped_source/check_hz_templates.py": "2935f6af001ab6dd8b725ba73dc2d1fc392f0ea94c30ac2e21fdea944f1607c5",
+    "scoped_source/graph.py": "49b43d74785cf80a6fa98afafe864374b311c925146f6d172bee55f2203d060c",
+    "scoped_source/hz_binary64.py": "ac753309027be11964c449f4a4bd5421c74ece1f9d87184abc06195b8eb7c6d0",
+    "scoped_source/hz_block_source.py": "3afe9bf230956cda98135bf38931cbfe6ca6e8239f28c4b53031cd1c694daf76",
+    "scoped_source/hz_lifted_source.py": "389d69f0c6557cd4cb094a50fcc9bac70562cc8c861135739459c84f5f962cea",
+    "scoped_source/hz_portable_verify.py": "9461922ce2dce7f1ceae65cecf85a6c7254fab370bedf3fc05fa2f8cb96fe0df",
+    "scoped_source/hz_row_enclosure.py": "46b025d62171ca32778d58d3d353ea498478f364d7e6a936ecfbd5fe9a5658c3",
+    "scoped_source/hz_source_build.py": "8d698784f0575cd019ed48e6885e05f5b42a8e33c557b15b25b5d61e09390aa7",
+    "scoped_source/hz_source_check.py": "1197d16fc9e134e51193873e31983d80e7d9737da26e6254e203434a04c1f4dc",
+    "scoped_source/hz_templates.py": "e82e1626dcc4b79564c7ec4bdc5d10bc6e9342bcbc1d07f8aa7ac975a776040b",
+    "scripts/audit_hz_block_capacity.py": "3fa7d3f9c4d6d6b23a5cf781480e9dcc7864bf4343aadb9bf6f92844591c3cba",
+    "scripts/audit_hz_real_intake.py": "7b11d0687f045f3d0215c574b6c15a471b4240fd9c80416a836d700f9dd4208a",
+    "scripts/hz_source_supervised.py": "579aa7b99d3fdc3debada5c869ba7fd1bc4ca24799d1790821df2a8649075ed7",
+    "scripts/test_hz_block_capacity.py": "fa950bc08b4762d886ba6510c1fc46194c5829a80fb914a4d58ed7cb5a5d5c6f",
+    "scripts/test_hz_real_intake.py": "fc923fa1b8821222eddc430229b4fc93e96e1bd3c3ac38e95b5d0633321ba389",
+    "source_enclosure/check.py": "5647f4e2b6945b9736b1ff210f500ed70b997f517651be6e18324f77666b2e0e",
+    "source_enclosure/format.py": "ba79d394824abc84aac1509518bf9416be3510a4eecef5b107ba60e63418f7ef",
+    "source_enclosure/produce.py": "530385756877f80e1e8e9c668583f5feb429a07e2df180b2b0b958bcb5ad1384"
+  },
+  "source_or_output_certificate": false,
+  "status": "REAL_BLOCK_INTAKE_NOT_ADMITTED",
+  "wide_rows": {
+    "actual_trained_row_widths": null,
+    "actual_wide_row_failure_observed": false,
+    "local_reference_factor_limit": 8,
+    "mathematical_rule": "exact coefficient L1 residual, not corner enumeration"
+  },
+  "wrapper_integration": {
+    "new_block_hard_supervision_established": false,
+    "new_schema": "CHECKED_HZ_BLOCK_SOURCE_V1",
+    "old_portable_has_block_checker": false
+  }
+}

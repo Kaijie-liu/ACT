@@ -20,6 +20,7 @@
 | 看精确来源怎样接上 binary64 外包络 | [行级来源设计](hz_lifted_source_design_20261001.md)、[实现与独立重查](hz_lifted_source_20261001.md) | 18 组、128 回归通过；四原声明生成 fresh 端点证据，非零补偿仅由算子控制触发；实模、块容量与新完整监督仍开放 |
 | 看共享专家模板与条件视图 | [单因素冻结](hz_expert_template_design_20261001.md)、[两臂结果](hz_expert_templates_20261001.md) | 18 组、146 回归通过；真实专家传播 6→3／12→4，15 pair 数值域及 42 端点界相同；不减少输出义务，不是实模或 GPU 加速 |
 | 看 HybridZ 块支持算法 | [直接块支持冻结](hz_block_support_design_20261002.md)、[实现与结果](hz_blocks_20261002.md) | 18 组控制及独立审计通过；15 域／84 候选差分一致，无 joint 分配；三项小控制总耗时更差，不是实模或 GPU 收益 |
+| 看块算法后的真实容量与下一机制 | [容量核查](hz_block_capacity_20261002.md)、[稀疏行设计](hz_sparse_rows_design_20261002.md) | 八项元数据控制通过；全源反复解析及行宽合同未解决，旧6684并非新因素上界；下一步单独实现稀疏行精确残差，不直接抬旧上限或启动实模 |
 | 看 H1 代码与合成证明 | [来源依赖控制](h1_sparse_source_controls_20260930.md)、[完整监督与搬迁](h1_supervision_20260930.md)、[对象适配及停止裁决](h1_model_intake_20260930.md) | 适配控制完成；稠密隐藏依赖未缩小，不自动推进真实比较 |
 | 看 H2 加权义务机制 | [gate 端点支持](h2_gate_endpoint_20260930.md)、[声明来源控制](h2_source_controls_20260930.md)、[监督与搬迁](h2_supervision_20260930.md)、[对象接入与容量](h2_model_intake_20260930.md)、[分块来源与 pair 表示](h2_factored_representation_20260930.md)、[分块监督与搬迁](h2_factored_supervision_20260930.md)、[全路径容量审计](h2_factored_capacity_20260930.md)、[逐行检查控制](h2_rowwise_controls_20260930.md)、[逐行完整监督](h2_rowwise_supervision_20260930.md)、[数学证明](../act/back_end/moe/proofs/gate_interval_endpoint_support.md) | 新核完整监督控制通过；全尺寸容量未准入，不是新增真实证书 |
 | 看完整工程目录 | [目录分类](organization/DIRECTORY_CATALOG.md) | 目录还在原位；分类不是删除许可 |
