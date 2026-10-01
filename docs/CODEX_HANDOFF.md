@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-HybridZ checked-support propagation integration controls: 2026-10-01.
+HybridZ complete CPU propagation supervision controls: 2026-10-01.
 Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
@@ -21,7 +21,7 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: checked support enters actual HybridZ propagation; full supervision and physical GPU remain
+## Current decision: actual propagation supervision passes; physical GPU and real benefit remain
 
 The user's 2026-10-01 [refined goal](ALGORITHM_RESEARCH_GOAL.md) explicitly requires
 MoE-specific algorithms integrated into HybridZ and separately measured GPU
@@ -57,9 +57,18 @@ are retained; R4 binds full objective coefficients, dispatch identity, per-nativ
 call budget admission and mandatory proof inventory; final R5 adds saved query
 side/layer binding with mutation controls. Native fallback is tested
 only with an instrumented seam. No native solves or GPU work occurred.
-Next integrate this finite entry into separate complete hard-budget supervision
-including construction/serialization/reception; physical GPU bounded cleanup
-remains separate. Do not launch real requests on this cooperative wrapper.
+The later [complete CPU propagation supervisor](hz_propagation_supervision_20261001.md)
+now passes 12 controls, 67 regressions and independent archive audit. All 18 fixed
+calls remain: four normal conditional propagations, seven intended errors, six
+timeouts and one resource refusal. Ten normal support bounds match; two additional
+bounds in a publication-timeout prefix are rechecked offline but remain unaccepted.
+R1/R2 are retained pre-hardening executions; final R3 closes source, fault-reach,
+late-anchor and cost/cleanup gaps. The new bounded CPU executor confirms leader
+reaping and no live group members, not escaped descendants or GPU-driver cleanup.
+Next separately integrate this bounded primitive into device supervision and test
+resource-return/deadline controls before freezing physical CPU/GPU admission.
+No native solve, GPU work or real/full-size request was launched. Do not use the
+finite control wrapper as a production request verifier; all six goal gates stay OPEN.
 
 The [batched HybridZ support contract](hz_batch_support_design_20261001.md) now
 specifies finite CPU synthetic controls before implementation: original factor
