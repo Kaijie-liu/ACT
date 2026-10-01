@@ -40,11 +40,18 @@ packages are unchanged across the two attempts. One construction interval got
 worse despite fewer calls; these tiny observations are not production speedup.
 No real model, native solve, CUDA or sealed request was run. All six gates stay OPEN.
 
-Next address shared/private view support and evidence capacity separately, against
-the existing multi-objective support algorithm. Pair matrices/query counts did
-not shrink. Do not call omitted joint allocations new bound tightening or simply
-raise caps. Full-budget/portable integration must bind the template schema before
-real admission. Do not repeat tiny fixtures or automatically retry physical GPU.
+Next implement the separately [frozen block-native support
+contract](hz_block_support_design_20261002.md), against the existing multi-objective
+support algorithm. The design is frozen, not implemented or executed. Operate on
+common/entry/expert-template blocks directly; expert suffixes start at the common
+prefix, not the guarded entry prefix. Sum shared residual contributions before
+the box minimum. The same candidate must have the exact same residual/bound in
+both representations, though floating proposal trajectories may differ.
+Pair domains/query counts do not shrink. Do not call omitted joint allocations
+new bound tightening or simply raise caps. Full-budget/portable integration must
+bind the new schema before real admission. Do not repeat tiny fixtures for better
+results or automatically retry physical GPU. The goal contract now separates
+actual HybridZ changes, this pending algorithm and unmeasured GPU benefit.
 
 ## Checked rowwise enclosure source integration retained
 
