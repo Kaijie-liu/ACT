@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-HybridZ complete CPU propagation supervision controls: 2026-10-01.
+HybridZ device lifecycle CPU/simulated release controls: 2026-10-01.
 Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
@@ -21,7 +21,7 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: actual propagation supervision passes; physical GPU and real benefit remain
+## Current decision: bounded device lifecycle controls pass; physical GPU and real benefit remain
 
 The user's 2026-10-01 [refined goal](ALGORITHM_RESEARCH_GOAL.md) explicitly requires
 MoE-specific algorithms integrated into HybridZ and separately measured GPU
@@ -34,8 +34,9 @@ execution and complete-model benefit remain unestablished. The prior goal is
 The hard-budget support supervisor now passes finite synthetic controls below.
 The separate same-algorithm device kernel now passes CPU/reference and simulated
 fault controls. Device-specific CPU/stub supervision and resource-refusal controls
-now also pass. Physical GPU still needs bounded owned-process cleanup and resource
-admission before its own frozen control; not a real or full-size
+now also pass. New bounded process cleanup and CPU/simulated release controls now
+pass below. Physical GPU still needs its own frozen control and fresh resource
+admission; not a real or full-size
 rerun. No sealed object is reopened. Six acceptance
 gates now distinguish HybridZ integration, GPU end-to-end benefit, same-source
 proof, external competition, external validity and independent submission review.
@@ -43,6 +44,21 @@ Read the new hardware/guarantee contract before proposing execution: same-algori
 CPU/GPU comparisons, transfer/checking costs and capable baselines' GPU access
 must be explicit. Resource inspection found the shared GPU busy; no GPU work was
 launched by this goal registration and no dependency was installed.
+
+[Bounded device lifecycle](hz_device_lifecycle_20261001.md) now passes 12 controls,
+12 fixed CPU calls and independent archive audit; the 67 algorithm/propagation/
+navigation regressions also pass. R2 retains five complete given-HZ CPU executions
+(four original cases plus simulated foreign-tenant arrival), one producer error,
+one readback timeout, four unconfirmed-release terminals and one simulated pending
+cleanup. The eight original exact bounds match; the foreign-tenant control repeats
+four bounds. R1 is preserved as pre-hardening, not silently replaced.
+All failures retain prefixes, clocks and costs; failed producers also require
+confirmed process cleanup before release. A foreign tenant can coexist with our
+observed PID disappearance, but release snapshots never establish the next admission.
+All device observations here are simulated; no physical CUDA or real request ran.
+Next separately freeze small same-algorithm CPU/GPU controls, then require fresh
+resource admission. Do not skip directly to real/full-size experiments. All six
+goal gates remain OPEN; these are engineering controls, not a GPU speedup result.
 
 [Checked-support propagation integration](hz_checked_propagation_20261001.md) now
 uses an additive HybridzTF subclass and actual analyzer on finite synthetic
@@ -65,8 +81,8 @@ bounds in a publication-timeout prefix are rechecked offline but remain unaccept
 R1/R2 are retained pre-hardening executions; final R3 closes source, fault-reach,
 late-anchor and cost/cleanup gaps. The new bounded CPU executor confirms leader
 reaping and no live group members, not escaped descendants or GPU-driver cleanup.
-Next separately integrate this bounded primitive into device supervision and test
-resource-return/deadline controls before freezing physical CPU/GPU admission.
+The later device lifecycle controls above integrate this bounded primitive and
+test simulated resource-return/deadline behavior before physical CPU/GPU admission.
 No native solve, GPU work or real/full-size request was launched. Do not use the
 finite control wrapper as a production request verifier; all six goal gates stay OPEN.
 
