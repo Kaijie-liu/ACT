@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-Complete CPU source-to-HybridZ supervision controls completed: 2026-10-01.
+Finite source-to-HybridZ proof portability completed: 2026-10-01.
 Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
@@ -21,7 +21,26 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: finite source supervision passes; portable and real proof remain
+## Current decision: finite portable source checking passes; real proof remains
+
+[Source-to-HybridZ portability](hz_source_portable_20261001.md) now passes eight
+groups and independent saved-evidence audit. Five fixed objects recheck under
+`python -B -I -S` after copying, without repository/model/data/optimizer reads.
+Eleven mathematical leaves retain their frozen bytes; complete returned results,
+42 complete-case endpoint bounds and 15 partial-case bounds match. Three finite
+declared-source positives, complete nonpositive UNKNOWN and partial UNKNOWN remain.
+R1 is preserved before wrapper/archive hardening; accepted R2 audits mutation
+inventory, specific refusal reasons, original leaf identities and strict receipts.
+All five normal and seven auxiliary children are recorded; costs are offline
+rechecking, not free generation or new end-to-end performance. No real/GPU/native
+solve ran. All six goal gates remain OPEN.
+
+Next freeze the separate G1 **same-source representation comparison**: endpoint
+support versus range-only MC, same checked source/P/gate/property and all duties,
+fresh matrices and evidence. Shared-input independence is a separate factor.
+Do not add another supervision layer, enlarge fixtures or reopen sealed objects.
+Physical GPU refusal remains, without automatic retry. Full-size representability,
+real-source proof and external competition are still open requirements.
 
 [Complete source CPU supervision](hz_source_supervision_20261001.md) now passes
 13 controls, all 17 fixed calls, independent saved-evidence audit and 103
@@ -35,12 +54,9 @@ unchanged complete R4 follow-up passed; no budget, algorithm or source was tuned
 Source, propagation, imports, proposals, serialization, checking, reception and
 cleanup are now inside one clock. No CUDA/native solve/real/full-size request ran.
 
-Next, deliver a separately scoped portable source-to-output checker for the saved
-objects, with caller-owned identities and no ACT installation, checkpoint or
-optimizer under `python -I -S`. Do not add another layer of supervision controls
-or infer real capacity from this finite success. Same-source MC/relationship
-ablation remains a separate G1 delivery with fresh matrices/evidence. All six
-goal gates stay OPEN; GPU refusal and all sealed-input boundaries remain.
+The saved-object portable checker formerly next here is now completed only within
+the finite scope above. Do not infer real capacity from its success. Same-source
+MC/relationship ablation remains separate and requires fresh matrices/evidence.
 
 [Same-source HybridZ controls](hz_source_connection_20261001.md) now connect
 checked input containment, actual sparse affine/ReLU, exact compensation,
