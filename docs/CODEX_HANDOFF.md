@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-H2 full-path capacity and supervised HybridZ batched CPU support controls: 2026-10-01.
+HybridZ device-candidate implementation and CPU/stub controls: 2026-10-01.
 Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
@@ -21,7 +21,7 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: CPU batch support and hard supervision pass controls; GPU is a separate next gate
+## Current decision: device kernel passes CPU controls; GPU hard supervision and admission are next
 
 The user's 2026-10-01 [refined goal](ALGORITHM_RESEARCH_GOAL.md) explicitly requires
 MoE-specific algorithms integrated into HybridZ and separately measured GPU
@@ -32,8 +32,9 @@ representation studies. The CPU support interface now has controls below; GPU
 execution and complete-model benefit remain unestablished. The prior goal is
 [preserved verbatim](ALGORITHM_RESEARCH_GOAL_HISTORY_20261001.md).
 The hard-budget support supervisor now passes finite synthetic controls below.
-The next action is a separate same-algorithm CPU/GPU candidate contract and control
-implementation, with resource admission before GPU execution; not a real or full-size
+The separate same-algorithm device kernel now passes CPU/reference and simulated
+fault controls. The next action is device-specific hard-budget supervision and
+resource admission before any physical GPU control; not a real or full-size
 rerun. No sealed object is reopened. Six acceptance
 gates now distinguish HybridZ integration, GPU end-to-end benefit, same-source
 proof, external competition, external validity and independent submission review.
@@ -74,6 +75,16 @@ explicit launch identities and consistent deadline/cost clock samples. Budgets,
 algorithm and original acceptance formula did not change. Final saved-evidence audit
 passes; no native solves, GPU, real input, portable-checker or production-fallback
 claim is made. G1/G2 remain open, as do the real proof and external comparison gates.
+
+[Device-selectable candidate kernel](hz_device_candidates_20261001.md) now passes
+15 CPU/stub controls plus 16 CPU-support and 15 exact-kernel regressions. Six fixed
+HZ batches contain 18 support targets; V1/V2 CPU candidates and exact bounds match.
+R1/R2 are retained pre-hardening archives; R3 independently checks fixed source
+identities, complete tests/fault inventories, mathematical certificates and metadata.
+Actual CUDA, OOM and GPU synchronization are not tested: simulated faults are not
+hardware evidence. The new entry remains cooperative and proposal-cost-only;
+the old CPU supervisor does not automatically supervise this device API. All six
+goal gates remain OPEN. No GPU speedup or new whole-MoE certificate is established.
 
 On 2026-09-28 the user explicitly requested an algorithm-improvement goal aimed
 at external competitiveness and a software-engineering A-venue submission.
