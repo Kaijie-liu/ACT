@@ -1,0 +1,43 @@
+{
+  "schema": "HZ_PHYSICAL_DEVICE_DESIGN_V1",
+  "starting_head": "3d0f419f9b0b1b5d3222eb21580f093710725248",
+  "scope": "four original tiny given-HZ cases, same algorithm CPU/GPU compatibility; not a performance or real-model confirmation",
+  "gpu_uuid": "GPU-f491c2c6-a093-590a-6b8a-13b5f76aadcc",
+  "cases": ["guarded_two_sides_positive", "guarded_nonpositive", "equality_coupled", "private_binary_relaxation"],
+  "budget_seconds": 30,
+  "max_request_seconds": 300,
+  "rss_limit": 2147483648,
+  "allocator_limit": 1073741824,
+  "threads": 1,
+  "dtype": "float64",
+  "iterations": 128,
+  "admission_seconds": 3,
+  "postproducer_reserve_seconds": 7,
+  "release_seconds": 3,
+  "cleanup_reserve_seconds": 0.25,
+  "publication_reserve_seconds": 1,
+  "admission": {"observations": 2, "separation_seconds": 0.2, "max_utilization_percent": 5, "min_free_mib": 4096, "no_compute_pids": true, "exclusive_reservation": false},
+  "release": {"observations": 2, "separation_seconds": 0.05, "no_owned_pid": true, "proves_driver_correctness": false},
+  "cpu_controls": {
+    "normal": [30, "CHECKED_GIVEN_HZ_DEVICE_EXECUTION"],
+    "admission_busy_stub": [30, "RESOURCE_UNAVAILABLE"],
+    "pre_cuda_busy_stub": [30, "RESOURCE_UNAVAILABLE"],
+    "producer_exception": [30, "ERROR"],
+    "check_delay": [8, "TIMEOUT"],
+    "release_delay": [8, "DEVICE_RELEASE_UNCONFIRMED"]
+  },
+  "physical_roster": "case order above; CPU then GPU on even case positions, GPU then CPU on odd positions; one call per arm/case, no repeats",
+  "physical_gate": "requires a separate execution freeze binding passing controls and source bytes; busy gate records NOT_ADMITTED and does not consume a kernel request; no automatic retry loop",
+  "stop_rule": "Stop batch after resource refusal, unresolved cleanup/release, numerical/identity error or timeout; retain completed prefix and pending roster. No substitution, added budget, changed dtype or rerunning a failed physical call.",
+  "differential": "check each candidate exactly against original HZ; report CPU/GPU bound differences, do not require bitwise candidate equality or tune to it",
+  "frozen_dependencies": {
+    "scripts/hz_device_lifecycle.py": "ac3c7f954110a9bc0ab2e2d5c529d5c5d8c5e2bdca4440244825349d55ee9ec5",
+    "scripts/hz_device_release.py": "aa68de6249e9e731867b725f577ae54383dc05c75d6df4d46a8b7d98b8d0b611",
+    "scripts/hz_device_admission.py": "cd664533c86a187f92a8f6286d599cf3f4488f50e40fe607f0938195535286a4",
+    "scoped_proof/owned_bounded.py": "482f9c1d783cd5e3291b4056c7c57a90e42d3305cb92b240b536061042f8ff40",
+    "act/back_end/moe/batched_support_device.py": "d791850003d8f2658b09ebfae09f97285b3db573417da40430dec347645709b4"
+  },
+  "native_solves": 0,
+  "real_requests": 0,
+  "complete_moe_proofs": 0
+}
