@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-HybridZ small physical-device execution refused by resource admission: 2026-10-01.
+HybridZ weighted endpoint integration and direct representation controls: 2026-10-01.
 Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
@@ -21,7 +21,26 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: CPU controls pass; physical batch not admitted; no GPU benefit result
+## Current decision: H2 endpoints now use actual shared HybridZ; hard supervision and real proof remain
+
+[Weighted endpoint integration](hz_endpoint_controls_20261001.md) now passes
+18 finite CPU controls, 68 regressions and independent audit of 12 saved packages.
+The additive adapter uses actual SparseHZono shared/private pair construction,
+rational endpoint queries and the existing batch support algorithm. Its independent
+checker reconstructs every factor map, prefix, constraint and property objective.
+On the fixed three-expert HZ, the 128-step proposal closes all 3 duties/6 endpoints
+(minimum about 0.06776); analytic duals give 3/32. The same P/gate/property MC
+relaxation has an exactly checked feasible objective -1/32, not a network witness.
+A separate same-source relation ablation gives 1/4 with shared inputs versus -3/4
+with independent marginals. Negative and missing controls remain UNKNOWN.
+R1/R2/R3 remain preserved; final R4 binds both comparison sides to the frozen source
+coefficients, requires all measured cost records and complete analytic reference
+obligations (not only their minimum). No native solve, CUDA or
+real request ran. Given-HZ/gate acceptance is not a complete source/network proof.
+The next bounded task is separately frozen CPU hard supervision of the full
+multi-pair endpoint path, including creation, serialization, partial evidence,
+checks, reception and cleanup. Do not increase dimensions or reopen sealed inputs.
+Physical GPU admission below remains refused; no automatic polling/retry.
 
 The user's 2026-10-01 [refined goal](ALGORITHM_RESEARCH_GOAL.md) explicitly requires
 MoE-specific algorithms integrated into HybridZ and separately measured GPU
@@ -64,9 +83,9 @@ NOT_ADMITTED: two compute PIDs, 12,550 MiB used, 20% utilization. The independen
 [terminal audit](hz_physical_execution_20261001_r1.json) passes with all eight
 slots unstarted and no CUDA initialization. This is not device compatibility or
 speedup evidence. Preserve the refusal; no poll/retry loop. A future physical
-attempt needs separately recorded fresh admission. Meanwhile the bounded next
-algorithm task is the A2 H2-to-guarded-HZ interface/control contract, not a real
-request: same base, gate and properties, new matrices need new exact evidence.
+attempt needs separately recorded fresh admission. The subsequent A2 integration
+at the top of this handoff completed finite given-HZ controls, not real admission:
+same base, gate and properties, new matrices require new exact evidence.
 Do not skip directly to real/full-size experiments. All six
 goal gates remain OPEN; these are engineering controls, not a GPU speedup result.
 
