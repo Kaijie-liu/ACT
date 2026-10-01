@@ -39,6 +39,14 @@ CPU/GPU comparisons, transfer/checking costs and capable baselines' GPU access
 must be explicit. Resource inspection found the shared GPU busy; no GPU work was
 launched by this goal registration and no dependency was installed.
 
+The [batched HybridZ support contract](hz_batch_support_design_20261001.md) now
+specifies finite CPU synthetic controls before implementation: original factor
+coordinates, bound query/source/side identities, projected multi-objective
+proposals and independent exact reception. GPU execution is explicitly disabled
+in this first protocol. Structural sharing is supported for saved endpoint
+objectives, not automatically for property-specific MC matrices. This freeze
+does not authorize new real or full-size runs.
+
 On 2026-09-28 the user explicitly requested an algorithm-improvement goal aimed
 at external competitiveness and a software-engineering A-venue submission.
 The [goal contract](ALGORITHM_RESEARCH_GOAL.md) separates same-source proof,

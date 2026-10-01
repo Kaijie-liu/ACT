@@ -1,0 +1,36 @@
+{
+  "schema": "HZ_BATCH_SUPPORT_CONTROLS_V1",
+  "scope": "synthetic supplied SparseHZono support only; no model/data/native MILP or real request",
+  "reference_head": "0de6a595c02d8eafcf24339383c3d188fa75da70",
+  "algorithm": "projected_dual_subgradient_multiobjective_v1",
+  "iterations": 128,
+  "step_size": 0.125,
+  "step_schedule": "step_size/sqrt(iteration+1)",
+  "initial_multipliers": "zero",
+  "best_rule": "per-column proposed bound including zero; all claims exactly rechecked",
+  "dtype": "float64",
+  "device": "cpu",
+  "cuda_execution_authorized": false,
+  "threads": 1,
+  "max_variables": 128,
+  "max_rows": 256,
+  "max_objectives": 8,
+  "max_call_seconds": 300,
+  "positive_threshold": "1/10000000",
+  "scope_guarantee": "CHECKED_GIVEN_HZ_CONTINUOUS_RELAXATION",
+  "hard_supervision_complete": false,
+  "old_inputs_reopened": false,
+  "cases": [
+    "guarded_two_sides_positive", "guarded_nonpositive", "equality_coupled",
+    "private_binary_relaxation", "constant_objective", "batched_vs_single_and_reordered",
+    "wrong_source_objective_side_or_request", "missing_duplicate_or_corrupt_certificate",
+    "nonfinite_invalid_shapes_or_deadline", "candidate_exception_and_unauthorized_cuda"
+  ],
+  "stop_rule": "preserve any failure; no changing iterations, fixtures, threshold or dimensions to chase positives",
+  "frozen_dependencies": {
+    "docs/h2_capacity_prefix_analysis_20261001_r1.json": "9f3f6cc8f946165a95ce3701ac8403b3f3533f5353512667f74720ee7e4bf0c3",
+    "act/back_end/solver/hz_lp_export.py": "e9658c0c3ce986bfc6fb611f3f9c2fe872f44b4cda912e8e2c6d9fda2e5327ee",
+    "act/back_end/solver/check_hz_lp_export.py": "1c7b34ccce9c88a58e4d0d551c2b2da6e338d279b46a474730e0907f00919287",
+    "scoped_source/rowwise_bound.py": "9a90e630be10f6eae5f60f56a3005db18af5e745c77dd31aa5996e2f5b969aa3"
+  }
+}
