@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-Declared-source to actual HybridZ endpoint controls completed: 2026-10-01.
+Complete CPU source-to-HybridZ supervision controls completed: 2026-10-01.
 Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
@@ -21,7 +21,26 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: finite source connection passes; full-path supervision and real proof remain
+## Current decision: finite source supervision passes; portable and real proof remain
+
+[Complete source CPU supervision](hz_source_supervision_20261001.md) now passes
+13 controls, all 17 fixed calls, independent saved-evidence audit and 103
+regressions. The five normal executions retain three declared-source positives,
+one complete nonpositive UNKNOWN and one incomplete UNKNOWN. All 42 complete-case
+endpoint bounds and 15 partial-case bounds match the previous source archive.
+Six intended errors and six timeouts retain source/output prefixes and full cost.
+R1/R2 are pre-hardening; R3 genuinely stopped after 11 calls with unconfirmed
+cleanup during imports, leaving six pending. Its failure is preserved. One
+unchanged complete R4 follow-up passed; no budget, algorithm or source was tuned.
+Source, propagation, imports, proposals, serialization, checking, reception and
+cleanup are now inside one clock. No CUDA/native solve/real/full-size request ran.
+
+Next, deliver a separately scoped portable source-to-output checker for the saved
+objects, with caller-owned identities and no ACT installation, checkpoint or
+optimizer under `python -I -S`. Do not add another layer of supervision controls
+or infer real capacity from this finite success. Same-source MC/relationship
+ablation remains a separate G1 delivery with fresh matrices/evidence. All six
+goal gates stay OPEN; GPU refusal and all sealed-input boundaries remain.
 
 [Same-source HybridZ controls](hz_source_connection_20261001.md) now connect
 checked input containment, actual sparse affine/ReLU, exact compensation,
@@ -35,10 +54,10 @@ certificate or MC point is transplanted. No native solve, CUDA, real model or
 full-size source was run. This is the declared real graph, not native floating
 execution, legacy analyzer reproof, portable distribution or a real gain.
 
-The next bounded step is separately freezing complete source-path CPU
-supervision, including upstream creation/propagation, proposal, serialization,
-checking, reception, failure prefixes and cleanup within one budget. The older
-endpoint supervisor below does not cover the new upstream producer automatically.
+The subsequently completed source-path CPU supervision above includes upstream
+creation/propagation, proposal, serialization, checking, reception, failure
+prefixes and cleanup within one budget. The older endpoint supervisor below
+did not automatically cover the new upstream producer.
 Do not enlarge fixtures or launch real requests based on tiny control timings.
 Source coefficients must round-trip exactly to the live sparse representation;
 generic large-source representability/capacity remains unestablished. All six
