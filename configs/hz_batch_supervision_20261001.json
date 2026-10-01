@@ -1,0 +1,54 @@
+{
+  "schema": "HZ_BATCH_SUPERVISION_CONTROLS_V1",
+  "scope": "fixed synthetic given-HZ batches; no real or full-size input, native solve, GPU or production dispatch",
+  "reference_head": "3c293c0020b8ff889190cf135b64e75d4b3e5c2e",
+  "max_request_seconds": 300,
+  "normal_control_seconds": 30,
+  "rss_limit": 2147483648,
+  "threads": 1,
+  "device": "cpu",
+  "cuda_execution_authorized": false,
+  "phases": ["produce", "check", "receive"],
+  "work_reserve": "min(1 second, budget/5)",
+  "produce_reserve": "min(5 seconds, budget/4) before work deadline",
+  "native_fallback": "disabled in this support-only control; original production fallback unchanged",
+  "complete_status": "CHECKED_GIVEN_HZ_SUPPORT_EXECUTION",
+  "partial_policy": "preserve files and reject complete reception; ERROR does not imply unsafe",
+  "portable_claim": false,
+  "cases": {
+    "guarded_two_sides_positive": {
+      "batch_sha256": "9a6bc71445a380d11015eedcda3fede50659587805c4f02c4bdbdfa73e0038f6",
+      "query_ids": ["plus-min", "plus-max", "minus-min", "minus-max"],
+      "sides": ["min", "max", "min", "max"]
+    },
+    "guarded_nonpositive": {
+      "batch_sha256": "8d72d5bb138f7b5bd060c758b57bf7e86948f43274615ca59fa1d30426d8b40d",
+      "query_ids": ["plus-min"], "sides": ["min"]
+    },
+    "equality_coupled": {
+      "batch_sha256": "695f5d6ef6c8994cd5b836bac5b170fdfc24049765b67315ae1690b265f48550",
+      "query_ids": ["plus-min"], "sides": ["min"]
+    },
+    "private_binary_relaxation": {
+      "batch_sha256": "38fa63f0a300f6aa1f640e1c34ddc65fb0fed32330edf5331d6f585433f95472",
+      "query_ids": ["min", "max"], "sides": ["min", "max"]
+    }
+  },
+  "faults": {
+    "produce_delay": [1, "TIMEOUT"], "prepare_delay": [4, "TIMEOUT"],
+    "candidate_exception": [30, "ERROR"], "partial_candidate": [30, "ERROR"],
+    "wrong_query": [30, "ERROR"], "check_delay": [4, "TIMEOUT"],
+    "check_exception": [30, "ERROR"], "missing_stdout": [30, "ERROR"],
+    "rewrite_stdout": [30, "ERROR"], "receive_delay": [5, "TIMEOUT"],
+    "late_publish": [5, "TIMEOUT"], "descendant": [2, "ERROR"],
+    "launch_failure": [10, "ERROR"], "low_rss": [2, "RESOURCE_LIMIT"],
+    "wrong_invocation": [30, "ERROR"], "serialization_delay": [4, "TIMEOUT"]
+  },
+  "extra_controls": ["null/wrong hashes", "cost/terminal rebind mutations", "publication deadline", "unchanged math differential", "API observation required", "full inventories"],
+  "frozen_dependencies": {
+    "act/back_end/moe/batched_support.py": "fa923ee46466c29abfb76a1cb1f114dd70a70a52e9ce48ffcd7c9d9abee8aaf4",
+    "act/back_end/moe/check_batched_support.py": "0edbca1a49cc2821a4cda512cfba51add3129f60c2e7a2d8caba723eb1305ecf",
+    "scoped_proof/supervisor.py": "a935cf6bf03d3604e2e2ce581939ca8c9ba120715ef8f289ba3fde59f7a8f14c",
+    "scoped_proof/io.py": "ee080902b729bcc0ce50ead5696538b687302358f143b039a6f9bdee2256569d"
+  }
+}
