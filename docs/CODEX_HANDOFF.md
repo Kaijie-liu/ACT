@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-Checked binary64 HybridZ enclosure kernel completed: 2026-10-01.
+Checked rowwise enclosure source integration completed: 2026-10-01.
 Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
@@ -21,7 +21,33 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: checked binary64 enclosure passed; connect source next
+## Current decision: source lift connected; block capacity remains separate
+
+[Rowwise enclosure source integration](hz_lifted_source_20261001.md) now passes
+18 frozen groups, independent saved-evidence audit and 128 regressions. It first
+checks each exact affine/ReLU/conditional-guard reference, then the local lifts
+and complete shared-factor assembly, actual SparseHZono snapshots and fresh
+endpoint proofs. All four unchanged declarations retain 3/3, 18/18, 0/6 and 6/6
+positive duties; the specified partial package stays UNKNOWN. All four use zero
+nonzero lift compensation, so this is integration, not new coverage or a real
+rounding repair. The three supplied affine/ReLU/guard operator bridges separately
+exercise the nonrepresentable cases. No native solve, CUDA or real request ran.
+
+Eight row/kernel differentials match exactly; a sparse nine-global-factor case
+passes while an individual nine-factor row refuses. Local eight-factor and old
+global 128/256 source limits are unchanged. R1/R2 pre-hardening records remain;
+R3 independently reconstructs 22 concrete negative queries and does not accept
+unexpected timeout as an intended mutation refusal. All complete mathematical
+packages are identical across the three attempts.
+
+Next study shared input/router versus expert-private block representation/support
+capacity as a separate algorithm factor, not another run of these small sources.
+Preserve input consistency and exact evidence; do not raise caps or relabel dense
+rows sparse. Full-budget/portable integration must separately bind this new
+source schema before real-model admission. All six goals and real/GPU benefit
+remain OPEN, and the prior physical GPU refusal is not retried automatically.
+
+## Given-reference enclosure kernel retained
 
 [Checked binary64 enclosure](hz_binary64_enclosure_20261001.md) now passes all
 17 finite controls and independent saved-evidence audit under `python -B -S`,
@@ -33,11 +59,10 @@ checked. R1/R2 remain pre-hardening records; R3 prevents substituting one reject
 input for another. All eight normal mathematical objects are unchanged across
 the three attempts. No native solve, CUDA, real model or new output query ran.
 
-The next step is separately scoped source integration: first check the original
-exact affine/ReLU/guard reference, then this outer lift, then fresh output
-evidence for the new matrix. Keep the existing finite declarations and all old
-contracts/defaults. This is not another supervisor wrapper or permission to
-increase caps. Shared/private block capacity remains a separate mechanism.
+The separately scoped finite source integration is completed above: exact
+affine/ReLU/guard reference, outer lift, then fresh output evidence. It retains
+the original declarations and old contracts/defaults. It is not permission to
+increase caps; shared/private block capacity remains a separate mechanism.
 All six goal gates remain OPEN; physical GPU refusal is unchanged.
 
 ## Real intake diagnosis motivating this kernel
@@ -61,8 +86,8 @@ design](hz_binary64_enclosure_design_20261001.md) is now implemented above: reta
 preserve original factor ownership, introduce independently checked continuous
 output/equality compensation, and weaken inequalities outward. It is inclusion,
 not equality, and all old contracts/proofs/defaults remain unchanged. No larger
-source, real request, native solve or GPU retry is admitted. Source integration
-must still establish the connection to these given references. Shared/private
+source, real request, native solve or GPU retry is admitted. Finite source integration
+now establishes the connection above, not real-model admission. Shared/private
 block factoring is a subsequent separate mechanism, not the same control.
 All six goal gates remain OPEN.
 
