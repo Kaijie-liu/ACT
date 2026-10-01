@@ -11,7 +11,7 @@
   "rss_limit": 2147483648,
   "threads": 1,
   "phases": ["admit", "produce", "release", "check", "receive"],
-  "reserves": "one second final publication; five seconds after producer; 0.25 seconds cleanup per phase; admit/release at most two seconds",
+  "reserves": "one second final publication; min(5 seconds, budget/4) after producer; 0.25 seconds cleanup per phase; admit/release at most two seconds",
   "cases": {
     "weighted_sign": {"source_case": "weighted_sign", "source_sha256": "b50e6ac79b92ac1d25e6a2ad8d83d1958353e90eeba869663e3d9d7c9eff0de2", "duties": 3, "endpoints": 6, "partial": false},
     "tied_partial_reuse": {"source_case": "tied_partial_reuse", "source_sha256": "de8ddb321d0d7016ea9d61e8898b9c72a0fb66833aa6cdb28adfb598bf221a5f", "duties": 18, "endpoints": 18, "partial": false},

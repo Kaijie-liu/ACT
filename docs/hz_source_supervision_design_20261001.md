@@ -14,6 +14,9 @@ Reuse `scoped_proof.device_lifecycle` and its bounded owned-process executor
 without changing them. The phases remain admit, produce, release, check, receive.
 Normal calls have a 30-second control budget, fault calls the registered 8/10/30
 seconds, with maximum API admission 300 seconds. No stage receives a new budget.
+The unchanged inherited producer cutoff reserves min(5 seconds, budget/4)
+after production; the short fault budgets therefore reserve 2 or 2.5 seconds.
+This clarification was committed before any execution; it changes no formula.
 Source construction, imports, input enclosure, router and expert propagation,
 entry/guard construction, endpoint preparation, proposals, serialization,
 independent checking, reception and cleanup all occur inside this clock.
