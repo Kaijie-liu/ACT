@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-Same-source HybridZ representation comparison completed: 2026-10-01.
+Real-model HybridZ intake diagnosis completed: 2026-10-01.
 Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
@@ -21,7 +21,33 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: same-source representation gap checked; real intake remains
+## Current decision: real intake diagnosis selects checked binary64 enclosure
+
+[Real-intake metadata and arithmetic diagnosis](hz_real_intake_20261001.md)
+is complete without loading models/data or running propagation/solvers. Eight
+standard-library controls pass. Both real families are rejected before inference:
+current source/HZ/duty dimensions are finite, convolution/pooling are unsupported,
+and bal010 parameter base64 alone exceeds the new portable member and total limits.
+The all-unstable/all-affine-error MLP pair scenario has 6,684 HZ factors and 2,700
+constraint rows, not the old 4,892 direct-node variables; actual sizes are unknown.
+
+An independent representation obstacle is now explicit: exact affine error sums,
+ReLU endpoints/equality RHS and guard differences need not fit binary64 even when
+their inputs do. Five pure rational witnesses establish this lack of closure,
+not its frequency in trained weights. Raising caps or giving GPU proposals more
+time would not repair it.
+
+Next implement the separately frozen [binary64 outer-enclosure finite
+design](hz_binary64_enclosure_design_20261001.md): retain an exact reference,
+preserve original factor ownership, introduce independently checked continuous
+output/equality compensation, and weaken inequalities outward. It is inclusion,
+not equality, and all old contracts/proofs/defaults remain unchanged. No larger
+source, real request, native solve or GPU retry is admitted. Shared/private block
+factoring is a subsequent separate mechanism; do not add another wrapper or
+expand a toy table instead of fixing this source-representation requirement.
+All six goal gates remain OPEN.
+
+## Same-source finite representation result preserved
 
 [Same-source representation comparison](hz_source_representation_20261001.md)
 now passes thirteen controls, eight independently rechecked packages and 103
@@ -35,12 +61,9 @@ It is not a model counterexample, optimality claim, real certificate, production
 speed comparison or GPU result. The actual stored-coefficient difference interval
 is checked rather than replaced with the old symmetric analytic interval.
 
-Next inspect existing real-model configuration/source metadata for the new
-HybridZ intake's operator, expert/class, factor/row and exact-representability
-limits. Do not infer real capacity from tiny controls or raise caps blindly.
-Use that evidence to choose a separate representation/capacity protocol; no real
-run, sealed input or automatic GPU retry is admitted by this comparison. Shared
-versus independent input remains a separate factor. All six goal gates stay OPEN.
+The previously next real-intake metadata assessment is completed above. Do not
+infer real capacity from tiny controls or raise caps blindly. Shared versus
+independent input remains a separate factor; all six goal gates stay OPEN.
 
 [Source-to-HybridZ portability](hz_source_portable_20261001.md) now passes eight
 groups and independent saved-evidence audit. Five fixed objects recheck under

@@ -1,0 +1,233 @@
+{
+  "all_six_goal_gates_remain_open": true,
+  "binary64_representation": {
+    "affine_generators": [
+      "4503599627370497/4503599627370496",
+      "4503599627370497/356811923176489970264571492362373784095686656"
+    ],
+    "affine_weight": "4503599627370497/4503599627370496",
+    "exact_float_would_accept": {
+      "affine_error_sum": false,
+      "guard_difference": false,
+      "half_minimum_subnormal": false,
+      "relu_equality_rhs": false,
+      "relu_upper": false
+    },
+    "individual_affine_residuals": [
+      "1/20282409603651670423947251286016",
+      "1/1606938044258990275541962092341162602522202993782792835301376"
+    ],
+    "non_roundtrip_values": {
+      "affine_error_sum": "79228162514264337593543950337/1606938044258990275541962092341162602522202993782792835301376",
+      "guard_difference": "18014398509481983/18014398509481984",
+      "half_minimum_subnormal": "1/404804506614621236704990693437834614099113299528284236713802716054860679135990693783920767402874248990374155728633623822779617474771586953734026799881477019843034848553132722728933815484186432682479535356945490137124014966849385397236206711298319112681620113024717539104666829230461005064372655017292012526615415482186989568",
+      "relu_equality_rhs": "-36028797018963967/72057594037927936",
+      "relu_upper": "36028797018963969/18014398509481984"
+    },
+    "real_model_failure_frequency": null,
+    "relu_center": "1",
+    "relu_generators": [
+      "1",
+      "1/18014398509481984"
+    ],
+    "relu_lower": "-1/18014398509481984",
+    "relu_rhs_example": {
+      "center": "1/72057594037927936",
+      "generator": "1/2",
+      "supplied_range": [
+        "-1",
+        "1"
+      ]
+    },
+    "scope": "algebraic representability witnesses, not observed trained weights or executed HZ"
+  },
+  "conv": {
+    "all_pairs": 6,
+    "checkpoint_loaded": false,
+    "checkpoint_sha256": "f5781a792f844a68de941f1a6b314d0e627ad5dd30e262088e6c1864d6bc5289",
+    "duties": 54,
+    "factory": {
+      "channels": [
+        16,
+        32
+      ],
+      "hidden": 64,
+      "input_shape": [
+        3,
+        32,
+        32
+      ],
+      "num_classes": 10,
+      "num_experts": 4,
+      "router_pool": 4,
+      "seed": 17
+    },
+    "input_dimensions": 3072,
+    "recorded_test_accuracy": 0.6706,
+    "unsupported_operators": [
+      "Conv2d",
+      "AvgPool2d"
+    ]
+  },
+  "cuda_calls": 0,
+  "dense_recipe": {
+    "all_layer_trace_records": 340,
+    "classes": 10,
+    "definite_rejections": [
+      "experts",
+      "classes",
+      "input factors and output rows",
+      "property roster",
+      "query roster",
+      "portable source bytes"
+    ],
+    "duties": 252,
+    "endpoint_targets_if_gate_nondegenerate": 504,
+    "expert_propagations_in_current_all_pair_loop": 56,
+    "expert_widths": [
+      3072,
+      256,
+      128,
+      10
+    ],
+    "experts": 8,
+    "input_dimensions": 3072,
+    "input_factor_lower_bound": 3072,
+    "new_HZ_pair_scenario": {
+      "all_unstable_relu_nodes": 896,
+      "binary_factors": 896,
+      "continuous_factors": 5788,
+      "equalities": 896,
+      "inequalities": 1804,
+      "max_nonzero_affine_error_factors": 924,
+      "scope": "all-ReLU-unstable, every-affine-row-nonzero-error scenario; not measured sizes",
+      "total_constraint_rows": 2700,
+      "total_factors": 6684
+    },
+    "pairs": 28,
+    "parameter_tensors": 52,
+    "parameters": 6961368,
+    "queries_per_pair_degenerate_gate": 9,
+    "queries_per_pair_nondegenerate_gate": 18,
+    "registered_recipe_scope": "seed1/2 recipe; seed0 state counts only; no loaded topology",
+    "router_layer_records": 4,
+    "router_widths": [
+      3072,
+      128,
+      8
+    ]
+  },
+  "literal_contracts": [
+    {
+      "expression": "2 <= e <= 4",
+      "file": "scoped_source/hz_source_check.py",
+      "function": "properties",
+      "line": 136
+    },
+    {
+      "expression": "2 <= c <= 5",
+      "file": "scoped_source/hz_source_check.py",
+      "function": "properties",
+      "line": 136
+    },
+    {
+      "expression": "1 <= len(c) + len(b) <= 128",
+      "file": "scoped_source/hz_source_check.py",
+      "function": "checked_state",
+      "line": 32
+    },
+    {
+      "expression": "len(h['c']) > 128",
+      "file": "scoped_source/hz_source_check.py",
+      "function": "checked_state",
+      "line": 32
+    },
+    {
+      "expression": "len(h['b']) + len(h['ub']) > 256",
+      "file": "scoped_source/hz_source_check.py",
+      "function": "checked_state",
+      "line": 32
+    },
+    {
+      "expression": "1 <= len(props) <= 4",
+      "file": "act/back_end/moe/check_hz_endpoints.py",
+      "function": "validate_request",
+      "line": 100
+    },
+    {
+      "expression": "1 <= len(queries) <= 8",
+      "file": "act/back_end/moe/check_batched_support.py",
+      "function": "validated_records",
+      "line": 36
+    }
+  ],
+  "models": {
+    "seed0": {
+      "checkpoint_loaded": false,
+      "checkpoint_sha256": "fbaa7c871d28763ac5acb29a9502dc5d146e1d5af0b4a03e9911899251bd43f7",
+      "native_topology_revalidated": false,
+      "state": {
+        "parameter_count": 6961368,
+        "sha256": "40e184c22e4f6c63fe4187a21df13b1ca9c74b296a59f2d6e32dd3f963e61c22",
+        "tensor_count": 52
+      }
+    },
+    "seed1": {
+      "checkpoint_loaded": false,
+      "checkpoint_sha256": "cfd5fb07b1c426c5b98309d56a5d0439f8a99dc52ff936bcbea43d4fe641139a",
+      "native_topology_revalidated": false,
+      "state": {
+        "parameter_count": 6961368,
+        "sha256": "8e8c459eb70c17cad6185808460c0b40ef978f798a214646fe124360384a12c4",
+        "tensor_count": 52
+      }
+    },
+    "seed2": {
+      "checkpoint_loaded": false,
+      "checkpoint_sha256": "a60517c7964177858d10303bc7b306293c8da3cde6caa93a5d8f442968e97758",
+      "native_topology_revalidated": false,
+      "state": {
+        "parameter_count": 6961368,
+        "sha256": "c1297bd70d5e72aa7d4de3cff325f3bccec637b43cf90126d9e40ee2e3f2f3d9",
+        "tensor_count": 52
+      }
+    }
+  },
+  "new_input_selections": 0,
+  "new_model_loads": 0,
+  "new_propagations": 0,
+  "new_solves": 0,
+  "next_decision": "separate exact-reference to binary64 outer-enclosure controls before capacity changes; no cap bump or real execution",
+  "schema": "HZ_REAL_INTAKE_METADATA_V1",
+  "source_bindings": {
+    "act/back_end/moe/batched_support.py": "fa923ee46466c29abfb76a1cb1f114dd70a70a52e9ce48ffcd7c9d9abee8aaf4",
+    "act/back_end/moe/check_batched_support.py": "0edbca1a49cc2821a4cda512cfba51add3129f60c2e7a2d8caba723eb1305ecf",
+    "act/back_end/moe/check_hz_endpoints.py": "d23716d2d19e34b21bfede7d8c2da01634665f53e1702c8a0200fc3dfcd8c823",
+    "act/back_end/moe/conv_factory.py": "29e74d39614fce82416e840635cb8717086ee3518e08416af2bd591cd19d3aae",
+    "act/back_end/moe/factory.py": "da472b2bbb3d8f684cb9c9916a735fd7105ceaab925911e1cbc983785a4c7d2d",
+    "act/back_end/moe/hz_endpoints.py": "0bf1779cd6367972a7b0e2f0b916e02e07d91d869cf6e8dbe345b4c15ce5d32c",
+    "act/pipeline/moe/configs/experiment1_multiseed_training_r1.json": "1ad3cfcc4aaa181d29320dfea57f40d4113e67943684e352edb8da5cbae04f4b",
+    "act/pipeline/moe/configs/schedule_confirmation_100_selection_r1.json": "b4167d8ab501df06570bfb49ad646263962c79736c2252f1398dc0499d3a7ee6",
+    "act/pipeline/moe/results/conv_training_review_20260915_r1.json": "7d3dba5423ae825cc84321d10d653f80f39ed1cc520c9a844d84c68325b4b737",
+    "router_source/checker.py": "ddbd8fe642fee7b96abea917d5a95cce5b2336fcccde9d2119829c5947207c84",
+    "scoped_source/capture.py": "d3ca9b562c9840ace096d790d0fd6eb12d7105560a3c38767c85244c65f651e2",
+    "scoped_source/graph.py": "49b43d74785cf80a6fa98afafe864374b311c925146f6d172bee55f2203d060c",
+    "scoped_source/hz_portable_verify.py": "9461922ce2dce7f1ceae65cecf85a6c7254fab370bedf3fc05fa2f8cb96fe0df",
+    "scoped_source/hz_source_build.py": "8d698784f0575cd019ed48e6885e05f5b42a8e33c557b15b25b5d61e09390aa7",
+    "scoped_source/hz_source_check.py": "1197d16fc9e134e51193873e31983d80e7d9737da26e6254e203434a04c1f4dc",
+    "scripts/audit_hz_real_intake.py": "7b11d0687f045f3d0215c574b6c15a471b4240fd9c80416a836d700f9dd4208a",
+    "scripts/hz_source_supervised.py": "579aa7b99d3fdc3debada5c869ba7fd1bc4ca24799d1790821df2a8649075ed7",
+    "scripts/test_hz_real_intake.py": "fc923fa1b8821222eddc430229b4fc93e96e1bd3c3ac38e95b5d0633321ba389",
+    "source_enclosure/check.py": "5647f4e2b6945b9736b1ff210f500ed70b997f517651be6e18324f77666b2e0e",
+    "source_enclosure/produce.py": "530385756877f80e1e8e9c668583f5feb429a07e2df180b2b0b958bcb5ad1384"
+  },
+  "source_bytes": {
+    "actual_source_or_proof_bytes": null,
+    "parameter_base64_lower_bound": 74254592,
+    "portable_bundle_limit": 33554432,
+    "portable_member_limit": 4194304,
+    "source_lower_bound_exceeds_both": true
+  },
+  "source_or_output_certificate": false,
+  "status": "REAL_INTAKE_NOT_ADMITTED"
+}
