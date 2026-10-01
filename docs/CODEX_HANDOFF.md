@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-H2 full-path capacity results update: 2026-10-01.
+H2 full-path capacity results and HybridZ/GPU goal update: 2026-10-01.
 Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
@@ -22,6 +22,22 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
 ## Current decision: both full-size capacity calls timed out during output proposals
+
+The user's 2026-10-01 [refined goal](ALGORITHM_RESEARCH_GOAL.md) explicitly requires
+MoE-specific algorithms integrated into HybridZ and separately measured GPU
+acceleration. The prioritized proposal is multi-objective support with shared
+pair matrices, GPU candidate duals and CPU independent exact acceptance; guarded
+shared/private block decomposition and H2-to-HybridZ integration are separate
+representation studies. These are hypotheses, not implemented GPU features or
+new results. The prior goal is [preserved verbatim](ALGORITHM_RESEARCH_GOAL_HISTORY_20261001.md).
+The next action remains saved-prefix/interface analysis and a bounded control
+design, not a new solve or real run. No sealed object is reopened. Six acceptance
+gates now distinguish HybridZ integration, GPU end-to-end benefit, same-source
+proof, external competition, external validity and independent submission review.
+Read the new hardware/guarantee contract before proposing execution: same-algorithm
+CPU/GPU comparisons, transfer/checking costs and capable baselines' GPU access
+must be explicit. Resource inspection found the shared GPU busy; no GPU work was
+launched by this goal registration and no dependency was installed.
 
 On 2026-09-28 the user explicitly requested an algorithm-improvement goal aimed
 at external competitiveness and a software-engineering A-venue submission.
@@ -167,9 +183,10 @@ separately. Seven negative lower bounds do not establish LP impossibility or mod
 unsafety; no exact feasible upper evidence was checked. Full capacity remains failed,
 and no real request or new complete real certificate is admitted.
 
-Next bounded task: analyze only these saved prefixes for the distinction between
-necessary distinct objectives and repeated structure. Propose another finite
-algorithm control only with a concrete obligation-preserving hypothesis. No new
+Next bounded task under the refined goal: analyze only these saved prefixes and
+the production HybridZ support interface for necessary distinct objectives versus
+shared structure. Specify the batched candidate/exact acceptance contract and a
+finite control only with a concrete obligation-preserving hypothesis. No new
 solve, rerun, larger budget or easier synthetic/real source is authorized by this
 result. Preserve all
 identities, residual compensation, structure checks and obligations. Do not claim
