@@ -1,0 +1,37 @@
+{
+  "schema": "HZ_ENDPOINT_SUPERVISION_CONTROLS_V1",
+  "starting_head": "5333fbf3694f3ab29b8d70e98807d9b8d8fb3062",
+  "scope": "fixed tiny actual HybridZ endpoint CPU execution only",
+  "reference_protocol": "configs/hz_endpoint_controls_20261001.json",
+  "reference_protocol_sha256": "5bd0e784c123cab4a89354e4208eaaf01a10c19580790f9d8c55cddfa5d61201",
+  "reference_report": "docs/hz_endpoint_controls_20261001_r4.json",
+  "max_budget": 300,
+  "normal_budget": 30,
+  "rss_limit": 2147483648,
+  "threads": 1,
+  "phases": ["admit", "produce", "release", "check", "receive"],
+  "reserves": "one second publication; five seconds after producer; 0.25 seconds cleanup per phase; CPU admit/release at most two seconds",
+  "cases": {
+    "separation": {"basis_sha256": "8f880249ede449efe99d121454d7c6ae7cd49d1c50475dccce9419cf658c3511", "properties": 3, "endpoints": 6, "reference": "separation_projected"},
+    "shared": {"basis_sha256": "8d44c076af3b5ebb2aa67b95aa6d988e89a250400bf082d576a4f33707fd6bb4", "properties": 1, "endpoints": 1, "reference": "shared_relation"},
+    "independent": {"basis_sha256": "dc1b44b4b94b20c172ce0b4de26efde5242fb632bd8d00ef12576486b677ffb0", "properties": 1, "endpoints": 1, "reference": "independent_relation"},
+    "partial": {"basis_sha256": "8f880249ede449efe99d121454d7c6ae7cd49d1c50475dccce9419cf658c3511", "properties": 3, "endpoints": 6, "reference": null}
+  },
+  "faults": {
+    "creation_delay": [8, "TIMEOUT"],
+    "proposal_exception": [30, "ERROR"],
+    "partial_delay": [8, "TIMEOUT"],
+    "serialization_delay": [8, "TIMEOUT"],
+    "wrong_source": [30, "ERROR"],
+    "missing_endpoint": [30, "ERROR"],
+    "check_exception": [30, "ERROR"],
+    "check_delay": [8, "TIMEOUT"],
+    "missing_check": [30, "ERROR"],
+    "receive_delay": [10, "TIMEOUT"]
+  },
+  "controls": ["normal_positive", "complete_nonpositive", "partial_unknown", "producer_cutoffs", "producer_errors", "checker_failures", "receiver_cutoff", "source_and_checker_binding", "inventory_and_cost", "late_api_not_accepted", "no_observation_not_accepted", "mandatory_call_roster"],
+  "native_solves": 0,
+  "cuda_calls": 0,
+  "real_requests": 0,
+  "stop_rule": "Preserve every attempt. No fixture, algorithm, numerical threshold, dimension, budget or sample tuning; no real/full-size admission. Partial evidence never completes a positive request."
+}
