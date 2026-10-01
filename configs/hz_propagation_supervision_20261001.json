@@ -1,0 +1,42 @@
+{
+  "schema": "HZ_PROPAGATION_SUPERVISION_CONTROLS_V1",
+  "starting_head": "cec603728d7d2a6a85196015e7b96e7d2fe17fdd",
+  "scope": "fixed synthetic actual HybridZ propagation, CPU only",
+  "max_request_seconds": 300,
+  "normal_control_seconds": 30,
+  "rss_limit": 2147483648,
+  "threads": 1,
+  "phases": ["produce", "check", "receive"],
+  "work_reserve": "min(1 second, budget/5)",
+  "produce_reserve": "min(5 seconds, budget/4)",
+  "cleanup_reserve": "min(0.25 second, budget/20) within each phase",
+  "payload_limit": 4194304,
+  "reference_archive": "docs/hz_checked_propagation_20261001_r5.json",
+  "cases": {
+    "retained_guard": {"scope_sha256": "27282417f5429f79ebe51063e4d62298fc3b3d76b7e1e8baaa2a1230eaad516c", "relu_layers": [3], "query_counts": [2]},
+    "disabled": {"scope_sha256": "1f3fa5faa88c74f77b9e9a3b59e464b80b63139d4a011a51994082be83df5b97", "relu_layers": [], "query_counts": []},
+    "guard_discarded": {"scope_sha256": "d4e4efff10de966238b1412b854eb29c57b21ff9a5ee373e5ae554c4d07e1e45", "relu_layers": [3], "query_counts": [0]},
+    "two_layers": {"scope_sha256": "1b5debe1f1dfbaf81a466bb06362eb73f49e9b0a7ddb5d28c3fefa6afb962bd3", "relu_layers": [3,5], "query_counts": [4,4]}
+  },
+  "faults": {
+    "produce_delay": [2, "TIMEOUT"],
+    "propagate_exception": [30, "ERROR"],
+    "native_wait_stub": [8, "TIMEOUT"],
+    "serialization_delay": [8, "TIMEOUT"],
+    "partial_package": [30, "ERROR"],
+    "wrong_scope": [30, "ERROR"],
+    "check_exception": [30, "ERROR"],
+    "check_delay": [8, "TIMEOUT"],
+    "missing_check": [30, "ERROR"],
+    "receive_delay": [10, "TIMEOUT"],
+    "late_publish": [10, "TIMEOUT"],
+    "launch_failure": [5, "ERROR"],
+    "low_rss": [2, "RESOURCE_LIMIT"],
+    "descendant": [30, "ERROR"]
+  },
+  "native_solves": 0,
+  "cuda_calls": 0,
+  "real_requests": 0,
+  "complete_moe_proofs": 0,
+  "stop_rule": "No real or full-size admission, no algorithm/capacity/acceptance tuning. Preserve failed controls."
+}
