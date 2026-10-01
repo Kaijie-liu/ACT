@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-Checked rowwise enclosure source integration completed: 2026-10-01.
+Checked HybridZ expert-template source factorization completed: 2026-10-02.
 Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
@@ -21,7 +21,32 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: source lift connected; block capacity remains separate
+## Current decision: expert templates checked; support capacity still open
+
+[Checked expert templates](hz_expert_templates_20261001.md) now pass 18 frozen
+groups, independent saved-evidence audit and 146 regressions. Each expert is
+propagated once from the complete common input/router entry, followed by checked
+conditional pair views with disjoint expert-private factors. Actual expert calls
+fall from 6 to 3 on three-expert controls and 12 to 4 on the four-expert control.
+All 15 numeric pair domains/objectives and 42 endpoint bounds match the fresh
+per-pair arm exactly. Positive duties remain 3/3, 18/18, 0/6 and 6/6; partial
+evidence stays UNKNOWN. This reduces repeated propagation, not output obligations.
+
+R1 is preserved before complete auxiliary-call accounting; it included one extra
+candidate pass in the source-mutation test. R2 removes that unnecessary proposal,
+records two auxiliary failures separately, checks finite ordered clocks and
+independently reconstructs 19 negative queries. All eight complete mathematical
+packages are unchanged across the two attempts. One construction interval got
+worse despite fewer calls; these tiny observations are not production speedup.
+No real model, native solve, CUDA or sealed request was run. All six gates stay OPEN.
+
+Next address shared/private view support and evidence capacity separately, against
+the existing multi-objective support algorithm. Pair matrices/query counts did
+not shrink. Do not call omitted joint allocations new bound tightening or simply
+raise caps. Full-budget/portable integration must bind the template schema before
+real admission. Do not repeat tiny fixtures or automatically retry physical GPU.
+
+## Checked rowwise enclosure source integration retained
 
 [Rowwise enclosure source integration](hz_lifted_source_20261001.md) now passes
 18 frozen groups, independent saved-evidence audit and 128 regressions. It first
@@ -40,12 +65,11 @@ R3 independently reconstructs 22 concrete negative queries and does not accept
 unexpected timeout as an intended mutation refusal. All complete mathematical
 packages are identical across the three attempts.
 
-Next study shared input/router versus expert-private block representation/support
-capacity as a separate algorithm factor, not another run of these small sources.
+The subsequent expert-template factor above removes repeated propagation while
+preserving all pair domains; shared/private support capacity remains separate.
 Preserve input consistency and exact evidence; do not raise caps or relabel dense
-rows sparse. Full-budget/portable integration must separately bind this new
-source schema before real-model admission. All six goals and real/GPU benefit
-remain OPEN, and the prior physical GPU refusal is not retried automatically.
+rows sparse. Full-budget/portable integration must bind new source schemas before
+real admission. All six goals and real/GPU benefit remain OPEN.
 
 ## Given-reference enclosure kernel retained
 
