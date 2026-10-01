@@ -1,0 +1,41 @@
+{
+  "schema": "HZ_SOURCE_SUPERVISION_CONTROLS_V1",
+  "starting_head": "da106759dbec89d429430af242fc9815be368cdd",
+  "reference_protocol": "configs/hz_source_connection_20261001.json",
+  "reference_protocol_sha256": "d3a0b4b48d535bec3f7f9018797612c88523d52edd1dff0db105db86c2b17046",
+  "reference_report": "docs/hz_source_connection_20261001_r2.json",
+  "reference_root": "/data1/Kane/MOE/baseline_runs/hz_source_connection_20261001_r2",
+  "scope": "unchanged finite synthetic declared sources, actual HybridZ, CPU only",
+  "max_budget": 300,
+  "normal_budget": 30,
+  "rss_limit": 2147483648,
+  "threads": 1,
+  "phases": ["admit", "produce", "release", "check", "receive"],
+  "reserves": "one second final publication; five seconds after producer; 0.25 seconds cleanup per phase; admit/release at most two seconds",
+  "cases": {
+    "weighted_sign": {"source_case": "weighted_sign", "source_sha256": "b50e6ac79b92ac1d25e6a2ad8d83d1958353e90eeba869663e3d9d7c9eff0de2", "duties": 3, "endpoints": 6, "partial": false},
+    "tied_partial_reuse": {"source_case": "tied_partial_reuse", "source_sha256": "de8ddb321d0d7016ea9d61e8898b9c72a0fb66833aa6cdb28adfb598bf221a5f", "duties": 18, "endpoints": 18, "partial": false},
+    "unsafe_tied": {"source_case": "unsafe_tied", "source_sha256": "36898a6957fe529ad5b43306c721f9d51b077f05ee5f71c8f9fd6de49e238c1e", "duties": 6, "endpoints": 6, "partial": false},
+    "unresolved_sign": {"source_case": "unresolved_sign", "source_sha256": "b01dded09de8c72f4350e50ee9ed4a924f6cbfe2eb34821915e4a3e58465a1de", "duties": 6, "endpoints": 12, "partial": false},
+    "partial": {"source_case": "tied_partial_reuse", "source_sha256": "de8ddb321d0d7016ea9d61e8898b9c72a0fb66833aa6cdb28adfb598bf221a5f", "duties": 18, "endpoints": 18, "partial": true}
+  },
+  "faults": {
+    "creation_delay": [8, "TIMEOUT"],
+    "upstream_delay": [8, "TIMEOUT"],
+    "upstream_exception": [30, "ERROR"],
+    "proposal_exception": [30, "ERROR"],
+    "partial_delay": [8, "TIMEOUT"],
+    "serialization_delay": [8, "TIMEOUT"],
+    "wrong_source": [30, "ERROR"],
+    "missing_endpoint": [30, "ERROR"],
+    "check_exception": [30, "ERROR"],
+    "check_delay": [8, "TIMEOUT"],
+    "missing_check": [30, "ERROR"],
+    "receive_delay": [10, "TIMEOUT"]
+  },
+  "controls": ["normal_source_positive", "complete_nonpositive", "partial_unknown", "source_prefix", "producer_cutoffs", "producer_errors", "checker_failures", "receiver_cutoff", "source_and_checker_binding", "inventory_and_cost", "late_api_not_accepted", "no_observation_not_accepted", "mandatory_call_roster"],
+  "native_solves": 0,
+  "cuda_calls": 0,
+  "real_requests": 0,
+  "stop_rule": "No source, dimension, iteration, threshold, budget or sample tuning; preserve failures, prefixes and unstarted slots after uncertain cleanup. No real/full-size admission or GPU retry."
+}
