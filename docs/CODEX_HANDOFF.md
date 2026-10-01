@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-Finite source-to-HybridZ proof portability completed: 2026-10-01.
+Same-source HybridZ representation comparison completed: 2026-10-01.
 Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
@@ -21,7 +21,26 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: finite portable source checking passes; real proof remains
+## Current decision: same-source representation gap checked; real intake remains
+
+[Same-source representation comparison](hz_source_representation_20261001.md)
+now passes thirteen controls, eight independently rechecked packages and 103
+regressions. On the four unchanged declarations, endpoint/MC positive duties are
+3/2 of 3, 18/18 of 18, 0/0 of 6 and 6/6 of 6. Both arms freshly build the same
+checked source-to-HybridZ lowering, retain all routes/properties and use the same
+128-step candidate algorithm. A new exactly feasible MC point has objective about
+-0.025 on the duty with endpoint lower bound about 0.0108245. This establishes
+a finite same-source representation gap, not merely candidate convergence.
+It is not a model counterexample, optimality claim, real certificate, production
+speed comparison or GPU result. The actual stored-coefficient difference interval
+is checked rather than replaced with the old symmetric analytic interval.
+
+Next inspect existing real-model configuration/source metadata for the new
+HybridZ intake's operator, expert/class, factor/row and exact-representability
+limits. Do not infer real capacity from tiny controls or raise caps blindly.
+Use that evidence to choose a separate representation/capacity protocol; no real
+run, sealed input or automatic GPU retry is admitted by this comparison. Shared
+versus independent input remains a separate factor. All six goal gates stay OPEN.
 
 [Source-to-HybridZ portability](hz_source_portable_20261001.md) now passes eight
 groups and independent saved-evidence audit. Five fixed objects recheck under
@@ -35,12 +54,9 @@ All five normal and seven auxiliary children are recorded; costs are offline
 rechecking, not free generation or new end-to-end performance. No real/GPU/native
 solve ran. All six goal gates remain OPEN.
 
-Next freeze the separate G1 **same-source representation comparison**: endpoint
-support versus range-only MC, same checked source/P/gate/property and all duties,
-fresh matrices and evidence. Shared-input independence is a separate factor.
-Do not add another supervision layer, enlarge fixtures or reopen sealed objects.
-Physical GPU refusal remains, without automatic retry. Full-size representability,
-real-source proof and external competition are still open requirements.
+The formerly next same-source endpoint/MC comparison is completed only within
+the finite scope above. Physical GPU refusal remains, without automatic retry.
+Full-size representability, real-source proof and external competition remain open.
 
 [Complete source CPU supervision](hz_source_supervision_20261001.md) now passes
 13 controls, all 17 fixed calls, independent saved-evidence audit and 103
