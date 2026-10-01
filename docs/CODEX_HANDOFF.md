@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-HybridZ device-candidate CPU/stub supervision and admission controls: 2026-10-01.
+HybridZ checked-support propagation integration controls: 2026-10-01.
 Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
@@ -21,7 +21,7 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: device supervision passes CPU controls; physical GPU cleanup and production integration remain
+## Current decision: checked support enters actual HybridZ propagation; full supervision and physical GPU remain
 
 The user's 2026-10-01 [refined goal](ALGORITHM_RESEARCH_GOAL.md) explicitly requires
 MoE-specific algorithms integrated into HybridZ and separately measured GPU
@@ -43,6 +43,23 @@ Read the new hardware/guarantee contract before proposing execution: same-algori
 CPU/GPU comparisons, transfer/checking costs and capable baselines' GPU access
 must be explicit. Resource inspection found the shared GPU busy; no GPU work was
 launched by this goal registration and no dependency was installed.
+
+[Checked-support propagation integration](hz_checked_propagation_20261001.md) now
+uses an additive HybridzTF subclass and actual analyzer on finite synthetic
+networks. Fourteen controls pass; five saved batches and twenty exact support
+bounds are rechecked independently. Retained tie-legal guards eliminate one ReLU
+binary where disabled and guard-discarded propagation retain it; a two-layer
+control also exercises private factors and keeps its residual instability.
+This is actual sparse propagation integration, not a native-support benchmark,
+real/full-MoE certificate, production default change or G1 completion. The old
+core/config/pipeline files are unchanged. R1's test errors and pre-hardening R2/R3
+are retained; R4 binds full objective coefficients, dispatch identity, per-native
+call budget admission and mandatory proof inventory; final R5 adds saved query
+side/layer binding with mutation controls. Native fallback is tested
+only with an instrumented seam. No native solves or GPU work occurred.
+Next integrate this finite entry into separate complete hard-budget supervision
+including construction/serialization/reception; physical GPU bounded cleanup
+remains separate. Do not launch real requests on this cooperative wrapper.
 
 The [batched HybridZ support contract](hz_batch_support_design_20261001.md) now
 specifies finite CPU synthetic controls before implementation: original factor
@@ -96,9 +113,10 @@ two-sided anchors) and the admission-parent deadline boundary, with independent
 final audit. All costs and denominators stay.
 Actual CUDA remains explicitly disabled. The reused process runner has an unbounded
 wait after killpg and cannot establish bounded GPU-driver cleanup; fix/test that
-separately before real CUDA admission. G1's guarded preactivation hook can be prepared
-independently, with caller-owned domain/guard identities, outward rational conversion
-and native fallback charged to the same remaining budget. No production change yet.
+separately before real CUDA admission. The guarded preactivation hook described
+above subsequently passes finite CPU controls, with caller-owned identities,
+outward rational conversion and remaining-budget fallback admission; it does not
+automatically replace production entry points or establish full request costs.
 
 On 2026-09-28 the user explicitly requested an algorithm-improvement goal aimed
 at external competitiveness and a software-engineering A-venue submission.
