@@ -1,0 +1,83 @@
+{
+  "schema": "HZ_PHYSICAL_EXECUTION_FREEZE_V1",
+  "design_sha256": "003e7dd82790d7597c5c154e1d27c4a5b80c92b34f98269360c7a8bb038968ce",
+  "sources": {
+    "configs/hz_device_supervision_20261001.json": "81009d4874e0f6b18ae700878cea6e5638494d9b312085e2755d3790eaffc131",
+    "scripts/hz_device_admission.py": "cd664533c86a187f92a8f6286d599cf3f4488f50e40fe607f0938195535286a4",
+    "act/back_end/moe/batched_support_device.py": "d791850003d8f2658b09ebfae09f97285b3db573417da40430dec347645709b4",
+    "docs/hz_device_candidates_20261001_r3.json": "8cd8fbde3a1b7bc9218e600d4f86485631e149f5c04a694ad8e85715e704855f",
+    "scripts/hz_batch_support_worker.py": "fd9c12a2a4118b5b865303fbac195f88507695ca3c79325187339d1f0e29cf1a",
+    "scripts/hz_batch_support_supervised.py": "b62da720255fc105c491b8e920b0e014ffbde933092f83cacd4e1aa514c7e326",
+    "configs/hz_batch_supervision_20261001.json": "8b3c1312e2f64fd993eddb537be0801877a7ccd012676d5ddd45854c256ffc45",
+    "scripts/hz_device_supervised.py": "5d2383b3399f01b80b1289dd39dd5f8164a08d08b8e5b225cf8cac61ad3118c2",
+    "scripts/hz_device_worker.py": "33341573a86f5c58e7e8af7f32aabbe1ff2e58794ba6411920e0e74aadd681c4",
+    "act/back_end/moe/batched_support.py": "fa923ee46466c29abfb76a1cb1f114dd70a70a52e9ce48ffcd7c9d9abee8aaf4",
+    "act/back_end/moe/check_batched_support.py": "0edbca1a49cc2821a4cda512cfba51add3129f60c2e7a2d8caba723eb1305ecf",
+    "act/back_end/solver/hz_lp_export.py": "e9658c0c3ce986bfc6fb611f3f9c2fe872f44b4cda912e8e2c6d9fda2e5327ee",
+    "act/back_end/solver/check_hz_lp_export.py": "1c7b34ccce9c88a58e4d0d551c2b2da6e338d279b46a474730e0907f00919287",
+    "act/back_end/solver/lp_certificate.py": "67d419126a5986235931cf7d139ef1821f12d530b5aef8aace0ecdb43a57ef1f",
+    "act/back_end/solver/solver_hz.py": "87daf1515b69a5e77aa87fd10dab8466c3532045a8d0a5350ff3d13b1418d72a",
+    "scoped_source/rowwise_bound.py": "9a90e630be10f6eae5f60f56a3005db18af5e745c77dd31aa5996e2f5b969aa3",
+    "scoped_source/rowwise_native.py": "f5c9c11985326ccd845eb0e03bbf48568c2b10b3e7a4c4872c5f4201e4466b87",
+    "scoped_proof/io.py": "ee080902b729bcc0ce50ead5696538b687302358f143b039a6f9bdee2256569d",
+    "scoped_proof/supervisor.py": "a935cf6bf03d3604e2e2ce581939ca8c9ba120715ef8f289ba3fde59f7a8f14c",
+    "source_enclosure/format.py": "ba79d394824abc84aac1509518bf9416be3510a4eecef5b107ba60e63418f7ef",
+    "configs/hz_device_lifecycle_20261001.json": "e79af4a14a42d769f81ec2a89bb56cad9be6b3237147d64a8119a310848b0d98",
+    "scoped_proof/owned_bounded.py": "482f9c1d783cd5e3291b4056c7c57a90e42d3305cb92b240b536061042f8ff40",
+    "scripts/hz_propagation_supervised.py": "a343446c701c675e52ed1e0205870bf1356d736b4f79c9954ffbc4544f167481",
+    "scripts/hz_device_lifecycle.py": "ac3c7f954110a9bc0ab2e2d5c529d5c5d8c5e2bdca4440244825349d55ee9ec5",
+    "scripts/hz_device_release.py": "aa68de6249e9e731867b725f577ae54383dc05c75d6df4d46a8b7d98b8d0b611",
+    "scripts/hz_device_lifecycle_worker.py": "758b86052d4443f243c942282fa079ef9892153eee0022a7d249a0ac1521e6dd",
+    "configs/hz_physical_device_design_20261001.json": "003e7dd82790d7597c5c154e1d27c4a5b80c92b34f98269360c7a8bb038968ce",
+    "scoped_proof/device_lifecycle.py": "48539051eedc8d9496f1289236c9181e8f704f955844b1140cf745cd68819a3a",
+    "scripts/hz_physical_device.py": "02d5ff3b9abed486d4dc4462e198f6da695fc578dd42543deee05fc3c3625fb8",
+    "scripts/hz_physical_worker.py": "1c7806bde6edb65a55cab2f9a0744b6fac411078e43b56a285a091b21cd0ae73",
+    "scripts/test_hz_physical_device.py": "f2aae60afd0125f58b52ed07477cd90573663cdb1da453d52c81543cb3c524f6",
+    "scripts/run_hz_physical_device.py": "a27cbf89d2c8b337b7f12448f01480cf677a38d0f54fed95faf7305af3a7da05"
+  },
+  "roster": [
+    {
+      "case": "guarded_two_sides_positive",
+      "device": "cpu"
+    },
+    {
+      "case": "guarded_two_sides_positive",
+      "device": "cuda:0"
+    },
+    {
+      "case": "guarded_nonpositive",
+      "device": "cuda:0"
+    },
+    {
+      "case": "guarded_nonpositive",
+      "device": "cpu"
+    },
+    {
+      "case": "equality_coupled",
+      "device": "cpu"
+    },
+    {
+      "case": "equality_coupled",
+      "device": "cuda:0"
+    },
+    {
+      "case": "private_binary_relaxation",
+      "device": "cuda:0"
+    },
+    {
+      "case": "private_binary_relaxation",
+      "device": "cpu"
+    }
+  ],
+  "controls_root": "/data1/Kane/MOE/baseline_runs/hz_physical_controls_20261001_r2",
+  "controls_summary_sha256": "bdc23ea58868fc7ae9aeab294b50453ce27253f97d5ec430a2b6694b0aa8d6c9",
+  "controls_audit_path": "/data1/Kane/MOE/ACT/docs/hz_physical_controls_20261001_r2.json",
+  "controls_audit_sha256": "afae537b7fbd0abe960dee3008e97e5976350571b24f4743343ad8f5eec74ad1",
+  "execution_root": "/data1/Kane/MOE/baseline_runs/hz_physical_execution_20261001_r1",
+  "budget_seconds": 30,
+  "paired_repetitions": 1,
+  "warmups": 0,
+  "retries": 0,
+  "real_requests": 0,
+  "complete_moe_proofs": 0
+}

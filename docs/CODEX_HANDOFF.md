@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-HybridZ device lifecycle CPU/simulated release controls: 2026-10-01.
+HybridZ small physical-device execution freeze: 2026-10-01.
 Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
@@ -21,7 +21,7 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: bounded device lifecycle controls pass; physical GPU and real benefit remain
+## Current decision: small physical-device controls frozen after CPU tests; admission remains
 
 The user's 2026-10-01 [refined goal](ALGORITHM_RESEARCH_GOAL.md) explicitly requires
 MoE-specific algorithms integrated into HybridZ and separately measured GPU
@@ -56,8 +56,12 @@ All failures retain prefixes, clocks and costs; failed producers also require
 confirmed process cleanup before release. A foreign tenant can coexist with our
 observed PID disappearance, but release snapshots never establish the next admission.
 All device observations here are simulated; no physical CUDA or real request ran.
-Next separately freeze small same-algorithm CPU/GPU controls, then require fresh
-resource admission. Do not skip directly to real/full-size experiments. All six
+The later [small physical-device stage](hz_physical_device_20261001.md) now passes
+eight controls, six CPU/stub calls, independent archive audit and 67 regressions.
+Its separately frozen execution binds the same four HZ cases and eight CPU/GPU
+slots, 30 seconds each, no warmups/retries. One bounded batch preflight is next;
+busy means all eight remain unstarted. It is not physical CUDA evidence yet.
+Do not skip directly to real/full-size experiments. All six
 goal gates remain OPEN; these are engineering controls, not a GPU speedup result.
 
 [Checked-support propagation integration](hz_checked_propagation_20261001.md) now
