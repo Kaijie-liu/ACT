@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-Real-model HybridZ intake diagnosis completed: 2026-10-01.
+Checked binary64 HybridZ enclosure kernel completed: 2026-10-01.
 Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
@@ -21,7 +21,26 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: real intake diagnosis selects checked binary64 enclosure
+## Current decision: checked binary64 enclosure passed; connect source next
+
+[Checked binary64 enclosure](hz_binary64_enclosure_20261001.md) now passes all
+17 finite controls and independent saved-evidence audit under `python -B -S`,
+plus 111 regressions. Eight given-reference objects instantiate actual
+SparseHZono; all 13 exact embeddings and 24 individually bound mutation refusals
+recheck, with two overflow refusals retained. Output compensation, equality
+slack, outward inequalities and continuous/binary ownership are independently
+checked. R1/R2 remain pre-hardening records; R3 prevents substituting one rejected
+input for another. All eight normal mathematical objects are unchanged across
+the three attempts. No native solve, CUDA, real model or new output query ran.
+
+The next step is separately scoped source integration: first check the original
+exact affine/ReLU/guard reference, then this outer lift, then fresh output
+evidence for the new matrix. Keep the existing finite declarations and all old
+contracts/defaults. This is not another supervisor wrapper or permission to
+increase caps. Shared/private block capacity remains a separate mechanism.
+All six goal gates remain OPEN; physical GPU refusal is unchanged.
+
+## Real intake diagnosis motivating this kernel
 
 [Real-intake metadata and arithmetic diagnosis](hz_real_intake_20261001.md)
 is complete without loading models/data or running propagation/solvers. Eight
@@ -37,14 +56,14 @@ their inputs do. Five pure rational witnesses establish this lack of closure,
 not its frequency in trained weights. Raising caps or giving GPU proposals more
 time would not repair it.
 
-Next implement the separately frozen [binary64 outer-enclosure finite
-design](hz_binary64_enclosure_design_20261001.md): retain an exact reference,
+The separately frozen [binary64 outer-enclosure finite
+design](hz_binary64_enclosure_design_20261001.md) is now implemented above: retain an exact reference,
 preserve original factor ownership, introduce independently checked continuous
 output/equality compensation, and weaken inequalities outward. It is inclusion,
 not equality, and all old contracts/proofs/defaults remain unchanged. No larger
-source, real request, native solve or GPU retry is admitted. Shared/private block
-factoring is a subsequent separate mechanism; do not add another wrapper or
-expand a toy table instead of fixing this source-representation requirement.
+source, real request, native solve or GPU retry is admitted. Source integration
+must still establish the connection to these given references. Shared/private
+block factoring is a subsequent separate mechanism, not the same control.
 All six goal gates remain OPEN.
 
 ## Same-source finite representation result preserved
