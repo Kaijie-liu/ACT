@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-HybridZ weighted endpoint integration and direct representation controls: 2026-10-01.
+HybridZ endpoint CPU hard-budget supervision completed: 2026-10-01.
 Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
@@ -21,7 +21,25 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: H2 endpoints now use actual shared HybridZ; hard supervision and real proof remain
+## Current decision: H2 endpoints have bounded CPU execution; source connection and real proof remain
+
+[Endpoint CPU supervision](hz_endpoint_supervision_20261001.md) now passes twelve
+controls, all fourteen fixed calls and independent saved-evidence audit, plus
+eighty-five regressions. Four normal checks retain two conditional positives,
+one complete nonpositive UNKNOWN and one incomplete UNKNOWN. Five errors and
+five timeouts keep their prefixes, costs and cleanup records. The eight complete
+normal endpoint bounds match the prior archive individually; four additional
+checked endpoints belong to the incomplete control. R1 is preserved before the
+batch fail-stop hardening; accepted R2 records pending slots immediately and
+stops after unconfirmed cleanup. No native solve, CUDA, full-size or real request
+ran. Execution completion is not obligation completeness or positivity.
+
+The next bounded task is a source-connection review: connect the existing checked
+propagation outputs and factor identities with this endpoint interface, including
+guard/gate premises on one declared object. Freeze that contract before changing
+code; do not splice old evidence onto new matrices. Tiny supervision timings do
+not admit larger fixtures or real models. GPU admission below remains refused;
+no automatic polling or retry. All six goal gates remain open.
 
 [Weighted endpoint integration](hz_endpoint_controls_20261001.md) now passes
 18 finite CPU controls, 68 regressions and independent audit of 12 saved packages.
@@ -37,9 +55,9 @@ R1/R2/R3 remain preserved; final R4 binds both comparison sides to the frozen so
 coefficients, requires all measured cost records and complete analytic reference
 obligations (not only their minimum). No native solve, CUDA or
 real request ran. Given-HZ/gate acceptance is not a complete source/network proof.
-The next bounded task is separately frozen CPU hard supervision of the full
-multi-pair endpoint path, including creation, serialization, partial evidence,
-checks, reception and cleanup. Do not increase dimensions or reopen sealed inputs.
+The subsequent separately frozen CPU supervision above now covers creation,
+serialization, partial evidence, checking, reception and cleanup. Do not increase
+dimensions or reopen sealed inputs.
 Physical GPU admission below remains refused; no automatic polling/retry.
 
 The user's 2026-10-01 [refined goal](ALGORITHM_RESEARCH_GOAL.md) explicitly requires
