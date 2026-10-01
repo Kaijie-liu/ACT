@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-Checked HybridZ expert-template source factorization completed: 2026-10-02.
+Checked block-native HybridZ support and source connection completed: 2026-10-02.
 Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
@@ -21,7 +21,33 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: expert templates checked; support capacity still open
+## Current decision: block support checked but performance and capacity open
+
+[Block-native support](hz_blocks_20261002.md) now passes 18 frozen controls,
+independent R4 archive audit and 134 existing algorithm/source regressions.
+The source-connected path operates directly on entry and expert-template suffixes
+after the common prefix. It sums shared residuals before box support, without
+joint construction, global sparse remapping, full LP export or the old full source
+checker. All 15 domains/objectives match; 84 bidirectional candidate transfers
+have identical exact residuals/bounds. All 42 final endpoints remain equal and
+positive duties stay 3/3, 18/18, 0/6, 6/6. Missing evidence remains UNKNOWN.
+
+R1/R2/R3 remain pre-final records. R2's separate-process audit actually failed on
+an execution-local independent frame ID; R4 checks disjointness and consistently
+renames only that namespace. It also checks candidate IDs/original LP hashes,
+diagnostic windows, stored-versus-executed nnz and 20 concrete negative queries.
+All eight normal mathematical packages are unchanged across four attempts.
+
+Three of four tiny total intervals are worse; block proposals are slower in all
+four. No speedup or peak-memory claim. Templates/snapshots still repeat per pair.
+Keep opt-in, stop tiny timing/positive-count tuning. Next assess the remaining
+source/operator/row/global/package capacity obstacles from recorded metadata,
+without loading models or launching solves; omitting joint allocation alone is
+not real admission. Any later full-budget/portable stage must bind this schema.
+The block GPU kernel is not implemented; flat device controls do not cover it.
+No native solve, real input, CUDA or sealed request ran. All six gates stay OPEN.
+
+## Prior expert-template factorization retained
 
 [Checked expert templates](hz_expert_templates_20261001.md) now pass 18 frozen
 groups, independent saved-evidence audit and 146 regressions. Each expert is
@@ -40,18 +66,10 @@ packages are unchanged across the two attempts. One construction interval got
 worse despite fewer calls; these tiny observations are not production speedup.
 No real model, native solve, CUDA or sealed request was run. All six gates stay OPEN.
 
-Next implement the separately [frozen block-native support
-contract](hz_block_support_design_20261002.md), against the existing multi-objective
-support algorithm. The design is frozen, not implemented or executed. Operate on
-common/entry/expert-template blocks directly; expert suffixes start at the common
-prefix, not the guarded entry prefix. Sum shared residual contributions before
-the box minimum. The same candidate must have the exact same residual/bound in
-both representations, though floating proposal trajectories may differ.
-Pair domains/query counts do not shrink. Do not call omitted joint allocations
-new bound tightening or simply raise caps. Full-budget/portable integration must
-bind the new schema before real admission. Do not repeat tiny fixtures for better
-results or automatically retry physical GPU. The goal contract now separates
-actual HybridZ changes, this pending algorithm and unmeasured GPU benefit.
+The subsequent separately [frozen block-native contract](hz_block_support_design_20261002.md)
+has now been implemented above. Pair domains/query counts do not shrink.
+Do not call omitted joint allocations new bound tightening or simply raise caps.
+Full-budget/portable integration must bind the new schema before real admission.
 
 ## Checked rowwise enclosure source integration retained
 
