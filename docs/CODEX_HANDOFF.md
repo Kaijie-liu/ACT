@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-HybridZ endpoint CPU hard-budget supervision completed: 2026-10-01.
+Declared-source to actual HybridZ endpoint controls completed: 2026-10-01.
 Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
@@ -21,7 +21,31 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: H2 endpoints have bounded CPU execution; source connection and real proof remain
+## Current decision: finite source connection passes; full-path supervision and real proof remain
+
+[Same-source HybridZ controls](hz_source_connection_20261001.md) now connect
+checked input containment, actual sparse affine/ReLU, exact compensation,
+factor provenance, conditional route entries and sign-derived gates to fresh
+endpoint proofs. Eighteen controls, five independently checked saved packages
+and eighty-five regressions pass. The four unchanged synthetic declarations
+give 3/3, 18/18, 0/6 and 6/6 positive duties; the derived missing-evidence control
+stays UNKNOWN. Weighted_sign has distinct exactly evaluated legal routes and
+all three pair duties checked positive, minimum about 0.0108245. No old matrix
+certificate or MC point is transplanted. No native solve, CUDA, real model or
+full-size source was run. This is the declared real graph, not native floating
+execution, legacy analyzer reproof, portable distribution or a real gain.
+
+The next bounded step is separately freezing complete source-path CPU
+supervision, including upstream creation/propagation, proposal, serialization,
+checking, reception, failure prefixes and cleanup within one budget. The older
+endpoint supervisor below does not cover the new upstream producer automatically.
+Do not enlarge fixtures or launch real requests based on tiny control timings.
+Source coefficients must round-trip exactly to the live sparse representation;
+generic large-source representability/capacity remains unestablished. All six
+goal gates remain OPEN. GPU refusal and sealed-input boundaries below remain.
+R1 is preserved before archive-receipt hardening; accepted R2 requires complete
+normal evidence, exactly the registered partial omission, honest scope flags and
+zero exceptional test outcomes. All five package hashes are identical to R1.
 
 [Endpoint CPU supervision](hz_endpoint_supervision_20261001.md) now passes twelve
 controls, all fourteen fixed calls and independent saved-evidence audit, plus
@@ -34,12 +58,10 @@ batch fail-stop hardening; accepted R2 records pending slots immediately and
 stops after unconfirmed cleanup. No native solve, CUDA, full-size or real request
 ran. Execution completion is not obligation completeness or positivity.
 
-The next bounded task is a source-connection review: connect the existing checked
-propagation outputs and factor identities with this endpoint interface, including
-guard/gate premises on one declared object. Freeze that contract before changing
-code; do not splice old evidence onto new matrices. Tiny supervision timings do
-not admit larger fixtures or real models. GPU admission below remains refused;
-no automatic polling or retry. All six goal gates remain open.
+Its former next step, source connection, is now completed only for the new
+finite declared-source path above. It does not retrospectively close the legacy
+propagation assumptions. Tiny supervision timings do not admit larger fixtures
+or real models. GPU admission below remains refused; no automatic polling/retry.
 
 [Weighted endpoint integration](hz_endpoint_controls_20261001.md) now passes
 18 finite CPU controls, 68 regressions and independent audit of 12 saved packages.
