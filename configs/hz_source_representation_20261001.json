@@ -1,0 +1,31 @@
+{
+  "schema": "HZ_SAME_SOURCE_REPRESENTATION_CONTROL_V1",
+  "start_head": "b8177c77bf8f298d77ab347132556a6b965327f0",
+  "source_protocol": "configs/h2_source_controls_20260930.json",
+  "source_protocol_canonical_sha256": "154e6171c8c2ffad14b6394ae19419827f22184214522a64a27cd3a727a7180a",
+  "cases": {
+    "weighted_sign": {"source_sha256": "b50e6ac79b92ac1d25e6a2ad8d83d1958353e90eeba869663e3d9d7c9eff0de2", "duties": 3, "endpoints": 6},
+    "tied_partial_reuse": {"source_sha256": "de8ddb321d0d7016ea9d61e8898b9c72a0fb66833aa6cdb28adfb598bf221a5f", "duties": 18, "endpoints": 18},
+    "unsafe_tied": {"source_sha256": "36898a6957fe529ad5b43306c721f9d51b077f05ee5f71c8f9fd6de49e238c1e", "duties": 6, "endpoints": 6},
+    "unresolved_sign": {"source_sha256": "b01dded09de8c72f4350e50ee9ed4a924f6cbfe2eb34821915e4a3e58465a1de", "duties": 6, "endpoints": 12}
+  },
+  "arms": ["endpoints", "mccormick"],
+  "order": "case order above, arms reversed on odd case positions",
+  "common_domain": "fresh checked joint shared-input HybridZ per arm; all pairs and properties retained, no exclusion or reuse",
+  "gate": "unchanged independently checked router-box sign rule",
+  "difference": "d0 plus/minus sum of absolute exact joint-factor coefficients; no tightening query",
+  "proposal": "unchanged CPU projected dual subgradient, 128 updates and zero-candidate exact fallback",
+  "deadline_seconds": 300,
+  "threads": 1,
+  "acceptance_threshold": "1/10000000",
+  "deadline_type": "existing cooperative checks; finite algorithm control, not new production hard supervision",
+  "costs": "fresh source creation, propagation, preparation, proposals, serialization, checking and observation per arm; imports/orchestration separate; no runtime superiority claim",
+  "weighted_mc_point": {"pair": [0, 1], "property": "class1", "input_factors": "0", "negative_relu_factors": "-1", "positive_relu_factors": "1", "sign_factors": "1", "affine_error_factors": "0", "gate": "1/4", "product": "-1/8", "accept_only_if_exactly_feasible_on_new_matrix": true},
+  "controls": ["complete_roster_same_domain", "source_binding", "mc_projection", "mc_planes", "difference_range", "gate_binding", "binary_factor_binding", "missing_duties", "stale_candidates", "registered_point", "deadline", "checker_independence", "cost_and_archive"],
+  "native_solves": false,
+  "cuda": false,
+  "real_or_fullsize_intake": false,
+  "shared_vs_independent_ablation": false,
+  "stop_rule": "report all eight executions; do not tune source, ranges, iteration count, budget or threshold to obtain separation; absence of an exact feasible witness leaves MC impossibility unresolved",
+  "sealed_inputs": [98, 4088, 4096, 4098, 4099]
+}
