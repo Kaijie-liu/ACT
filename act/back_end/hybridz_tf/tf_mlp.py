@@ -12,6 +12,8 @@
 #
 # ===---------------------------------------------------------------------===#
 
+import math
+
 import torch
 import torch.nn.functional as F
 try:
@@ -399,7 +401,11 @@ def _sparse_triplets(parts, shape):
     ).tocsr()
 
 
-def _sparse_relu_bounds(hz: SparseHZono, input_bounds: Bounds):
+def _sparse_relu_bounds(
+    hz: SparseHZono,
+    input_bounds: Bounds,
+    forced_stable_negative=None,
+):
     hb = sparse_hz_fast_bounds(hz)
     fact_lb = _to_numpy(input_bounds.lb).reshape(-1)
     fact_ub = _to_numpy(input_bounds.ub).reshape(-1)
@@ -407,6 +413,16 @@ def _sparse_relu_bounds(hz: SparseHZono, input_bounds: Bounds):
     hz_ub = _to_numpy(hb.ub).reshape(-1)
     if fact_lb.size != hz.n_out or hz_lb.size != hz.n_out:
         raise ValueError("sparse ReLU bounds shape mismatch")
+    if forced_stable_negative is not None:
+        forced = np.asarray(forced_stable_negative, dtype=bool).reshape(-1)
+        if forced.size != hz.n_out:
+            raise ValueError(
+                f"forced ReLU row mismatch: {forced.size} vs {hz.n_out}"
+            )
+        if np.any(fact_ub[forced] > 0.0):
+            raise ValueError("forced ReLU row is not interval-stable negative")
+        hz_lb[forced] = fact_lb[forced]
+        hz_ub[forced] = fact_ub[forced]
     lb = np.maximum(fact_lb, hz_lb)
     ub = np.minimum(fact_ub, hz_ub)
     if np.any(lb > ub):
@@ -511,13 +527,1048 @@ def sparse_hz_apply_relu_exact(
     )
 
 
-def _sparse_apply_relu(L, hz: SparseHZono, input_bounds: Bounds, tf):
-    lb, ub = _sparse_relu_bounds(hz, input_bounds)
+def sparse_hz_apply_relu_compact_exact(
+    hz: SparseHZono,
+    lb,
+    ub,
+    slots,
+    n_cont: int,
+    n_bin: int,
+) -> SparseHZono:
+    """Apply the one-continuous-factor exact ReLU quotient sparsely."""
+    lb = np.asarray(lb, dtype=np.float64).reshape(-1)
+    ub = np.asarray(ub, dtype=np.float64).reshape(-1)
+    active_idx = np.flatnonzero(lb >= 0.0).astype(np.int64)
     unstable_idx = np.flatnonzero((lb < 0.0) & (ub > 0.0)).astype(np.int64)
-    reservation = tf._sparse_relu_slots_for(hz, L.id, unstable_idx)
+    k = int(unstable_idx.size)
+    if len(slots) != k:
+        raise ValueError("sparse compact ReLU slot count mismatch")
+
+    padded = sparse_hz_pad_frame(hz, n_cont, n_bin)
+    out_c = np.zeros(hz.n_out, dtype=np.float64)
+    gc_parts = []
+    gb_parts = []
+    if active_idx.size:
+        out_c[active_idx] = hz.c[active_idx]
+        active_gc = padded.Gc[active_idx].tocoo()
+        gc_parts.append((active_idx[active_gc.row], active_gc.col, active_gc.data))
+        active_gb = padded.Gb[active_idx].tocoo()
+        gb_parts.append((active_idx[active_gb.row], active_gb.col, active_gb.data))
+
+    ineq_c_parts = []
+    ineq_b_parts = []
+    ineq_rhs = np.zeros(3 * k, dtype=np.float64)
+    if k:
+        slot_array = np.asarray(slots, dtype=np.int64)
+        eta_cols = slot_array[:, 0]
+        z_cols = slot_array[:, 2]
+        rows = np.arange(k, dtype=np.int64)
+        lower = lb[unstable_idx]
+        upper = ub[unstable_idx]
+        out_c[unstable_idx] = upper / 2.0
+        gc_parts.append((unstable_idx, eta_cols, -upper / 2.0))
+
+        # beta=+1 is inactive: -eta + beta <= 0.
+        ineq_c_parts.append((rows, eta_cols, -np.ones(k, dtype=np.float64)))
+        ineq_b_parts.append((rows, z_cols, np.ones(k, dtype=np.float64)))
+
+        # x <= y.
+        lower_rows = k + rows
+        pre_gc = hz.Gc[unstable_idx].tocoo()
+        ineq_c_parts.append(
+            (lower_rows[pre_gc.row], pre_gc.col, pre_gc.data)
+        )
+        ineq_c_parts.append((lower_rows, eta_cols, upper / 2.0))
+        pre_gb = hz.Gb[unstable_idx].tocoo()
+        ineq_b_parts.append(
+            (lower_rows[pre_gb.row], pre_gb.col, pre_gb.data)
+        )
+        ineq_rhs[lower_rows] = upper / 2.0 - hz.c[unstable_idx]
+
+        # y <= x - l * (1-delta), delta=(1-beta)/2.
+        upper_rows = 2 * k + rows
+        ineq_c_parts.append(
+            (upper_rows[pre_gc.row], pre_gc.col, -pre_gc.data)
+        )
+        ineq_c_parts.append((upper_rows, eta_cols, -upper / 2.0))
+        ineq_b_parts.append(
+            (upper_rows[pre_gb.row], pre_gb.col, -pre_gb.data)
+        )
+        ineq_b_parts.append((upper_rows, z_cols, lower / 2.0))
+        ineq_rhs[upper_rows] = (
+            hz.c[unstable_idx] - upper / 2.0 - lower / 2.0
+        )
+
+    out_Gc = _sparse_triplets(gc_parts, (hz.n_out, n_cont))
+    out_Gb = _sparse_triplets(gb_parts, (hz.n_out, n_bin))
+    ineq_Ac = _sparse_triplets(ineq_c_parts, (3 * k, n_cont))
+    ineq_Ab = _sparse_triplets(ineq_b_parts, (3 * k, n_bin))
+    return SparseHZono(
+        c=out_c,
+        Gc=out_Gc,
+        Gb=out_Gb,
+        Ac=padded.Ac.copy(),
+        Ab=padded.Ab.copy(),
+        b=padded.b.copy(),
+        Auc=sp.vstack([padded.Auc, ineq_Ac], format="csr"),
+        Aub=sp.vstack([padded.Aub, ineq_Ab], format="csr"),
+        ub=np.concatenate([padded.ub, ineq_rhs]),
+        frame_id=hz.frame_id,
+        exact=hz.exact,
+    )
+
+
+def _sparse_exact_duplicate_groups(hz: SparseHZono, rows) -> list[np.ndarray]:
+    """Partition affine rows by exact center/index/value bytes."""
+    rows = np.asarray(rows, dtype=np.int64).reshape(-1)
+    gc = hz.Gc.tocsr()
+    gb = hz.Gb.tocsr()
+    groups: dict[tuple[bytes, ...], list[int]] = {}
+    for row in rows:
+        gc_start, gc_stop = gc.indptr[row], gc.indptr[row + 1]
+        gb_start, gb_stop = gb.indptr[row], gb.indptr[row + 1]
+        key = (
+            np.asarray(hz.c[row], dtype=np.float64).tobytes(),
+            gc.indices[gc_start:gc_stop].tobytes(),
+            gc.data[gc_start:gc_stop].tobytes(),
+            gb.indices[gb_start:gb_stop].tobytes(),
+            gb.data[gb_start:gb_stop].tobytes(),
+        )
+        groups.setdefault(key, []).append(int(row))
+    return [np.asarray(group, dtype=np.int64) for group in groups.values()]
+
+
+def _duplicate_group_stats(groups) -> tuple[int, int, int]:
+    repeated = [len(group) for group in groups if len(group) > 1]
+    return (
+        sum(count - 1 for count in repeated),
+        len(repeated),
+        max(repeated, default=1),
+    )
+
+
+def _exact_ratio_pair(value: float, pivot: float) -> tuple[int, int]:
+    """Return the reduced exact-real ratio of two finite binary64 values."""
+    value_n, value_d = float(value).as_integer_ratio()
+    pivot_n, pivot_d = float(pivot).as_integer_ratio()
+    numerator = value_n * pivot_d
+    denominator = value_d * pivot_n
+    if denominator < 0:
+        numerator = -numerator
+        denominator = -denominator
+    divisor = math.gcd(abs(numerator), denominator)
+    return numerator // divisor, denominator // divisor
+
+
+def _exact_dyadic_sum_is_zero(values) -> bool:
+    """Test a finite binary64 sum as exact reals, not rounded arithmetic."""
+    ratios = []
+    for value in np.asarray(values, dtype=np.float64).reshape(-1):
+        if not math.isfinite(float(value)):
+            return False
+        ratios.append(float(value).as_integer_ratio())
+    if not ratios:
+        return True
+    denominator = max(part[1] for part in ratios)
+    return sum(
+        numerator * (denominator // part_denominator)
+        for numerator, part_denominator in ratios
+    ) == 0
+
+
+def _signed_groups_cancel_in_successor_dense(L, hz, groups, tf):
+    """Return groups whose shared ReLU term has exact zero successor weight."""
+    successors = tf._net.succs.get(L.id, [])
+    if len(successors) != 1:
+        return []
+    successor = tf._net.by_id.get(successors[0])
+    if successor is None or str(successor.kind) != "DENSE":
+        return []
+    weight = successor.params.get("weight")
+    if not isinstance(weight, torch.Tensor) or weight.ndim != 2:
+        return []
+    weight = weight.detach().cpu().double().numpy()
+    if weight.shape[1] != hz.n_out:
+        return []
+    return [
+        group
+        for group in groups
+        if all(
+            _exact_dyadic_sum_is_zero(weight[row, group])
+            for row in range(weight.shape[0])
+        )
+    ]
+
+
+def _signed_group_has_opposite_orientation(hz, group) -> bool:
+    """Return whether an exact signed group contains both x and -x rows."""
+    if len(group) < 2:
+        return False
+    representative = int(group[0])
+    representative_orientation = _sparse_row_orientation(
+        hz.Gc, hz.Gb, float(hz.c[representative]), representative
+    )
+    return any(
+        _sparse_row_orientation(hz.Gc, hz.Gb, float(hz.c[row]), int(row))
+        != representative_orientation
+        for row in group[1:]
+    )
+
+
+def _sparse_drop_canceled_relu_graphs(hz: SparseHZono, context):
+    """Drop proven dead compact ReLU graphs after their Dense cancellation."""
+    if hz.frame_id != context["frame_id"]:
+        return hz, 0
+    n_groups = int(context["n_groups"])
+    group_indices = np.asarray(context["group_indices"], dtype=np.int64)
+    base_ineq = int(context["base_ineq"])
+    eta_cols = np.asarray(context["eta_cols"], dtype=np.int64)
+    z_cols = np.asarray(context["z_cols"], dtype=np.int64)
+    if (
+        group_indices.size == 0
+        or eta_cols.size != group_indices.size
+        or z_cols.size != group_indices.size
+        or np.any(group_indices < 0)
+        or np.any(group_indices >= n_groups)
+    ):
+        return hz, 0
+    drop_rows = np.concatenate(
+        [base_ineq + group_indices + offset * n_groups for offset in range(3)]
+    )
+    if np.any(drop_rows < 0) or np.any(drop_rows >= hz.n_ineq):
+        return hz, 0
+    keep_rows = np.ones(hz.n_ineq, dtype=bool)
+    keep_rows[drop_rows] = False
+    kept_Auc = hz.Auc[keep_rows].tocsr()
+    kept_Aub = hz.Aub[keep_rows].tocsr()
+
+    # A graph column must be local to the rows being removed. Any unexpected
+    # coupling makes the optimization inapplicable rather than approximate.
+    if (
+        hz.Ac[:, eta_cols].nnz
+        or kept_Auc[:, eta_cols].nnz
+        or hz.Ab[:, z_cols].nnz
+        or kept_Aub[:, z_cols].nnz
+    ):
+        return hz, 0
+
+    gc = hz.Gc.tocoo()
+    keep_gc = ~np.isin(gc.col, eta_cols)
+    out_Gc = sp.csr_matrix(
+        (gc.data[keep_gc], (gc.row[keep_gc], gc.col[keep_gc])),
+        shape=gc.shape,
+    )
+    gb = hz.Gb.tocoo()
+    keep_gb = ~np.isin(gb.col, z_cols)
+    out_Gb = sp.csr_matrix(
+        (gb.data[keep_gb], (gb.row[keep_gb], gb.col[keep_gb])),
+        shape=gb.shape,
+    )
+    return (
+        SparseHZono(
+            c=hz.c.copy(),
+            Gc=out_Gc,
+            Gb=out_Gb,
+            Ac=hz.Ac.copy(),
+            Ab=hz.Ab.copy(),
+            b=hz.b.copy(),
+            Auc=kept_Auc,
+            Aub=kept_Aub,
+            ub=hz.ub[keep_rows].copy(),
+            frame_id=hz.frame_id,
+            exact=hz.exact,
+        ),
+        int(group_indices.size),
+    )
+
+
+def _sparse_exact_proportional_groups(
+    hz: SparseHZono, rows, *, positive_only: bool
+) -> list[np.ndarray]:
+    """Partition rows by an exact nonzero real scale, with no tolerance."""
+    rows = np.asarray(rows, dtype=np.int64).reshape(-1)
+    gc = hz.Gc.tocsr()
+    gb = hz.Gb.tocsr()
+    groups: dict[tuple[object, ...], list[int]] = {}
+    for row in rows:
+        gc_start, gc_stop = gc.indptr[row], gc.indptr[row + 1]
+        gb_start, gb_stop = gb.indptr[row], gb.indptr[row + 1]
+        values = [float(hz.c[row])]
+        values.extend(float(value) for value in gc.data[gc_start:gc_stop])
+        values.extend(float(value) for value in gb.data[gb_start:gb_stop])
+        pivot = next((value for value in values if value != 0.0), None)
+        if pivot is None or not all(math.isfinite(value) for value in values):
+            # An all-zero row has no distinguished positive scale. Keep its
+            # exact byte identity rather than broadening this relation.
+            key = (
+                "unscaled",
+                np.asarray(hz.c[row], dtype=np.float64).tobytes(),
+                gc.indices[gc_start:gc_stop].tobytes(),
+                gc.data[gc_start:gc_stop].tobytes(),
+                gb.indices[gb_start:gb_stop].tobytes(),
+                gb.data[gb_start:gb_stop].tobytes(),
+            )
+        else:
+            sign_key = (
+                "positive" if pivot > 0.0 else "negative"
+            ) if positive_only else "signed"
+            key = (
+                sign_key,
+                gc.indices[gc_start:gc_stop].tobytes(),
+                gb.indices[gb_start:gb_stop].tobytes(),
+                tuple(_exact_ratio_pair(value, pivot) for value in values),
+            )
+        groups.setdefault(key, []).append(int(row))
+    return [np.asarray(group, dtype=np.int64) for group in groups.values()]
+
+
+def _sparse_exact_positive_proportional_groups(
+    hz: SparseHZono, rows
+) -> list[np.ndarray]:
+    return _sparse_exact_proportional_groups(hz, rows, positive_only=True)
+
+
+def _sparse_exact_signed_proportional_groups(
+    hz: SparseHZono, rows
+) -> list[np.ndarray]:
+    return _sparse_exact_proportional_groups(hz, rows, positive_only=False)
+
+
+def _sparse_exact_signed_duplicate_groups(
+    hz: SparseHZono, rows
+) -> list[np.ndarray]:
+    """Partition rows that are byte-exact copies or negations."""
+    rows = np.asarray(rows, dtype=np.int64).reshape(-1)
+    gc = hz.Gc.tocsr()
+    gb = hz.Gb.tocsr()
+    groups: dict[tuple[object, ...], list[int]] = {}
+    for row in rows:
+        gc_start, gc_stop = gc.indptr[row], gc.indptr[row + 1]
+        gb_start, gb_stop = gb.indptr[row], gb.indptr[row + 1]
+        values = np.asarray(
+            [
+                float(hz.c[row]),
+                *(float(value) for value in gc.data[gc_start:gc_stop]),
+                *(float(value) for value in gb.data[gb_start:gb_stop]),
+            ],
+            dtype=np.float64,
+        )
+        pivot = next((value for value in values if value != 0.0), None)
+        if pivot is None or not np.all(np.isfinite(values)):
+            normalized = values
+        else:
+            normalized = values if pivot > 0.0 else -values
+        # Positive and negative zero denote the same real coefficient.
+        normalized = normalized.copy()
+        normalized[normalized == 0.0] = 0.0
+        key = (
+            gc.indices[gc_start:gc_stop].tobytes(),
+            gb.indices[gb_start:gb_stop].tobytes(),
+            normalized.tobytes(),
+        )
+        groups.setdefault(key, []).append(int(row))
+    return [np.asarray(group, dtype=np.int64) for group in groups.values()]
+
+
+def sparse_hz_apply_relu_shared_exact(
+    hz: SparseHZono,
+    lb,
+    ub,
+    groups,
+    slots,
+    n_cont: int,
+    n_bin: int,
+) -> SparseHZono:
+    """Apply one extended exact-ReLU graph per identical affine row group."""
+    lb = np.asarray(lb, dtype=np.float64).reshape(-1)
+    ub = np.asarray(ub, dtype=np.float64).reshape(-1)
+    active_idx = np.flatnonzero(lb >= 0.0).astype(np.int64)
+    groups = [np.asarray(group, dtype=np.int64).reshape(-1) for group in groups]
+    r = len(groups)
+    if len(slots) != r or any(group.size == 0 for group in groups):
+        raise ValueError("sparse shared ReLU group/slot mismatch")
+
+    padded = sparse_hz_pad_frame(hz, n_cont, n_bin)
+    out_c = np.zeros(hz.n_out, dtype=np.float64)
+    gc_parts = []
+    gb_parts = []
+    if active_idx.size:
+        out_c[active_idx] = hz.c[active_idx]
+        active_gc = padded.Gc[active_idx].tocoo()
+        gc_parts.append((active_idx[active_gc.row], active_gc.col, active_gc.data))
+        active_gb = padded.Gb[active_idx].tocoo()
+        gb_parts.append((active_idx[active_gb.row], active_gb.col, active_gb.data))
+
+    eq_c_parts = []
+    eq_b_parts = []
+    ineq_c_parts = []
+    ineq_b_parts = []
+    if r:
+        representatives = np.asarray([group[0] for group in groups], dtype=np.int64)
+        owners = np.concatenate(
+            [np.full(group.size, owner, dtype=np.int64) for owner, group in enumerate(groups)]
+        )
+        unstable_idx = np.concatenate(groups)
+        slot_array = np.asarray(slots, dtype=np.int64)
+        xi1_cols = slot_array[:, 0]
+        xi2_cols = slot_array[:, 1]
+        z_cols = slot_array[:, 2]
+        rows = np.arange(r, dtype=np.int64)
+        lower = np.asarray([np.min(lb[group]) for group in groups])
+        upper = np.asarray([np.max(ub[group]) for group in groups])
+
+        out_c[unstable_idx] = upper[owners] / 2.0
+        gc_parts.append(
+            (unstable_idx, xi2_cols[owners], -upper[owners] / 2.0)
+        )
+
+        eq_c_parts.extend(
+            [
+                (rows, xi1_cols, lower / 2.0),
+                (rows, xi2_cols, -upper / 2.0),
+            ]
+        )
+        pre_gc = hz.Gc[representatives].tocoo()
+        eq_c_parts.append((pre_gc.row, pre_gc.col, -pre_gc.data))
+        eq_b_parts.append((rows, z_cols, lower / 2.0))
+        pre_gb = hz.Gb[representatives].tocoo()
+        eq_b_parts.append((pre_gb.row, pre_gb.col, -pre_gb.data))
+
+        ineq_c_parts.extend(
+            [
+                (rows, xi1_cols, -np.ones(r, dtype=np.float64)),
+                (r + rows, xi2_cols, -np.ones(r, dtype=np.float64)),
+            ]
+        )
+        ineq_b_parts.extend(
+            [
+                (rows, z_cols, -np.ones(r, dtype=np.float64)),
+                (r + rows, z_cols, np.ones(r, dtype=np.float64)),
+            ]
+        )
+        eq_rhs = hz.c[representatives] - upper / 2.0
+    else:
+        eq_rhs = np.zeros(0, dtype=np.float64)
+
+    out_Gc = _sparse_triplets(gc_parts, (hz.n_out, n_cont))
+    out_Gb = _sparse_triplets(gb_parts, (hz.n_out, n_bin))
+    eq_Ac = _sparse_triplets(eq_c_parts, (r, n_cont))
+    eq_Ab = _sparse_triplets(eq_b_parts, (r, n_bin))
+    ineq_Ac = _sparse_triplets(ineq_c_parts, (2 * r, n_cont))
+    ineq_Ab = _sparse_triplets(ineq_b_parts, (2 * r, n_bin))
+    return SparseHZono(
+        c=out_c,
+        Gc=out_Gc,
+        Gb=out_Gb,
+        Ac=sp.vstack([padded.Ac, eq_Ac], format="csr"),
+        Ab=sp.vstack([padded.Ab, eq_Ab], format="csr"),
+        b=np.concatenate([padded.b, eq_rhs]),
+        Auc=sp.vstack([padded.Auc, ineq_Ac], format="csr"),
+        Aub=sp.vstack([padded.Aub, ineq_Ab], format="csr"),
+        ub=np.concatenate([padded.ub, np.zeros(2 * r, dtype=np.float64)]),
+        frame_id=hz.frame_id,
+        exact=hz.exact,
+    )
+
+
+def _sparse_row_orientation(gc, gb, center: float, row: int) -> float:
+    """Return the sign of the first nonzero affine coefficient."""
+    if center != 0.0:
+        return 1.0 if center > 0.0 else -1.0
+    gc_start, gc_stop = gc.indptr[row], gc.indptr[row + 1]
+    for value in gc.data[gc_start:gc_stop]:
+        if value != 0.0:
+            return 1.0 if value > 0.0 else -1.0
+    gb_start, gb_stop = gb.indptr[row], gb.indptr[row + 1]
+    for value in gb.data[gb_start:gb_stop]:
+        if value != 0.0:
+            return 1.0 if value > 0.0 else -1.0
+    return 1.0
+
+
+def sparse_hz_apply_relu_signed_shared_exact(
+    hz: SparseHZono,
+    lb,
+    ub,
+    groups,
+    slots,
+    n_cont: int,
+    n_bin: int,
+) -> SparseHZono:
+    """Apply one exact-ReLU graph per byte-exact copy/negation group."""
+    lb = np.asarray(lb, dtype=np.float64).reshape(-1)
+    ub = np.asarray(ub, dtype=np.float64).reshape(-1)
+    active_idx = np.flatnonzero(lb >= 0.0).astype(np.int64)
+    groups = [np.asarray(group, dtype=np.int64).reshape(-1) for group in groups]
+    r = len(groups)
+    if len(slots) != r or any(group.size == 0 for group in groups):
+        raise ValueError("sparse signed-shared ReLU group/slot mismatch")
+
+    padded = sparse_hz_pad_frame(hz, n_cont, n_bin)
+    source_gc = hz.Gc.tocsr()
+    source_gb = hz.Gb.tocsr()
+    group_signs = []
+    for group in groups:
+        representative_orientation = _sparse_row_orientation(
+            source_gc, source_gb, float(hz.c[group[0]]), int(group[0])
+        )
+        group_signs.append(
+            np.asarray(
+                [
+                    _sparse_row_orientation(
+                        source_gc, source_gb, float(hz.c[row]), int(row)
+                    )
+                    * representative_orientation
+                    for row in group
+                ],
+                dtype=np.float64,
+            )
+        )
+
+    out_c = np.zeros(hz.n_out, dtype=np.float64)
+    gc_parts = []
+    gb_parts = []
+    if active_idx.size:
+        out_c[active_idx] = hz.c[active_idx]
+        active_gc = padded.Gc[active_idx].tocoo()
+        gc_parts.append((active_idx[active_gc.row], active_gc.col, active_gc.data))
+        active_gb = padded.Gb[active_idx].tocoo()
+        gb_parts.append((active_idx[active_gb.row], active_gb.col, active_gb.data))
+
+    eq_c_parts = []
+    eq_b_parts = []
+    ineq_c_parts = []
+    ineq_b_parts = []
+    if r:
+        representatives = np.asarray([group[0] for group in groups], dtype=np.int64)
+        owners = np.concatenate(
+            [np.full(group.size, owner, dtype=np.int64) for owner, group in enumerate(groups)]
+        )
+        unstable_idx = np.concatenate(groups)
+        member_signs = np.concatenate(group_signs)
+        negative_idx = unstable_idx[member_signs < 0.0]
+        slot_array = np.asarray(slots, dtype=np.int64)
+        xi1_cols = slot_array[:, 0]
+        xi2_cols = slot_array[:, 1]
+        z_cols = slot_array[:, 2]
+        rows = np.arange(r, dtype=np.int64)
+        lower = np.asarray(
+            [
+                np.min(np.where(signs > 0.0, lb[group], -ub[group]))
+                for group, signs in zip(groups, group_signs)
+            ]
+        )
+        upper = np.asarray(
+            [
+                np.max(np.where(signs > 0.0, ub[group], -lb[group]))
+                for group, signs in zip(groups, group_signs)
+            ]
+        )
+
+        out_c[unstable_idx] = upper[owners] / 2.0
+        gc_parts.append((unstable_idx, xi2_cols[owners], -upper[owners] / 2.0))
+        if negative_idx.size:
+            # ReLU(-x) = ReLU(x) - x = ReLU(x) + (-x). The member row
+            # itself is the exact stored -x affine expression.
+            out_c[negative_idx] += hz.c[negative_idx]
+            negative_gc = padded.Gc[negative_idx].tocoo()
+            gc_parts.append(
+                (negative_idx[negative_gc.row], negative_gc.col, negative_gc.data)
+            )
+            negative_gb = padded.Gb[negative_idx].tocoo()
+            gb_parts.append(
+                (negative_idx[negative_gb.row], negative_gb.col, negative_gb.data)
+            )
+
+        eq_c_parts.extend(
+            [
+                (rows, xi1_cols, lower / 2.0),
+                (rows, xi2_cols, -upper / 2.0),
+            ]
+        )
+        pre_gc = hz.Gc[representatives].tocoo()
+        eq_c_parts.append((pre_gc.row, pre_gc.col, -pre_gc.data))
+        eq_b_parts.append((rows, z_cols, lower / 2.0))
+        pre_gb = hz.Gb[representatives].tocoo()
+        eq_b_parts.append((pre_gb.row, pre_gb.col, -pre_gb.data))
+
+        ineq_c_parts.extend(
+            [
+                (rows, xi1_cols, -np.ones(r, dtype=np.float64)),
+                (r + rows, xi2_cols, -np.ones(r, dtype=np.float64)),
+            ]
+        )
+        ineq_b_parts.extend(
+            [
+                (rows, z_cols, -np.ones(r, dtype=np.float64)),
+                (r + rows, z_cols, np.ones(r, dtype=np.float64)),
+            ]
+        )
+        eq_rhs = hz.c[representatives] - upper / 2.0
+    else:
+        eq_rhs = np.zeros(0, dtype=np.float64)
+
+    out_Gc = _sparse_triplets(gc_parts, (hz.n_out, n_cont))
+    out_Gb = _sparse_triplets(gb_parts, (hz.n_out, n_bin))
+    eq_Ac = _sparse_triplets(eq_c_parts, (r, n_cont))
+    eq_Ab = _sparse_triplets(eq_b_parts, (r, n_bin))
+    ineq_Ac = _sparse_triplets(ineq_c_parts, (2 * r, n_cont))
+    ineq_Ab = _sparse_triplets(ineq_b_parts, (2 * r, n_bin))
+    return SparseHZono(
+        c=out_c,
+        Gc=out_Gc,
+        Gb=out_Gb,
+        Ac=sp.vstack([padded.Ac, eq_Ac], format="csr"),
+        Ab=sp.vstack([padded.Ab, eq_Ab], format="csr"),
+        b=np.concatenate([padded.b, eq_rhs]),
+        Auc=sp.vstack([padded.Auc, ineq_Ac], format="csr"),
+        Aub=sp.vstack([padded.Aub, ineq_Ab], format="csr"),
+        ub=np.concatenate([padded.ub, np.zeros(2 * r, dtype=np.float64)]),
+        frame_id=hz.frame_id,
+        exact=hz.exact,
+    )
+
+
+def sparse_hz_apply_relu_signed_shared_compact_exact(
+    hz: SparseHZono,
+    lb,
+    ub,
+    groups,
+    slots,
+    n_cont: int,
+    n_bin: int,
+) -> SparseHZono:
+    """Apply one compact exact-ReLU graph per exact copy/negation group."""
+    lb = np.asarray(lb, dtype=np.float64).reshape(-1)
+    ub = np.asarray(ub, dtype=np.float64).reshape(-1)
+    active_idx = np.flatnonzero(lb >= 0.0).astype(np.int64)
+    groups = [np.asarray(group, dtype=np.int64).reshape(-1) for group in groups]
+    r = len(groups)
+    if len(slots) != r or any(group.size == 0 for group in groups):
+        raise ValueError("sparse compact signed-shared ReLU group/slot mismatch")
+
+    padded = sparse_hz_pad_frame(hz, n_cont, n_bin)
+    source_gc = hz.Gc.tocsr()
+    source_gb = hz.Gb.tocsr()
+    group_signs = []
+    for group in groups:
+        representative_orientation = _sparse_row_orientation(
+            source_gc, source_gb, float(hz.c[group[0]]), int(group[0])
+        )
+        group_signs.append(
+            np.asarray(
+                [
+                    _sparse_row_orientation(
+                        source_gc, source_gb, float(hz.c[row]), int(row)
+                    )
+                    * representative_orientation
+                    for row in group
+                ],
+                dtype=np.float64,
+            )
+        )
+
+    out_c = np.zeros(hz.n_out, dtype=np.float64)
+    gc_parts = []
+    gb_parts = []
+    if active_idx.size:
+        out_c[active_idx] = hz.c[active_idx]
+        active_gc = padded.Gc[active_idx].tocoo()
+        gc_parts.append((active_idx[active_gc.row], active_gc.col, active_gc.data))
+        active_gb = padded.Gb[active_idx].tocoo()
+        gb_parts.append((active_idx[active_gb.row], active_gb.col, active_gb.data))
+
+    ineq_c_parts = []
+    ineq_b_parts = []
+    ineq_rhs = np.zeros(3 * r, dtype=np.float64)
+    if r:
+        representatives = np.asarray([group[0] for group in groups], dtype=np.int64)
+        owners = np.concatenate(
+            [np.full(group.size, owner, dtype=np.int64) for owner, group in enumerate(groups)]
+        )
+        unstable_idx = np.concatenate(groups)
+        member_signs = np.concatenate(group_signs)
+        negative_idx = unstable_idx[member_signs < 0.0]
+        slot_array = np.asarray(slots, dtype=np.int64)
+        eta_cols = slot_array[:, 0]
+        z_cols = slot_array[:, 2]
+        rows = np.arange(r, dtype=np.int64)
+        lower = np.asarray(
+            [
+                np.min(np.where(signs > 0.0, lb[group], -ub[group]))
+                for group, signs in zip(groups, group_signs)
+            ]
+        )
+        upper = np.asarray(
+            [
+                np.max(np.where(signs > 0.0, ub[group], -lb[group]))
+                for group, signs in zip(groups, group_signs)
+            ]
+        )
+
+        out_c[unstable_idx] = upper[owners] / 2.0
+        gc_parts.append((unstable_idx, eta_cols[owners], -upper[owners] / 2.0))
+        if negative_idx.size:
+            out_c[negative_idx] += hz.c[negative_idx]
+            negative_gc = padded.Gc[negative_idx].tocoo()
+            gc_parts.append(
+                (negative_idx[negative_gc.row], negative_gc.col, negative_gc.data)
+            )
+            negative_gb = padded.Gb[negative_idx].tocoo()
+            gb_parts.append(
+                (negative_idx[negative_gb.row], negative_gb.col, negative_gb.data)
+            )
+
+        # beta=+1 is inactive: -eta + beta <= 0.
+        ineq_c_parts.append((rows, eta_cols, -np.ones(r, dtype=np.float64)))
+        ineq_b_parts.append((rows, z_cols, np.ones(r, dtype=np.float64)))
+
+        # x <= y for the representative affine row.
+        lower_rows = r + rows
+        pre_gc = hz.Gc[representatives].tocoo()
+        ineq_c_parts.append((lower_rows[pre_gc.row], pre_gc.col, pre_gc.data))
+        ineq_c_parts.append((lower_rows, eta_cols, upper / 2.0))
+        pre_gb = hz.Gb[representatives].tocoo()
+        ineq_b_parts.append((lower_rows[pre_gb.row], pre_gb.col, pre_gb.data))
+        ineq_rhs[lower_rows] = upper / 2.0 - hz.c[representatives]
+
+        # y <= x - l * (1-delta), delta=(1-beta)/2.
+        upper_rows = 2 * r + rows
+        ineq_c_parts.append((upper_rows[pre_gc.row], pre_gc.col, -pre_gc.data))
+        ineq_c_parts.append((upper_rows, eta_cols, -upper / 2.0))
+        ineq_b_parts.append((upper_rows[pre_gb.row], pre_gb.col, -pre_gb.data))
+        ineq_b_parts.append((upper_rows, z_cols, lower / 2.0))
+        ineq_rhs[upper_rows] = (
+            hz.c[representatives] - upper / 2.0 - lower / 2.0
+        )
+
+    out_Gc = _sparse_triplets(gc_parts, (hz.n_out, n_cont))
+    out_Gb = _sparse_triplets(gb_parts, (hz.n_out, n_bin))
+    ineq_Ac = _sparse_triplets(ineq_c_parts, (3 * r, n_cont))
+    ineq_Ab = _sparse_triplets(ineq_b_parts, (3 * r, n_bin))
+    return SparseHZono(
+        c=out_c,
+        Gc=out_Gc,
+        Gb=out_Gb,
+        Ac=padded.Ac.copy(),
+        Ab=padded.Ab.copy(),
+        b=padded.b.copy(),
+        Auc=sp.vstack([padded.Auc, ineq_Ac], format="csr"),
+        Aub=sp.vstack([padded.Aub, ineq_Ab], format="csr"),
+        ub=np.concatenate([padded.ub, ineq_rhs]),
+        frame_id=hz.frame_id,
+        exact=hz.exact,
+    )
+
+
+def _sparse_apply_relu(
+    L,
+    hz: SparseHZono,
+    input_bounds: Bounds,
+    tf,
+    *,
+    forced_stable_negative=None,
+):
+    lb, ub = _sparse_relu_bounds(
+        hz,
+        input_bounds,
+        forced_stable_negative=forced_stable_negative,
+    )
+    unstable_idx = np.flatnonzero((lb < 0.0) & (ub > 0.0)).astype(np.int64)
+    duplicate_groups = None
+    signed_duplicate_groups = None
+    if bool(getattr(tf, "_neural_hz_duplicate_census", False)) or bool(
+        getattr(tf, "_neural_hz_share_relu", False)
+    ) or bool(getattr(tf, "_neural_hz_share_signed_relu", False)) or bool(
+        getattr(tf, "_neural_hz_share_signed_compact_relu", False)
+    ) or bool(
+        getattr(tf, "_neural_hz_proportional_census", False)
+    ) or bool(
+        getattr(tf, "_neural_hz_signed_proportional_census", False)
+    ) or bool(
+        getattr(tf, "_neural_hz_signed_cancellation_census", False)
+    ):
+        duplicate_groups = _sparse_exact_duplicate_groups(hz, unstable_idx)
+        duplicate_rows, group_count, max_group = _duplicate_group_stats(
+            duplicate_groups
+        )
+        tf._neural_hz_duplicate_rows = int(
+            getattr(tf, "_neural_hz_duplicate_rows", 0)
+        ) + duplicate_rows
+        tf._neural_hz_duplicate_groups = int(
+            getattr(tf, "_neural_hz_duplicate_groups", 0)
+        ) + group_count
+        tf._neural_hz_duplicate_max_group = max(
+            int(getattr(tf, "_neural_hz_duplicate_max_group", 1)),
+            max_group,
+        )
+    if bool(getattr(tf, "_neural_hz_proportional_census", False)):
+        proportional_groups = _sparse_exact_positive_proportional_groups(
+            hz, unstable_idx
+        )
+        proportional_rows, proportional_count, proportional_max = (
+            _duplicate_group_stats(proportional_groups)
+        )
+        tf._neural_hz_proportional_rows = int(
+            getattr(tf, "_neural_hz_proportional_rows", 0)
+        ) + proportional_rows
+        tf._neural_hz_proportional_groups = int(
+            getattr(tf, "_neural_hz_proportional_groups", 0)
+        ) + proportional_count
+        tf._neural_hz_proportional_max_group = max(
+            int(getattr(tf, "_neural_hz_proportional_max_group", 1)),
+            proportional_max,
+        )
+    if bool(getattr(tf, "_neural_hz_signed_proportional_census", False)):
+        signed_groups = _sparse_exact_signed_proportional_groups(
+            hz, unstable_idx
+        )
+        signed_rows, signed_count, signed_max = _duplicate_group_stats(
+            signed_groups
+        )
+        tf._neural_hz_signed_proportional_rows = int(
+            getattr(tf, "_neural_hz_signed_proportional_rows", 0)
+        ) + signed_rows
+        tf._neural_hz_signed_proportional_groups = int(
+            getattr(tf, "_neural_hz_signed_proportional_groups", 0)
+        ) + signed_count
+        tf._neural_hz_signed_proportional_max_group = max(
+            int(getattr(tf, "_neural_hz_signed_proportional_max_group", 1)),
+            signed_max,
+        )
+        signed_duplicate_groups = _sparse_exact_signed_duplicate_groups(
+            hz, unstable_idx
+        )
+        signed_duplicate_rows, signed_duplicate_count, signed_duplicate_max = (
+            _duplicate_group_stats(signed_duplicate_groups)
+        )
+        tf._neural_hz_signed_duplicate_rows = int(
+            getattr(tf, "_neural_hz_signed_duplicate_rows", 0)
+        ) + signed_duplicate_rows
+        tf._neural_hz_signed_duplicate_groups = int(
+            getattr(tf, "_neural_hz_signed_duplicate_groups", 0)
+        ) + signed_duplicate_count
+        tf._neural_hz_signed_duplicate_max_group = max(
+            int(getattr(tf, "_neural_hz_signed_duplicate_max_group", 1)),
+            signed_duplicate_max,
+        )
+    if bool(getattr(tf, "_neural_hz_signed_cancellation_census", False)):
+        cancellation_groups = _signed_groups_cancel_in_successor_dense(
+            L,
+            hz,
+            _sparse_exact_signed_duplicate_groups(hz, unstable_idx),
+            tf,
+        )
+        cancellation_rows = sum(len(group) for group in cancellation_groups)
+        tf._neural_hz_cancellation_rows = int(
+            getattr(tf, "_neural_hz_cancellation_rows", 0)
+        ) + cancellation_rows
+        tf._neural_hz_cancellation_groups = int(
+            getattr(tf, "_neural_hz_cancellation_groups", 0)
+        ) + len(cancellation_groups)
+        tf._neural_hz_cancellation_max_group = max(
+            int(getattr(tf, "_neural_hz_cancellation_max_group", 1)),
+            max((len(group) for group in cancellation_groups), default=1),
+        )
+    share_signed = bool(getattr(tf, "_neural_hz_share_signed_relu", False))
+    share_signed_compact = bool(
+        getattr(tf, "_neural_hz_share_signed_compact_relu", False)
+    )
+    if share_signed or share_signed_compact:
+        signed_duplicate_groups = _sparse_exact_signed_duplicate_groups(
+            hz, unstable_idx
+        )
+        representatives = np.asarray(
+            [group[0] for group in signed_duplicate_groups], dtype=np.int64
+        )
+        signed_members = 0
+        for group in signed_duplicate_groups:
+            representative_orientation = _sparse_row_orientation(
+                hz.Gc,
+                hz.Gb,
+                float(hz.c[group[0]]),
+                int(group[0]),
+            )
+            signed_members += sum(
+                _sparse_row_orientation(
+                    hz.Gc, hz.Gb, float(hz.c[row]), int(row)
+                )
+                != representative_orientation
+                for row in group
+            )
+        # Compact quotienting is paid for by an actual x/-x graph share.
+        # Without a negative member, retain the established extended graph;
+        # all-singleton layers are then representation-identical to baseline.
+        use_compact = share_signed_compact and signed_members > 0
+        if use_compact:
+            tf._neural_hz_signed_compact_layers = int(
+                getattr(tf, "_neural_hz_signed_compact_layers", 0)
+            ) + 1
+        reservation = tf._sparse_relu_slots_for(
+            hz,
+            L.id,
+            representatives,
+            compact=use_compact,
+        )
+        if reservation is None:
+            return None, "sparse_signed_shared_relu_size_limit"
+        slots, n_cont, n_bin = reservation
+        tf._neural_hz_shared_relu_rows = int(
+            getattr(tf, "_neural_hz_shared_relu_rows", 0)
+        ) + int(unstable_idx.size - representatives.size)
+        tf._neural_hz_signed_shared_relu_rows = int(
+            getattr(tf, "_neural_hz_signed_shared_relu_rows", 0)
+        ) + int(signed_members)
+        signed_transform = (
+            sparse_hz_apply_relu_signed_shared_compact_exact
+            if use_compact
+            else sparse_hz_apply_relu_signed_shared_exact
+        )
+        if use_compact and bool(
+            getattr(tf, "_neural_hz_signed_cancellation", False)
+        ):
+            cancellation_groups = _signed_groups_cancel_in_successor_dense(
+                L, hz, signed_duplicate_groups, tf
+            )
+            if bool(
+                getattr(
+                    tf,
+                    "_neural_hz_signed_cancellation_mixed_only",
+                    False,
+                )
+            ):
+                cancellation_groups = [
+                    group
+                    for group in cancellation_groups
+                    if _signed_group_has_opposite_orientation(hz, group)
+                ]
+            max_cardinality = int(
+                getattr(
+                    tf,
+                    "_neural_hz_signed_cancellation_elimination_max_cardinality",
+                    0,
+                )
+            )
+            if bool(
+                getattr(tf, "_neural_hz_signed_cancellation_pairs_only", False)
+            ):
+                max_cardinality = 2
+            two_pair_min_outputs = int(
+                getattr(
+                    tf,
+                    "_neural_hz_signed_cancellation_two_pair_min_outputs",
+                    0,
+                )
+            )
+            if two_pair_min_outputs > 0:
+                max_cardinality = (
+                    4 if hz.n_out >= two_pair_min_outputs else 2
+                )
+            if max_cardinality > 0:
+                cancellation_groups = [
+                    group
+                    for group in cancellation_groups
+                    if len(group) <= max_cardinality
+                ]
+            cancellation_keys = {
+                tuple(int(row) for row in group) for group in cancellation_groups
+            }
+            group_indices = [
+                index
+                for index, group in enumerate(signed_duplicate_groups)
+                if tuple(int(row) for row in group) in cancellation_keys
+            ]
+            successors = tf._net.succs.get(L.id, [])
+            if group_indices and len(successors) == 1:
+                contexts = tf._neural_hz_cancellation_contexts
+                successor_id = int(successors[0])
+                if successor_id not in contexts:
+                    contexts[successor_id] = {
+                        "relu_id": int(L.id),
+                        "dense_id": successor_id,
+                        "source_n_out": int(hz.n_out),
+                        "source_n_cont": int(hz.n_cont),
+                        "source_n_bin": int(hz.n_bin),
+                        "frame_id": hz.frame_id,
+                        "base_ineq": hz.n_ineq,
+                        "n_groups": len(signed_duplicate_groups),
+                        "group_indices": group_indices,
+                        "group_sizes": [
+                            int(len(signed_duplicate_groups[index]))
+                            for index in group_indices
+                        ],
+                        "eta_cols": [slots[index][0] for index in group_indices],
+                        "z_cols": [slots[index][2] for index in group_indices],
+                    }
+        return (
+            signed_transform(
+                hz,
+                lb,
+                ub,
+                signed_duplicate_groups,
+                slots,
+                n_cont,
+                n_bin,
+            ),
+            None,
+        )
+    if bool(getattr(tf, "_neural_hz_share_relu", False)) and duplicate_groups:
+        representatives = np.asarray(
+            [group[0] for group in duplicate_groups], dtype=np.int64
+        )
+        reservation = tf._sparse_relu_slots_for(
+            hz,
+            L.id,
+            representatives,
+            compact=False,
+        )
+        if reservation is None:
+            return None, "sparse_shared_relu_size_limit"
+        slots, n_cont, n_bin = reservation
+        tf._neural_hz_shared_relu_rows = int(
+            getattr(tf, "_neural_hz_shared_relu_rows", 0)
+        ) + int(unstable_idx.size - representatives.size)
+        return (
+            sparse_hz_apply_relu_shared_exact(
+                hz,
+                lb,
+                ub,
+                duplicate_groups,
+                slots,
+                n_cont,
+                n_bin,
+            ),
+            None,
+        )
+    neural_mode = getattr(tf, "_neural_hz_compact_relu", False)
+    compact = bool(neural_mode) and neural_mode != "fill_aware"
+    if neural_mode == "fill_aware" and unstable_idx.size:
+        support = int(hz.Gc[unstable_idx].getnnz())
+        support += int(hz.Gb[unstable_idx].getnnz())
+        twice_neurons = 2 * int(unstable_idx.size)
+        compact_width = hz.n_cont + hz.n_bin + twice_neurons
+        compact = support < twice_neurons or (
+            support == twice_neurons and compact_width <= 512
+        )
+    reservation = tf._sparse_relu_slots_for(
+        hz,
+        L.id,
+        unstable_idx,
+        compact=compact,
+    )
     if reservation is None:
         return None, "sparse_relu_size_limit"
     slots, n_cont, n_bin = reservation
+    if compact:
+        tf._neural_hz_sparse_compact_factors = int(
+            getattr(tf, "_neural_hz_sparse_compact_factors", 0)
+        ) + int(unstable_idx.size)
+        return (
+            sparse_hz_apply_relu_compact_exact(
+                hz, lb, ub, slots, n_cont, n_bin
+            ),
+            None,
+        )
     return sparse_hz_apply_relu_exact(hz, lb, ub, slots, n_cont, n_bin), None
 
 
@@ -543,6 +1594,43 @@ def sparse_hz_apply_layer(L, hz: SparseHZono, input_bounds: Bounds, result: Fact
     k = L.kind.upper()
     if k == "DENSE":
         out = _sparse_apply_per_batch_linear(hz, L.params["weight"], L.params.get("bias"))
+        context = getattr(tf, "_neural_hz_cancellation_contexts", {}).pop(
+            L.id, None
+        )
+        if context is not None:
+            out, eliminated = _sparse_drop_canceled_relu_graphs(out, context)
+            tf._neural_hz_eliminated_cancellation_groups = int(
+                getattr(tf, "_neural_hz_eliminated_cancellation_groups", 0)
+            ) + eliminated
+            tf._neural_hz_cancellation_profile.append(
+                {
+                    "relu_id": int(context.get("relu_id", -1)),
+                    "dense_id": int(context.get("dense_id", L.id)),
+                    "source_n_out": int(context.get("source_n_out", 0)),
+                    "source_n_cont": int(context.get("source_n_cont", 0)),
+                    "source_n_bin": int(context.get("source_n_bin", 0)),
+                    "candidate_groups": int(len(context["group_indices"])),
+                    "eliminated_groups": int(eliminated),
+                    "group_size_min": int(
+                        min(context.get("group_sizes", [0]), default=0)
+                    ),
+                    "group_size_max": int(
+                        max(context.get("group_sizes", [0]), default=0)
+                    ),
+                    "group_size_sum": int(
+                        sum(context.get("group_sizes", []))
+                    ),
+                    "group_size_histogram": {
+                        str(int(size)): int(
+                            sum(
+                                int(other) == int(size)
+                                for other in context.get("group_sizes", [])
+                            )
+                        )
+                        for size in sorted(set(context.get("group_sizes", [])))
+                    },
+                }
+            )
         return True, out, None
     if k == "BIAS":
         return True, sparse_hz_add_const(hz, _sparse_param_vector(L.params["c"], hz.n_out)), None
@@ -795,7 +1883,20 @@ def tf_relu(L, bounds, tf):
     hz_in = tf._hz_cache.get(L.id)
     fact = interval.tf_relu(L, bounds)
     if hz_in is not None:
-        hz_out = hz_apply_relu(hz_in)
+        neural_mode = getattr(tf, "_neural_hz_compact_relu", False)
+        if neural_mode == "fill_aware":
+            hz_out = hz_apply_relu_fill_aware_exact(hz_in)
+        elif bool(neural_mode):
+            hz_out = hz_apply_relu_compact_exact(hz_in)
+        else:
+            hz_out = hz_apply_relu(hz_in)
+        if neural_mode:
+            added_binary = hz_out.Gb.shape[1] - hz_in.Gb.shape[1]
+            added_continuous = hz_out.Gc.shape[1] - hz_in.Gc.shape[1]
+            if added_binary > 0 and added_continuous == added_binary:
+                tf._neural_hz_compact_factors = int(
+                    getattr(tf, "_neural_hz_compact_factors", 0)
+                ) + int(added_binary)
         if _hz_exceeds_limit(tf, L, hz_out):
             tf._hz_cache.pop(L.id, None)
         else:
@@ -1449,7 +2550,164 @@ def _relu_extend_ids(hz: HZono, k: int):
     )
 
 
-def _hz_apply_relu_family(hz: HZono, negative_slope: float) -> HZono:
+def _relu_extend_compact_ids(hz: HZono, k: int):
+    if hz.col_ids is None:
+        return None, None
+    if hz.col_ids.numel() != hz.Gc.shape[1]:
+        return None, None
+    if hz.bcol_ids is None:
+        if hz.Gb.shape[1] != 0:
+            return None, None
+        base_bids = torch.zeros(0, dtype=torch.long, device=hz.c.device)
+    elif hz.bcol_ids.numel() == hz.Gb.shape[1]:
+        base_bids = hz.bcol_ids.to(hz.c.device)
+    else:
+        return None, None
+    return (
+        torch.cat([hz.col_ids.to(hz.c.device), hz_fresh_col_ids(k, hz.c.device)]),
+        torch.cat([base_bids, hz_fresh_col_ids(k, hz.c.device)]),
+    )
+
+
+def hz_apply_relu_compact_exact(hz: HZono, *, _bounds=None) -> HZono:
+    """Exact one-continuous-factor ReLU graph quotient.
+
+    For each unstable preactivation ``x`` with bounds ``l < 0 < u``, encode
+    ``y = ReLU(x)`` with one continuous output factor and one binary phase. The
+    factor box already gives ``0 <= y <= u``; three predicate inequalities are
+    the standard exact disjunction hull for a binary phase. Unlike the extended
+    two-factor HZ graph, no predicate-only negative-branch factor is retained.
+    """
+    device = hz.c.device
+    n = hz.c.shape[0]
+    ng = hz.Gc.shape[1]
+    nb = hz.Gb.shape[1]
+    nc = hz.Ac.shape[0]
+
+    bounds = hz_compute_bounds(hz) if _bounds is None else _bounds
+    lb = bounds.lb.flatten()
+    ub = bounds.ub.flatten()
+    active = lb >= 0
+    inactive = ub <= 0
+    unstable = ~active & ~inactive
+    unstable_idx = torch.where(unstable)[0]
+    k = int(unstable_idx.numel())
+
+    out_c = hz.c.new_zeros(n, 1)
+    out_Gc = hz.c.new_zeros(n, ng + k)
+    out_Gb = hz.c.new_zeros(n, nb + k)
+    if active.any():
+        out_c[active] = hz.c[active]
+        out_Gc[active, :ng] = hz.Gc[active]
+        out_Gb[active, :nb] = hz.Gb[active]
+    if k == 0:
+        return HZono(
+            c=out_c,
+            Gc=out_Gc[:, :ng],
+            Gb=out_Gb[:, :nb],
+            Ac=hz.Ac.clone(),
+            Ab=hz.Ab.clone(),
+            b=hz.b.clone(),
+            eq_mask=None if hz.eq_mask is None else hz.eq_mask.clone(),
+            col_ids=None if hz.col_ids is None else hz.col_ids.clone(),
+            bcol_ids=None if hz.bcol_ids is None else hz.bcol_ids.clone(),
+        )
+
+    lower = lb[unstable_idx]
+    upper = ub[unstable_idx]
+    t = torch.arange(k, device=device)
+    eta_cols = ng + t
+    phase_cols = nb + t
+    out_c[unstable_idx, 0] = upper / 2.0
+    out_Gc[unstable_idx, eta_cols] = -upper / 2.0
+
+    rows = nc + 3 * k
+    Ac_out = hz.c.new_zeros(rows, ng + k)
+    Ab_out = hz.c.new_zeros(rows, nb + k)
+    b_out = hz.c.new_zeros(rows, 1)
+    if nc:
+        Ac_out[:nc, :ng] = hz.Ac
+        Ab_out[:nc, :nb] = hz.Ab
+        b_out[:nc] = hz.b
+
+    # beta=+1 selects the inactive phase and beta=-1 the active phase.
+    phase_rows = nc + t
+    Ac_out[phase_rows, eta_cols] = -1.0
+    Ab_out[phase_rows, phase_cols] = 1.0
+
+    # x <= y.
+    lower_graph_rows = nc + k + t
+    Ac_out[lower_graph_rows, :ng] = hz.Gc[unstable_idx]
+    Ac_out[lower_graph_rows, eta_cols] = upper / 2.0
+    if nb:
+        Ab_out[lower_graph_rows, :nb] = hz.Gb[unstable_idx]
+    b_out[lower_graph_rows, 0] = upper / 2.0 - hz.c[unstable_idx, 0]
+
+    # y <= x - l * (1-delta), where delta=(1-beta)/2 is active.
+    upper_graph_rows = nc + 2 * k + t
+    Ac_out[upper_graph_rows, :ng] = -hz.Gc[unstable_idx]
+    Ac_out[upper_graph_rows, eta_cols] = -upper / 2.0
+    if nb:
+        Ab_out[upper_graph_rows, :nb] = -hz.Gb[unstable_idx]
+    Ab_out[upper_graph_rows, phase_cols] = lower / 2.0
+    b_out[upper_graph_rows, 0] = (
+        hz.c[unstable_idx, 0] - upper / 2.0 - lower / 2.0
+    )
+
+    old_mask = (
+        hz.eq_mask.to(device)
+        if hz.eq_mask is not None
+        else torch.ones(nc, dtype=torch.bool, device=device)
+    )
+    eq_mask = torch.cat(
+        [old_mask, torch.zeros(3 * k, dtype=torch.bool, device=device)]
+    )
+    col_ids, bcol_ids = _relu_extend_compact_ids(hz, k)
+    return HZono(
+        c=out_c,
+        Gc=out_Gc,
+        Gb=out_Gb,
+        Ac=Ac_out,
+        Ab=Ab_out,
+        b=b_out,
+        eq_mask=eq_mask,
+        col_ids=col_ids,
+        bcol_ids=bcol_ids,
+    )
+
+
+def hz_apply_relu_fill_aware_exact(hz: HZono) -> HZono:
+    """Choose the exact ReLU graph with no predicate-fill increase.
+
+    With ``p`` nonzeros in an unstable preactivation, the two-factor extended
+    graph adds ``p+7`` predicate nonzeros and the one-factor quotient adds
+    ``2p+5``. Always accept strict fill reduction. At equal fill (average
+    ``p=2``), accept only while the post-transform latent width is at most 512;
+    larger equality blocks retain the extended graph favored by MILP presolve.
+    """
+    bounds = hz_compute_bounds(hz)
+    lower = bounds.lb.flatten()
+    upper = bounds.ub.flatten()
+    unstable_idx = torch.where((lower < 0) & (upper > 0))[0]
+    k = int(unstable_idx.numel())
+    if k:
+        support = int(torch.count_nonzero(hz.Gc[unstable_idx]).item())
+        support += int(torch.count_nonzero(hz.Gb[unstable_idx]).item())
+        twice_neurons = 2 * k
+        compact_width = hz.Gc.shape[1] + hz.Gb.shape[1] + twice_neurons
+        if support < twice_neurons or (
+            support == twice_neurons and compact_width <= 512
+        ):
+            return hz_apply_relu_compact_exact(hz, _bounds=bounds)
+    return _hz_apply_relu_family(hz, 0.0, _bounds=bounds)
+
+
+def _hz_apply_relu_family(
+    hz: HZono,
+    negative_slope: float,
+    *,
+    _bounds=None,
+) -> HZono:
     """Exact compressed LeakyReLU/ReLU graph encoding.
 
     For each unstable neuron with bounds [a, b], a < 0 < b, add xi1/xi2 and
@@ -1465,7 +2723,7 @@ def _hz_apply_relu_family(hz: HZono, negative_slope: float) -> HZono:
     nb = hz.Gb.shape[1]
     nc = hz.Ac.shape[0]
 
-    bounds = hz_compute_bounds(hz)
+    bounds = hz_compute_bounds(hz) if _bounds is None else _bounds
     lb = bounds.lb.flatten()
     ub = bounds.ub.flatten()
 

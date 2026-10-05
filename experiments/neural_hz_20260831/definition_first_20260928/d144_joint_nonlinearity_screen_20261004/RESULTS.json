@@ -1,0 +1,128 @@
+[
+  {
+    "model": "onnx/CIFAR100_resnet_large.onnx",
+    "source_forms": 1600,
+    "groups": 325,
+    "windows": 5,
+    "downstream_rows": 320,
+    "source_classes": {
+      "outer_crossing": 10,
+      "strict_active": 727,
+      "strict_inactive": 863
+    },
+    "group_sizes": {
+      "4": 25,
+      "5": 300
+    },
+    "group_crossing_histogram": {
+      "0": 316,
+      "1": 8,
+      "2": 1
+    },
+    "group_zero_touch_histogram": {
+      "0": 325
+    },
+    "anchor_pairs": {
+      "outer_crossing/strict_inactive": 1,
+      "strict_active/strict_active": 59,
+      "strict_active/strict_inactive": 65,
+      "strict_inactive/outer_crossing": 1,
+      "strict_inactive/strict_active": 76,
+      "strict_inactive/strict_inactive": 123
+    },
+    "strict_lemma_eligible_groups": 324,
+    "multi_cross_groups": 1,
+    "multi_cross_without_zero_touch": 1,
+    "residual_classes": {
+      "outer_crossing": 21,
+      "strict_active": 467,
+      "strict_inactive": 462
+    },
+    "exact_zero_residuals": 0
+  },
+  {
+    "model": "onnx/CIFAR100_resnet_medium.onnx",
+    "source_forms": 1600,
+    "groups": 325,
+    "windows": 5,
+    "downstream_rows": 640,
+    "source_classes": {
+      "outer_crossing": 53,
+      "strict_active": 551,
+      "strict_inactive": 996
+    },
+    "group_sizes": {
+      "4": 25,
+      "5": 300
+    },
+    "group_crossing_histogram": {
+      "0": 277,
+      "1": 43,
+      "2": 5
+    },
+    "group_zero_touch_histogram": {
+      "0": 325
+    },
+    "anchor_pairs": {
+      "outer_crossing/strict_active": 1,
+      "outer_crossing/strict_inactive": 7,
+      "strict_active/outer_crossing": 3,
+      "strict_active/strict_active": 67,
+      "strict_active/strict_inactive": 112,
+      "strict_inactive/outer_crossing": 6,
+      "strict_inactive/strict_active": 38,
+      "strict_inactive/strict_inactive": 91
+    },
+    "strict_lemma_eligible_groups": 320,
+    "multi_cross_groups": 5,
+    "multi_cross_without_zero_touch": 5,
+    "residual_classes": {
+      "outer_crossing": 59,
+      "strict_active": 368,
+      "strict_inactive": 523
+    },
+    "exact_zero_residuals": 0
+  },
+  {
+    "model": "onnx/TinyImageNet_resnet_medium.onnx",
+    "source_forms": 1600,
+    "groups": 325,
+    "windows": 5,
+    "downstream_rows": 640,
+    "source_classes": {
+      "outer_crossing": 26,
+      "strict_active": 621,
+      "strict_inactive": 953
+    },
+    "group_sizes": {
+      "4": 25,
+      "5": 300
+    },
+    "group_crossing_histogram": {
+      "0": 301,
+      "1": 22,
+      "2": 2
+    },
+    "group_zero_touch_histogram": {
+      "0": 325
+    },
+    "anchor_pairs": {
+      "outer_crossing/strict_inactive": 1,
+      "strict_active/outer_crossing": 1,
+      "strict_active/strict_active": 47,
+      "strict_active/strict_inactive": 46,
+      "strict_inactive/outer_crossing": 2,
+      "strict_inactive/strict_active": 104,
+      "strict_inactive/strict_inactive": 124
+    },
+    "strict_lemma_eligible_groups": 323,
+    "multi_cross_groups": 2,
+    "multi_cross_without_zero_touch": 2,
+    "residual_classes": {
+      "outer_crossing": 31,
+      "strict_active": 424,
+      "strict_inactive": 495
+    },
+    "exact_zero_residuals": 0
+  }
+]

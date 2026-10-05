@@ -1,0 +1,32 @@
+# 联合残余从纸面定理进入可靠算术
+
+日期2026-10-06 Australia/Sydney，分支redu-hz，HEAD f1bc0f16612bd3f2112f2970174ec2f7cc3bf5ac。执行前后生产tracked binary diff SHA256均为29baf0c0fcc19070a97a5ddf0fea3d1591ff937d00abca28689e9a871a530bc5；继承生产快照的candidate_sha256为15198f4ddc40dfa1c37456737b0f2080ddee2c653e2b9d0010cf245b6c5fec75，两者是不同口径，不混用。
+
+上一用户状态回合仅汇报已有材料，记no progress。本轮完成D263纸面研究封存，实现D264可靠共同支持算术，并完成一次完整4285项数学回放，故本轮为progress。完整用户Goal保持active，GPU、smooth/Transformer、13家族、CIFAR/Tiny及新家族目标均未缩减。
+
+## 有针对性的实现选择
+
+未继续为新关系实例化旧六乘积列，而是先实现其需要的共同支持：两行系数在同一来源轴上保持关联，定号重叠只计可证下界，支持始终向外。新行的实际H绑定与终端消费仍需完成，不把核心叫作已建成Neural-HZ。
+
+选择保留完整父来源系数：纸面负对照显示a=0会破坏现有严格例。选择不追加运行旧来源worker：旧全阶段已用255549650/256000000，仅找到6205824可删除重复主项，尚无新全算法净费用证明。选择原数学完整回放而非只跑四项新测试，原人口和60秒门保持。
+
+实现仅复用冻结D259的可靠数值编码及求和误差论证，不调用其模型执行或把旧资格转授。新增核心不是外部验证helper，无solver调用；静态向量操作目前为NumPy多次遍历，不宣称融合GPU或已取得真实速度收益。
+
+## 执行和归档
+
+六个候选文件均在首次import、AST、compile、collection和执行前冻结。数学RUN只执行一次，全部结果与失败保护收据自动写入独占目录；原历史writer仅局部重定向。session83252最终exit0，无后台任务等待。全部新增与源码写入仅在experiments/neural_hz_20260831新隔离目录，生产、/data1/Kane/HyZor及旧冻结版本只读，无commit/push。
+
+关键收据为
+
+```text
+a95d8cbb27588d04cb553e6505fbc9f0d51a876a0d65f1e70e2233aeecc651aa  freeze.json
+2575b75d5eff761cfef1b9a6acc642b5b4e68f7acf66d2dda29c27a458fa25c3  mathematical exit.json
+53fc507ce23bac59c751eb8d67462acd37ff215a49c4c1251ad05d6a115442b8  mathematical preregistered.json
+4841099297986ebb4259428da56688986395fa32548810dab5717ba7fca15cc7  mathematical inventory.json
+6f8390e637270d421a327519928b4dd32437dd941072cebe153ff059e0444f2b  mathematical summary.json
+c6d8f80e171fc88303aabc6d392a33bca8c934f48c9dfaf92f19b93b75ea2e97  D263 ARCHIVE.sha256
+```
+
+数学新资格仅joint_support_kernel_math_passed=true；source、native、GPU、complete-network、new-domain和new-capability仍false，三项新增成绩均0。没有完整正式回放，所以正式1870及独立61保持历史账而非本候选已重证的成绩。
+
+本地写作技能用于把数学、数值、来源和能力分开记录，沿用本地Markdown格式，没有创建外部Page。源码、证明引用、全部本RUN工件及历史关键锚点由ARCHIVE.sha256封存；候选冻结文件不再改动，后继在新版本推进真实来源和正常消费者。

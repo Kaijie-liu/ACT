@@ -361,6 +361,22 @@ class HybridZConfig:
     max_input_dim: int = 1024
     sigmoid_segments: int = 2
     fuse_sigmoid_affine: bool = False
+    signed_relu_sharing: bool = False
+    signed_relu_compact: bool = True
+    signed_relu_cancellation: bool = False
+    signed_relu_cancellation_mixed_only: bool = False
+    signed_relu_cancellation_pairs_only: bool = False
+    signed_relu_cancellation_elimination_max_cardinality: int = 0
+    signed_relu_cancellation_two_pair_min_outputs: int = 0
+    sparse_affine_nnz_guard: bool = False
+    sparse_relu_nnz_guard: bool = False
+    sparse_conv_csr_builder: bool = False
+    sparse_deferred_relu_materialization: bool = False
+    sparse_lazy_affine_dag: bool = False
+    sparse_frontier_image_rebase: bool = False
+    sparse_phase_separated_relu: bool = False
+    sparse_phase_selective_materialization: bool = False
+    sparse_implicit_conv_dag: bool = False
 
 
 @dataclass

@@ -1,0 +1,30 @@
+# 联合支持核心的完整数学预注册
+
+日期为2026-10-06 Australia/Sydney，分支redu-hz，commit f1bc0f16612bd3f2112f2970174ec2f7cc3bf5ac，生产tracked binary diff SHA256为29baf0c0fcc19070a97a5ddf0fea3d1591ff937d00abca28689e9a871a530bc5。所有新候选源码在首次import、AST、compile、collection或数值执行之前由freeze.json认证；冻结后不得补丁、重试或重用RUN。
+
+## 冻结范围
+
+六个候选文件为CONTRACT.md、PREREG.md、joint_support.py、test_joint_support.py、run_math.py、collection_contract.py。冻结同时记录D263纸面定理及D261完整数学收据，全部历史源码、依赖、原模型和spec身份只读认证，不转授资格。最后成功人口4281项/230文件必须完整原序保留。
+
+新增plain tests精确为以下四项，没有参数化隐藏扩张：
+
+1. test_01_exact_and_interval_fraction_oracle
+2. test_02_shared_source_control_and_bias
+3. test_03_default_off_identity_and_rejection
+4. test_04_shared_budget_and_summary
+
+独立Fraction oracle计算共同源盒上四个仿射方向的精确支持。固定少量系数区间端点枚举仅是算术测试，不在候选中搜索原相位、输入、性质或模型。可靠性比较使用作为实际输入的二进制浮点精确值；十进制有理正控的输入舍入与支持舍入分别说明，不能只比较近似打印值。
+
+## 唯一执行阶段
+
+RUN为results/d264_joint_support_kernel_20261006_v1，schema为d264_joint_support_kernel_v1。使用继承认证Python、CPU0、单线程、CUDA隐藏、禁bytecode/pytest插件自动加载、importlib模式和单pytest进程。完整4285项/231文件必须有序一致，零failure/error/skip，测试总墙钟不超过原60秒。AS16GiB和监督器及测试侧原双1GiB宿主观察保持。
+
+所有历史evidence writer仅在其导入模块内改写目的地到本RUN的独占子目录，包含最新D261；不修改旧函数代码、不全局monkeypatch Path、不写旧结果。新组件只写唯一summary.json。执行前后认证源码、依赖、输入、生产provenance及实际收集人口。失败保留唯一exit、异常及部分工件，不修改冻结版本后重跑。
+
+核心普通正例共用原256M work、200M operation、64M entries、512bit数学预算；独立小预算仅用于预注册的资源失败负控，不能分开正常计算逃避总账。记录核心实际work和entries不等于完整来源及全网络成本。
+
+## 明确不注册的阶段
+
+本版本不执行来源worker、原模型运行、原生HZ安装、GPU、shadow或全量回放。新增核心和四项新增测试不调用LP/MILP；完整继承数学人口中的既有固定LP对照照常保留，不删除或转称候选helper。来源阶段缺少完整新总成本证明，不能在已用255549650/256000000的旧worker上直接追加本组件。保留下一来源版本原三完整前缀、97532位置、2853记录、40M证据一次预付、原时间/内存/预算门，不裁剪或提高门槛。
+
+通过仅更新本RUN的joint_support_kernel_math_passed，不更新正式baseline、旧候选资格或生产默认。formal_gain、independent_e0_gain、new_benchmark_solves全部0，native/GPU/new_domain/new_capability全部false。用户完整Neural-HZ、13家族、CIFAR/Tiny、smooth/Transformer及新家族目标继续active。

@@ -1,0 +1,248 @@
+{
+  "advancement_gate": "Any production loader repair must remain default-off until a complete 2413 replay retains all 1870 solved rows and every one of 13 family counts.",
+  "branch": "redu-hz",
+  "candidate_certificate": {
+    "accepted": true,
+    "batchnorm_pair_count": 19,
+    "edge_count": 88,
+    "graph_sha256": "0681a567dd0a008dbbc8a83f2829652209f0b3dbad66f29640da1bb19995430e",
+    "issue_count": 0,
+    "layer_count": 81
+  },
+  "claims": {
+    "all_13_families_replayed": false,
+    "c3_target_authorized": false,
+    "full_2413_replay": false,
+    "hz_runtime_lineage_adapter_proven": false,
+    "production_patch": false
+  },
+  "commit": "f1bc0f16612bd3f2112f2970174ec2f7cc3bf5ac",
+  "default_enabled": false,
+  "family_non_regression_constraint": 13,
+  "formal_baseline": "1870/2413",
+  "format_version": "tiny_iid143_bn_graph_faithfulness_audit_v1",
+  "gain": 0,
+  "issue_counts": {
+    "bn_scale_bias_graph_event_missing": 19,
+    "predecessor_producer_mismatch": 19
+  },
+  "issue_layer_ids": {
+    "bn_scale_bias_graph_event_missing": [
+      4,
+      8,
+      12,
+      15,
+      19,
+      23,
+      27,
+      31,
+      35,
+      39,
+      43,
+      47,
+      50,
+      54,
+      58,
+      62,
+      66,
+      70,
+      74
+    ],
+    "predecessor_producer_mismatch": [
+      4,
+      8,
+      12,
+      15,
+      19,
+      23,
+      27,
+      31,
+      35,
+      39,
+      43,
+      47,
+      50,
+      54,
+      58,
+      62,
+      66,
+      70,
+      74
+    ]
+  },
+  "layer_28_36": [
+    {
+      "id": 28,
+      "in_var_first": 722880,
+      "kind": "RELU",
+      "out_var_first": 747968,
+      "preds": [27],
+      "succs": [29]
+    },
+    {
+      "id": 29,
+      "in_var_first": 747968,
+      "kind": "CONV2D",
+      "out_var_first": 773056,
+      "preds": [28],
+      "succs": [30, 31]
+    },
+    {
+      "id": 30,
+      "in_var_first": 773056,
+      "kind": "SCALE",
+      "out_var_first": 798144,
+      "preds": [29],
+      "succs": []
+    },
+    {
+      "id": 31,
+      "in_var_first": 798144,
+      "kind": "BIAS",
+      "out_var_first": 823232,
+      "preds": [29],
+      "succs": [32]
+    },
+    {
+      "id": 32,
+      "in_var_first": 823232,
+      "kind": "ADD",
+      "out_var_first": 848320,
+      "preds": [31, 24],
+      "succs": [33, 40]
+    },
+    {
+      "id": 33,
+      "in_var_first": 848320,
+      "kind": "CONV2D",
+      "out_var_first": 873408,
+      "preds": [32],
+      "succs": [34, 35]
+    },
+    {
+      "id": 34,
+      "in_var_first": 873408,
+      "kind": "SCALE",
+      "out_var_first": 898496,
+      "preds": [33],
+      "succs": []
+    },
+    {
+      "id": 35,
+      "in_var_first": 898496,
+      "kind": "BIAS",
+      "out_var_first": 923584,
+      "preds": [33],
+      "succs": [36]
+    },
+    {
+      "id": 36,
+      "in_var_first": 923584,
+      "kind": "RELU",
+      "out_var_first": 948672,
+      "preds": [35],
+      "succs": [37]
+    }
+  ],
+  "provenance": {
+    "prototype_relative_path": "experiments/neural_hz_20260831/bn_graph_faithfulness_certificate_prototype.py",
+    "tf_cnn_sha256": "8c2ebc9c3cfac78360af36770f54990704c2e031d4c42ddb58532e515c6762a9",
+    "torch2act_sha256": "d6cb15ec6b0dedef0d30bd0441f1dc98e02f6202bcb1e279c337d219c7c33d44",
+    "trial8_relative_path": "experiments/neural_hz_20260831/results/trial8_phase_selective__tinyimagenet_2024__iid143__relu63_v1.json",
+    "trial8_sha256": "f1f6abcdc87d96e9d8898d0f667d8087b2a72a9898f44d61b4e123426d45b274"
+  },
+  "recorded_date": "2026-08-31",
+  "relu36_path_diagnostic": {
+    "accepted": false,
+    "bias_transition_layer_ids": [31, 35],
+    "candidate_graph_sha256": "0681a567dd0a008dbbc8a83f2829652209f0b3dbad66f29640da1bb19995430e",
+    "expected_operators": [
+      [29, "implicit_conv2d"],
+      [30, "diagonal_scale"],
+      [33, "implicit_conv2d"],
+      [34, "diagonal_scale"]
+    ],
+    "issues": [
+      [30, "unaccounted_linear_event", "diagonal_scale"],
+      [34, "unaccounted_linear_event", "diagonal_scale"]
+    ],
+    "observed_operators": [
+      [29, "implicit_conv2d"],
+      [33, "implicit_conv2d"]
+    ],
+    "observation_source": "Trial8 lazy core cited in S0_C2_REAL_GRAPH_ZERO_HIT_AUDIT_20260831.md; no new verifier/cache run",
+    "path_layer_ids": [29, 30, 31, 32, 33, 34, 35, 36],
+    "runtime_lineage_adapter_proven": false
+  },
+  "relu36_scale_stats": [
+    {
+      "entries": 25088,
+      "in_var_first": 773056,
+      "layer_id": 30,
+      "maximum": 2.1341762976063428,
+      "minimum": -0.04747119835380177,
+      "not_equal_one": 25088,
+      "out_var_first": 798144
+    },
+    {
+      "entries": 25088,
+      "in_var_first": 873408,
+      "layer_id": 34,
+      "maximum": 0.02266037406504889,
+      "minimum": 0.00014627055224732068,
+      "not_equal_one": 25088,
+      "out_var_first": 898496
+    }
+  ],
+  "repair_plan": {
+    "authorized": true,
+    "candidate_graph_sha256": "0681a567dd0a008dbbc8a83f2829652209f0b3dbad66f29640da1bb19995430e",
+    "default_enabled": false,
+    "gain": 0,
+    "reason": "authorized_bn_sibling_to_chain_clone_only",
+    "replacements": [
+      [4, [2], [3]],
+      [8, [6], [7]],
+      [12, [10], [11]],
+      [15, [13], [14]],
+      [19, [17], [18]],
+      [23, [21], [22]],
+      [27, [25], [26]],
+      [31, [29], [30]],
+      [35, [33], [34]],
+      [39, [37], [38]],
+      [43, [41], [42]],
+      [47, [45], [46]],
+      [50, [48], [49]],
+      [54, [52], [53]],
+      [58, [56], [57]],
+      [62, [60], [61]],
+      [66, [64], [65]],
+      [70, [68], [69]],
+      [74, [72], [73]]
+    ],
+    "source_graph_sha256": "5f5b63d0f0d914d887496ace7d3fdf9059cba03ce1168cc4c3dce72219a1820c"
+  },
+  "source_certificate": {
+    "accepted": false,
+    "batchnorm_pair_count": 19,
+    "checked_input_variables": 1475736,
+    "edge_count": 88,
+    "graph_sha256": "5f5b63d0f0d914d887496ace7d3fdf9059cba03ce1168cc4c3dce72219a1820c",
+    "issue_count": 38,
+    "layer_count": 81,
+    "malformed_input": false,
+    "predecessor_successor_asymmetry_count": 0
+  },
+  "target": {
+    "converted_vnnlib": "experiments/neural_hz_20260831/vnnlib_v2_full_v1/tinyimagenet_2024/vnnlib/TinyImageNet_resnet_medium_prop_idx_3553_sidx_3392_eps_0.0039.vnnlib",
+    "converted_vnnlib_sha256": "d105a0c7ca711eb46b9f20ab772a0564444569d06f6206bca0e95d5a19990cca",
+    "dtype": "torch.float64",
+    "family": "tinyimagenet_2024",
+    "iid": 143,
+    "input_shape": [1, 3, 56, 56],
+    "model": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx",
+    "model_sha256": "234b04b151d640f8fc859fab00729448ba533d8feb3679427cbadb94467ec776"
+  },
+  "verifier_run": false
+}

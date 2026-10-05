@@ -1,0 +1,81 @@
+{
+  "scope": "descriptive audit of two sealed model files after failed full three-source run; not a rerun or qualification",
+  "source_hashes": {
+    "complete_0.json": "0743a8aef9496ab484466e727a3b6f379fd9da84143d129dbbd0e1db5a362f93",
+    "complete_1.json": "7728a92c5fb800eb3ca71f4f49c2102c0f0e8f640a48b02531e095bf976c1e76"
+  },
+  "crossing_rule": "lower numerator < 0 and upper numerator > 0; denominators positive; no floating tolerance",
+  "relevant_crossing_rule": "difference forms: either original receiver ordinary bound crosses zero; companion forms: w ordinary bound crosses zero",
+  "models": [
+    {
+      "model": "onnx/CIFAR100_resnet_large.onnx",
+      "pairs": 160,
+      "receiver_rows": 320,
+      "forms": 640,
+      "forms_with_relevant_crossing": 6,
+      "nonconstant_with_relevant_crossing": 2,
+      "hinge_with_relevant_crossing": 0,
+      "last_gap_with_relevant_crossing": 2,
+      "hinge_records": []
+    },
+    {
+      "model": "onnx/CIFAR100_resnet_medium.onnx",
+      "pairs": 320,
+      "receiver_rows": 640,
+      "forms": 1280,
+      "forms_with_relevant_crossing": 76,
+      "nonconstant_with_relevant_crossing": 41,
+      "hinge_with_relevant_crossing": 3,
+      "last_gap_with_relevant_crossing": 38,
+      "hinge_records": [
+        {
+          "position": [0, 0],
+          "channels": [38, 39],
+          "form": "companion_lower",
+          "h_state": "strict_inactive",
+          "w_state": "crossing_outer_bound",
+          "relevant_crossing": true,
+          "nonconstant": true,
+          "last_gap": true,
+          "simple_stability_audit": "unresolved"
+        },
+        {
+          "position": [0, 7],
+          "channels": [126, 127],
+          "form": "difference_upper",
+          "h_state": "crossing_outer_bound",
+          "w_state": "strict_active",
+          "relevant_crossing": true,
+          "nonconstant": true,
+          "last_gap": true,
+          "simple_stability_audit": "unresolved"
+        },
+        {
+          "position": [4, 4],
+          "channels": [52, 53],
+          "form": "difference_upper",
+          "h_state": "strict_inactive",
+          "w_state": "strict_inactive",
+          "relevant_crossing": false,
+          "nonconstant": true,
+          "last_gap": true,
+          "simple_stability_audit": "redundant: r=t=0 and G_plus>=0 on the phase cube"
+        },
+        {
+          "position": [4, 4],
+          "channels": [96, 97],
+          "form": "difference_lower",
+          "h_state": "crossing_outer_bound",
+          "w_state": "strict_inactive",
+          "relevant_crossing": true,
+          "nonconstant": true,
+          "last_gap": true,
+          "simple_stability_audit": "redundant: t=0, r>=0 and -G_plus<=0 on the phase cube"
+        }
+      ]
+    }
+  ],
+  "full_three_source_qualified": false,
+  "native_HZ_admitted": false,
+  "formal_gain": 0
+}

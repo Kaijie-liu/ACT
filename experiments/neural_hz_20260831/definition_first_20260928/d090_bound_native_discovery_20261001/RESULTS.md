@@ -1,0 +1,27 @@
+# 依赖修正版通过数学门但完整归档检查超预算
+
+本版本修复了导入身份缺项，并成功认证、解码所选真实归档；随后在完整存活root遍历期间耗尽whole工作预算，主机峰值内存也超过门槛。尚未进入关系发现，不能报告真实适用人口、成功转换或能力收益。已消费版本不再修改或重跑。
+
+## 数学与归档终态
+
+唯一数学RUN为 results/d090_bound_native_discovery_20261001_v1。完整继承的3825项、183文件全部通过，测试子进程50.91225307993591秒，满足原60秒门。监督器连同来源检查及收尾共62.13230086863041秒；60秒门作用于子进程启动、收集、测试和JUnit，不把监督总时长混称测试时长。source/input drift为空，provenance未漂移；无新增或删减测试。
+
+一次归档worker在11.06587465107441秒终止，外监督子进程共11.889773519709706秒，worker_exit=1、timeout=false。116文件的完整act身份闭包及初始/解码后的未绑定模块检查均已通过；归档完整SHA256和68718806字节契约通过，archive_loaded与archive_authentication_completed为true。
+
+停止原因是完整root遍历在closed_root_header前请求16工作单位，而whole已用255999993，超过256000000门。branch已用172795252，evidence为0。peak RSS为1364664320字节，超过1073741824字节；RSS增长1343373312字节，memory_gate_passed=false。tracemalloc peak为288430730字节，追踪元数据247221344字节。完整root账未完成，不能用尚未返回的局部数字冒充完整存储资格。
+
+archive_census_completed、transformed、all_groups_applied及archive_probe_qualified均为false。source_drift和identities_unchecked为空，监督器本身内存门通过；这些不抵消worker的工作量与内存失败。worker.json、worker.log及supervisor.json已自动保存，无后台实验继续运行。
+
+## 有界静态诊断
+
+回执明确C41 copied_numeric_entries/bytes均为0，84次numeric reducer且readonly reducer为0；其临时memo已释放。不能把本次超额归因于不存在的数值owner复制。
+
+一个有源码依据的额外开销是archive_probe.py的full_roots在标量类型分支前，为所有唯一对象执行seen.add(id(value))，包括Python整数。归档捕获代码保存完整net；TorchToACT._alloc_ids以list(range(...))逐神经元创建整数，保存在Layer.in_vars/out_vars。因而root遍历会为这些不可变标量另外建立身份集合，叠加哈希表和tracemalloc记录。
+
+这说明一个可修的成本来源，但现有回执没有路径/阶段分项计数，不能断言全部约35M解码后branch费用或整个RSS峰值都来自该列表。后续若修复，应对普通不可变标量序列完整流式检查并保守计数，保留所有元素、复合对象alias/cycle及数值owner核验；需要重新证明费用和存储上界，不能跳过root、缩人口或提高门槛。本轮不继续开计账wrapper，以免支撑工作替代域定义主线。
+
+## 定义主线与记账
+
+同轮D091得到共同规范实现的组合证明和第三门严格控制，另存独立理论文件；它不继承本诊断的真实模型资格，也不把纸面间隙算为CIFAR100/TinyImageNet收益。下一项核心工作是将结构统一的条件观察和槽界生成做成默认关闭组件，验证保留原H0全部因子及原输入重构，并核对native舍入后的分离是否仍成立。
+
+2026-10-01，redu-hz，commit f1bc0f16612bd3f2112f2970174ec2f7cc3bf5ac。正式1870/2413（1063 CERT+807 validated ADV）、独立CIFAR10025和TinyImageNet36共61/400不变，formal_gain=0。无终端求解、GPU、shadow或全量回放。本版本冻结七源码及freeze未改变；旧归档和生产文件未改，未commit/push。文档技能用于分别存档数学成功、实际失败和未证推断。

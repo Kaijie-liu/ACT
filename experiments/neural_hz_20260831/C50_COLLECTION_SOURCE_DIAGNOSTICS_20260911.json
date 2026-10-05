@@ -1,0 +1,25 @@
+{
+  "schema": "c50_collection_definition_origin_diagnostic_v1",
+  "read_only_collection": true,
+  "tests_executed": 0,
+  "collection_exit_code": 0,
+  "collected_cases": 2120,
+  "pytest_collection_wall_s": 3.26,
+  "original_full_qualification_closed": true,
+  "qualification_module_audits_completed": 64,
+  "first_rejected_collection_file": "test_c6_support_affine_plan_v2.py",
+  "import_alias_groups": [
+    {
+      "collection_file": "test_c6_support_affine_plan_v2.py",
+      "definition_file": "test_c6_support_affine_plan_v1.py",
+      "items": 31,
+      "definition_module": "experiments.neural_hz_20260831.test_c6_support_affine_plan_v1",
+      "source_sha256": "1bebecbec36f63ea58afaf086074ab03901856c2eb1c5495341c0e40478c66fd",
+      "matches_original_frozen_source": true
+    }
+  ],
+  "cause": "module_audit requires every selected item's unwrapped function co_filename to equal the collecting module path; 31 existing imported test items have a different, already frozen definition source",
+  "source_relationship": "v2 imports the original v1 tests with import * and an autouse fixture substitutes v2 plan/SupportEngine in the original module",
+  "no_tests_were_removed_or_passed_by_this_diagnostic": true,
+  "formal_gain": 0
+}

@@ -1,0 +1,9 @@
+# 组合传递研究的续接入口
+
+最新执行里程碑仍为[D093](definition_first_20260928/d093_sparse_native_relay_20261001/RESULTS.md)的3833项185文件一次通过；没有新增真实网络、GPU或正式得分。D094只有纸面与来源审查，不是新的执行资格。
+
+本轮新证据见[真实入口费用与原门范围](definition_first_20260928/d094_compositional_gate_provenance_20261001/ENTRY_COST.md)：完整原门人口前提下，照搬旧发现及重复认证路径的费用已超门，因此不应直接启动原计划的fresh worker。注意下界前提，不把聚合计数当实际人口认证，也不把C5的island工作门扩大为全网络工作门。
+
+数学续接见[共同实现的组合传递与相位出生](definition_first_20260928/d094_compositional_gate_provenance_20261001/THEORY.md)。它区分旧Graph有效性的传递与每个原状态的共同扩展，明确在线ReLU出生必须在(theta,b)上覆盖零点两个标签。下一步须形成可信构造及数值lowering合同，而非只删掉旧扫描或改预算常数。
+
+继续保留全部旧研究、源数据与失败结果。正式1870/2413及独立61/400不变，Goal active。没有本轮后台模型作业。所有本轮结果与限制按文档技能分别落盘，不依赖聊天记忆。

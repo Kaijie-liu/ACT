@@ -1,0 +1,54 @@
+# 混合源相位组件的唯一完整数学回放
+
+本阶段实现CONTRACT.md及已归档D244定理。冻结前只允许静态读写/审阅，禁止候选import、AST、compile、collection或数值试跑。六源为CONTRACT.md、PREREG.md、mixed_relation.py、test_mixed_relation.py、run_math.py、collection_contract.py；审查结束后SHA256冻结，本版本只执行一次。失败原样保留，不修改或重跑。
+
+## 完整测试人口
+
+继承D243的4189 tests/223 files、原有序nodeids、全部来源/依赖/证据闭包和14输入，新增以下20项无参数化测试，总4209/224；不skip，不用历史receipt替代执行。
+
+1. test_01_default_off_and_frame_identity
+2. test_02_shared_source_recovery_without_direct_parent_edges
+3. test_03_stored_row_physical_projection_certificate
+4. test_04_complete_single_child_prefix_witnesses
+5. test_05_joint_children_over_convexified_parents
+6. test_06_all_qualified_old_tau_certificates
+7. test_07_fixed_integer_extensions_and_decoder
+8. test_08_original_zero_phase_labels
+9. test_09_complete_nonzero_residual_and_derived_tau
+10. test_10_same_range_distinct_source_identity
+11. test_11_asymmetric_parent_normalization
+12. test_12_bn_error_and_shared_consumers
+13. test_13_binary_source_and_retained_predicates
+14. test_14_difference_only_tail_alias
+15. test_15_rank_and_dependent_parent_rejection
+16. test_16_guard_and_invalid_input_rejection
+17. test_17_sticky_shared_budget
+18. test_18_complete_materialized_cost
+19. test_19_original_state_immutability
+20. test_20_summary_and_evidence_boundary
+
+点与分解只检查已证明数学语义，候选不读取它们作攻击/采样/方向选择。所有普通正例共享一个Budget；独立拒绝fixture使用各自事前声明账本。固定27点、16个全零标签、完整强参照、非负存储行证书、来源/重构及资源拒绝按冻结测试执行。
+
+## 历史只读和新证据
+
+D112及D207/208/209/214/228/229/230/231/240全部writer隔离保留。新增D243 test_source_relation.py的_record_file重定位：firstlineno46、源码SHA256为1954a87da60a9da4601e9bbb292ae9bbeb3dac75976724304fb48d48ccd9a026，20项全部执行，仅证据目的改为本RUN/inherited_d243_controls/summary.json；不改冻结源、断言或原函数字节码。
+
+D241只作既有参数/拓扑来源参考，不重跑worker。调用已认证D243 runner的source_reference仍传原D240 manifest，保留D241历史4169/222，不伪改历史人口。D244仅纸面依据，不是数学通过receipt。
+
+唯一RUN是experiments/neural_hz_20260831/results/d245_mixed_source_component_20261005_v1，首次独占创建即消费本版本。唯一命令：
+
+~~~text
+/data1/Kane/miniconda3/bin/python -B experiments/neural_hz_20260831/definition_first_20260928/d245_mixed_source_component_20261005/run_math.py --enabled
+~~~
+
+CPU0、单线程、CUDA隐藏、AS16GiB；完整pytest含导入/collection/全部测试/JUnit限60秒。监督器1GiB及reserve65536不变，候选work256M/单公共操作200M/entries64M/512位不变。阶段限定不冒充完整模型资源资格。
+
+独占保存preregistered.json、inventory.json、tests.log、tests.xml、summary.json、exit.json及所有继承证据，失败也保留工件。观察超时只轮询原进程，不重启。后验核对有序人口、JUnit零failure/error/skip、来源/输入前后SHA与工作区provenance。
+
+## 资格和不变项
+
+schema=d245_mixed_source_component_v1，required_tests=4209，required_test_files=224。mathematical_stage_only、fixed_component_lp_controls_registered、domain_definition_changed、new_component_solver_free为true；定义标志不等于新集合表达力或论文创新完成。negative_audit_only、new_set_class、solver_rescue_registered、worker_stage_registered为false。全部原模型/native/GPU/完整物理、新域及能力资格为false，formal_gain=independent_e0_gain=new_benchmark_solves=0。
+
+分支redu-hz，commit f1bc0f16612bd3f2112f2970174ec2f7cc3bf5ac，tracked binary diff SHA256为29baf0c0fcc19070a97a5ddf0fea3d1591ff937d00abca28689e9a871a530bc5。只写本新源目录与RUN，不改生产、默认开关、历史模型/日志/成绩、冻结版本，不commit/push。
+
+上一轮D244定理与强参照是progress；本轮实现和检验同H组件，不替代整体Goal。正式1870/2413及独立CIFAR10025+TinyImageNet36=61/400不变。数学之后仍须完整真实人口、shadow、逐家族及全量和四并发门；GPU、smooth、Transformer与外部家族保持完整目标。

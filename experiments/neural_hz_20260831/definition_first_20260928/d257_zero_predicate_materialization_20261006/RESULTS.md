@@ -1,0 +1,39 @@
+# 相位关系通过惰性读出和真实 ReLU 接口的结果
+
+本轮默认关闭的零值谓词运输组件通过完整数学门：4269项、228个文件，零失败、错误或skip。D255相位关系不再只在原局部HZ中作对照；在本次构造样例上，它经过完整Add读出、实际物化及普通终端后仍有效，也能穿过一次真实生产selective ReLU变换。没有真实模型、GPU或新解收益。
+
+唯一RUN为results/d257_zero_predicate_materialization_20261006_v1，唯一监督会话11722已终态exit0。pytest日志时间51.65秒，监督器测得完整pytest墙钟52.77708591520786秒，符合60秒门；含认证及后检查的监督器总墙钟67.39948152005672秒，二者不得混淆。保留13个旧测试警告，不将其写成零警告。
+
+## 实际完成的语义检查
+
+沿用D255的同一构造相位关系，原source有15个连续因子和4个二元位；增强追加6个连续辅助，不新增关系二元位。完整读出保留14个输出坐标和5项输入decoder。另一条skip来源只有5个连续因子、没有二元位，且带原局部S中没有的xi0+xi1=0等式；其非零读出及bias通过Add保留。旧窄source也可在17连续、5二元的全frame高水位下认证，增强后为23连续、5二元，不替换原可达source对象。
+
+三个纯线性算子构成的零读出链被精确规范化成一个零CSR，checkpoint、部分keep_rows以及全false keep_rows都保留source谓词。全false时bias按原生产物化语义保留，不错误宣称整个仿射表达式归零。真实ImplicitConv2DOp无需展开为矩阵；未知算子、NaN、形状损坏和kernel漂移均拒绝。
+
+第7项对真正的完整物化输出作普通终端降级，并检查所有原连续/二元列、原谓词及额外skip谓词。相同固定方向的LP对照由2.75收紧到2.05859375；原存储行证书F<=265/128仍成立。这是已有D255关系被正确运输的证据，不是新一份能力提升，也不称这个较粗证书为紧界。候选本身无求解器；只有预注册的两次普通终端LP作测试对照。
+
+18个固定整数见证覆盖16种原零点标签组合，正确处理D255证书顺序oldcont/oldbin/aux与原生矩阵顺序oldcont/aux/oldbin之间的映射。全部输出及decoder保持。
+
+第9项使用实际HybridzTF对象和生产ReLU构造函数，私有物化入口确实被调用，selective分支成功。稳定正读出的9个非零支撑留在lazy分支，crossing行进入core，常负行归零；保留原4个二元位，并新增后继ReLU本来需要的1个原生相位。检查了该后继门的合法整数见证以及零点两标签。没有用手写门替代生产操作，也没有安装完整在线HybridzTF。
+
+第11项通过真实生产apply的ValueError捕获分支检查资源失败：即使内部捕获预算异常，外层仍sticky拒绝，并恢复active meter。未按失败状态改走第二条验证路径。
+
+## 费用和资格
+
+共享组件Budget记录work 898463、累计entries 287713。这包括本次新检查/运输/规范化及所调用的已计费D255操作，不包括所有测试fixture构造和原生产传播内部循环；全部测试步骤计入上述pytest墙钟。它不是完整真实前向、物理内存或加速结果，也不能与覆盖人口不同的上一版本计数比较为提速。
+
+监督器traced peak为21430357字节，tracer metadata为7398832字节，RSS highwater增量为0；这些不是pytest子进程或GPU的完整物理用量。原资源及真实三来源门不变。
+
+exit.json在全部后置检查通过后置zero_predicate_materialization_passed=true。测试期间生成的summary.json保留该标志false，明确资格还需监督器后检查；二者阶段不同，不改写旧summary。原rebase/quantified资格仅保留历史收据，当前新RUN相应标志仍false。
+
+source_drift和input_drift为空，provenance_drift=false。独立只读核查确认JUnit与inventory的有序人口一致，完整保留旧4257项前缀；7936个source身份包含原7886个全部映射，14个input身份不变。35个RUN工件逐一通过SHA核验，RUN实际文件集合正好为这些工件加exit.json共36个，旧证据的隔离副本与旧文件相符。
+
+actual_model、online_lifecycle、GPU、complete_physical、new_domain和new_capability资格均未授予。此规则仍是现有HZ语义内的接入支撑，不是独立新集合类。
+
+正式成绩保持1870/2413，其中1063 CERT和807 validated ADV；独立E0保持CIFAR10025、TinyImageNet36，共61/400。所有本轮正式gain为0，不相加，也没有完成全2413或独立400回放。
+
+## 下一实际缺口
+
+不再重复证明零项是否保留谓词。下一接入需把已过数学门的组件与真实同frame来源、完整消费者和原子高水位发布连接，覆盖实际deferred/precomputed及最终property物化，再补齐固定三来源完整前缀的可靠数值与执行总账。本轮未执行deferred路径，未解决生产lazy ASSERT drop，也没有新增lazy Concat支持；私有函数调用闭包不能冒充整条在线路径。
+
+新工作仍须另建目录、预注册并冻结，不改本轮六源或RUN。随后才有真实同结构/shadow、13家族、全2413、独立400及四并发不回退的资格。本轮组件完成不结束Neural-HZ定义创新、GPU、smooth、Transformer或新家族目标。

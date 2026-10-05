@@ -1,0 +1,25 @@
+# Resume after shared error and forward energy boundary research
+
+The full active goal remains definition-first nonconvex Neural-HZ, ordinary CNN/PWA priority, smooth/Transformer, full GPU, all 13 families and independent external families. Formal baseline is 1870/2413=1063 CERT+807 validated ADV. Independent E0 is CIFAR100 25+TinyImageNet 36=61/400. Both gains remain zero; no candidate has passed complete old-solve preservation. The preceding user-status turn was no progress. This turn adds paper evidence and archives it, not numerical qualification.
+
+## Latest authoritative research
+
+[D132 theory](definition_first_20260928/d132_shared_error_boundary_20261002/THEORY.md) closes the cheap inverse-decoder fork with explicit evidence. A gap ball paid by individual squared-ReLU secants is implied by the old triangle relaxation. A stronger projection ball still admits a strict ordinary four-gate false amplitude with original integer signs, epigraph and scalar triangles; it is not a point in full old HZ. Fixed phase-polynomial decoding has valid joint error/noise bounds, but known fourth-kind Chebyshev residuals are not new algorithms. Exact source/statistic binding and the correct amplitude range eliminate all apparent error freedom. In the proposed correlated-defect outer readout, the same defect also cancels algebraically from the final amplitude.
+
+[Forward energy review](definition_first_20260928/d132_shared_error_boundary_20261002/FORWARD_ENERGY.md) explores a different definition hypothesis. The positive weighted network complementarity gap is zero exactly on the original graph when every epigraph and phase guard is retained. Explicit static DAG weights make its hidden quadratic block positive definite; negative inertia equals the rank of the actual shared-source incidence. All hidden amplitudes, bits, edges and old predicates remain. A direct 2022 verification-paper precedent already contains the weighted propagation gap and convexification. Do not implement a new QP path or call the repackaging a new domain.
+
+[Decision](definition_first_20260928/d132_shared_error_boundary_20261002/RESEARCH_DECISION.md), [sources](definition_first_20260928/d132_shared_error_boundary_20261002/SOURCES.md) and [status](definition_first_20260928/d132_shared_error_boundary_20261002/STATUS.json) distinguish paper proofs, prior art, limited comparisons and absent qualifications. Independent reviews corrected set-inclusion wording, phase-specific support scope, defect cancellation and a small control's arithmetic. This is not machine checking.
+
+The next actionable mathematical question is a directly compositional forward relation with useful same-information precision or complete query-cost advantage across ordinary mixed consumers/residuals and the next ReLU. Do not reopen inverse-decoder engineering, single-ball components, global-QP wrappers, sorting/cache work or another test framework as a substitute. A known relation can be supporting material, but a new candidate needs explicit semantics and a real algorithmic advantage before execution preregistration.
+
+## Numerical state has not advanced
+
+D130 session 22072 is recorded terminal with supervisor exit 1. Its 3953 tests/207 files passed in 48.93076469562948 seconds; source work stopped at its internal 235 second timeout after 38/192 rows and 233/1152 roots, with no new stable gate. Source/native/model/GPU/full-physical/shadow/full-replay qualifications remain false. D128 and D129 are also recorded terminal. None was restarted or polled as a live process this turn; no verified-wait claim is made. Latest complete CNN source is D120: 1600 local readouts, zero next-ReLU improvements.
+
+No candidate imports, AST/compile, collection, tests, source workers, solver, model forward or GPU runs occurred this turn. D132 has no runnable candidate. Future execution needs a NEW preregistration and freeze, the inherited complete test population (currently 3953/207), unchanged math/resource/physical/fail-closed gates, same-structure and family shadow, then same-path full 2413 and independent 400 replays. Do not shrink populations or rewrite old freezes.
+
+## Custody and full scope
+
+All current writes are new isolated files under experiments/neural_hz_20260831. Historical HyZor files/models/results, previous frozen experiments and production code remain read-only. No default changes, commit or push. All original continuous sources, signed bits/zero labels, EQ/LE, shared identities, every consumer and input reconstruction remain required. No instance/solver-state menu, attack/PGD, BaB, input/phase split, backward/dual rescue or certificate repair is authorized. Literature reading does not authorize its solvers.
+
+2026-10-02 Australia/Sydney; redu-hz; HEAD f1bc0f16612bd3f2112f2970174ec2f7cc3bf5ac; tracked binary diff SHA256 29baf0c0fcc19070a97a5ddf0fea3d1591ff937d00abca28689e9a871a530bc5. D132 ARCHIVE_SHA256SUMS is post-readback document custody, not a numerical preexecution freeze. Complete Goal remains active and incomplete.

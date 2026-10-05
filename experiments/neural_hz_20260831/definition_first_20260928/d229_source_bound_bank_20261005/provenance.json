@@ -1,0 +1,99 @@
+{
+  "record_type": "postrun_mathematical_binding_archive_not_promotion",
+  "date_local": "2026-10-05",
+  "timezone": "Australia/Sydney",
+  "last_observed_utc": "2026-10-05 04:46:37 UTC",
+  "branch": "redu-hz",
+  "commit": "f1bc0f16612bd3f2112f2970174ec2f7cc3bf5ac",
+  "tracked_binary_diff_sha256": "29baf0c0fcc19070a97a5ddf0fea3d1591ff937d00abca28689e9a871a530bc5",
+  "goal_status": "active",
+  "configuration": {
+    "default_enabled": false,
+    "attempts": 1,
+    "new_component_solver_free": true,
+    "inherited_fixed_lp_controls_retained": true,
+    "new_model_worker_launched": false,
+    "production_modified": false,
+    "historical_source_or_evidence_modified": false,
+    "commit_or_push": false,
+    "background_processes_remaining": false
+  },
+  "freeze_sha256": "1b89fa9cf3d56330b9d90a348cb9600ee922748ad535e8e3fe91209901dd835f",
+  "run": "../../results/d229_source_bound_bank_20261005_v1",
+  "receipt_sha256": {
+    "exit": "08a5e16f6d0d26e75c822592c9d9fa34edfdebd5f01538125ab7b2d34e5dda35",
+    "preregistered": "8b7f99bf26cacdee187b3f8d7d6e9f265c655c412e1f9f5b26ee57b43e4c5fce",
+    "inventory": "44a5ae6618f7b67e98c13cf45261e72b7689a9ab30f7419cfb5cdbec27edefb9",
+    "summary": "d95b8073a09f4061cd201dcd062cd072e2db440c89490ccb3d494bfd60e88da7"
+  },
+  "qualification": {
+    "mathematical_component_gate_passed": true,
+    "tests": 4140,
+    "test_files": 219,
+    "inherited_tests": 4132,
+    "inherited_files": 218,
+    "sources": 7544,
+    "inputs": 14,
+    "pytest_wall_s": 50.28,
+    "test_wall_s": 51.43639129213989,
+    "supervisor_wall_s": 66.0501713808626,
+    "source_drift": [],
+    "input_drift": [],
+    "production_provenance_drift": false,
+    "actual_model_binding_qualified": false,
+    "native_runtime_installation_qualified": false,
+    "gpu_qualified": false,
+    "full_physical_qualified": false,
+    "new_set_class": false,
+    "new_domain_qualified": false,
+    "new_capability_qualified": false,
+    "external_novelty_established": false,
+    "formal_gain": 0,
+    "independent_e0_gain": 0
+  },
+  "formal_baseline": {
+    "solved": 1870,
+    "total": 2413,
+    "cert": 1063,
+    "validated_adv": 807
+  },
+  "independent_e0_not_additive": {
+    "cifar100": 25,
+    "tinyimagenet": 36,
+    "solved": 61,
+    "total": 400
+  },
+  "measured_native_fixture": {
+    "added_continuous": 61,
+    "added_binary": 0,
+    "eq": 9,
+    "le": 69,
+    "pulled_nnz": 567,
+    "complete_receiver_bounds": [
+      "-23/16",
+      "53/16"
+    ],
+    "complete_receiver_remainder": [
+      "-3/16",
+      "9/16"
+    ],
+    "cumulative_work": 102596,
+    "cumulative_entries": 40001,
+    "original_input_grid_points": 9,
+    "integer_labelled_states": 16,
+    "zero_label_states": 8,
+    "model_witness": false
+  },
+  "negative_findings": {
+    "d228_positive_control_already_implied_by_d062": true,
+    "new_same_H_strong_reference_comparison": false,
+    "actual_model_run": false,
+    "global_allocator_publication": false,
+    "nonzero_compact_graph_error_supported": false,
+    "general_depth_closure_proved": false,
+    "full_correlated_source_ideality_proved": false,
+    "complete_cost_qualified": false
+  },
+  "next_action": "Qualify original CIFAR ONNX-to-ACT phase/frame/BN/consumer/decoder bindings, then compare fixed complete physical queries against applicable strong references on the same H and budget. Revise domain hypothesis if this gives only equivalent recoding; no rescue or toy-to-model promotion.",
+  "archive_method": "New isolated local files via apply_patch; pages:write-page separation of evidence, negative findings, and limits; no external Page."
+}

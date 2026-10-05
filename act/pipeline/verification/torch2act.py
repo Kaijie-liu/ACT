@@ -1996,9 +1996,18 @@ class TorchToACT:
     """
     _WRAPPER_TYPES = ("InputLayer", "InputSpecLayer", "OutputSpecLayer")
 
-    def __init__(self, wrapped: nn.Module, sample_input: Optional[torch.Tensor] = None):
+    def __init__(
+        self,
+        wrapped: nn.Module,
+        sample_input: Optional[torch.Tensor] = None,
+        *,
+        repair_batchnorm_producer_graph: bool = False,
+    ):
         if not isinstance(wrapped, nn.Module):
             raise TypeError("TorchToACT expects an nn.Module.")
+        if type(repair_batchnorm_producer_graph) is not bool:
+            raise TypeError("repair_batchnorm_producer_graph must be a bool")
+        self._repair_batchnorm_producer_graph = repair_batchnorm_producer_graph
 
         self.m = wrapped
         mods = list(self.m.children())
@@ -2076,6 +2085,11 @@ class TorchToACT:
         
         # Build and validate network
         preds, succs = self._build_layer_graph()
+        if self._repair_batchnorm_producer_graph:
+            from act.pipeline.verification.batchnorm_graph import (
+                repair_batchnorm_producer_graph,
+            )
+            preds, succs = repair_batchnorm_producer_graph(self.layers, preds, succs)
         net = Net(layers=self.layers, preds=preds, succs=succs)
         
         from act.back_end.layer_util import validate_graph

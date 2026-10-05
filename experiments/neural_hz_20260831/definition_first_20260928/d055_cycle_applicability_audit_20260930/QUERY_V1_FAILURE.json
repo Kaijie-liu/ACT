@@ -1,0 +1,8 @@
+{
+  "schema": "d055_readonly_query_failure_v1",
+  "query_sha256": "122d451a9abc8a96563065703839844c6e085e77b85917f990b58b83a1f4f1a7",
+  "exit_code": 5,
+  "output": "jq: error (at experiments/neural_hz_20260831/results/d047_multiphase_source_census_20260930_v1/complete_1.json:1): window position\n",
+  "scope": "read-only archive query, no candidate/model/worker executed",
+  "diagnosis": "jq index(array) searches for a subsequence, not an array-valued position; replace this geometry membership test with any(. == position), preserving complete population and all other rules"
+}

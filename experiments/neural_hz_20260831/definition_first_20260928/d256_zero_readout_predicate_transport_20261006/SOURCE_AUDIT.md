@@ -1,0 +1,58 @@
+# 零值谓词运输的源码证据与代价边界
+
+本轮只读核查支持THEORY.md中的零值谓词运输，但不支持“给一个core加行后所有真实网络立即变强”的结论。静态结果使下一实现可以围绕一个物化前精确规则展开，而不先建立一套全新惰性输出框架。完整来源、数值、终端与资源的原门不变。
+
+## 已有实现确实保留零项的谓词
+
+tf_cnn.py的SparseHZAffineExpr检查每个term的source/frame/形状，并将bias单独存储。_lazy_append_linear把新operator追加到每个term，_lazy_add拼接terms；二者没有按term值零而删除source。
+
+_lazy_materialize先按operator链构造映射，再按source对象身份分组。即使某组operator经eliminate_zeros成为零矩阵，该组仍保留，并调用solver_hz.py的sparse_hz_linear。后者对新的Gc/Gb/c作线性变换，原Ac/Ab/b/Auc/Aub/ub全部传入结果。因此零source项仍具有谓词语义。
+
+随后sparse_hz_add_same_frame使用_sparse_merge_all_constraints合取各source的谓词。其下层_sparse_merge_constraints虽先选行数最多的base，但会认证每个其他source的相同前缀并追加不同的完整suffix；不是只保留最长source。显式sparse_hz_concat直接堆叠全部谓词。不能把待设计carrier的危险捷径误报成现有merger丢约束。
+
+checkpoint物化后用新的HZ作identity source；phase-separated/selective保留稳定读出与core的合成，deferred保留precomputed及表达式引用。在这些成功路径中没有找到主动删除零谓词source的优化。该结论只涵盖已读实现，不自动认证新hook、异常处理或实际模型。
+
+## 为什么仍需物化前的精确规则
+
+现有物化是反向组合：从最终row mask开始，按reversed(term.operators)处理。因此“前端挂了一个零矩阵”不保证零计算成本，可能先形成很大的非零中间算子再遇到零映射。最终nnz为0也不代表展开次数为0。
+
+最小候选规则是在每次_lazy_materialize的reverse-prefix统计之前，对严格零读出的source统一执行以下变换：
+
+~~~text
+keep source, every predicate, every old factor, every signed bit;
+keep expr.bias and every other term;
+replace this term's entire verified linear chain
+with an empty CSR of shape (expr.n_out, source.n_out).
+~~~
+
+不同source即便都输出零，也不能据此合并其身份或删除其谓词。不得用相同范围、tol近零、未知自定义operator声明或未验证的“谓词推出零”替代严格存储零判据。完整算子形状、有限数、类型和来源检查仍必须支付；该规则不是绕过不支持算子的入口。
+
+只在tf.apply返回后整理不足以覆盖内部deferred/selective的提前物化。三处subclass观察点可以继续用于出生、rebase和GC证据，却不能代替新的物化前入口。当前生产没有这一入口，本轮没有实现或安装它，也没有修改生产函数。
+
+## 发布与消费者必须一起成立
+
+D255的Result必须与实际旧source的内容、原列身份和全frame宽度绑定，才能使用THEORY的P_live=>P_S。结果默认仍关闭。发布时先统一预约新连续辅助，再让登记的live sparse、lazy、precomputed及skip消费者消费相同关系版本；原decoder的输入身份不变。失败须不发布半批，不能让旧消费者与新分配器处于互相矛盾的世代。
+
+至少一个anchor在数学联合状态中能加入关系，但生产各消费者独立求值，不能据此省略消费者登记。少挂一个anchor通常会丢掉该consumer的增强，不自动证明它不健全；把仅有局部前提的cut未经来源认证移到其他frame则可能错误删点，必须拒绝。
+
+## 仍然存在的终端与能力缺口
+
+hybridz_tf.py的ASSERT分支在前驱仍为lazy expression时明确drop，原普通lowering只接收显式HZ。lazy CONCAT没有对应的直接实现；显式Concat保谓词不能被写成任意lazy消费者已支持。新anchor不会自动改变这些范围。
+
+sparse_hz_fast_bounds只计算中心和生成元绝对值半径，不读取EQ/LE。因此运输成功也不保证下一ReLU的前向界收紧。新增关系必须经原普通终端或另一个已经证明并计费的域内消费规则真正使用，才能论证能力收益；不能为此临时引入中间LP/dual rescue或第二验证器。
+
+最终property读出、完整物化、原终端转换和输入见证仍须认证和计费。本轮没有这份端到端证明，不授予native在线、GPU或完整模型资格。
+
+## 完整三来源的成本审查修正
+
+固定来源仍为D241的large row117、medium row30和Tiny row73的完整前缀，包含原消费者。CPU观察不以strace/CUDA成功为前提，但须有确定的实际执行表，不能把Torch调用数作为work。
+
+interval_tf的_conv_bound_pair调用两次卷积，每次都把lb/ub拼成双batch；若采用直接稠密卷积，它对应四路卷积算术，另加拆权重、复制和相加。Torch内部算法并未由当前源码固定，不能把这个直接实现费用称为所有Torch/GPU算法的下界，亦不能把两次库调用收费为两个work。可靠舍入合同尚未由该调用自动提供。
+
+ImplicitConv2DOp.matvec的Python实现对有效tap明确乘一次、加一次，另有行生成和检查。若一条声明路径完整遍历三源每个卷积一次，则单算这些乘加为398824704，large单独为220546560，分别超过原总额和单模型上限。但_lazy_from_hz_linear只保留首个operator，_lazy_append_linear才执行bias matvec，deferred还可能屏蔽已证明稳定负行。因此不能把这个完整unmasked执行表强行当作每条普通前向都会发生的账单。
+
+_left_compose_rows按Q非零项展开相应卷积行，再逐项乘加、字典合并和排序。结果max_nnz是存储检查，不是完整展开次数或work上限。要给真实前向作预付表，必须覆盖实际mask/Q、临时填充、bias、所有source和合并，而不是只给最后的nnz。
+
+D251原reader加标准F4组合的380221449不完整小计仍有效，该组合不能删费重跑；这不是所有解析实现或所有隐式卷积的数学下界。原D025到D241一次40M evidence/ledger预付保留，不能按实际证据较小自行退款，也不能把其已经覆盖的同一写账重复相加。256M总额、200M每模型、64M entries、512-bit、240秒、AS16GiB、CPU0及双1GiB观察门不变。
+
+这些修正限定了旧否决的范围，没有证明目前已有一个完整三来源可执行且可过门的worker。下一实现需要明确零项规则及其使用位置、认证来源、真实执行表和总账；不能因新增接口而推定整个传播成本已付清。

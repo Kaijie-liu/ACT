@@ -1,0 +1,49 @@
+# 跨残差前缀的完整参数来源审计
+
+本轮为已通过4169项数学测试的D240补齐真实来源前提，不执行D240或新的抽象域候选。已有D179只有完整拓扑；D025只保存浅层参数和五窗口界，且其三模型全轮失败。本轮真正读取缺失的残差主支与后继卷积参数、可靠BN系数包络、完整输入property及全图消费者。不能把它称为已通过真实guard、native接入或网络收益。
+
+## 固定人口与语义
+
+继承D240 preregistered.json中的三个selected_sources及原顺序：CIFAR100 large、CIFAR100 medium、TinyImageNet medium，各一个原定property，所有原模型/spec/hash不变。每个模型从原始输入读取到原拓扑中第三个ReLU，包含其间所有Conv、BatchNormalization、ReLU和动态Add。large截止Relu11，另两者截止Relu13；这些索引只用于核验已经冻结的来源，不按身份改变代数规则。统一采用上述算子语法，未知操作、错误shape/port/参数或未计入的边界均fail closed。
+
+读取全部前缀参数与通道，保留两次卷积各自的stride/padding/dilation/group，不把跨Add子图直接换成朴素5x5卷积。前缀每个输出在完整原图中的消费者和graph output都保留，包括截止范围以后的shortcut。与D179全图metadata逐项核对，但metadata不能替代原始参数字节。
+
+复用D015原Reader.conv/bn与明确batch-one的原绑定约定，只在内存中绑定输入batch，不改变任何原始字节或数值。每个所需参数完整解码、有限性和精确有理数/形状审核；BN用现有post_affine的外向平方根包络计算所有通道，不取中点。复用原input_box解析完整property输入盒；来源身份同时包含model SHA、spec SHA、输入盒、batch/NCHW和原port，不能沿用只含模型名的frame。逻辑ReLU来源标记不被当成native相位列。
+
+本轮不传播全bank的L/U，不运行输入、相位或几何搜索，不检查D240的X/Q数值守卫，不构造新的H或decoder。THEORY.md单独说明未来必须在同一个实际H上做精确代换，以及完整r/e与可靠共同误差项；本次来源记录不授予该桥已实现的资格。
+
+## 冻结与唯一入口
+
+新源仅THEORY.md、本文、source_audit.py和run_audit.py。四源与依赖/输入在任何新源码import、AST、compile、collection或数值执行前冻结。冻结前仅静态审阅。成功或失败均消费此版本，不修补或重跑。
+
+唯一入口：
+
+```text
+/data1/Kane/miniconda3/bin/python -B experiments/neural_hz_20260831/definition_first_20260928/d241_residual_source_binding_20261005/run_audit.py --enabled
+```
+
+唯一独占输出目录为experiments/neural_hz_20260831/results/d241_residual_source_binding_20261005_v1。保存preregistered.json、source_0/1/2.json、report.json和exit.json；失败可保留.partial，但不能将其算成完整来源证据。异常自动保留小报告和已完成文件，不对未完成大根做无预算恢复遍历。观察超时只轮询原进程。
+
+以D240成功的4169/222 receipt作为前序数学事实，核验原source/input/dependency与D179的三个metadata工件。本轮没有新候选数学阶段，不运行或删减那4169项，也不继承D240的数学资格给本读取脚本。数学组件人口与60秒门保持不变；实际native候选仍须完整数学、真实目标、shadow、逐家族及全量回放。
+
+## 原资源上限与生命周期
+
+采用原来源阶段的CPU0、单线程、CUDA隐藏、禁字节码、AS16GiB，以及包括身份前后检查的240秒单次期限。共同work上限256M，每模型200M，数值入口与存储有理端点512位，数值条目上界64M。监督器与提取在同一进程中计时和观察；RSS高水位增长加65536 reserve，以及tracemalloc峰值加metadata加65536，均不得超过1GiB。不能重置观测来隐藏解码峰值。
+
+全程只有一个原k.WorkBudget；加载已认证k之前的身份检查小账一次性转入它，不重置旧支出。哈希按D179已有的块读取工作账收费并记录真实读取字节数，不宣称固定块收费就是哈希CPU指令数。参数解析先预付4096+model_bytes+8*spec_bytes；完整参数逐值读取、统计、形状/来源遍历、BN算术和记录构造另外计费。新循环在执行前收费，单模型边界不能超200M。
+
+原全局40M evidence与65536 reserve只预付一次，三个模型共用，不按文件重置。沿用D025有界对象账本和流式独占编码器，但声明不同的实际生命周期：decoded权重只在单模型提取期间存活，完整审核后以原始只读模型SHA、initializer名字/类型/shape/原字节标识和读取规则保留无损来源引用，不把百万Fraction再次拷进JSON。完整输入盒、BN原参数与包络、全部几何、来源和消费者直接记录。原始模型仍是不可缺少的可重构来源，不被删除或视为零存储。
+
+decoder及临时数值的保守条目上界在解码前从完整所需参数shape人口计算。令N为去重后的全部所需initializer标量数、B为前缀BN通道总数、D为输入坐标数、G为全图节点数，固定上界为8*N+128*B+32*D+64*G+65536，超过64M即拒绝，并在解码前预付该上界的8倍work。原64*N解码和统计预付另外保留。Fraction及其两个整数占3*N，最坏repeated payload暂存不超过N个浮点值，Conv与BN复用原参数tuple而不创建第二套权重；额外BN包络、输入盒解析和图metadata分别由其宽余量覆盖。实际代码与此计数不符即拒绝，不能为了通过调小上界。
+
+对应的逐标量审核与临时条目计费仍进入同一work账。返回后对真实仍存活的raw/spec/记录根执行D025 bounded_ledger，编码器只对这些保留的来源记录执行。进入下一模型前释放上一模型完整根，只留小摘要和工件hash。临时对象不再存活不等于未发生，其实际峰值全程由RSS/tracemalloc观察，报告同时给出解析人口上界与保留根账。此生命周期不是Neural-HZ存储创新、吞掉解码代价或完整候选物理资格。
+
+## 判定与记账
+
+三个模型必须都完成完整前缀源审核、可靠BN包络、输入盒与消费者记录，全部前后身份、时间、工作、条目和宿主观察过门，才报source audit complete。任何模型失败即本轮不通过，不删掉失败模型或改成更小窗口；仅保留已经完整写出的部分证据。
+
+无论通过与否，candidate_executed、model_forward_executed、solver_executed、gpu_computation_completed、actual_model_binding_qualified、actual_phase_column_binding_verified、native_HZ_admitted、source_component_qualified、complete_physical_qualification、new_domain_qualified和new_capability_qualified均为false。没有guard命中人口或新数学门，不报source-contract已在真实H成立。formal_gain=independent_e0_gain=new_benchmark_solves=0。
+
+正式1870/2413与独立CIFAR10025+TinyImageNet36=61/400不变，不相加。分支redu-hz，commit f1bc0f16612bd3f2112f2970174ec2f7cc3bf5ac；tracked binary diff SHA256为29baf0c0fcc19070a97a5ddf0fea3d1591ff937d00abca28689e9a871a530bc5。仅本新源目录与独占RUN写入；不改生产、默认、原参数、历史源码或结果，不commit/push。
+
+上一轮D240属于progress。本轮的判定重点是把缺失的原参数和完整消费链变成可复核事实，而非用更多相同控制替代实际来源。完整Goal继续active，包括GPU、smooth、Transformer、新家族与全量成绩；本来源阶段不能替代这些目标。

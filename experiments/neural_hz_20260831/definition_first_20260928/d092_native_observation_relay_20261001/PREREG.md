@@ -1,0 +1,13 @@
+# 跨层观察组件的单次数学资格
+
+先冻结 CONTRACT.md、PREREG.md、native_observation_relay.py、test_native_observation_relay.py、run_math.py、collection_contract.py 六文件；freeze schema 为 d092_native_observation_relay_v1。required_tests=3829，required_test_files=184，完整继承D090的3825项183文件，加一个文件四项测试。冻结前仅文本及来源检查，不做本候选 AST、导入、编译、收集或数值执行。
+
+四个新增测试名为 test_native_joint_realization_and_zero_phases、test_third_relu_separates_all_auxiliary_extensions、test_signed_observation_and_full_residuals、test_default_off_binding_and_resource_rejections。测试范围由CONTRACT规定，不预跑单项、不缩减旧人口。
+
+唯一RUN为 experiments/neural_hz_20260831/results/d092_native_observation_relay_20261001_v1。run_math.py --enabled 首次创建即消费版本。完全继承D090成功manifest、exit、inventory和所有来源/输入身份；保留D088及D090归档失败证据而不重跑它们。所有旧有历史合同、9inputs、GPU与decoder依赖人口均保留，不覆盖冲突身份。
+
+原执行条件不变：单CPU亲和、线程数1、CUDA空、AS16GiB，测试子进程启动/导入/收集/执行/JUnit总计不超过60秒。监督器前后身份核查时间单列，不混称测试时间。完整有序nodeids、数量、source/input drift和退出记录自动保存；任何失败或超时保留终态，不修改消费版本后重跑。
+
+本版仅数学阶段，worker_stage_registered=false、single_archive_probe_registered=false。数学通过也不授予完整物理、真实网络、GPU、shadow或正式得分资格。失败版本只读归档。既有whole256M、branch200M、evidence40M、numeric+provedtemp64M、rational512bit、RSSabsolute/growth+tracer1GiB等边界未修改；本轮未执行的门不能写成通过。
+
+2026-10-01，branch redu-hz，commit f1bc0f16612bd3f2112f2970174ec2f7cc3bf5ac。baseline1870/2413（1063CERT+807validatedADV），独立CIFAR10025、TinyImageNet36，共61/400；本轮formal_gain=0。无生产修改、模型/归档运行、commit/push；按文档技能分别保存证明、测试及未验证范围。

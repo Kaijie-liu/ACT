@@ -1,0 +1,58 @@
+# 同预算 CUDA 跟踪诊断结果
+
+本次唯一执行完整重放了既有4209项数学测试，全部通过；随后strace在自身启动检查中收到ptrace权限拒绝，未触达预注册的CUDA worker。诊断未完成，没有产生新的CUDA OOM、设备算术或模型能力证据。本文件分别记录数学回放、诊断失败、身份核验和资格边界，不将其中任何一项混记为正式提分。
+
+## 冻结与数学回放
+
+源目录为definition_first_20260928/d247_cuda_same_cap_trace_20261005，唯一RUN为results/d247_cuda_same_cap_trace_20261005_v1。四源于2026-10-05 12:55:19 UTC冻结；本归档仅新增文档及校验和，不修改四源、freeze.json或RUN，不再次执行诊断。
+
+完整继承D245的4209项测试、224个文件及全部有序nodeids，没有新增、删减或跳过数学测试。实际JUnit逐项核对为4209个唯一testcase、224个文件，顺序与本轮登记清单和D245一致，failure、error、skipped均为0。pytest报告4209 passed、13条告警、50.68秒；包含导入、collection、执行及JUnit的测试进程墙钟为51.83881828188896秒，未超过60秒。
+
+component_tests_passed、mathematical_component_gate_passed、inventory_validated_before_execution均为true。这是既有数学人口的兼容性重放，不是D247新增数学规则的证明，也不证明新诊断监督代码已被这批旧测试覆盖。
+
+## 跟踪启动失败
+
+worker.stderr.log实际保存146字节，内容为：
+
+~~~text
+/usr/bin/strace: is_exitkill_supported: PTRACE_TRACEME: Operation not permitted
+/usr/bin/strace: PTRACE_O_EXITKILL is not supported by the kernel
+~~~
+
+第一条是本次直接观察到的ptrace权限拒绝。第二条产生于同一失败的启动检查，不能据此独立证明内核普遍不支持PTRACE_O_EXITKILL。未移除安全选项，也未改变权限、sysctl、驱动或预算。
+
+strace退出码为1；跟踪尝试墙钟为0.0670540165156126秒。syscalls.trace与worker.stdout.log均为0字节，worker.json不存在，worker_exit为null，worker_report为空。exit中的worker_launched=true在本实现中表示监督器成功创建了strace进程，不表示Python worker、Torch导入或CUDA可用性调用已经开始。
+
+旧D020解析器对空trace返回trace_complete=false、worker_exit_seen=false、events=[]、bytes_seen=0。absence_claim_authorized和unique_failure_cause_proved均为false。failed_reservation_exceeds_total_as_cap=false只表示没有此类观测，不能用于推断实际内存需求。
+
+diagnostic_completed=false、availability_confirmed=false、all_registered_stages_passed=false，监督器终态exit1。此处availability_confirmed=false不是一次CUDA调用返回false；本轮没有得到任何CUDA调用结果。失败不是新的cuInit OOM，也不能替代或重解释D043的历史CUDA错误证据。监督器整体墙钟68.91788437776268秒与数学测试、跟踪尝试分别记账。
+
+## 资源与身份核验
+
+原CPU0、单线程、数学阶段CUDA隐藏、AS16GiB、60秒数学门、240秒跟踪上限和每文件16MiB日志上限均保持。数学组件既有256M总work、200M单操作、64M累计逻辑entries、512位限制未改变；未执行候选数值worker，不能把初始化记成已验证的零成本运算。
+
+监督器host_observations_within_caps=true：traced_peak_bytes=19855689，tracer_metadata_bytes=6809296，summary_reserve_bytes=65536；RSS高水位增量观测为0。该增量不表示RSS为0，实际final VmHWM为59809792字节、VmRSS为59002880字节。worker未产生记录，strace和设备context峰值没有独立测量。observed_context_bytes、device_context_measured保持null，combined_physical_gate为unknown，不能声称合计物理内存通过。
+
+本轮登记来源7790项，完整包含D245的7752项原映射；14项输入映射完全相同。运行收据为source_drift=[]、input_drift=[]、provenance_drift=false。归档前另行只读逐项SHA核验7790份来源、14份输入、四份冻结源及exit登记的35份工件，全部一致；JUnit与有序人口也独立核对，不只依赖exit中的通过标志。
+
+D245已保存的20份继承证据在本RUN对应子目录中哈希不变。D245自己的20项测试也完整重放，summary仅写本RUN/inherited_d245_controls/summary.json，其SHA与原D245 summary同为6506f09df564c5d6a17c2d48c8a49cb2eadf576ec0478ed2fd369779b44981d4。旧结果目录没有被覆写。
+
+分支redu-hz，HEAD f1bc0f16612bd3f2112f2970174ec2f7cc3bf5ac，tracked binary diff SHA仍为29baf0c0fcc19070a97a5ddf0fea3d1591ff937d00abca28689e9a871a530bc5。没有修改生产、默认启用状态、历史模型或结果，没有commit或push。
+
+## 保存范围与关键校验和
+
+RUN实际保存36个普通文件，恰为exit登记的35份工件加exit.json本身；包括两份pytest临时证据。35份工件中保留完整测试日志、JUnit、清单、继承控制、空trace、空worker stdout、失败stderr和保守trace_summary；不存在worker.json，不补造缺失记录。
+
+- freeze.json：2e90e287ff1eec350447ed6414e2f1528ebea6f39d039feea8e48d78b0c269c0。
+- preregistered.json：38157bb2b7c1f1feb42a80f05f3528e52ab1182debf1e9d6c7044c2851f4e83f。
+- inventory.json：f97553832f50ec35b2c5a79f9a6474d02835e28d5f95315f09a2d354fc694d3e。
+- exit.json：00c7d6a8157fa6b1eb233bb5343d40183e5de8c8505447da985a020a207193ba。
+- trace_summary.json：3c07a13a27318ea0aac93078a0d5941bc4bf29595c98c92bf4404200de9f0438。
+
+ARCHIVE.sha256登记四份冻结源、freeze.json、本次两份归档文档和RUN全部36个文件，共43项，路径相对于仓库根。它不重复抄录全部历史依赖；完整来源和输入身份保留于已封存的preregistered.json。校验和清单不包含自身，避免循环身份。
+
+## 资格与成绩
+
+本轮domain_definition_changed=false、new_set_class=false。实际模型、原相位绑定、native HZ、GPU计算、完整物理、新域和新能力资格全部为false。正式baseline保持1870/2413，即1063 CERT与807经验证ADV；独立外部E0保持CIFAR100 25、TinyImageNet 36，共61/400，两套成绩不相加。formal_gain、independent_e0_gain、new_benchmark_solves均为0。
+
+本轮失败只关闭这次已消费的跟踪尝试，不阻塞数学Neural-HZ Goal。没有实质环境变更证据时不得再次尝试同一路径；Seccomp=0或nvidia-smi正常都不足以证明ptrace可用。后续不得为此放宽权限、安全选项或预算，也不能把设备诊断替代强Neural-HZ定义与真实能力研究。

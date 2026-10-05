@@ -18,7 +18,9 @@
 
 """ """
 
+import numpy as np
 import torch
+import weakref
 from typing import Dict, Optional
 from act.config.config import HybridZConfig
 from act.back_end.core import Bounds, Fact, Layer, Net, ConSet
@@ -32,6 +34,7 @@ from act.back_end.solver.solver_hz import (
     hz_lift_bounds,
     hz_tighten_bounds,
     sparse_hz_fast_bounds,
+    sparse_hz_rebase_image_exact,
     sparse_hz_from_bounds,
 )
 
@@ -52,6 +55,9 @@ class HybridzTF(RegistryTF):
         self._hz_cache: Dict[int, HZono] = {}
         self._sparse_hz_cache: Dict[int, SparseHZono] = {}
         self._sparse_drop_reasons: Dict[int, str] = {}
+        self._sparse_precomputed_relu: Dict[int, tuple] = {}
+        self._sparse_affine_expr_cache: Dict[int, object] = {}
+        self._sparse_phase_output_bounds: Dict[int, Bounds] = {}
         self._sigmoid_affine_targets: Dict[int, int] = {}
         self._sigmoid_affine_inputs: Dict[int, HZono] = {}
         self._softmax_differences: Dict[int, object] = {}
@@ -62,12 +68,106 @@ class HybridzTF(RegistryTF):
         if self._sigmoid_K < 1:
             raise ValueError("HybridZ sigmoid_segments must be positive")
         self._fuse_sigmoid_affine: bool = bool(cfg.fuse_sigmoid_affine)
+        self._neural_hz_share_signed_relu: bool = bool(
+            cfg.signed_relu_sharing and not cfg.signed_relu_compact
+        )
+        self._neural_hz_share_signed_compact_relu: bool = bool(
+            cfg.signed_relu_sharing and cfg.signed_relu_compact
+        )
+        self._neural_hz_signed_cancellation: bool = bool(
+            cfg.signed_relu_sharing
+            and cfg.signed_relu_compact
+            and cfg.signed_relu_cancellation
+        )
+        self._neural_hz_signed_cancellation_mixed_only: bool = bool(
+            self._neural_hz_signed_cancellation
+            and cfg.signed_relu_cancellation_mixed_only
+        )
+        self._neural_hz_signed_cancellation_pairs_only: bool = bool(
+            self._neural_hz_signed_cancellation
+            and cfg.signed_relu_cancellation_pairs_only
+        )
+        cancellation_max_cardinality = int(
+            cfg.signed_relu_cancellation_elimination_max_cardinality
+        )
+        if cancellation_max_cardinality < 0:
+            raise ValueError(
+                "HybridZ cancellation elimination cardinality must be nonnegative"
+            )
+        self._neural_hz_signed_cancellation_elimination_max_cardinality = (
+            cancellation_max_cardinality
+            if self._neural_hz_signed_cancellation
+            else 0
+        )
+        two_pair_min_outputs = int(
+            cfg.signed_relu_cancellation_two_pair_min_outputs
+        )
+        if two_pair_min_outputs < 0:
+            raise ValueError(
+                "HybridZ two-pair output threshold must be nonnegative"
+            )
+        self._neural_hz_signed_cancellation_two_pair_min_outputs = (
+            two_pair_min_outputs if self._neural_hz_signed_cancellation else 0
+        )
+        self._neural_hz_sparse_affine_nnz_guard: bool = bool(
+            cfg.sparse_affine_nnz_guard
+        )
+        self._neural_hz_sparse_relu_nnz_guard: bool = bool(
+            cfg.sparse_relu_nnz_guard
+        )
+        self._neural_hz_sparse_conv_csr_builder: bool = bool(
+            cfg.sparse_conv_csr_builder
+        )
+        self._neural_hz_sparse_deferred_relu_materialization: bool = bool(
+            cfg.sparse_deferred_relu_materialization
+        )
+        self._neural_hz_sparse_lazy_affine_dag: bool = bool(
+            cfg.sparse_lazy_affine_dag
+        )
+        self._neural_hz_sparse_frontier_image_rebase: bool = bool(
+            cfg.sparse_frontier_image_rebase
+        )
+        self._neural_hz_sparse_phase_separated_relu: bool = bool(
+            cfg.sparse_phase_separated_relu
+        )
+        self._neural_hz_sparse_phase_selective_materialization: bool = bool(
+            cfg.sparse_phase_selective_materialization
+        )
+        self._neural_hz_sparse_implicit_conv_dag: bool = bool(
+            cfg.sparse_implicit_conv_dag
+        )
         self._var_id_stride: int = 1
         setattr(self, "_HZ_MAX_INPUT_DIM", cfg.max_input_dim)
         self._sparse_next_frame_id: int = 0
         self._sparse_frame_widths: Dict[int, tuple[int, int]] = {}
         self._sparse_relu_slots: Dict[tuple[int, int, int], tuple[int, int, int]] = {}
         self._sparse_aux_slots: Dict[tuple[int, int], tuple[int, ...]] = {}
+        self._neural_hz_cancellation_contexts: Dict[int, dict] = {}
+        self._neural_hz_cancellation_profile: list[dict] = []
+        self._neural_hz_deferred_relu_layers: int = 0
+        self._neural_hz_deferred_zero_rows: int = 0
+        self._neural_hz_lazy_affine_layers: int = 0
+        self._neural_hz_lazy_affine_materializations: int = 0
+        self._neural_hz_lazy_checkpoints: int = 0
+        self._neural_hz_transient_relu_input: bool = False
+        self._neural_hz_frontier_rebases: int = 0
+        self._neural_hz_frontier_rebase_profile: list[dict] = []
+        self._neural_hz_phase_separated_relus: int = 0
+        self._neural_hz_phase_separated_profile: list[dict] = []
+        self._neural_hz_phase_selective_relus: int = 0
+        self._neural_hz_phase_selective_profile: list[dict] = []
+        # Content interning must not keep dead operators alive. Reachability is
+        # charged from live expressions/precomputed states, never from arena
+        # membership.
+        self._neural_hz_linear_op_arena = weakref.WeakValueDictionary()
+        self._neural_hz_implicit_conv_ops: int = 0
+        self._neural_hz_implicit_conv_profile: list[dict] = []
+        self._neural_hz_sparse_consumer_gc: bool = bool(
+            cfg.sparse_implicit_conv_dag
+        )
+        self._sparse_remaining_consumers: Dict[int, int] = {}
+        self._sparse_pinned_layers: set[int] = set()
+        self._neural_hz_released_sparse_states: int = 0
 
     @staticmethod
     def _net_var_id_stride(net: Net) -> int:
@@ -319,6 +419,8 @@ class HybridzTF(RegistryTF):
         hz: SparseHZono,
         layer_id: int,
         neurons,
+        *,
+        compact: bool = False,
     ) -> Optional[tuple[list[tuple[int, int, int]], int, int]]:
         if hz.frame_id is None:
             raise ValueError("sparse ReLU requires a generator frame")
@@ -332,16 +434,37 @@ class HybridzTF(RegistryTF):
             (frame_id, int(layer_id), int(neuron)) not in self._sparse_relu_slots
             for neuron in neurons
         )
-        if hz.n_out * (n_cont + n_bin + 3 * missing) > self._SPARSE_MAX_AFFINE_CELLS:
-            return None
+        new_variables = (2 if compact else 3) * missing
+        if not self._neural_hz_transient_relu_input:
+            if self._neural_hz_sparse_relu_nnz_guard:
+                neuron_rows = [int(neuron) for neuron in neurons]
+                selected_support = int(
+                    hz.Gc[neuron_rows].nnz + hz.Gb[neuron_rows].nnz
+                )
+                estimated_entries = int(
+                    self._sparse_storage_entries(hz)
+                    + 8 * selected_support
+                    + 32 * missing
+                )
+                if estimated_entries > self._SPARSE_MAX_AFFINE_CELLS:
+                    return None
+            elif (
+                hz.n_out * (n_cont + n_bin + new_variables)
+                > self._SPARSE_MAX_AFFINE_CELLS
+            ):
+                return None
         slots = []
         for neuron in neurons:
             key = (frame_id, int(layer_id), int(neuron))
             slot = self._sparse_relu_slots.get(key)
             if slot is None:
-                slot = (n_cont, n_cont + 1, n_bin)
+                slot = (
+                    (n_cont, n_cont, n_bin)
+                    if compact
+                    else (n_cont, n_cont + 1, n_bin)
+                )
                 self._sparse_relu_slots[key] = slot
-                n_cont += 2
+                n_cont += 1 if compact else 2
                 n_bin += 1
             slots.append(slot)
         self._sparse_frame_widths[frame_id] = (n_cont, n_bin)
@@ -406,21 +529,431 @@ class HybridzTF(RegistryTF):
     def _drop_sparse_hz(self, layer_id: int, reason: str) -> None:
         lid = int(layer_id)
         self._sparse_hz_cache.pop(lid, None)
+        self._sparse_phase_output_bounds.pop(lid, None)
         self._sparse_drop_reasons[lid] = reason
+
+    def release_intermediate_hz(self) -> tuple[int, int]:
+        """Release propagated HZ states after final/input states are retained.
+
+        Callers must first take ordinary Python references to every HZ state
+        needed by final solving or witness reconstruction. Clearing these
+        caches does not mutate those retained objects; it only shortens the
+        lifetime of intermediate DAG states before MILP lowering.
+        """
+        dense_states = len(self._hz_cache)
+        sparse_states = len(self._sparse_hz_cache)
+        self._hz_cache.clear()
+        self._sparse_hz_cache.clear()
+        self._sparse_drop_reasons.clear()
+        self._sparse_precomputed_relu.clear()
+        self._sparse_affine_expr_cache.clear()
+        self._sparse_phase_output_bounds.clear()
+        self._sigmoid_affine_targets.clear()
+        self._sigmoid_affine_inputs.clear()
+        self._softmax_differences.clear()
+        self._softmax_score_contexts.clear()
+        self._sparse_frame_widths.clear()
+        self._sparse_relu_slots.clear()
+        self._sparse_aux_slots.clear()
+        self._neural_hz_cancellation_contexts.clear()
+        self._neural_hz_linear_op_arena.clear()
+        self._sparse_remaining_consumers.clear()
+        self._sparse_pinned_layers.clear()
+        self._cache_net_id = None
+        self._sparse_next_frame_id = 0
+        return dense_states, sparse_states
+
+    def _release_consumed_sparse_predecessors(self, layer: Layer) -> None:
+        """Drop a sparse cache entry only after its final graph consumer.
+
+        INPUT/INPUT_SPEC states remain pinned for concrete-witness decoding,
+        and the predecessor of ASSERT remains pinned for terminal solving.
+        Expressions and deferred states retain ordinary Python references to
+        every source/operator they still need, so removing an obsolete cache
+        key cannot mutate the represented set.
+        """
+        if not self._neural_hz_sparse_consumer_gc:
+            return
+        for raw_pred in self._net.preds.get(layer.id, []):
+            pred = int(raw_pred)
+            remaining = self._sparse_remaining_consumers.get(pred)
+            if remaining is None or remaining <= 0:
+                raise ValueError(
+                    f"invalid sparse consumer accounting for layer {pred}"
+                )
+            remaining -= 1
+            self._sparse_remaining_consumers[pred] = remaining
+            if remaining or pred in self._sparse_pinned_layers:
+                continue
+            released = int(pred in self._sparse_hz_cache) + int(
+                pred in self._sparse_affine_expr_cache
+            )
+            self._sparse_hz_cache.pop(pred, None)
+            self._sparse_affine_expr_cache.pop(pred, None)
+            self._sparse_phase_output_bounds.pop(pred, None)
+            self._neural_hz_released_sparse_states += released
 
     def _sparse_exceeds_limit(self, hz: SparseHZono, out_dim: int) -> bool:
         gen = int(hz.n_cont + hz.n_bin)
         return gen > 0 and int(out_dim) * gen > self._SPARSE_MAX_AFFINE_CELLS
 
+    @staticmethod
+    def _sparse_storage_entries(hz: SparseHZono) -> int:
+        return int(
+            hz.c.size
+            + hz.b.size
+            + hz.ub.size
+            + hz.Gc.nnz
+            + hz.Gb.nnz
+            + hz.Ac.nnz
+            + hz.Ab.nnz
+            + hz.Auc.nnz
+            + hz.Aub.nnz
+        )
+
+    _SPARSE_RESIDUAL_AFFINE_KINDS = frozenset(
+        {
+            "AVGPOOL2D",
+            "BIAS",
+            "BN",
+            "CONV2D",
+            "CONVTRANSPOSE2D",
+            "DENSE",
+            "FLATTEN",
+            "RESHAPE",
+            "SCALE",
+            "SQUEEZE",
+            "TRANSPOSE",
+            "UNSQUEEZE",
+        }
+    )
+
+    def _sparse_affine_source_terms(
+        self,
+        layer_id: int,
+        current_relu_id: int,
+        *,
+        depth: int = 0,
+        visiting: Optional[frozenset[int]] = None,
+    ) -> int:
+        """Count exact lazy sources behind one prospective residual input.
+
+        Future nodes have no cache yet, so walk backwards through a purely
+        affine chain until reaching the current ReLU or an already materialized
+        exact HZ/lazy expression.  Zero means that the count is not structurally
+        decidable and therefore disables the optimization.
+        """
+        lid = int(layer_id)
+        if lid == int(current_relu_id):
+            return 1
+        if depth >= 16:
+            return 0
+        seen = frozenset() if visiting is None else visiting
+        if lid in seen:
+            return 0
+        expression = self._sparse_affine_expr_cache.get(lid)
+        if expression is not None:
+            return int(len(expression.terms))
+        hz = self._sparse_hz_cache.get(lid)
+        if hz is not None and hz.exact and hz.frame_id is not None:
+            return 1
+        layer = self._net.by_id.get(lid)
+        if layer is None:
+            return 0
+        kind = layer.kind.upper()
+        predecessors = [int(value) for value in self._net.preds.get(lid, [])]
+        next_seen = seen | {lid}
+        if kind == "ADD":
+            counts = [
+                self._sparse_affine_source_terms(
+                    pred,
+                    current_relu_id,
+                    depth=depth + 1,
+                    visiting=next_seen,
+                )
+                for pred in predecessors
+            ]
+            return sum(counts) if counts and all(counts) else 0
+        if kind not in self._SPARSE_RESIDUAL_AFFINE_KINDS or len(predecessors) != 1:
+            return 0
+        return self._sparse_affine_source_terms(
+            predecessors[0],
+            current_relu_id,
+            depth=depth + 1,
+            visiting=next_seen,
+        )
+
+    def _relu_next_residual_terms(self, layer_id: int) -> int:
+        """Return the exact source count at the nearest downstream ADD.
+
+        Only affine paths are traversed.  Multiple equally near residual
+        targets, an unknown source, or a graph cycle fail closed with zero.
+        """
+        current = int(layer_id)
+        frontier = [(int(value), 1) for value in self._net.succs.get(current, [])]
+        seen_depth: Dict[int, int] = {}
+        nearest_depth: Optional[int] = None
+        nearest_adds = set()
+        while frontier:
+            lid, depth = frontier.pop(0)
+            if depth > 16 or (
+                nearest_depth is not None and depth > nearest_depth
+            ):
+                continue
+            prior_depth = seen_depth.get(lid)
+            if prior_depth is not None and prior_depth <= depth:
+                continue
+            seen_depth[lid] = depth
+            layer = self._net.by_id.get(lid)
+            if layer is None:
+                continue
+            kind = layer.kind.upper()
+            if kind == "ADD":
+                nearest_depth = depth
+                nearest_adds.add(lid)
+                continue
+            if kind not in self._SPARSE_RESIDUAL_AFFINE_KINDS:
+                continue
+            frontier.extend(
+                (int(value), depth + 1)
+                for value in self._net.succs.get(lid, [])
+            )
+        if len(nearest_adds) != 1:
+            return 0
+        residual_id = nearest_adds.pop()
+        counts = [
+            self._sparse_affine_source_terms(pred, current)
+            for pred in self._net.preds.get(residual_id, [])
+        ]
+        return sum(counts) if len(counts) >= 2 and all(counts) else 0
+
+    def _maybe_rebase_sparse_frontier(
+        self,
+        L: Layer,
+        hz: SparseHZono,
+        bounds: Bounds,
+    ) -> SparseHZono:
+        """Install an exact sparse image interface before repeated residual use."""
+        if (
+            not self._neural_hz_sparse_frontier_image_rebase
+            or L.kind.upper() != "RELU"
+            or not hz.exact
+            or hz.frame_id is None
+        ):
+            return hz
+
+        lower = bounds.lb.detach().cpu().double().numpy().reshape(-1)
+        upper = bounds.ub.detach().cpu().double().numpy().reshape(-1)
+        if lower.size != hz.n_out or not np.isfinite(lower).all() or not np.isfinite(upper).all():
+            return hz
+        interface_width = int(np.count_nonzero(upper != lower))
+        value_nnz = int(hz.Gc.nnz + hz.Gb.nnz)
+        latent_width = int(hz.n_cont + hz.n_bin)
+        before_storage = self._sparse_storage_entries(hz)
+        residual_terms = self._relu_next_residual_terms(L.id)
+        storage_pressure = (
+            3 * before_storage
+            >= 2 * min(self._SPARSE_MAX_AFFINE_CELLS, 64_000_000)
+        )
+
+        # A structural residual-source count is diagnostic, not sufficient to
+        # justify rebasing: real traces show that an early dense link can cost
+        # more than the next residual reuse saves.  Install the interface only
+        # under the fixed, representation-wide storage-pressure gate.
+        if (
+            interface_width == 0
+            or interface_width > latent_width
+            or hz.n_out > latent_width
+            or value_nnz < 1_000_000
+            or value_nnz <= 4 * interface_width
+            or not storage_pressure
+        ):
+            return hz
+
+        try:
+            candidate = sparse_hz_rebase_image_exact(hz, bounds)
+        except (MemoryError, ValueError):
+            return hz
+        after_storage = self._sparse_storage_entries(candidate)
+        if (
+            after_storage > self._SPARSE_MAX_AFFINE_CELLS
+            or candidate.n_bin != hz.n_bin
+            or candidate.Gc.nnz >= value_nnz
+        ):
+            return hz
+
+        frame_id = int(hz.frame_id)
+        self._sparse_frame_widths[frame_id] = (
+            candidate.n_cont,
+            candidate.n_bin,
+        )
+        self._sparse_relu_slots = {
+            key: value
+            for key, value in self._sparse_relu_slots.items()
+            if int(key[0]) != frame_id
+        }
+        self._sparse_aux_slots = {
+            key: value
+            for key, value in self._sparse_aux_slots.items()
+            if int(key[0]) != frame_id
+        }
+        self._neural_hz_cancellation_contexts.clear()
+        self._neural_hz_frontier_rebases += 1
+        self._neural_hz_frontier_rebase_profile.append(
+            {
+                "layer_id": int(L.id),
+                "frame_id": frame_id,
+                "trigger": "storage_pressure",
+                "residual_terms": int(residual_terms),
+                "interface_width": interface_width,
+                "n_cont_before": int(hz.n_cont),
+                "n_cont_after": int(candidate.n_cont),
+                "n_bin": int(candidate.n_bin),
+                "value_nnz_before": value_nnz,
+                "value_nnz_after": int(candidate.Gc.nnz + candidate.Gb.nnz),
+                "storage_before": before_storage,
+                "storage_after": after_storage,
+            }
+        )
+        return candidate
+
     def _propagate_sparse_hz(self, L: Layer, input_bounds: Bounds, result: Fact) -> Fact:
         k = L.kind.upper()
+        if k == "ASSERT" and any(
+            int(pred) in self._sparse_affine_expr_cache
+            for pred in self._net.preds.get(L.id, [])
+        ):
+            self._drop_sparse_hz(L.id, "lazy_affine_reached_terminal")
+            return result
         if k in ("INPUT", "INPUT_SPEC", "ASSERT"):
             hz = self._sparse_hz_cache.get(L.id)
             return self._sparse_fact(result, hz) if hz is not None else result
+        precomputed = self._sparse_precomputed_relu.pop(int(L.id), None)
+        if precomputed is not None:
+            phase_bounds = None
+            if len(precomputed) == 3:
+                out, expected_lb, expected_ub = precomputed
+                out_expression = None
+            elif len(precomputed) == 4:
+                out, expected_lb, expected_ub, out_expression = precomputed
+            else:
+                (
+                    out,
+                    expected_lb,
+                    expected_ub,
+                    out_expression,
+                    phase_bounds,
+                ) = precomputed
+            actual_lb = input_bounds.lb.detach().cpu()
+            actual_ub = input_bounds.ub.detach().cpu()
+            if not (
+                torch.equal(actual_lb, expected_lb)
+                and torch.equal(actual_ub, expected_ub)
+            ):
+                self._drop_sparse_hz(
+                    L.id, "deferred_relu_interval_bounds_mismatch"
+                )
+                return result
+            if out_expression is not None:
+                if (
+                    not out.exact
+                    or out.frame_id != out_expression.frame_id
+                    or out.n_out != out_expression.n_out
+                ):
+                    self._drop_sparse_hz(
+                        L.id, "invalid_phase_separated_relu"
+                    )
+                    return result
+                self._sparse_hz_cache.pop(L.id, None)
+                self._sparse_affine_expr_cache[L.id] = out_expression
+                self._sparse_drop_reasons[L.id] = "lazy_affine_expr"
+                if phase_bounds is not None:
+                    return Fact(
+                        bounds=hz_tighten_bounds(result.bounds, phase_bounds),
+                        cons=result.cons,
+                    )
+                return self._sparse_fact(result, out)
+            out = self._maybe_rebase_sparse_frontier(L, out, result.bounds)
+            if (
+                self._sparse_storage_entries(out)
+                > self._SPARSE_MAX_AFFINE_CELLS
+            ):
+                self._drop_sparse_hz(L.id, "sparse_storage_limit:RELU")
+                return result
+            self._sparse_hz_cache[L.id] = out
+            self._sparse_drop_reasons.pop(L.id, None)
+            return self._sparse_fact(result, out)
+        expression = self._sparse_affine_expr_cache.get(int(L.id))
+        predecessors = [int(value) for value in self._net.preds.get(L.id, [])]
+        add_has_expression = k == "ADD" and any(
+            pred in self._sparse_affine_expr_cache for pred in predecessors
+        )
+        if expression is not None or add_has_expression:
+            handled, out, out_expression, reason = (
+                hz_cnn.sparse_hz_apply_affine_expr_layer(
+                    L,
+                    expression,
+                    input_bounds,
+                    result,
+                    self,
+                )
+            )
+            if handled:
+                self._sparse_hz_cache.pop(L.id, None)
+                if out_expression is not None:
+                    phase_bounds = self._sparse_phase_output_bounds.pop(
+                        int(L.id), None
+                    )
+                    self._sparse_affine_expr_cache[L.id] = out_expression
+                    self._sparse_drop_reasons[L.id] = "lazy_affine_expr"
+                    if phase_bounds is not None:
+                        return Fact(
+                            bounds=hz_tighten_bounds(
+                                result.bounds, phase_bounds
+                            ),
+                            cons=result.cons,
+                        )
+                    return (
+                        self._sparse_fact(result, out)
+                        if out is not None
+                        else result
+                    )
+                if out is not None:
+                    out = self._maybe_rebase_sparse_frontier(
+                        L, out, result.bounds
+                    )
+                    self._sparse_affine_expr_cache.pop(L.id, None)
+                    self._sparse_hz_cache[L.id] = out
+                    self._sparse_drop_reasons.pop(L.id, None)
+                    return self._sparse_fact(result, out)
+                self._sparse_affine_expr_cache.pop(L.id, None)
+                self._drop_sparse_hz(
+                    L.id, reason or f"unsupported_lazy_affine_op:{k}"
+                )
+                return result
         hz = self._sparse_hz_cache.get(L.id)
         if hz is None:
             return result
-        if self._sparse_exceeds_limit(hz, result.bounds.lb.numel()):
+        sparsity_priced_affine = bool(
+            self._neural_hz_sparse_affine_nnz_guard
+            and k in (
+                "CONV2D",
+                "CONVTRANSPOSE2D",
+                "AVGPOOL2D",
+                "SCALE",
+                "BIAS",
+                "BN",
+                "ADD",
+                "SUB",
+            )
+        )
+        sparsity_priced_relu = bool(
+            self._neural_hz_sparse_relu_nnz_guard and k == "RELU"
+        )
+        if (
+            self._sparse_exceeds_limit(hz, result.bounds.lb.numel())
+            and not (sparsity_priced_affine or sparsity_priced_relu)
+        ):
             self._drop_sparse_hz(L.id, f"sparse_size_limit:{k}")
             return result
         try:
@@ -435,6 +968,16 @@ class HybridzTF(RegistryTF):
                 if out is None:
                     self._drop_sparse_hz(L.id, drop_reason or f"unsupported_sparse_op:{k}")
                     return result
+                if (
+                    (sparsity_priced_affine or sparsity_priced_relu)
+                    and self._sparse_storage_entries(out)
+                    > self._SPARSE_MAX_AFFINE_CELLS
+                ):
+                    self._drop_sparse_hz(L.id, f"sparse_storage_limit:{k}")
+                    return result
+                out = self._maybe_rebase_sparse_frontier(
+                    L, out, result.bounds
+                )
                 self._sparse_hz_cache[L.id] = out
                 self._sparse_drop_reasons.pop(L.id, None)
                 return self._sparse_fact(result, out)
@@ -458,12 +1001,44 @@ class HybridzTF(RegistryTF):
             self._hz_cache.clear()
             self._sparse_hz_cache.clear()
             self._sparse_drop_reasons.clear()
+            self._sparse_precomputed_relu.clear()
+            self._sparse_affine_expr_cache.clear()
+            self._sparse_phase_output_bounds.clear()
             self._sigmoid_affine_inputs.clear()
             self._softmax_differences.clear()
             self._softmax_score_contexts.clear()
             self._sparse_frame_widths.clear()
             self._sparse_relu_slots.clear()
             self._sparse_aux_slots.clear()
+            self._neural_hz_cancellation_contexts.clear()
+            self._neural_hz_frontier_rebases = 0
+            self._neural_hz_frontier_rebase_profile = []
+            self._neural_hz_phase_separated_relus = 0
+            self._neural_hz_phase_separated_profile = []
+            self._neural_hz_phase_selective_relus = 0
+            self._neural_hz_phase_selective_profile = []
+            self._neural_hz_linear_op_arena.clear()
+            self._neural_hz_implicit_conv_ops = 0
+            self._neural_hz_implicit_conv_profile = []
+            self._neural_hz_released_sparse_states = 0
+            self._sparse_remaining_consumers = {
+                int(layer.id): 0 for layer in net.layers
+            }
+            for consumer in net.layers:
+                for predecessor in net.preds.get(consumer.id, []):
+                    pred = int(predecessor)
+                    self._sparse_remaining_consumers[pred] = (
+                        self._sparse_remaining_consumers.get(pred, 0) + 1
+                    )
+            self._sparse_pinned_layers = {
+                int(layer.id)
+                for layer in net.layers
+                if layer.kind.upper() in ("INPUT", "INPUT_SPEC")
+                or any(
+                    net.by_id[int(successor)].kind.upper() == "ASSERT"
+                    for successor in net.succs.get(layer.id, [])
+                )
+            }
             self._cache_net_id = net_id
             self._var_id_stride = self._net_var_id_stride(net)
             self._sparse_next_frame_id = 0
@@ -475,6 +1050,15 @@ class HybridzTF(RegistryTF):
 
         self._set_context(net, before, after)
         self._seed_sparse_cache(L, input_bounds)
+        if k not in ("INPUT", "INPUT_SPEC", "ASSERT"):
+            predecessors = net.preds.get(L.id, [])
+            if (
+                predecessors
+                and int(predecessors[0]) in self._sparse_affine_expr_cache
+            ):
+                self._sparse_affine_expr_cache[L.id] = (
+                    self._sparse_affine_expr_cache[int(predecessors[0])]
+                )
 
         if k in ("INPUT", "INPUT_SPEC"):
             hz_init = self._hz_from_bounds(
@@ -526,4 +1110,5 @@ class HybridzTF(RegistryTF):
             else:
                 self._hz_cache.pop(L.id, None)
 
+        self._release_consumed_sparse_predecessors(L)
         return result

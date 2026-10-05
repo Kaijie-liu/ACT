@@ -1,0 +1,47 @@
+# 完整真实前缀的观察入口与尚缺合同
+
+重基底组件通过后，下一实质阶段仍是固定三个完整真实前缀：D241冻结的CIFAR100 large row117、CIFAR100 medium row30、TinyImageNet medium row73，从原始输入到第三个原ReLU，包含shortcut和全部真实消费者。本文件是源码核查和接入设计，不是新的执行预注册，也不是已经可运行且过门的worker。
+
+## 可以在不改生产源码的情况下观察
+
+新隔离worker可以继承HybridzTF，并在既有方法调用前后记录证据；每次仍原样调用super，不改变生产数学运算，不关闭consumer GC，不以全局monkeypatch替换ReLU或全局验证器。
+
+第一处为hybridz_tf.py的_sparse_relu_slots_for（当前417行）。此时可见实际输入H、layer、neuron和compact标记，返回槽位与全frame宽度。但是返回非None只表示变量预约，不表示出生约束已经成功生成；tf_mlp.py在返回后才调用对应extended/compact/shared算子。因此先保存有预算的pending元数据，在真正core或precomputed中按槽位及完整EQ/LE内容认证后才能commit。失败、取消、重试或降级不得把pending升级为真实门。shared/signed-shared还须保留原orientation映射，不能仅凭slots猜原神经元的读出。
+
+第二处为_maybe_rebase_sparse_frontier（当前730行）。原函数在返回accepted candidate之前会清空同frame的旧slot cache；其before与返回after仍在调用栈内时，可以用已证明的record_rebase记录完整内容。未发生rebase应记录无事件，不凭对象形状造link。receipt及后继capture共用预算，扫描原H、保存行和完整摘要的费用不能移出当前账。只在最终实际H上重新匹配EQ内容，不依赖出生时行号。
+
+第三处为_propagate_sparse_hz（当前820行）。正常apply先调用它，随后在1113行释放最后消费者的前驱cache。因此可以在该方法返回前观察完整live roots，不必禁用GC。该方法本身会pop precomputed；观察器须在super前暂时保留需要核对的引用，super后从实际cache/expression确认已接受的结果，随后释放临时引用。不能通过永久保存每层完整H来简化证据生命周期。
+
+还需观察输入frame：_seed_sparse_cache在INPUT和INPUT_SPEC上都会调用_sparse_from_bounds建立新frame。decoder必须来自最终H同frame的实际输入状态，并认证原性质的输入坐标映射；不能固定取第一个INPUT cache。原GC已经固定保留INPUT/INPUT_SPEC，不需要额外pin历史层。
+
+这些是静态定位的候选观察点，尚未实现观察器、运行三模型或证明异常/资源情况下的全生命周期。
+
+## 完整读出接口仍然缺失
+
+phase-selective ReLU的真实输出不是core单独一块：tf_cnn.py会把不稳定core与stable-positive lazy expression组合；deferred路径还保有precomputed和phase bounds，残差之后有skip及后续消费者。只取core不能声称捕获了完整层。
+
+当前D255 capture只接受显式SparseHZono的Gc/Gb、完整谓词和显式decoder；它还没有认证完整lazy消费者的接口。三个观察点解决的是何时能看见证据，不解决如何以可支付成本把完整live状态接给D255。后继必须认证所有源、隐式算子、bias、frame、消费者和decoder，或证明完整显式转换的成本；不能以局部窗口、挑选两个有利输出、只保留crossing core或关闭lazy/rebase来绕过。
+
+最小待证接口是共同谓词承载状态、完整多输出lazy读出及原decoder的认证包。即便frame相同，也须证明其承载谓词覆盖每个可达source的全部约束，并明确新增关系如何由所有读出共同消费。不能把detached terminal上已通过的attach直接回写为在线表达式变换；当前组件没有这种变换或终端证明。
+
+出生行正确也不等于原ONNX健全对应。仍需核对stored(c-Q)+Q-c、compact误差、原Conv/BN、可靠范围与输入盒的完整来源关系。D255同H运输定理不能替代这些前提。
+
+## 资源与设备判断
+
+CPU完整前缀诊断没有必须先通过strace/CUDA的数学前提。D247只观察到strace启动的ptrace拒绝，CUDA worker未启动；该失败不禁止新的独立CPU合同，也不授权改变权限或重跑原失败版本。CPU诊断不能授予GPU资格。
+
+可复用shadow_worker_dtype_v2.py的原模型/spec加载及TorchToACT和正常tf.apply流程，但不能直接运行其带其他历史arm和输出目录的main。必须冻结原来源、dtype、转换/simplify/BN行为和完整配置。显式CPU初始化可避免自动选择GPU，不能悄悄改变数值路径。
+
+旧_live_cache_upper_bound_ledger只覆盖其声明的cache对象，不是allocator峰值，也不覆盖全部模型、图、转换临时对象、pending出生凭据及当前捕获副本。新worker必须完整记录这些根的共享与生命周期，并在同一观测窗口计入加载、计算、快照、序列化和终端准备。
+
+普通tf.apply尚无覆盖全部库计算的D241 work账。interval_tf/tf_cnn.py的_conv_bound_pair是两个batch-stacked卷积调用，不能以“两次Python调用”当成两个work；稠密实现的零权重也不能未经证明按零成本处理。D251已关闭的原reader加标准F4组合，以及原直接tap组合，不能换个worker名称再删费运行。这些是特定算法的费用结论，不是所有未来算法的复杂度下界。
+
+新账还须包括完整模型转换与ACT图构造，而非只收前缀initializer费用；lazy_append_linear仍有bias matvec，隐式算子仍可能进行逐项计算、合并。保留惰性表达式不等于这些运算消失。绑定阶段也应按原ONNX端口认证截止ReLU与未来消费者，不能假定TorchToACT转换后的层号等于原节点序号。
+
+真实阶段仍保持原三来源、256M总work、200M单模型、一次40M evidence、64M entries、512-bit、240秒、CPU0单线程、AS16GiB及双1GiB宿主观察门。下一执行前必须先补全所选实际算法的工作表和完整读出接口；当前没有这份合格worker，故没有启动模型。不得通过缩减来源、提高预算或只计最终存储来获得通过。
+
+## 继续边界
+
+本轮已经完成的证据是D255的4257项数学回放及上述源码入口核查。下一步的成功标准不是再造一个玩具关系，而是完整三来源实际状态的可信接入，以及统一规则的覆盖率、收紧效果和全流程成本。若真实来源否定当前两父关系的适用性，应修改数学假设并保留负结论，而不是按实例或终端margin更换路径。
+
+正式1870/2413、独立61/400、真实模型/GPU/new-domain资格均不因本文改变。没有执行原模型、没有新的CERT/ADV，也没有修改生产源码。

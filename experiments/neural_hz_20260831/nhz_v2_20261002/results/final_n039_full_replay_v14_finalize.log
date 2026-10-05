@@ -1,0 +1,39 @@
+| family | rows | baseline CERT+ADV | retained | lost | CERT gains | ADV gains (sources) | conflicts |
+|---|---:|---:|---:|---|---:|---|---:|
+| acasxu_2023 | 186 | 120 | 94 | ADV->TIMEOUT 26 | 0 | 0 (-) | 0 |
+| cersyve | 12 | 11 | 11 | - | 0 | 0 (-) | 0 |
+| cgan_2023 | 21 | 13 | 13 | - | 2 | 2 (milp_incumbent_D 2) | 0 |
+| cora_2024 | 180 | 40 | 24 | ADV->TIMEOUT 16 | 0 | 7 (milp_incumbent_D 7) | 0 |
+| dist_shift_2023 | 72 | 70 | 66 | CERT->TIMEOUT 3, ADV->TIMEOUT 1 | 0 | 0 (-) | 0 |
+| linearizenn_2024 | 60 | 40 | 30 | CERT->TIMEOUT 10 | 0 | 0 (-) | 0 |
+| malbeware | 150 | 150 | 143 | ADV->ERROR 1, ADV->TIMEOUT 5, CERT->TIMEOUT 1 | 0 | 0 (-) | 0 |
+| metaroom_2023 | 100 | 95 | 95 | - | 0 | 0 (-) | 0 |
+| relusplitter | 220 | 45 | 41 | CERT->TIMEOUT 4 | 27 | 0 (-) | 0 |
+| safenlp_2024 | 1080 | 1079 | 1077 | ADV->TIMEOUT 1, CERT->TIMEOUT 1 | 0 | 0 (-) | 0 |
+| sat_relu | 100 | 100 | 100 | - | 0 | 0 (-) | 0 |
+| tllverifybench_2023 | 32 | 17 | 15 | ADV->TIMEOUT 2 | 0 | 1 (milp_incumbent_D 1) | 0 |
+| vit_2023 | 200 | 90 | 41 | CERT->TIMEOUT 33, CERT->UNKNOWN 16 | 1 | 0 (-) | 0 |
+| **total** | 2413 | 1870 | 1750 | 120 | 30 | 10 | 0 |
+
+{
+ "replay": "n039_full_replay_v14",
+ "rows": 2413,
+ "baseline_solves": 1870,
+ "retained": 1750,
+ "conflicts": [],
+ "witness_audit": {
+  "audited": 767,
+  "S1_invalid": [],
+  "S2_invalid_count": 16,
+  "unaudited_adv": []
+ },
+ "cert_audit": {
+  "audited": 245,
+  "violations": 0,
+  "box_disagreements": []
+ },
+ "gate": "FAIL"
+}
+lost: [('safenlp_2024', 704, 'ADV', 'TIMEOUT'), ('safenlp_2024', 844, 'CERT', 'TIMEOUT'), ('malbeware', 21, 'ADV', 'ERROR'), ('malbeware', 102, 'ADV', 'TIMEOUT'), ('malbeware', 103, 'CERT', 'TIMEOUT'), ('malbeware', 109, 'ADV', 'TIMEOUT'), ('malbeware', 115, 'ADV', 'TIMEOUT'), ('malbeware', 121, 'ADV', 'TIMEOUT'), ('malbeware', 126, 'ADV', 'TIMEOUT'), ('acasxu_2023', 55, 'ADV', 'TIMEOUT'), ('acasxu_2023', 56, 'ADV', 'TIMEOUT'), ('acasxu_2023', 57, 'ADV', 'TIMEOUT'), ('acasxu_2023', 58, 'ADV', 'TIMEOUT'), ('acasxu_2023', 59, 'ADV', 'TIMEOUT'), ('acasxu_2023', 60, 'ADV', 'TIMEOUT'), ('acasxu_2023', 61, 'ADV', 'TIMEOUT'), ('acasxu_2023', 63, 'ADV', 'TIMEOUT'), ('acasxu_2023', 66, 'ADV', 'TIMEOUT'), ('acasxu_2023', 67, 'ADV', 'TIMEOUT'), ('acasxu_2023', 69, 'ADV', 'TIMEOUT'), ('acasxu_2023', 70, 'ADV', 'TIMEOUT'), ('acasxu_2023', 71, 'ADV', 'TIMEOUT'), ('acasxu_2023', 74, 'ADV', 'TIMEOUT'), ('acasxu_2023', 75, 'ADV', 'TIMEOUT'), ('acasxu_2023', 76, 'ADV', 'TIMEOUT'), ('acasxu_2023', 77, 'ADV', 'TIMEOUT'), ('acasxu_2023', 78, 'ADV', 'TIMEOUT'), ('acasxu_2023', 80, 'ADV', 'TIMEOUT'), ('acasxu_2023', 81, 'ADV', 'TIMEOUT'), ('acasxu_2023', 82, 'ADV', 'TIMEOUT'), ('acasxu_2023', 84, 'ADV', 'TIMEOUT'), ('acasxu_2023', 85, 'ADV', 'TIMEOUT'), ('acasxu_2023', 86, 'ADV', 'TIMEOUT'), ('acasxu_2023', 88, 'ADV', 'TIMEOUT'), ('acasxu_2023', 89, 'ADV', 'TIMEOUT'), ('relusplitter', 3, 'CERT', 'TIMEOUT'), ('relusplitter', 38, 'CERT', 'TIMEOUT'), ('relusplitter', 39, 'CERT', 'TIMEOUT'), ('relusplitter', 63, 'CERT', 'TIMEOUT'), ('linearizenn_2024', 13, 'CERT', 'TIMEOUT'), ('linearizenn_2024', 14, 'CERT', 'TIMEOUT'), ('linearizenn_2024', 34, 'CERT', 'TIMEOUT'), ('linearizenn_2024', 39, 'CERT', 'TIMEOUT'), ('linearizenn_2024', 41, 'CERT', 'TIMEOUT'), ('linearizenn_2024', 46, 'CERT', 'TIMEOUT'), ('linearizenn_2024', 50, 'CERT', 'TIMEOUT'), ('linearizenn_2024', 51, 'CERT', 'TIMEOUT'), ('linearizenn_2024', 52, 'CERT', 'TIMEOUT'), ('linearizenn_2024', 53, 'CERT', 'TIMEOUT'), ('vit_2023', 25, 'CERT', 'TIMEOUT'), ('vit_2023', 39, 'CERT', 'TIMEOUT'), ('vit_2023', 78, 'CERT', 'TIMEOUT'), ('vit_2023', 101, 'CERT', 'TIMEOUT'), ('vit_2023', 102, 'CERT', 'TIMEOUT'), ('vit_2023', 103, 'CERT', 'TIMEOUT'), ('vit_2023', 104, 'CERT', 'UNKNOWN'), ('vit_2023', 107, 'CERT', 'TIMEOUT'), ('vit_2023', 108, 'CERT', 'TIMEOUT'), ('vit_2023', 112, 'CERT', 'TIMEOUT'), ('vit_2023', 115, 'CERT', 'TIMEOUT'), ('vit_2023', 117, 'CERT', 'UNKNOWN'), ('vit_2023', 118, 'CERT', 'TIMEOUT'), ('vit_2023', 121, 'CERT', 'TIMEOUT'), ('vit_2023', 122, 'CERT', 'UNKNOWN'), ('vit_2023', 125, 'CERT', 'TIMEOUT'), ('vit_2023', 126, 'CERT', 'TIMEOUT'), ('vit_2023', 128, 'CERT', 'UNKNOWN'), ('vit_2023', 129, 'CERT', 'TIMEOUT'), ('vit_2023', 133, 'CERT', 'UNKNOWN'), ('vit_2023', 135, 'CERT', 'TIMEOUT'), ('vit_2023', 139, 'CERT', 'TIMEOUT'), ('vit_2023', 140, 'CERT', 'UNKNOWN'), ('vit_2023', 143, 'CERT', 'TIMEOUT'), ('vit_2023', 149, 'CERT', 'UNKNOWN'), ('vit_2023', 152, 'CERT', 'TIMEOUT'), ('vit_2023', 153, 'CERT', 'UNKNOWN'), ('vit_2023', 154, 'CERT', 'TIMEOUT'), ('vit_2023', 155, 'CERT', 'TIMEOUT'), ('vit_2023', 157, 'CERT', 'TIMEOUT'), ('vit_2023', 159, 'CERT', 'TIMEOUT'), ('vit_2023', 161, 'CERT', 'TIMEOUT'), ('vit_2023', 162, 'CERT', 'UNKNOWN'), ('vit_2023', 163, 'CERT', 'UNKNOWN'), ('vit_2023', 164, 'CERT', 'TIMEOUT'), ('vit_2023', 165, 'CERT', 'TIMEOUT'), ('vit_2023', 166, 'CERT', 'TIMEOUT'), ('vit_2023', 167, 'CERT', 'UNKNOWN'), ('vit_2023', 169, 'CERT', 'UNKNOWN'), ('vit_2023', 171, 'CERT', 'TIMEOUT'), ('vit_2023', 174, 'CERT', 'TIMEOUT'), ('vit_2023', 180, 'CERT', 'TIMEOUT'), ('vit_2023', 182, 'CERT', 'TIMEOUT'), ('vit_2023', 183, 'CERT', 'UNKNOWN'), ('vit_2023', 187, 'CERT', 'UNKNOWN'), ('vit_2023', 188, 'CERT', 'UNKNOWN'), ('vit_2023', 191, 'CERT', 'UNKNOWN'), ('vit_2023', 195, 'CERT', 'TIMEOUT'), ('vit_2023', 197, 'CERT', 'TIMEOUT'), ('tllverifybench_2023', 10, 'ADV', 'TIMEOUT'), ('tllverifybench_2023', 27, 'ADV', 'TIMEOUT'), ('dist_shift_2023', 39, 'CERT', 'TIMEOUT'), ('dist_shift_2023', 42, 'ADV', 'TIMEOUT'), ('dist_shift_2023', 51, 'CERT', 'TIMEOUT'), ('dist_shift_2023', 71, 'CERT', 'TIMEOUT'), ('cora_2024', 62, 'ADV', 'TIMEOUT'), ('cora_2024', 65, 'ADV', 'TIMEOUT'), ('cora_2024', 71, 'ADV', 'TIMEOUT'), ('cora_2024', 74, 'ADV', 'TIMEOUT'), ('cora_2024', 82, 'ADV', 'TIMEOUT'), ('cora_2024', 83, 'ADV', 'TIMEOUT'), ('cora_2024', 86, 'ADV', 'TIMEOUT'), ('cora_2024', 95, 'ADV', 'TIMEOUT'), ('cora_2024', 107, 'ADV', 'TIMEOUT'), ('cora_2024', 108, 'ADV', 'TIMEOUT'), ('cora_2024', 109, 'ADV', 'TIMEOUT'), ('cora_2024', 110, 'ADV', 'TIMEOUT'), ('cora_2024', 112, 'ADV', 'TIMEOUT'), ('cora_2024', 125, 'ADV', 'TIMEOUT'), ('cora_2024', 134, 'ADV', 'TIMEOUT'), ('cora_2024', 171, 'ADV', 'TIMEOUT')]
+CERT gains: [('cgan_2023', 13), ('cgan_2023', 16), ('relusplitter', 89), ('relusplitter', 110), ('relusplitter', 111), ('relusplitter', 117), ('relusplitter', 118), ('relusplitter', 119), ('relusplitter', 125), ('relusplitter', 131), ('relusplitter', 144), ('relusplitter', 145), ('relusplitter', 150), ('relusplitter', 154), ('relusplitter', 155), ('relusplitter', 158), ('relusplitter', 162), ('relusplitter', 172), ('relusplitter', 173), ('relusplitter', 186), ('relusplitter', 187), ('relusplitter', 190), ('relusplitter', 196), ('relusplitter', 198), ('relusplitter', 206), ('relusplitter', 208), ('relusplitter', 212), ('relusplitter', 213), ('relusplitter', 216), ('vit_2023', 88)]
+ADV gains: [('cgan_2023', 8, 'milp_incumbent_D'), ('cgan_2023', 11, 'milp_incumbent_D'), ('tllverifybench_2023', 28, 'milp_incumbent_D'), ('cora_2024', 47, 'milp_incumbent_D'), ('cora_2024', 122, 'milp_incumbent_D'), ('cora_2024', 146, 'milp_incumbent_D'), ('cora_2024', 155, 'milp_incumbent_D'), ('cora_2024', 164, 'milp_incumbent_D'), ('cora_2024', 170, 'milp_incumbent_D'), ('cora_2024', 179, 'milp_incumbent_D')]

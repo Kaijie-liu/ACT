@@ -1,0 +1,59 @@
+{
+  "schema": "d100_paper_envelope_factorization_v1",
+  "status": "PAPER_RESULTS_NO_EXECUTABLE_CANDIDATE",
+  "branch": "redu-hz",
+  "commit": "f1bc0f16612bd3f2112f2970174ec2f7cc3bf5ac",
+  "formal_gain": 0,
+  "formal_baseline": 1870,
+  "formal_total": 2413,
+  "external_baseline": {
+    "cifar100": 25,
+    "tinyimagenet": 36,
+    "total": 400
+  },
+  "candidate_frozen": false,
+  "candidate_executed": false,
+  "tests_executed": 0,
+  "model_executed": false,
+  "gpu_executed": false,
+  "run_created": false,
+  "latest_executed_math": {
+    "id": "D098",
+    "tests": 3845,
+    "files": 188
+  },
+  "novel_domain_established": false,
+  "theorem_scope": "Fixed D089 error-box envelope algorithm, exact core, scalarized dictionary, all original HZ relations retained",
+  "results": [
+    "fixed-consumer sign-coherence iff",
+    "all-consumer disjoint-active-error-support iff",
+    "nonnegative-rank characterization in the same coefficient field",
+    "classical rank3/nonnegative-rank4 example adapted to algorithm"
+  ],
+  "rejected_claim": "D091 basis regression is not robust to inheriting the known true global bound; not a strong-domain separation",
+  "decision": "Do not implement a rank-only scalar observation compression candidate as a Neural-HZ breakthrough",
+  "previous_turn": "progress: local archive delivery, not ability gain",
+  "goal_status": "active",
+  "goal_complete": false,
+  "sources": [
+    {
+      "url": "https://lab.rockefeller.edu/cohenje/PDFs/211CohenRothblumLAA1993.pdf",
+      "scope": "Section2 nonnegative rank factorizations and classical4x4example"
+    },
+    {
+      "url": "https://files.sri.inf.ethz.ch/website/papers/DeepZ.pdf",
+      "scope": "Section3.1 ReLU affine noise transformer"
+    },
+    {
+      "url": "https://arxiv.org/pdf/0910.4748",
+      "scope": "Theorem3.3 order-continuity hypotheses and approximate-transformer-preserving domain simplification"
+    }
+  ],
+  "verification": "Paper derivation and independent review only; not numerical qualification",
+  "writes_scope": [
+    "experiments/neural_hz_20260831/definition_first_20260928/d100_envelope_factorization_20261001",
+    "experiments/neural_hz_20260831/RESUME_RESEARCH_20261001_D100.md"
+  ],
+  "commit_performed": false,
+  "push_performed": false
+}

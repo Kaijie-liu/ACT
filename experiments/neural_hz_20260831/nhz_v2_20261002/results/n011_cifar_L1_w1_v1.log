@@ -1,0 +1,13 @@
+76 MILP_CERT_PROBE {'41': (-0.252, 0)} 66.5
+50 MILP_CERT_PROBE {'91': (-0.3915, 0)} 108.1
+Traceback (most recent call last):
+  File "/data1/Kane/FSE/ACT/experiments/neural_hz_20260831/nhz_v2_20261002/run_n011_partial_milp.py", line 118, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/data1/Kane/FSE/ACT/experiments/neural_hz_20260831/nhz_v2_20261002/run_n011_partial_milp.py", line 79, in main
+    out, rows, K, phases = e.propagate(torch.as_tensor(lb), torch.as_tensor(ub), 300, 0.05)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/FSE/ACT/experiments/neural_hz_20260831/nhz_v2_20261002/nhz_engine.py", line 257, in propagate
+    out = AZ(xa.c + sgn * ya.c, xa.G + sgn * ya.G)
+                                ~~~~~^~~~~~~~~~~~
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 1.43 GiB. GPU 0 has a total capacity of 94.95 GiB of which 513.56 MiB is free. Process 1495101 has 1.05 GiB memory in use. Process 3420558 has 5.77 GiB memory in use. Process 314267 has 19.83 GiB memory in use. Including non-PyTorch memory, this process has 11.01 GiB memory in use. Process 2307147 has 22.00 GiB memory in use. Process 2563597 has 16.97 GiB memory in use. Process 2563598 has 17.74 GiB memory in use. 11.39 GiB allowed; Of the allocated memory 9.90 GiB is allocated by PyTorch, and 480.09 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)

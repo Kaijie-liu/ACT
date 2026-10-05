@@ -1,0 +1,83 @@
+{
+  "record_type": "postrun_mathematical_component_archive_not_promotion",
+  "date_local": "2026-10-05",
+  "timezone": "Australia/Sydney",
+  "last_observed_utc": "2026-10-05 04:18:27 UTC",
+  "branch": "redu-hz",
+  "commit": "f1bc0f16612bd3f2112f2970174ec2f7cc3bf5ac",
+  "tracked_binary_diff_sha256": "29baf0c0fcc19070a97a5ddf0fea3d1591ff937d00abca28689e9a871a530bc5",
+  "goal_status": "active",
+  "configuration": {
+    "default_enabled": false,
+    "attempts": 1,
+    "candidate_solver_free": true,
+    "new_model_worker_launched": false,
+    "production_modified": false,
+    "historical_source_or_evidence_modified": false,
+    "commit_or_push": false,
+    "background_processes_remaining": false
+  },
+  "freeze_sha256": "7853ea228f57e5ca93094ba970b779dfc364530eab60f0e39297684d5f497273",
+  "run": "../../results/d228_joint_bank_component_20261005_v1",
+  "receipt_sha256": {
+    "exit": "b0265cd97aa5c0c10ada1c60090e51fecea9d64e832f2e1b4ba6e450aa339471",
+    "preregistered": "e5d83a04c6b6937338e2334befcb6af5f27f858a0e02e1ea63953c50e3123e84",
+    "inventory": "4c135883919a49a1f170ce98939259e2cfc9fa9d14edd75e108df4f51a7b99f3",
+    "summary": "3213562500ea5874fcd415492cb5b4d4530aa49e7550b134e22911a7bb3cd589"
+  },
+  "qualification": {
+    "mathematical_component_gate_passed": true,
+    "tests": 4132,
+    "test_files": 218,
+    "inherited_tests": 4116,
+    "inherited_files": 217,
+    "sources": 7510,
+    "inputs": 14,
+    "test_wall_s": 51.581042202189565,
+    "supervisor_wall_s": 69.05641886778176,
+    "source_drift": [],
+    "input_drift": [],
+    "production_provenance_drift": false,
+    "actual_model_binding_qualified": false,
+    "native_qualified": false,
+    "gpu_qualified": false,
+    "full_physical_qualified": false,
+    "new_set_class": false,
+    "new_domain_qualified": false,
+    "new_capability_qualified": false,
+    "external_novelty_established": false,
+    "formal_gain": 0,
+    "independent_e0_gain": 0
+  },
+  "formal_baseline": {
+    "solved": 1870,
+    "total": 2413,
+    "cert": 1063,
+    "validated_adv": 807
+  },
+  "independent_e0_not_additive": {
+    "cifar100": 25,
+    "tinyimagenet": 36,
+    "solved": 61,
+    "total": 400
+  },
+  "measured_local_vertices": [
+    17,
+    40,
+    82
+  ],
+  "measured_local_nnz": [
+    149,
+    352,
+    820
+  ],
+  "negative_findings": {
+    "positive_control_already_implied_by_d062": true,
+    "d214_fiber_evaluated_on_same_control": false,
+    "vertexwise_original_source_atom_binding_unsound": true,
+    "general_depth_closure_proved": false,
+    "full_correlated_source_ideality_proved": false
+  },
+  "next_action": "Qualify real CIFAR shared-parent/parallel-consumer source and original phase/decoder bindings; compare same-H physical inference against applicable strong references, without adding rescue or using local toy results as capability.",
+  "archive_method": "New isolated local files via apply_patch; pages:write-page separation of evidence and limits; no external Page."
+}

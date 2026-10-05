@@ -1,0 +1,30 @@
+0 UNKNOWN K 10692 shadow -0.608 lp -0.4139 unst [620, 401, 129, 1, 2, 90, 0, 0, 0, 41] wall 7.1 mem 37.9
+2 UNKNOWN K 11200 shadow -1.274 lp -0.7817 unst [868, 515, 227, 1, 12, 111, 0, 0, 0, 58] wall 9.8 mem 39.4
+4 UNKNOWN K 11991 shadow -2.482 lp -1.9838 unst [1441, 584, 352, 0, 3, 138, 0, 0, 0, 65] wall 16.0 mem 42.1
+5 UNKNOWN K 10704 shadow -0.221 lp -0.0558 unst [534, 412, 232, 21, 7, 53, 0, 0, 0, 37] wall 6.9 mem 37.9
+8 UNKNOWN K 10667 shadow -0.463 lp -0.262 unst [515, 358, 281, 16, 9, 37, 0, 0, 0, 43] wall 7.1 mem 37.7
+9 UNKNOWN K 10936 shadow -0.274 lp -0.0047 unst [788, 381, 205, 0, 1, 101, 0, 0, 0, 52] wall 10.1 mem 38.6
+11 UNKNOWN K 10793 shadow -0.663 lp -0.4082 unst [652, 455, 171, 4, 14, 61, 0, 0, 0, 28] wall 11.0 mem 38.3
+12 UNKNOWN K 11446 shadow -2.44 lp -1.7185 unst [870, 622, 337, 0, 16, 125, 0, 0, 0, 68] wall 17.2 mem 40.1
+13 UNKNOWN K 10727 shadow -0.215 lp 0.0194 unst [581, 386, 236, 0, 6, 65, 0, 0, 0, 45] wall 10.1 mem 38.0
+14 UNKNOWN K 10947 shadow -0.256 lp -0.0092 unst [670, 481, 264, 1, 12, 72, 0, 0, 0, 39] wall 12.6 mem 38.6
+15 UNKNOWN K 10692 shadow -0.593 lp -0.3553 unst [556, 397, 225, 0, 4, 51, 0, 0, 0, 51] wall 10.6 mem 37.9
+16 UNKNOWN K 10922 shadow -1.125 lp -0.7592 unst [551, 440, 332, 8, 6, 114, 0, 0, 0, 63] wall 12.5 mem 38.3
+17 UNKNOWN K 10904 shadow -0.487 lp -0.1551 unst [605, 486, 248, 0, 12, 80, 0, 0, 0, 65] wall 11.9 mem 38.4
+18 UNKNOWN K 10579 shadow -0.259 lp -0.062 unst [515, 326, 212, 0, 5, 54, 0, 0, 0, 59] wall 9.3 mem 37.5
+19 UNKNOWN K 10814 shadow -0.857 lp -0.6267 unst [676, 398, 227, 0, 4, 63, 0, 0, 0, 38] wall 10.3 mem 38.3
+20 UNKNOWN K 11580 shadow -1.714 lp -1.0265 unst [1039, 631, 291, 2, 14, 124, 0, 0, 0, 71] wall 20.1 mem 40.6
+Traceback (most recent call last):
+  File "/data1/Kane/FSE/ACT/experiments/neural_hz_20260831/nhz_v2_20261002/run_n002_lp_probe.py", line 82, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/data1/Kane/FSE/ACT/experiments/neural_hz_20260831/nhz_v2_20261002/run_n002_lp_probe.py", line 59, in main
+    out, rs, K = run(graphs[onnx_p], lbt, ubt, iters=args.iters, lr=args.lr, log=log)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/FSE/ACT/experiments/neural_hz_20260831/nhz_v2_20261002/gpu_aligned_lp.py", line 195, in run
+    ub_lp = lp_upper_bounds(gobj, cobj, A, b, iters, lr).to(dt)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/FSE/ACT/experiments/neural_hz_20260831/nhz_v2_20261002/gpu_aligned_lp.py", line 100, in lp_upper_bounds
+    A64 = A.to(eval_dtype); b64 = b.to(eval_dtype)
+          ^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 414.00 MiB. GPU 0 has a total capacity of 94.95 GiB of which 70.88 MiB is free. Process 1495101 has 1.14 GiB memory in use. Process 3420558 has 3.79 GiB memory in use. Including non-PyTorch memory, this process has 42.64 GiB memory in use. Process 4041290 has 35.37 GiB memory in use. Process 4094917 has 11.21 GiB memory in use. Process 78465 has 662.00 MiB memory in use. Of the allocated memory 40.64 GiB is allocated by PyTorch, and 1.35 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)

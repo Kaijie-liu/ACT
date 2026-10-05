@@ -1,0 +1,111 @@
+"""One authenticated collection and test loop; no standalone collection run."""
+import hashlib
+import json
+import os
+from pathlib import Path
+
+import pytest
+
+HERE = Path(__file__).resolve().parent
+EXP = HERE.parent.parent
+ROOT = EXP.parent.parent
+RUN = EXP / 'results/d130_import_isolation_20261002_v1'
+MANIFEST = RUN / 'preregistered.json'
+INVENTORY = RUN / 'inventory.json'
+INHERITED_MODULE = (HERE.parent / 'd112_shared_endpoint_forward_20261002'
+                    / 'test_endpoint_forward.py')
+INHERITED_RUN = EXP / 'results/d112_shared_endpoint_forward_20261002_v1'
+RELOCATED_RUN = RUN / 'inherited_d112_controls'
+EVIDENCE_RELOCATION = dict(module_path=str(INHERITED_MODULE),
+                           original_run=str(INHERITED_RUN),
+                           relocated_run=str(RELOCATED_RUN))
+_verified = None
+
+
+def _reject(reason):
+    raise pytest.UsageError('D130 complete population: ' + reason)
+
+
+def _population(session):
+    if session.testsfailed or session.shouldstop or session.shouldfail:
+        _reject('collection error or stop')
+    ids = tuple(item.nodeid for item in session.items)
+    paths = tuple(str(Path(item.path).absolute()) for item in session.items)
+    if len(ids) != 3953 or len(set(ids)) != 3953 or len(set(paths)) != 207:
+        _reject('3953 items and 207 original paths required')
+    return ids, paths
+
+
+@pytest.hookimpl(trylast=True)
+def pytest_collection_finish(session):
+    global _verified
+    if _verified is not None:
+        _reject('repeated collection')
+    digest = os.environ.get('NEURAL_HZ_D130_MANIFEST_SHA256')
+    if not isinstance(digest, str) or len(digest) != 64:
+        _reject('missing parent identity')
+    if MANIFEST.is_symlink() or not MANIFEST.is_file() or not 0 < MANIFEST.stat().st_size <= 8*1024**2:
+        _reject('invalid manifest')
+    raw = MANIFEST.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != digest:
+        _reject('changed manifest')
+    manifest = json.loads(raw)
+    expected, files = manifest.get('expected_nodeids'), manifest.get('tests')
+    if (manifest.get('required_tests') != 3953 or manifest.get('required_test_files') != 207
+            or manifest.get('new_test_names') != ["test_fast_positive_geometry","test_fast_strong_product_reference","test_fast_negative_outer_loss","test_fast_degenerate_shift","test_fast_bisection_uncertainty","test_fast_fail_closed","test_fast_exponential16_certificate","test_fast_exponential16_fail_closed","test_binding_exact_float_payload","test_binding_layout_and_identity","test_binding_batchnorm_intervals","test_binding_shared_patch_templates","test_binding_all_cls_directions","test_binding_fail_closed","test_bridge_error_rectangle","test_bridge_original_identity","test_bridge_signed_composition","test_bridge_no_root_lower_as_witness","test_bridge_budget_and_errors","test_bridge_shared_budget"]
+            or manifest.get('schema') != 'd130_import_isolation_v1'
+            or manifest.get('pytest_import_mode') != 'importlib'
+            or manifest.get('mathematical_stage_only') is not False
+            or manifest.get('worker_stage_registered') is not True
+            or manifest.get('inherited_source_population_unchanged') is not True
+            or manifest.get('source_component_qualified') is not False
+            or manifest.get('source_census_qualified') is not False
+            or manifest.get('inherited_test_population_unchanged') is not True
+            or manifest.get('inherited_tests') != 3933
+            or manifest.get('inherited_test_files') != 204
+            or manifest.get('new_test_files') != 3
+            or manifest.get('same_process_collection_gate') is not True
+            or manifest.get('single_pytest_process') is not True
+            or manifest.get('fixed_component_lp_controls_registered') is not True
+            or manifest.get('solver_rescue_registered') is not False
+            or manifest.get('inherited_component_evidence_relocation') != EVIDENCE_RELOCATION
+            or type(expected) is not list or len(expected) != 3953 or len(set(expected)) != 3953
+            or type(files) is not list or len(files) != 207 or len(set(files)) != 207):
+        _reject('wrong contract')
+    ids, paths = _population(session)
+    if ids != tuple(expected) or set(paths) != set(files):
+        _reject('population drift')
+    if any(str(ROOT / i.split('::', 1)[0]) != p for i, p in zip(ids, paths)):
+        _reject('node identity differs from actual source')
+    # Only the frozen D112 controls' evidence destination is changed. The
+    # test functions, assertions, inputs, and budgets remain inherited verbatim.
+    inherited_items = [item for item, path in zip(session.items, paths)
+                       if path == str(INHERITED_MODULE)]
+    if len(inherited_items) != 4:
+        _reject('missing inherited D112 test module')
+    module = inherited_items[0].module
+    if (any(item.module is not module for item in inherited_items)
+            or getattr(module, '__file__', None) != str(INHERITED_MODULE)
+            or getattr(module, 'RUN', None) != INHERITED_RUN):
+        _reject('inherited D112 module or original evidence destination differs')
+    RELOCATED_RUN.mkdir(exist_ok=False)
+    module.RUN = RELOCATED_RUN
+    with INVENTORY.open('x') as stream:
+        json.dump(dict(nodeids=ids, count=3953, files=207,
+                       manifest_sha256=digest, validated_before_execution=True,
+                       inherited_component_evidence_relocation=EVIDENCE_RELOCATION),
+                  stream, sort_keys=True, indent=2, allow_nan=False)
+        stream.write('\n')
+    _verified = session, ids, paths, digest
+
+
+@pytest.hookimpl(tryfirst=True)
+def pytest_runtestloop(session):
+    if _verified is None or _verified[0] is not session:
+        _reject('no successful collection contract')
+    ids, paths = _population(session)
+    if (ids != _verified[1] or paths != _verified[2]
+            or INVENTORY.is_symlink() or not INVENTORY.is_file()
+            or hashlib.sha256(MANIFEST.read_bytes()).hexdigest() != _verified[3]):
+        _reject('population or evidence changed before execution')
+    return None

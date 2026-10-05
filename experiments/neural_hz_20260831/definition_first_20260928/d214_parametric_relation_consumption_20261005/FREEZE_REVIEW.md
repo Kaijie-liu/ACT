@@ -1,0 +1,5 @@
+# 首次执行前的冻结清单校对
+
+候选尚未执行、导入、AST解析、编译或收集时，发现手工填写freeze.json第六个测试名重复了bound。原未执行草稿逐字保留于freeze_preexecution_typo.json；正式freeze.json改为与早已登记的PREREG、runner和测试文件一致的test_small_box_bound_does_not_assume_domination。
+
+六项候选源码及其哈希未变，测试数量、正文、门槛、预算和任何结果均未改变。该校对发生在第一次候选执行之前，不是失败后修补或重跑。最终freeze.json的哈希由唯一运行清单记录；未执行草稿不提供任何资格。

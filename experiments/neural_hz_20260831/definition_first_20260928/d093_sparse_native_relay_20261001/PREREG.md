@@ -1,0 +1,13 @@
+# 原生稀疏跨层接入的单次资格
+
+冻结七文件：CONTRACT.md、PREREG.md、sparse_observation_relay.py、native_relay_plan.py、test_sparse_native_relay.py、run_math.py、collection_contract.py。freeze schema为d093_sparse_native_relay_v1。冻结前只做文本与依赖检查，不运行候选AST、import、compile、collect或数值实验。
+
+唯一RUN为experiments/neural_hz_20260831/results/d093_sparse_native_relay_20261001_v1，首次创建即消费版本。完整继承D092成功的3829项184文件及有序nodeids；新增一个文件四项测试，总3833项185文件。四名固定为test_sparse_matches_dense_joint_semantics、test_sparse_identity_avoids_dense_parameter_population、test_uniform_native_plan_uses_physical_child_scale、test_sparse_plan_and_binding_fail_closed。
+
+D092的manifest、exit、inventory与freeze绑定；D088及D090归档失败记录完整继承，不重跑它们。保留全部历史合同、项目116源码闭包、9inputs、4417GPU依赖、1011decoder依赖，禁止冲突身份覆盖。所有已冻结文件只读。
+
+单CPU亲和、线程数1、CUDA空、AS16GiB，单pytest启动/导入/完整收集/执行/JUnit总计不超过60秒；监督器前后身份核查单独记录。收集在同次进程中执行并在测试前认证全有序人口。日志、JUnit、inventory、manifest及exit自动独占保存；超时或失败同样保留终态，不改版本、不缩人口、不提高预算。
+
+本版仅数学和受控原生结构资格。single_archive_probe_registered=false，worker_stage_registered=false，无模型、GPU、终端、shadow或正式回放。即使通过，也不授予实际模型、完整物理或GPU资格。原whole256M、branch200M、evidence40M、numeric与provedtemp合计64M、rational512bit、RSSabsolute及growth加tracer1GiB保持不变，未评估不得写通过。
+
+2026-10-01，redu-hz，commit f1bc0f16612bd3f2112f2970174ec2f7cc3bf5ac。baseline1870/2413（1063CERT、807validatedADV）及独立E0共61/400不变。无生产修改、commit或push。使用文档技能将数学理由、测试人口、执行证据与尚未取得的资格分开记录。

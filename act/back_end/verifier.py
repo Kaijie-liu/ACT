@@ -643,6 +643,7 @@ def verify_once(
         output_layer_id = net.preds[assert_layer.id][0]
         output_hz = None
         input_hz = None
+        released_hz_states = (0, 0)
         exact_box_input = (
             len(spec_layers) == 1
             and spec_layers[0].params.get("kind") in (InKind.BOX, InKind.LINF_BALL)
@@ -663,6 +664,10 @@ def verify_once(
                     ):
                         input_hz = candidate
                         break
+            # output_hz/input_hz are retained object references. Intermediate
+            # HZ states are no longer needed and can otherwise exhaust the
+            # memory budget while the final sparse MILP is materialized.
+            released_hz_states = active_tf.release_intermediate_hz()
         solver = HZSolver(
             time_limit=30.0 if timelimit is None else timelimit,
             tolerance=1e-7 if hybridz_tolerance is None else hybridz_tolerance,
@@ -678,6 +683,8 @@ def verify_once(
             timelimit=timelimit,
         )
         for result in results:
+            result.metadata["released_dense_hz_states"] = released_hz_states[0]
+            result.metadata["released_sparse_hz_states"] = released_hz_states[1]
             if result.counterexample is not None:
                 result.counterexample = result.counterexample.to(
                     device=seed_bounds.lb.device,

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import logging
 import time
 
@@ -22,6 +23,13 @@ try:
     import scipy.sparse as sp
     from scipy.optimize import Bounds as SciPyBounds
     from scipy.optimize import LinearConstraint, linprog, milp
+    from act.back_end.solver.neural_hz import (
+        BinaryFix,
+        ContinuousElimination,
+        fix_predicate_implied_binary_phases,
+        project_inactive_equality_factors,
+        reconstruct_continuous_factors,
+    )
 
     _HAS_SCIPY = True
 except ImportError:
@@ -133,6 +141,16 @@ class SparseHZono:
 def hz_tighten_bounds(base: Bounds, candidate: Bounds) -> Bounds:
     candidate_lb = candidate.lb.reshape_as(base.lb).to(base.lb)
     candidate_ub = candidate.ub.reshape_as(base.ub).to(base.ub)
+    # A fast HZ enclosure is an optional tightening of the authoritative
+    # interval fact. Numerical overflow in a nonlinear HZ candidate must not
+    # replace a valid interval endpoint by NaN or infinity: ignore only the
+    # affected endpoint and retain the interval result there.
+    candidate_lb = torch.where(
+        torch.isfinite(candidate_lb), candidate_lb, base.lb
+    )
+    candidate_ub = torch.where(
+        torch.isfinite(candidate_ub), candidate_ub, base.ub
+    )
     lb = torch.maximum(base.lb, candidate_lb)
     ub = torch.minimum(base.ub, candidate_ub)
     conflict = lb > ub
@@ -413,7 +431,7 @@ def _require_sparse() -> None:
 def _as_csr(mat, *, shape=None):
     _require_sparse()
     out = mat if sp.issparse(mat) else sp.csr_matrix(mat, dtype=np.float64)
-    out = out.tocsr().astype(np.float64)
+    out = out.tocsr(copy=False).astype(np.float64, copy=False)
     if shape is not None and out.shape != shape:
         if out.shape[0] != shape[0] or out.shape[1] > shape[1]:
             raise ValueError(f"CSR shape mismatch: {out.shape} vs {shape}")
@@ -421,7 +439,20 @@ def _as_csr(mat, *, shape=None):
             [out, sp.csr_matrix((out.shape[0], shape[1] - out.shape[1]))],
             format="csr",
         )
-    out.eliminate_zeros()
+    # Sparse HZ matrices are immutable after construction.  Preserve object
+    # identity for an already canonical float64 CSR block so affine images can
+    # share large predicate graphs instead of copying them once per branch.
+    # Non-canonical inputs and explicit zeros are normalized on a private copy.
+    known_zero_free = bool(getattr(out, "_act_hz_zero_free", False))
+    has_explicit_zero = bool(
+        not known_zero_free and out.nnz and np.any(out.data == 0.0)
+    )
+    if not out.has_canonical_format or has_explicit_zero:
+        out = out.copy()
+        out.sum_duplicates()
+        out.eliminate_zeros()
+        out.sort_indices()
+    out._act_hz_zero_free = True
     return out
 
 
@@ -517,6 +548,102 @@ def sparse_hz_from_bounds(
         Aub=sparse_empty(0, 0),
         ub=np.zeros(0, dtype=np.float64),
         frame_id=frame_id,
+        exact=True,
+    )
+
+
+def sparse_hz_rebase_image_exact(
+    hz: SparseHZono,
+    bounds: Bounds,
+) -> SparseHZono:
+    """Re-express one exact HZ image through sparse normalized coordinates.
+
+    Let the current image be ``y = c + Gc*xi + Gb*beta`` and let ``[l,u]``
+    be a sound forward enclosure of that same image.  For every non-constant
+    output coordinate this transform introduces ``eta_i in [-1,1]`` and the
+    exact linking equality
+
+        ``Gc_i*xi + Gb_i*beta - r_i*eta_i = m_i - c_i``,
+
+    where ``m=(l+u)/2`` and ``r=(u-l)/2``.  The exposed image then becomes the
+    sparse diagonal map ``m + diag(r)*eta``.  Constant coordinates receive a
+    linking equality only when it is non-trivial.  Existing equality and
+    inequality predicates, all binary factors, the input-factor prefix, and
+    the shared frame identity are preserved verbatim.
+
+    This is an exact representation change, not an interval replacement: the
+    new box variables are tied to the old nonconvex HZ by equalities.  It is
+    useful at a graph cut/frontier because later affine layers operate on the
+    sparse image interface instead of repeatedly composing the historical
+    generator map.
+    """
+    if not hz.exact or hz.frame_id is None:
+        raise ValueError("image rebasing requires one exact sparse HZ frame")
+    lower, upper = _bounds_to_numpy(bounds)
+    if lower.size != hz.n_out or upper.size != hz.n_out:
+        raise ValueError(
+            f"image rebase bounds mismatch: {lower.size} vs {hz.n_out}"
+        )
+    if not np.isfinite(lower).all() or not np.isfinite(upper).all():
+        raise ValueError("image rebase requires finite forward bounds")
+    if np.any(lower > upper):
+        raise ValueError("image rebase received inconsistent forward bounds")
+
+    center = (lower + upper) * 0.5
+    radius = (upper - lower) * 0.5
+    variable_rows = np.flatnonzero(radius != 0.0).astype(np.int64, copy=False)
+    new_cont = int(hz.n_cont + variable_rows.size)
+
+    # Build the linking graph before replacing the exposed value map.  Sparse
+    # hstack/vstack retain the historical column order, so input coordinates
+    # remain a stable prefix and every binary column keeps its identity.
+    link_Ac = sparse_pad_cols(hz.Gc, new_cont).tolil(copy=True)
+    if variable_rows.size:
+        interface_columns = hz.n_cont + np.arange(
+            variable_rows.size, dtype=np.int64
+        )
+        link_Ac[variable_rows, interface_columns] = -radius[variable_rows]
+    link_Ac = link_Ac.tocsr()
+    link_Ac.sum_duplicates()
+    link_Ac.eliminate_zeros()
+    link_Ab = hz.Gb.copy().tocsr()
+    link_rhs = center - hz.c
+
+    # Rows that are exactly ``0 = 0`` add no information.  Equality comparison
+    # is intentional: no tolerance-based deletion is allowed in an exact HZ.
+    link_used = (
+        np.asarray(link_Ac.getnnz(axis=1)).reshape(-1) != 0
+    ) | (
+        np.asarray(link_Ab.getnnz(axis=1)).reshape(-1) != 0
+    ) | (link_rhs != 0.0)
+    link_Ac = link_Ac[link_used]
+    link_Ab = link_Ab[link_used]
+    link_rhs = link_rhs[link_used]
+
+    out_Gc = sp.csr_matrix(
+        (
+            radius[variable_rows],
+            (
+                variable_rows,
+                hz.n_cont + np.arange(variable_rows.size, dtype=np.int64),
+            ),
+        ),
+        shape=(hz.n_out, new_cont),
+        dtype=np.float64,
+    )
+    return SparseHZono(
+        c=center,
+        Gc=out_Gc,
+        Gb=sparse_empty(hz.n_out, hz.n_bin),
+        Ac=sp.vstack(
+            [sparse_pad_cols(hz.Ac, new_cont), link_Ac], format="csr"
+        ),
+        Ab=sp.vstack([hz.Ab, link_Ab], format="csr"),
+        b=np.concatenate([hz.b, link_rhs]),
+        Auc=sparse_pad_cols(hz.Auc, new_cont),
+        Aub=hz.Aub.copy(),
+        ub=hz.ub.copy(),
+        frame_id=hz.frame_id,
         exact=True,
     )
 
@@ -743,11 +870,15 @@ def _sparse_same_frame(parts) -> bool:
 
 def _sparse_vstack(mats, cols: int):
     mats = [sparse_pad_cols(m, cols) for m in mats if m.shape[0]]
+    if len(mats) == 1:
+        return mats[0]
     return sp.vstack(mats, format="csr") if mats else sparse_empty(0, cols)
 
 
 def _sparse_concat_arrays(arrs):
     arrs = [np.asarray(a, dtype=np.float64).reshape(-1) for a in arrs if np.asarray(a).size]
+    if len(arrs) == 1:
+        return arrs[0]
     return np.concatenate(arrs) if arrs else np.zeros(0, dtype=np.float64)
 
 
@@ -755,6 +886,18 @@ def _sparse_constraint_prefix(Ac_x, Ab_x, b_x, Ac_y, Ab_y, b_y) -> int:
     count = min(int(Ac_x.shape[0]), int(Ac_y.shape[0]))
     if count == 0:
         return 0
+    if (
+        Ac_x is Ac_y
+        and Ab_x is Ab_y
+        and (
+            b_x is b_y
+            or (
+                np.shares_memory(np.asarray(b_x), np.asarray(b_y))
+                and np.asarray(b_x).shape == np.asarray(b_y).shape
+            )
+        )
+    ):
+        return count
     dc = (Ac_x[:count] - Ac_y[:count]).tocsr()
     db = (Ab_x[:count] - Ab_y[:count]).tocsr()
     dc.eliminate_zeros()
@@ -1700,16 +1843,19 @@ def sparse_hz_add_same_frame(x: SparseHZono, y: SparseHZono) -> SparseHZono:
     Gb = (xp.Gb + yp.Gb).tocsr()
     Gc.eliminate_zeros()
     Gb.eliminate_zeros()
+    Ac, Ab, b, Auc, Aub, ub = _sparse_merge_all_constraints(
+        [xp, yp], n_cont, n_bin
+    )
     return SparseHZono(
         c=xp.c + yp.c,
         Gc=Gc,
         Gb=Gb,
-        Ac=_sparse_vstack([xp.Ac, yp.Ac], n_cont),
-        Ab=_sparse_vstack([xp.Ab, yp.Ab], n_bin),
-        b=_sparse_concat_arrays([xp.b, yp.b]),
-        Auc=_sparse_vstack([xp.Auc, yp.Auc], n_cont),
-        Aub=_sparse_vstack([xp.Aub, yp.Aub], n_bin),
-        ub=_sparse_concat_arrays([xp.ub, yp.ub]),
+        Ac=Ac,
+        Ab=Ab,
+        b=b,
+        Auc=Auc,
+        Aub=Aub,
+        ub=ub,
         frame_id=xp.frame_id,
         exact=xp.exact and yp.exact,
     )
@@ -1734,6 +1880,77 @@ def sparse_hz_fast_bounds(hz: SparseHZono) -> Bounds:
         lb=torch.from_numpy(hz.c - rad).reshape(1, -1),
         ub=torch.from_numpy(hz.c + rad).reshape(1, -1),
     )
+
+
+def _sparse_used_columns(*matrices) -> "np.ndarray":
+    """Return the structural union of columns used by sparse matrices."""
+    if not matrices:
+        return np.zeros(0, dtype=bool)
+    width = int(matrices[0].shape[1])
+    used = np.zeros(width, dtype=bool)
+    for matrix in matrices:
+        matrix = _as_csr(matrix)
+        if matrix.shape[1] != width:
+            raise ValueError(
+                f"sparse latent width mismatch: {matrix.shape[1]} vs {width}"
+            )
+        used |= np.asarray(matrix.getnnz(axis=0)).reshape(-1) != 0
+    return used
+
+
+def sparse_hz_prune_unused_factors(
+    hz: SparseHZono,
+    *,
+    preserve_cont_prefix: int = 0,
+    preserve_bin_prefix: int = 0,
+) -> tuple[SparseHZono, int, int]:
+    """Remove structurally unused latent factors from a final sparse HZ.
+
+    A factor is removed only when its column is identically zero in both the
+    value map and every equality/inequality predicate matrix. Such a factor is
+    existentially independent of the represented values and predicates, so
+    deleting it is an exact Hybrid-Zonotope identity. Prefix preservation is
+    used by final verification to retain the input-factor coordinates needed
+    for counterexample reconstruction.
+
+    This is intentionally a final-state operation: sparse propagation uses a
+    shared frame across DAG branches, whose column positions must not be
+    compacted independently while the graph is still live.
+    """
+    preserve_cont_prefix = int(preserve_cont_prefix)
+    preserve_bin_prefix = int(preserve_bin_prefix)
+    if not 0 <= preserve_cont_prefix <= hz.n_cont:
+        raise ValueError(
+            f"continuous prefix {preserve_cont_prefix} is outside [0, {hz.n_cont}]"
+        )
+    if not 0 <= preserve_bin_prefix <= hz.n_bin:
+        raise ValueError(
+            f"binary prefix {preserve_bin_prefix} is outside [0, {hz.n_bin}]"
+        )
+
+    keep_cont = _sparse_used_columns(hz.Gc, hz.Ac, hz.Auc)
+    keep_bin = _sparse_used_columns(hz.Gb, hz.Ab, hz.Aub)
+    keep_cont[:preserve_cont_prefix] = True
+    keep_bin[:preserve_bin_prefix] = True
+    removed_cont = int(hz.n_cont - np.count_nonzero(keep_cont))
+    removed_bin = int(hz.n_bin - np.count_nonzero(keep_bin))
+    if removed_cont == 0 and removed_bin == 0:
+        return hz, 0, 0
+
+    compact = SparseHZono(
+        c=hz.c,
+        Gc=hz.Gc[:, keep_cont],
+        Gb=hz.Gb[:, keep_bin],
+        Ac=hz.Ac[:, keep_cont],
+        Ab=hz.Ab[:, keep_bin],
+        b=hz.b,
+        Auc=hz.Auc[:, keep_cont],
+        Aub=hz.Aub[:, keep_bin],
+        ub=hz.ub,
+        frame_id=hz.frame_id,
+        exact=hz.exact,
+    )
+    return compact, removed_cont, removed_bin
 
 
 def _clone_ids(t: Optional[torch.Tensor]) -> Optional[torch.Tensor]:
@@ -2100,6 +2317,10 @@ class _HZMILP:
     integrality: "np.ndarray"
     n_cont: int
     n_bin: int
+    cont_source: "np.ndarray"
+    bin_source: "np.ndarray"
+    bin_fixes: "tuple[BinaryFix, ...]"
+    cont_eliminations: "tuple[ContinuousElimination, ...]"
 
     @property
     def n_var(self) -> int:
@@ -2117,7 +2338,85 @@ def _row_sum(mat) -> "np.ndarray":
     return np.asarray(mat.sum(axis=1), dtype=np.float64).reshape(-1)
 
 
-def _lower_hz_milp(hz: "HZono | SparseHZono") -> _HZMILP:
+def _coalesce_antiparallel_rows(A, row_lb, row_ub):
+    """Intersect byte-identical parallel predicate rows exactly.
+
+    Equal rows are merged by tightening their lower/upper interval. A row with
+    the exact negated coefficients is the same predicate in the opposite
+    orientation, so its interval is sign-flipped before intersection. No
+    floating-point normalization or tolerance matching is used here.
+    """
+    A = A.tocsr()
+    A.sum_duplicates()
+    A.eliminate_zeros()
+    A.sort_indices()
+    row_lb = np.asarray(row_lb, dtype=np.float64).copy()
+    row_ub = np.asarray(row_ub, dtype=np.float64).copy()
+    representatives = {}
+    keep = []
+    lower = []
+    upper = []
+
+    def digest(indices, values):
+        hasher = hashlib.blake2b(digest_size=16)
+        hasher.update(indices.tobytes())
+        hasher.update(values.tobytes())
+        return (int(indices.size), hasher.digest())
+
+    def byte_equal(row, indices, values, negated):
+        start, stop = A.indptr[row], A.indptr[row + 1]
+        old_indices = A.indices[start:stop]
+        old_values = A.data[start:stop]
+        candidate = -old_values if negated else old_values
+        return (
+            old_indices.tobytes() == indices.tobytes()
+            and candidate.tobytes() == values.tobytes()
+        )
+
+    for row in range(A.shape[0]):
+        start, stop = A.indptr[row], A.indptr[row + 1]
+        indices = A.indices[start:stop]
+        values = A.data[start:stop]
+        key = digest(indices, values)
+        matched = False
+        for target, negated in representatives.get(key, ()):
+            if not byte_equal(keep[target], indices, values, negated):
+                continue
+            if negated:
+                lower[target] = max(lower[target], -row_ub[row])
+                upper[target] = min(upper[target], -row_lb[row])
+            else:
+                lower[target] = max(lower[target], row_lb[row])
+                upper[target] = min(upper[target], row_ub[row])
+            matched = True
+            break
+        if matched:
+            continue
+        target = len(keep)
+        keep.append(row)
+        lower.append(row_lb[row])
+        upper.append(row_ub[row])
+        representatives.setdefault(key, []).append((target, False))
+        negated_key = digest(indices, -values)
+        representatives.setdefault(negated_key, []).append((target, True))
+    if len(keep) == A.shape[0]:
+        return A, row_lb, row_ub
+    return (
+        A[np.asarray(keep, dtype=np.int64)],
+        np.asarray(lower, dtype=np.float64),
+        np.asarray(upper, dtype=np.float64),
+    )
+
+
+def _lower_hz_milp(
+    hz: "HZono | SparseHZono",
+    *,
+    prune_unused: bool = True,
+    coalesce_rows: bool = True,
+    project_inactive_cont: bool = False,
+    fix_implied_binary: bool = False,
+    neural_hz_min_problem_size: int = 0,
+) -> _HZMILP:
     _require_sparse()
     if isinstance(hz, SparseHZono):
         c, Gc, Gb = hz.c, hz.Gc, hz.Gb
@@ -2142,6 +2441,25 @@ def _lower_hz_milp(hz: "HZono | SparseHZono") -> _HZMILP:
     else:
         raise TypeError(f"unsupported HZ representation: {type(hz).__name__}")
 
+    if prune_unused:
+        used_cont = np.asarray(Gc.getnnz(axis=0)).reshape(-1) != 0
+        used_bin = np.asarray(Gb.getnnz(axis=0)).reshape(-1) != 0
+        if eq_Ac.shape[0]:
+            used_cont |= np.asarray(eq_Ac.getnnz(axis=0)).reshape(-1) != 0
+            used_bin |= np.asarray(eq_Ab.getnnz(axis=0)).reshape(-1) != 0
+        if le_Ac.shape[0]:
+            used_cont |= np.asarray(le_Ac.getnnz(axis=0)).reshape(-1) != 0
+            used_bin |= np.asarray(le_Ab.getnnz(axis=0)).reshape(-1) != 0
+        cont_source = np.flatnonzero(used_cont).astype(np.int64, copy=False)
+        bin_source = np.flatnonzero(used_bin).astype(np.int64, copy=False)
+        Gc, Gb = Gc[:, cont_source], Gb[:, bin_source]
+        eq_Ac, eq_Ab = eq_Ac[:, cont_source], eq_Ab[:, bin_source]
+        le_Ac, le_Ab = le_Ac[:, cont_source], le_Ab[:, bin_source]
+        n_cont, n_bin = int(cont_source.size), int(bin_source.size)
+    else:
+        cont_source = np.arange(n_cont, dtype=np.int64)
+        bin_source = np.arange(n_bin, dtype=np.int64)
+
     value_center = np.asarray(c, dtype=np.float64).reshape(-1) - _row_sum(Gb)
     value_matrix = sp.hstack([Gc, 2.0 * Gb], format="csr")
     blocks, lowers, uppers = [], [], []
@@ -2158,6 +2476,47 @@ def _lower_hz_milp(hz: "HZono | SparseHZono") -> _HZMILP:
     A = sp.vstack(blocks, format="csr") if blocks else sparse_empty(0, n_cont + n_bin)
     row_lb = np.concatenate(lowers) if lowers else np.zeros(0, dtype=np.float64)
     row_ub = np.concatenate(uppers) if uppers else np.zeros(0, dtype=np.float64)
+    neural_hz_cost_gate = (
+        A.shape[0] + A.shape[1] >= int(neural_hz_min_problem_size)
+    )
+    bin_fixes: tuple[BinaryFix, ...] = ()
+    if fix_implied_binary and neural_hz_cost_gate:
+        phase_reduction = fix_predicate_implied_binary_phases(
+            value_center,
+            value_matrix,
+            A,
+            row_lb,
+            row_ub,
+            cont_source,
+            bin_source,
+        )
+        value_center = phase_reduction.value_center
+        value_matrix = phase_reduction.value_matrix
+        A = phase_reduction.constraint_matrix
+        row_lb = phase_reduction.row_lower
+        row_ub = phase_reduction.row_upper
+        bin_source = phase_reduction.bin_sources
+        bin_fixes = phase_reduction.fixes
+        n_bin = int(bin_source.size)
+    cont_eliminations: tuple[ContinuousElimination, ...] = ()
+    if project_inactive_cont and neural_hz_cost_gate:
+        projection = project_inactive_equality_factors(
+            value_matrix,
+            A,
+            row_lb,
+            row_ub,
+            cont_source,
+            bin_source,
+        )
+        value_matrix = projection.value_matrix
+        A = projection.constraint_matrix
+        row_lb = projection.row_lower
+        row_ub = projection.row_upper
+        cont_source = projection.cont_sources
+        cont_eliminations = projection.eliminations
+        n_cont = int(cont_source.size)
+    if coalesce_rows:
+        A, row_lb, row_ub = _coalesce_antiparallel_rows(A, row_lb, row_ub)
     return _HZMILP(
         value_center=value_center,
         value_matrix=value_matrix,
@@ -2175,6 +2534,10 @@ def _lower_hz_milp(hz: "HZono | SparseHZono") -> _HZMILP:
         ]),
         n_cont=n_cont,
         n_bin=n_bin,
+        cont_source=cont_source,
+        bin_source=bin_source,
+        bin_fixes=bin_fixes,
+        cont_eliminations=cont_eliminations,
     )
 
 
@@ -2268,10 +2631,25 @@ def _solve_hz_feasibility(
 class HZSolver(Solver):
     """Open-source Hybrid Zonotope bounds and verdict solver."""
 
-    def __init__(self, time_limit: float = 30.0, tolerance: float = 1e-7):
+    def __init__(
+        self,
+        time_limit: float = 30.0,
+        tolerance: float = 1e-7,
+        *,
+        simplify_final_hz: bool = True,
+        neural_hz_projection: bool = False,
+        neural_hz_phase_fixing: bool = False,
+        neural_hz_min_problem_size: int = 512,
+    ):
         self._last_bounds: Optional[Bounds] = None
         self.time_limit = float(time_limit)
         self.tolerance = float(tolerance)
+        self.simplify_final_hz = bool(simplify_final_hz)
+        self.neural_hz_projection = bool(neural_hz_projection)
+        self.neural_hz_phase_fixing = bool(neural_hz_phase_fixing)
+        self.neural_hz_min_problem_size = int(neural_hz_min_problem_size)
+        if self.neural_hz_min_problem_size < 0:
+            raise ValueError("neural_hz_min_problem_size must be non-negative")
         self.last_stats: dict[str, object] = {}
 
     def capabilities(self) -> SolverCaps:
@@ -2300,11 +2678,26 @@ class HZSolver(Solver):
     ) -> Optional[torch.Tensor]:
         if input_hz is None or input_hz.n_out != int(np.prod(input_shape)):
             return None
-        if input_hz.n_cont > model.n_cont or input_hz.n_bin > model.n_bin:
-            return None
-        xi_c = x[:model.n_cont][:input_hz.n_cont]
-        z = x[model.n_cont:model.n_cont + model.n_bin][:input_hz.n_bin]
-        xi_b = 2.0 * z - 1.0
+        z = x[model.n_cont:model.n_cont + model.n_bin]
+        cont_values = reconstruct_continuous_factors(
+            x[:model.n_cont],
+            z,
+            model.cont_source,
+            model.bin_source,
+            model.cont_eliminations,
+        )
+        xi_c = np.zeros(input_hz.n_cont, dtype=np.float64)
+        for source, value in cont_values.items():
+            if source < input_hz.n_cont:
+                if not np.isfinite(value) or value < -1.0 - 1e-6 or value > 1.0 + 1e-6:
+                    return None
+                xi_c[source] = value
+        xi_b = -np.ones(input_hz.n_bin, dtype=np.float64)
+        input_bin = model.bin_source < input_hz.n_bin
+        xi_b[model.bin_source[input_bin]] = 2.0 * z[input_bin] - 1.0
+        for fixed in model.bin_fixes:
+            if fixed.source < input_hz.n_bin:
+                xi_b[fixed.source] = 2.0 * fixed.value - 1.0
         value = input_hz.c.copy()
         if input_hz.n_cont:
             value += np.asarray(input_hz.Gc @ xi_c).reshape(-1)
@@ -2330,8 +2723,30 @@ class HZSolver(Solver):
             return self._unknown_results(B, "missing_hz_state")
         if not _HAS_SCIPY:
             return self._unknown_results(B, "scipy_unavailable")
+        raw_cont = (
+            output_hz.n_cont
+            if isinstance(output_hz, SparseHZono)
+            else int(output_hz.Gc.shape[1])
+        )
+        raw_bin = (
+            output_hz.n_bin
+            if isinstance(output_hz, SparseHZono)
+            else int(output_hz.Gb.shape[1])
+        )
+        raw_rows = (
+            output_hz.n_eq + output_hz.n_ineq
+            if isinstance(output_hz, SparseHZono)
+            else int(output_hz.Ac.shape[0])
+        )
         try:
-            model = _lower_hz_milp(output_hz)
+            model = _lower_hz_milp(
+                output_hz,
+                prune_unused=self.simplify_final_hz,
+                coalesce_rows=self.simplify_final_hz,
+                project_inactive_cont=self.neural_hz_projection,
+                fix_implied_binary=self.neural_hz_phase_fixing,
+                neural_hz_min_problem_size=self.neural_hz_min_problem_size,
+            )
         except Exception as exc:
             return self._unknown_results(B, f"lowering_failed:{type(exc).__name__}")
         if model.value_center.size != B * int(n_out):
@@ -2353,6 +2768,35 @@ class HZSolver(Solver):
         )
         solves = 0
         nodes = 0
+        representation = "sparse" if isinstance(output_hz, SparseHZono) else "dense"
+
+        def finalize(results: list[VerifyResult]) -> list[VerifyResult]:
+            self.last_stats = {
+                "elapsed": time.monotonic() - started,
+                "solves": solves,
+                "nodes": nodes,
+                "n_cont": model.n_cont,
+                "n_bin": model.n_bin,
+                "n_rows": int(model.A.shape[0]),
+                "predicate_nnz": int(model.A.nnz),
+                "representation": representation,
+                "pruned_cont": int(
+                    raw_cont - model.n_cont - len(model.cont_eliminations)
+                ),
+                "pruned_bin": int(
+                    raw_bin - model.n_bin - len(model.bin_fixes)
+                ),
+                "fixed_bin": len(model.bin_fixes),
+                "projected_cont": len(model.cont_eliminations),
+                "coalesced_rows": int(raw_rows - model.A.shape[0]),
+                "simplify_final_hz": self.simplify_final_hz,
+                "neural_hz_projection": self.neural_hz_projection,
+                "neural_hz_phase_fixing": self.neural_hz_phase_fixing,
+                "neural_hz_min_problem_size": self.neural_hz_min_problem_size,
+            }
+            for result in results:
+                result.metadata.update(self.last_stats)
+            return results
 
         def solve(extra_A=None, extra_lb=None, extra_ub=None) -> _MILPResult:
             nonlocal solves, nodes
@@ -2371,7 +2815,7 @@ class HZSolver(Solver):
         base = solve()
         if base.status != "feasible":
             reason = "empty_hz" if base.status == "infeasible" else "base_unknown"
-            return self._unknown_results(B, reason)
+            return finalize(self._unknown_results(B, reason))
 
         exact_witness = (
             isinstance(output_hz, SparseHZono)
@@ -2381,7 +2825,6 @@ class HZSolver(Solver):
             and output_hz.frame_id == input_hz.frame_id
             and input_shape is not None
         )
-        representation = "sparse" if isinstance(output_hz, SparseHZono) else "dense"
         results: list[VerifyResult] = []
 
         def metadata(lane: int, reason: str) -> dict[str, object]:
@@ -2495,18 +2938,7 @@ class HZSolver(Solver):
                     )
             results.append(lane_result)
 
-        self.last_stats = {
-            "elapsed": time.monotonic() - started,
-            "solves": solves,
-            "nodes": nodes,
-            "n_cont": model.n_cont,
-            "n_bin": model.n_bin,
-            "n_rows": int(model.A.shape[0]),
-            "representation": representation,
-        }
-        for result in results:
-            result.metadata.update(self.last_stats)
-        return results
+        return finalize(results)
 
     def solve_batch(
         self,

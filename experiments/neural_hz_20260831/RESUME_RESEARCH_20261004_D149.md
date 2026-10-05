@@ -1,0 +1,13 @@
+# 非凸 Neural-HZ 研究续接
+
+最新用户再次明确主线是提出强大的 Neural-HZ 本身。目标仍从HZ数学定义出发，不转成helper验证器、存储优化项目或未简化完整图包装。正式1870/2413和独立61/400口径不变；没有真实新解。权威限制见 [目标修订](GOAL_DEFINITION_FIRST_AMENDMENT_20260928.md) 及 active goal。
+
+本轮 [结果和证据边界](definition_first_20260928/d149_overlap_phase_fiber_20261004/RESULTS.md) 已归档。候选在新门处删除精确active-value上侧，保留原bits、guards、epigraph、mask和父谓词，用共享相位中心余项上的whole与overlap约束替代。它确为域内的有损非凸替换，但外部新颖性、真实收益和完整代价优势尚未建立。
+
+唯一冻结数学运行已完成：3985项全通过，209文件，其中20项为本轮新增；组合测试时间50.193897964432836秒，无失败、跳过或身份漂移。四维正控实现了whole-only接受、overlap拒绝的整数物理假点，真点保留。既有Householder、参考相位、物理源中点、共享身份、区间系数桥和成本控制也通过。不能重新运行或修改这个已消费版本。
+
+下一步针对普通真实卷积加活skip，先预注册完整同结构比较和所有费用，再做新来源试验。已存真实布局和系数边界见 [SOURCE_BOUNDARY.md](definition_first_20260928/d149_overlap_phase_fiber_20261004/SOURCE_BOUNDARY.md)。当前小型稠密API不是全层实现；不要盲目放宽上限或挑五个窗口假装完整收益。数学增强必须转化成相同可承受预算下的真实证明能力。
+
+必须保留的限定：不可能比精确HZ的集合关系更精确；当前support不自动优化全部P；decoder仅source-affine；独立sibling未实现合流；没有模型、GPU、终端转换、同结构shadow或全家族回放资格。GPU、smooth和Transformer尚未达成。若主线失去精度或代价优势，应改域假设，不把辅助算法成绩归给Neural-HZ。
+
+所有新文件位于 experiments/neural_hz_20260831；旧档案与生产修改保持原状。分支redu-hz，HEAD f1bc0f16612bd3f2112f2970174ec2f7cc3bf5ac，tracked diff SHA256 29baf0c0fcc19070a97a5ddf0fea3d1591ff937d00abca28689e9a871a530bc5。结果目录为 results/d149_overlap_phase_fiber_20261004_v1。当前无本轮后台运行；结果已自动保留，goal继续active。

@@ -1,0 +1,92 @@
+{
+  "schema": "d107_graph_metadata_v1",
+  "frozen_at_utc": "2026-10-01 14:49:09 UTC",
+  "branch": "redu-hz",
+  "commit": "f1bc0f16612bd3f2112f2970174ec2f7cc3bf5ac",
+  "tracked_binary_diff_sha256": "29baf0c0fcc19070a97a5ddf0fea3d1591ff937d00abca28689e9a871a530bc5",
+  "files": [
+    {
+      "path": "/data1/Kane/FSE/ACT/experiments/neural_hz_20260831/definition_first_20260928/d107_vit_graph_inventory_20261002/PREREG.md",
+      "sha256": "f0053888a59eb2c79cbbe2d0cc822f44d7f6083a8e4e004ad3ea3dbefc886a60"
+    },
+    {
+      "path": "/data1/Kane/FSE/ACT/experiments/neural_hz_20260831/definition_first_20260928/d107_vit_graph_inventory_20261002/graph_probe.py",
+      "sha256": "b7641fadbdf45c8701f5e181d4d6088daf637bbc39137a4abcc11258626ed2ed"
+    },
+    {
+      "path": "/data1/Kane/FSE/ACT/experiments/neural_hz_20260831/definition_first_20260928/d107_vit_graph_inventory_20261002/DECODER_SHA256SUMS",
+      "sha256": "07b9c2a07605030837ec831625c32222bdf0c766ce4248a70289648d02bee7ad"
+    },
+    {
+      "path": "/data1/Kane/FSE/ACT/experiments/neural_hz_20260831/manifests/formal_unsolved_structure_manifest_v1.json",
+      "sha256": "393590e26d3ae4edd50c9a7d2df48980c8b3701237b61c030bfbe4ad36947d8d"
+    },
+    {
+      "path": "/data1/Kane/FSE/ACT/experiments/neural_hz_20260831/definition_first_20260928/d106_attention_source_energy_20261002/SHA256SUMS",
+      "sha256": "baf00fe1de44437e64731cede1a98657164b89d1ebfd6b93fea574086d179df7"
+    },
+    {
+      "path": "/data1/Kane/FSE/ACT/experiments/neural_hz_20260831/definition_first_20260928/d098_native_relation_bank_20261001/SHA256SUMS",
+      "sha256": "2fb8c183636544cb2ed4002c85f02c89b0d31eb8b26c9f4f546a92ca589adef2"
+    },
+    {
+      "path": "/data1/Kane/FSE/ACT/act/back_end/hybridz_tf/tf_mlp.py",
+      "sha256": "7f4f533823fd502bbce13436ff4855ec8eba6abef79140742a22d6501913c6de"
+    },
+    {
+      "path": "/data1/Kane/FSE/ACT/act/front_end/vnnlib_loader/onnx_converter.py",
+      "sha256": "6ba110e7ebc16e60f06574bcdf633503d7c45155435aeca0f1385b8d56e2d113"
+    }
+  ],
+  "decoder_entries": 1015,
+  "models": [
+    {
+      "relative_path": "vit_2023/onnx/ibp_3_3_8.onnx",
+      "size_bytes": 303176,
+      "sha256": "9cc53b9edb35d40d70de1d816008a434c7e60b0404cf3cb38b9aefc189692883"
+    },
+    {
+      "relative_path": "vit_2023/onnx/pgd_2_3_16.onnx",
+      "size_bytes": 325647,
+      "sha256": "246326387574617a274b6f73f7f52771df1195e03c99065ce4ad18c46b8e0984"
+    }
+  ],
+  "configuration": {
+    "source_only_graph_metadata": true,
+    "network_execution": false,
+    "shape_inference": false,
+    "solver": false,
+    "candidate_qualification": false,
+    "cpu_affinity": [
+      0
+    ],
+    "threads": 1,
+    "cuda_visible_devices": "",
+    "as_bytes": 17179869184,
+    "worker_wall_seconds": 60,
+    "max_raw_bytes": 67108864,
+    "max_json_bytes": 4194304,
+    "observed_memory_gate_bytes": 1073741824
+  },
+  "baseline": {
+    "formal_solved": 1870,
+    "formal_total": 2413,
+    "cifar100": 25,
+    "tinyimagenet": 36,
+    "external_total": 400,
+    "gain": 0
+  },
+  "review_before_freeze": {
+    "math_scope": "d021_relational_literature",
+    "source_audit": "archive_readonly_audit",
+    "lifecycle": "d021_disjunctive_literature",
+    "fixes": [
+      "freeze identity pinned across process and postcheck",
+      "training subgraphs rejected",
+      "worker requires registered parent pid",
+      "resource initialization covered by exception receipt",
+      "non-timeout interruption terminates and reaps worker"
+    ]
+  },
+  "new_tool_executed_before_freeze": false
+}

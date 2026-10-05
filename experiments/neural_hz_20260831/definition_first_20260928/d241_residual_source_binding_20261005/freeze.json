@@ -1,0 +1,79 @@
+{
+  "schema": "d241_residual_source_binding_v1",
+  "frozen_at_utc": "2026-10-05 10:34:37 UTC",
+  "branch": "redu-hz",
+  "commit": "f1bc0f16612bd3f2112f2970174ec2f7cc3bf5ac",
+  "tracked_diff_sha256": "29baf0c0fcc19070a97a5ddf0fea3d1591ff937d00abca28689e9a871a530bc5",
+  "candidate_production_sha256": "15198f4ddc40dfa1c37456737b0f2080ddee2c653e2b9d0010cf245b6c5fec75",
+  "source_sha256": {
+    "/data1/Kane/FSE/ACT/experiments/neural_hz_20260831/definition_first_20260928/d241_residual_source_binding_20261005/THEORY.md": "b512a445ea0ef69e8158d6832f341ffe1aefe58baa5d06d610141fff07373b28",
+    "/data1/Kane/FSE/ACT/experiments/neural_hz_20260831/definition_first_20260928/d241_residual_source_binding_20261005/PREREG.md": "14d65823e2062f3e3b450964bc3bb1a4614748d4424e42a571315d574b71ac5f",
+    "/data1/Kane/FSE/ACT/experiments/neural_hz_20260831/definition_first_20260928/d241_residual_source_binding_20261005/source_audit.py": "8bd8afbe5b4a58321f4569398f16021321f484358ce9b02a62aa98db56c7ebed",
+    "/data1/Kane/FSE/ACT/experiments/neural_hz_20260831/definition_first_20260928/d241_residual_source_binding_20261005/run_audit.py": "233595d46cccccb10302a10a39355a4e24b97bebc19e5527f1662fb3a9e37da8"
+  },
+  "inherited_identity_manifest": {
+    "path": "/data1/Kane/FSE/ACT/experiments/neural_hz_20260831/results/d240_phase_supported_component_20261005_v1/preregistered.json",
+    "sha256": "7a7c7663bfd2496a840bac459ea136acb76a49393c8211978dec1669a49106ff",
+    "source_count": 7655,
+    "input_count": 14
+  },
+  "inherited_mathematical_receipt": {
+    "path": "/data1/Kane/FSE/ACT/experiments/neural_hz_20260831/results/d240_phase_supported_component_20261005_v1/exit.json",
+    "sha256": "e0418f0b687ef18d1fb2d579011cc1517691e2393d766e97e45398ed9649f664",
+    "tests": 4169,
+    "test_files": 222,
+    "qualification_transferred": false,
+    "tests_rerun_this_source_only_stage": false
+  },
+  "original_model_order": [
+    "CIFAR100_resnet_large.onnx",
+    "CIFAR100_resnet_medium.onnx",
+    "TinyImageNet_resnet_medium.onnx"
+  ],
+  "source_population": "all three inherited selected_sources, complete raw prefix through third original ReLU and all graph consumers",
+  "only_command": "/data1/Kane/miniconda3/bin/python -B /data1/Kane/FSE/ACT/experiments/neural_hz_20260831/definition_first_20260928/d241_residual_source_binding_20261005/run_audit.py --enabled",
+  "exclusive_output": "/data1/Kane/FSE/ACT/experiments/neural_hz_20260831/results/d241_residual_source_binding_20261005_v1",
+  "prefreeze_actions": "text-only review and file identity checks; no new source import, AST, compile, collection, numeric execution or trial run",
+  "caps": {
+    "wall_seconds": 240,
+    "cpu_affinity": [
+      0
+    ],
+    "threads": 1,
+    "cuda_visible_devices": "",
+    "bytecode_disabled": true,
+    "address_space_bytes": 17179869184,
+    "host_memory_bytes": 1073741824,
+    "summary_reserve_bytes": 65536,
+    "whole_work": 256000000,
+    "per_model_work": 200000000,
+    "global_evidence_work": 40000000,
+    "numeric_entries": 64000000,
+    "rational_endpoint_bits": 512
+  },
+  "mathematical_component_executed": false,
+  "model_forward_executed": false,
+  "solver_executed": false,
+  "d240_guard_evaluated": false,
+  "activation_bounds_propagated": false,
+  "actual_model_binding_qualified": false,
+  "native_HZ_admitted": false,
+  "gpu_computation_completed": false,
+  "new_domain_qualified": false,
+  "new_capability_qualified": false,
+  "formal_baseline": {
+    "solved": 1870,
+    "total": 2413,
+    "CERT": 1063,
+    "validated_ADV": 807
+  },
+  "independent_e0": {
+    "cifar100": 25,
+    "tinyimagenet": 36,
+    "solved": 61,
+    "total": 400
+  },
+  "formal_gain": 0,
+  "independent_e0_gain": 0,
+  "new_benchmark_solves": 0
+}

@@ -1,0 +1,285 @@
+{
+  "abstract_propagation": false,
+  "branch": "redu-hz",
+  "commit": "f1bc0f16612bd3f2112f2970174ec2f7cc3bf5ac",
+  "corrected_graph_sha256": "51c3e6fb0309e9add6063958a6fb891249bf495d7ffacc939346a33bf8952833",
+  "e0": "61/400",
+  "elapsed_s": 3.182093716226518,
+  "formal_baseline": "1870/2413",
+  "formal_gain": 0,
+  "limits": {
+    "coefficient_entries_per_descriptor": 2000000,
+    "contraction_products_per_descriptor": 200000000,
+    "descriptor_bytes": 67108864,
+    "total_contraction_products": 256000000
+  },
+  "measured_target_relu": 36,
+  "production_option_enabled": false,
+  "schema": "s0_c4_nested_add_necessary_preflight_v1",
+  "screen": {
+    "all_reachable_storage_accounted": false,
+    "coefficient_bytes_lower_bound_no_cache_discount": 32440320,
+    "common_outer": 33,
+    "complete_path_count": 4,
+    "necessary_resource_caps_pass": false,
+    "occurrences": [
+      {
+        "adds": [
+          32
+        ],
+        "events": [
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35
+        ],
+        "explicit_bias_events": [
+          31,
+          35
+        ],
+        "geometry_cost": {
+          "coefficient_bytes_lower_bound": 10616832,
+          "coefficient_entries": 1327104,
+          "contraction_products": 169869312,
+          "group_intersections": 1,
+          "inner_groups": 1,
+          "input_shape": [
+            1,
+            128,
+            14,
+            14
+          ],
+          "middle_shape": [
+            1,
+            128,
+            14,
+            14
+          ],
+          "outer_groups": 1,
+          "output_shape": [
+            1,
+            128,
+            14,
+            14
+          ]
+        },
+        "inner": 29,
+        "outer": 33,
+        "scale_events": [
+          30,
+          34
+        ],
+        "source": 28
+      },
+      {
+        "adds": [
+          24,
+          32
+        ],
+        "events": [
+          21,
+          22,
+          23,
+          24,
+          32,
+          33,
+          34,
+          35
+        ],
+        "explicit_bias_events": [
+          23,
+          35
+        ],
+        "geometry_cost": {
+          "coefficient_bytes_lower_bound": 10616832,
+          "coefficient_entries": 1327104,
+          "contraction_products": 169869312,
+          "group_intersections": 1,
+          "inner_groups": 1,
+          "input_shape": [
+            1,
+            128,
+            14,
+            14
+          ],
+          "middle_shape": [
+            1,
+            128,
+            14,
+            14
+          ],
+          "outer_groups": 1,
+          "output_shape": [
+            1,
+            128,
+            14,
+            14
+          ]
+        },
+        "inner": 21,
+        "outer": 33,
+        "scale_events": [
+          22,
+          34
+        ],
+        "source": 20
+      },
+      {
+        "adds": [
+          16,
+          24,
+          32
+        ],
+        "events": [
+          10,
+          11,
+          12,
+          16,
+          24,
+          32,
+          33,
+          34,
+          35
+        ],
+        "explicit_bias_events": [
+          12,
+          35
+        ],
+        "geometry_cost": {
+          "coefficient_bytes_lower_bound": 10616832,
+          "coefficient_entries": 1327104,
+          "contraction_products": 169869312,
+          "group_intersections": 1,
+          "inner_groups": 1,
+          "input_shape": [
+            1,
+            128,
+            14,
+            14
+          ],
+          "middle_shape": [
+            1,
+            128,
+            14,
+            14
+          ],
+          "outer_groups": 1,
+          "output_shape": [
+            1,
+            128,
+            14,
+            14
+          ]
+        },
+        "inner": 10,
+        "outer": 33,
+        "scale_events": [
+          11,
+          34
+        ],
+        "source": 9
+      },
+      {
+        "adds": [
+          16,
+          24,
+          32
+        ],
+        "events": [
+          13,
+          14,
+          15,
+          16,
+          24,
+          32,
+          33,
+          34,
+          35
+        ],
+        "explicit_bias_events": [
+          15,
+          35
+        ],
+        "geometry_cost": {
+          "coefficient_bytes_lower_bound": 589824,
+          "coefficient_entries": 73728,
+          "contraction_products": 9437184,
+          "group_intersections": 1,
+          "inner_groups": 1,
+          "input_shape": [
+            1,
+            64,
+            27,
+            27
+          ],
+          "middle_shape": [
+            1,
+            128,
+            14,
+            14
+          ],
+          "outer_groups": 1,
+          "output_shape": [
+            1,
+            128,
+            14,
+            14
+          ]
+        },
+        "inner": 13,
+        "outer": 33,
+        "scale_events": [
+          14,
+          34
+        ],
+        "source": 5
+      }
+    ],
+    "positive_authorization": false,
+    "runtime_lineage_proved": false,
+    "selected_support_emission_accounted": false,
+    "source_multiplicities": {
+      "5": 1,
+      "9": 1,
+      "20": 1,
+      "28": 1
+    },
+    "structural_pass": true,
+    "total_contraction_products_no_cache_discount": 519045120,
+    "violations": [
+      {
+        "field": "total_contraction_products",
+        "limit": 256000000,
+        "value": 519045120
+      }
+    ]
+  },
+  "solver_calls": 0,
+  "source_graph_sha256": "1993b610eb5bac28e5246cba3d994f81be995e94ad1cd39afa05b1bc9195cd60",
+  "source_sha256": {
+    "act/back_end/hybridz_tf/exact_linear_op.py": "685dc54758b1afd93f74239a4bfdc342626df3b52f5ef29d3b63bdce001382c1",
+    "experiments/neural_hz_20260831/S0_C4_NESTED_ADDITIVE_CORE_PREREG_20260905.md": "fa3253f9bcb669bf119df4ac4394da540e8e1e1ba478f11764da5432f8eb865b",
+    "experiments/neural_hz_20260831/bn_graph_faithfulness_certificate_prototype.py": "69e669ee5b6c4e51213f0742b7e3ac9cce1ff07ad1378611fcb8c514d4d72a8d",
+    "experiments/neural_hz_20260831/run_s0_c3_graph_preflight_v1.py": "684c33c2e4451086443b68c21e866124653be9f3359e212397a666ad54506ae1",
+    "experiments/neural_hz_20260831/run_s0_c4_nested_add_preflight_v1.py": "6a5e322b323a068bf2fdbe57b24dfc9f6d286bf63b65f7e34769432a4cd208e1",
+    "experiments/neural_hz_20260831/test_s0_c4_nested_add_preflight_v1.py": "40e3771976e75dbe6493af49374bc8b6d3f66f9f8048912fcbf57dd15a61bd42"
+  },
+  "target": {
+    "converted_spec": "/data1/Kane/FSE/ACT/experiments/neural_hz_20260831/vnnlib_v2_full_v1/tinyimagenet_2024/vnnlib/TinyImageNet_resnet_medium_prop_idx_3553_sidx_3392_eps_0.0039.vnnlib",
+    "converted_spec_sha256": "d105a0c7ca711eb46b9f20ab772a0564444569d06f6206bca0e95d5a19990cca",
+    "dtype": "torch.float64",
+    "family": "tinyimagenet_2024",
+    "iid": 143,
+    "input_shape": [
+      1,
+      3,
+      56,
+      56
+    ],
+    "model": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx",
+    "model_sha256": "234b04b151d640f8fc859fab00729448ba533d8feb3679427cbadb94467ec776"
+  }
+}

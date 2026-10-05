@@ -1,0 +1,20 @@
+# 独立复核与资格边界
+
+本轮由三个分工进行静态及结果审查，主线程阅读全文并负责冻结和唯一执行。所有后置复核只读已有源码/证据，不重新运行候选或模型。
+
+数学复核确认：原D257的4269个nodeid保持完整有序前缀，当前manifest、inventory和JUnit共4277项、229文件且顺序一致；零失败/错误/skip。八个冻结源和36个工件哈希逐项匹配。监督器仅在全部后置检查后授予shared_difference_bounds_math_passed，其他能力资格不转授。
+
+来源复核确认：五个来源工件哈希、八个冻结源、三个原model/spec/manifest及D241来源引用一致；input_box、70个initializer描述、全部前缀形状与消费者逐字段吻合。2853条类记录的四个阈值/支付以及两个比较条件均独立使用Fraction核对；完整mask人口为97532，无ineligible。source/input前后检查成功，provenance和当前生产diff一致。
+
+数学审查确认融合的有符号求和使用绝对和上界，而非取消后的结果绝对值；gamma误差及统一绝对项保持向外包络。实际来源分析另外区分内部、边、角点，发现Tiny的未排除结果全在边界，且参照child_upper跨mask不变。这是解释上的明确限制，不因程序成功而省略。
+
+关键收据SHA256：
+
+- freeze.json：a8b75961a67e8a5d3873d796c9bd11ce25b3b9fb97fbf7a17cf24e44c756ba8d
+- 数学exit.json：c112dc6333089afca2418eb5d87a84723b31f9f833b302be8f209f06bf791590
+- 来源report.json：c9c1fa245962cda871642474d8c66be76599f23e15e4760359356c3c0c54afac
+- 来源exit.json：4f57d085a5b7db8867dd5896ffd41cdd7a0f49cfbe777e2569264da16a29a35c
+
+仍未证明的事项包括新集合类/域新颖性、同源严格LP强化、完整原生相位列与终端消费、完整物理存储、GPU执行、实际CERT/validated ADV净增益和全量零回退。这些事项不能从数学测试或来源诊断通过推导。正式和独立收益均为0。
+
+全部本版本源码、冻结清单、结果文档和两个RUN由ARCHIVE.sha256封存；旧D257/D258的权威记录仅通过只读哈希锚定，不改写。封存不代表后续研究目标完成。

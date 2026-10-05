@@ -1,0 +1,23 @@
+# 可靠共同支持实现与执行收据审阅
+
+本审阅区分冻结前静态核查、一次执行及执行后只读核验。没有任何冻结后源码补丁或重跑，也没有把数学组件证据升级为真实模型资格。
+
+## 冻结前检查
+
+主线程全文读取合同、预注册、核心、测试及两份入口。数学协作者和独立资源审阅者复核区间信用下界、支持向上归约、常数偏置及不修改输入；共同确认成功调用的68*n+2279 work、26*n+1676 entries静态上界。NumPy多次逐操作扫描与一次四列sum被明确区分，不冒称GPU融合。
+
+四项测试使用独立四方向Fraction oracle，逐调用核对账目而不增加plain test人口。冻结前修正PREREG表述，明确新增组件无solver调用，但完整继承人口仍保留原固定LP对照。最终源码在2026-10-05 21:07:38 UTC统一冻结，六源身份由首次入口验证。
+
+## 执行后独立核验
+
+实际JUnit有4285项、231文件，failure/error/skipped均为0，与manifest逐项有序一致。前4281个nodeid和前230文件精确保留D261；新增四项位于登记末尾。38个RUN工件的SHA全部符合exit，freeze六源SHA全部符合，未发生第二次执行。
+
+新manifest有8092个源码及依赖身份、14个输入身份；原源码映射全部保留，输入及生产provenance与D261完全相同。runner前后source_drift、input_drift为空，provenance_drift为false。18组历史writer relocation与inventory一致，目标全在新RUN。新D261控制summary与历史内容哈希相同，但保存位置独立。
+
+退出收据为2575b75d5eff761cfef1b9a6acc642b5b4e68f7acf66d2dda29c27a458fa25c3；新summary为6f8390e637270d421a327519928b4dd32437dd941072cebe153ff059e0444f2b。测试进程53.391641987487674秒，原时间、AS、CPU及宿主观察门均通过。测试日志13个旧警告不隐藏，详见原RUN。
+
+## 资格与归档
+
+仅最终exit的joint_support_kernel_math_passed为true。summary记录局部四项完成但完整资格false是预注册的阶段顺序，不改写旧工件。来源worker、native、GPU、new-domain和new-capability仍未合格；正式与独立新增成绩均0。
+
+主线程读回RESULTS及RESEARCH_RECORD，确认付款改善不被记成真实网络严格强化，CIFAR/Tiny与完整目标不缩减。ARCHIVE.sha256绑定本版本全部正文和冻结文件、唯一RUN全部文件及关键历史锚点；封存后后继改动须新建版本。归档校验不是新模型实验。

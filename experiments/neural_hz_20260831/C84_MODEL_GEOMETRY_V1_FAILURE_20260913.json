@@ -1,0 +1,10 @@
+{
+  "schema": "c84_readonly_geometry_v1_failure_v1",
+  "command": "/data1/Kane/miniconda3/bin/python experiments/neural_hz_20260831/c84_model_geometry_inspect_v1.py",
+  "exit_code": 1,
+  "output": "Traceback (most recent call last):\n  File \"/data1/Kane/FSE/ACT/experiments/neural_hz_20260831/c84_model_geometry_inspect_v1.py\", line 56, in <module>\n    if __name__=='__main__':main()\n                            ~~~~^^\n  File \"/data1/Kane/FSE/ACT/experiments/neural_hz_20260831/c84_model_geometry_inspect_v1.py\", line 31, in main\n    if sha(model_path)!=digest:raise ValueError('original model content drift')\n       ~~~^^^^^^^^^^^^\n  File \"/data1/Kane/FSE/ACT/experiments/neural_hz_20260831/c84_model_geometry_inspect_v1.py\", line 16, in sha\n    with path.open('rb') as stream:\n         ~~~~~~~~~^^^^^^\n  File \"/data1/Kane/miniconda3/lib/python3.13/pathlib/_local.py\", line 537, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/onnx/TinyImageNet_resnet_medium.onnx'\n",
+  "reason": "manifest source_benchmark_root is the benchmark collection root; the original family path component was omitted",
+  "model_loaded": false,
+  "model_or_result_written": false,
+  "formal_gain": 0
+}

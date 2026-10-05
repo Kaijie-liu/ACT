@@ -1,0 +1,54 @@
+# 共同源关系的唯一数学验证
+
+本预注册针对 CONTRACT.md 的默认关闭数学组件。冻结前允许静态阅读与编辑，不允许候选 import、AST、compile、collection 或任何数值试跑。六个新源为 CONTRACT.md、PREREG.md、source_relation.py、test_source_relation.py、run_math.py、collection_contract.py。待全部静态审阅结束后记录 SHA256，冻结版本只执行一次，失败保留原样，不修改或重跑。
+
+## 固定测试人口
+
+继承 D240 的4169 tests/222 files及完整有序nodeids、来源/依赖/旧证据闭包和14输入。加入下列20个普通测试，必须为4189 tests/223 files，不skip、不缩减、不用历史receipt代替执行。
+
+1. test_01_default_off_and_frame_identity
+2. test_02_append_seal_and_lineage
+3. test_03_affine_add_and_full_input_decoder
+4. test_04_conv_complete_population_and_padding
+5. test_05_two_layer_padding_boundary
+6. test_06_raw_bn_enclosure_and_shared_error
+7. test_07_same_h_symmetric_certificate
+8. test_08_same_h_asymmetric_certificate
+9. test_09_strong_reference_witnesses
+10. test_10_complete_residual_and_derived_tau
+11. test_11_same_range_distinct_source_identity
+12. test_12_whole_h_integer_extensions
+13. test_13_original_zero_phase_labels
+14. test_14_binary_source_and_retained_predicates
+15. test_15_difference_only_alias
+16. test_16_unsupported_contract_rejected
+17. test_17_exact_arithmetic_and_mutation_rejection
+18. test_18_sticky_shared_budget
+19. test_19_complete_rows_and_cost
+20. test_20_immutable_state_and_summary
+
+具体小图、精确有限测试点、非负证书系数由冻结源码事前固定。测试网格仅检查已证语义，不是候选攻击、采样或求解算法。新关系采用固定 X 结构与由原完整系数导出的 tau；不根据模型身份、标签、LP状态或成功与否切换规则。
+
+旧 writer 的隔离规则完整继承；另外将 D240 test_factor.py 的 _record_file 返回目的地重定位至本 RUN/inherited_d240_controls/summary.json。仅修改其证据writer的执行环境/窄facade，不改变冻结旧源、数学输入、原测试断言或字节码。新 test_source_relation.py 的完整结果仅独占写本RUN/summary.json。D241作为来源证据而不是数学manifest，不导入或再次执行其来源审计程序。
+
+## 唯一入口和既有资源门
+
+唯一输出目录为 experiments/neural_hz_20260831/results/d243_operator_source_relation_20261005_v1；首次独占创建即消费本版本。唯一命令为
+
+```text
+/data1/Kane/miniconda3/bin/python -B experiments/neural_hz_20260831/definition_first_20260928/d243_operator_source_relation_20261005/run_math.py --enabled
+```
+
+CPU0、单线程、CUDA隐藏、AS16GiB；包含导入、collection、全部测试及JUnit的完整pytest阶段仍为60秒。监督器观测1GiB、reserve65536。候选同一Budget保持work256M、单公共操作200M、entries64M、512位上限。各独立拒绝fixture可以各有声明预算，普通正例不得以重建预算隐藏累计支出。
+
+监督器独占保留 preregistered.json、inventory.json、tests.log、tests.xml、summary.json、exit.json 与全部继承新证据，失败也保留已生成工件。观察超时只轮询同一进程，不重新启动。后验核对完整有序人口、JUnit无failure/error/skip、输入/源码前后SHA与工作区provenance。
+
+## 资格与不变项
+
+schema=d243_operator_source_relation_v1，required_tests=4189，required_test_files=223。mathematical_stage_only、fixed_component_lp_controls_registered、domain_definition_changed、new_component_solver_free为true；domain_definition_changed只表示本候选声明关系与共同源算子合同，不是宣称新集合表达力或外部新颖性。negative_audit_only、new_set_class、solver_rescue_registered、worker_stage_registered为false。
+
+source_component_qualified、actual_model_binding_qualified、actual_phase_column_binding_verified、native_HZ_admitted、complete_physical_qualification、gpu_computation_completed、new_domain_qualified、new_capability_qualified在本阶段均为false。数学的same-H关系绑定不等于原模型相位列已经认证。无ONNX执行、GPU、额外求解器、shadow或正式回放；formal_gain=independent_e0_gain=new_benchmark_solves=0。
+
+分支 redu-hz，commit f1bc0f16612bd3f2112f2970174ec2f7cc3bf5ac；tracked binary diff SHA256=29baf0c0fcc19070a97a5ddf0fea3d1591ff937d00abca28689e9a871a530bc5。仅写本新源目录及其新RUN，不改生产、默认开关、历史/冻结文档、模型或结果，不commit/push。正式1870/2413及独立CIFAR10025+TinyImageNet36=61/400不变。
+
+上一轮是中断状态诊断，没有实现进展；本轮可实现的研究进展是可执行同源关系的接入与证伪，不把数学组件过门代替完整目标。后续仍按完整固定三模型、shadow、家族及全量回放次序推进。GPU、smooth、Transformer及新家族保持未完成状态，不能由当前ReLU组件自动取得资格。

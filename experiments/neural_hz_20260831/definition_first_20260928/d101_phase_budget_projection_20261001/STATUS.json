@@ -1,0 +1,33 @@
+{
+  "schema": "d101_phase_budget_projection_paper_archive_v1",
+  "status": "PAPER_ONLY_SUPPORTING_MECHANISM_WITH_LIMITED_COMPARATOR",
+  "branch": "redu-hz",
+  "commit": "f1bc0f16612bd3f2112f2970174ec2f7cc3bf5ac",
+  "tracked_binary_diff_sha256": "29baf0c0fcc19070a97a5ddf0fea3d1591ff937d00abca28689e9a871a530bc5",
+  "candidate_created": false,
+  "candidate_frozen": false,
+  "candidate_executed": false,
+  "run_created": false,
+  "tests_executed": 0,
+  "model_executed": false,
+  "gpu_executed": false,
+  "novel_domain_established": false,
+  "strong_comparator_separation_established": false,
+  "latest_executed_math": {"id": "D098", "tests": 3845, "files": 188},
+  "formal_gain": 0,
+  "formal_baseline": {"solved": 1870, "total": 2413, "cert": 1063, "validated_adv": 807},
+  "external_baseline": {"cifar100": 25, "tinyimagenet": 36, "solved": 61, "total": 400},
+  "result_scope": "Classical continuous-knapsack support compiled to static phase-affine rows; finite forward-operator comparison only",
+  "negative_findings": [
+    "Shared ReLU-error coordinate reformulation duplicates existing D074 and related mixed-readout work",
+    "Weighted bound 66/25 does not beat known true global bound 5/2",
+    "NEXT comparison point is already excluded by D066 ideal common-phase table"
+  ],
+  "decision": "Archive as supporting mechanism; no new executable candidate or test suite selected",
+  "verification": "Hand derivation and independent paper review; no numerical qualification",
+  "goal_status_at_archive": "active",
+  "goal_complete": false,
+  "commit_performed": false,
+  "push_performed": false,
+  "remote_backup_performed": false
+}

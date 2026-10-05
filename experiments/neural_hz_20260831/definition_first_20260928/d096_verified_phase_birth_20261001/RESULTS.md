@@ -1,0 +1,31 @@
+# 精确非凸ReLU出生通过完整数学测试
+
+D096已一次通过3837项测试、186文件，将D094纸面出生语义落实为默认关闭的原生SparseHZono算子。它精确绑定实际预激活，保留全部原因子及谓词，覆盖零点两种新相位标签，并在后续Affine及再次出生后仍可认证旧latent关系。该结果只是定义研究的可靠算子支撑，不是新域创新、实际网络收益或GPU成绩。
+
+## 执行证据
+
+六文件在freeze.json中先冻结。此前仅做文本和数学审查，没有候选AST、导入、编译、收集或数值执行。中断恢复时确认freeze和RUN均不存在、没有相关run_math或pytest进程，再创建freeze并启动唯一入口。没有因观察超时重启。
+
+唯一RUN为results/d096_verified_phase_birth_20261001_v1，session39901已确认exit_code=0。完整继承D093的3833项185文件，加四项固定新测试；同一pytest进程在测试前认证全部有序nodeids，最终3837 passed、13 warnings，无失败、错误或跳过。原CPU1、单线程、CUDA空、AS16GiB及完整测试子进程60秒门不变。
+
+测试子进程从启动至JUnit用时50.31017832644284秒；pytest报告48.98秒；监督器含前后来源核查共61.446113273501396秒。60秒门属于测试子进程，不能将监督器总时间混称测试时间。原始exit、inventory、manifest、tests.log和tests.xml完整保留，不修改、不重跑已消费版本。
+
+component_tests_passed、mathematical_component_gate_passed、inventory_validated_before_execution和all_stages_passed为true，tests_exit和supervisor_exit为0；source_drift=[]、input_drift=[]、provenance_drift=false。监督器traced peak为14217161 bytes、tracer metadata为4802992 bytes、RSS highwater增长0，只是监督器范围，不是候选完整物理资格。
+
+## 测试支持的结论
+
+普通c=0.1的实际浮点预激活验证了字面两常量列模板，未将round(c-Q)当作精确差。已执行控制中旧偏置差的舍入误差为负2的55次方倒数；新EQ在精确Fraction下与实际g一致。正反方向的可行状态控制、稳定正负和恒零输出、旧连续及二元余项、旧EQ/LE和exact=False均保留。
+
+在g=0处，两种signed相位标签都具有合法共同连续扩展。二次出生前的混权Affine改变了输出银行，但没有改变旧谓词和latent身份；旧BornGate在新HZ中仍以实际行认证，而非错误绑定到旧输出位置。已有carrier复用，不重复新增常量列；稳定续层也认证其实际EQ。
+
+64个不同输出全部生成并认证，无代表门替代：在原64连续、1二元的基础上，新增130连续及64二元，得到194连续、65二元、66EQ、128LE。两个常量列只创建一次。测试核对全部字面EQ、每个门的g/q、原bit、共同扩展、数值buffer与nnz报告，以及硬pool收费；这些规模计数不等于存储压缩或端到端速度提升。
+
+默认关闭不触及毒输入；错误开关类型、坏carrier或Graph索引、改动后的实际常量EQ/出生EQ/guard、错误g/q/界、非有限输入、512bit或65536支撑超限、零预算等均拒绝。D095索引先比较造成异常不统一的问题在新D096修复，D095原始草稿和审查记录未改。
+
+## 仍未取得的资格
+
+actual_model_binding_qualified、actual_phase_column_binding_verified、source_component_qualified、source_census_qualified、native_HZ_admitted、complete_physical_qualification及gpu_computation_completed均false。worker_launched=false，candidate_physical_gate_evaluated=false。没有执行预训练模型、终端LP/MILP、GPU、shadow或全量回放。
+
+本版使用完整单位盒推界，可能比现有相关性界松，并可能增加真实层的不稳定人口；未证明真实13家族零回归。在线分配器、deferred部分物化、rebase证书运输及D093共同观察消费者也未接通。下一步见[NEXT_INTEGRATION](NEXT_INTEGRATION.md)，不把继续修数值或包装器当整个研究主线。
+
+2026年10月1日，branch redu-hz，commit f1bc0f16612bd3f2112f2970174ec2f7cc3bf5ac。正式1870/2413（1063 CERT、807 validated ADV）与独立CIFAR100 25、TinyImageNet 36共61/400不变，formal_gain=0。原tracked差异仍为9文件、3806 insertions、57 deletions；本轮未改生产和历史档案，未commit或push。文档技能用于分开已执行证据、数学含义及未取得资格。Goal继续active。

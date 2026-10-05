@@ -1,0 +1,852 @@
+{
+  "schema": "c78_original_torch_storage_loss_evidence_v1",
+  "actual_complete_ledgers": {
+    "terminal": {
+      "complete_decoded_input_still_retained": true,
+      "completed": false,
+      "diagnostic_work": 97642765,
+      "entry_rss_bytes_before_measurement": 582569984,
+      "failure": {
+        "reason": "complete restored LIVE entries",
+        "type": "MemoryError"
+      },
+      "formal_gain": 0,
+      "last_completed_boundary": "after_complete_numeric_owner_layout",
+      "measurement": {
+        "build_returned": false,
+        "elapsed_s": 26.42231855262071,
+        "entry_rss_bytes": 582569984,
+        "lifetime_hwm_after_bytes": 1622597632,
+        "lifetime_hwm_before_bytes": 582184960,
+        "measured_transient_gate": true,
+        "resident_growth_upper_bound_bytes": 1040027648,
+        "traced_current_bytes": 624341412,
+        "traced_peak_bytes": 706517654,
+        "tracer_metadata_bytes": 76974912,
+        "transient_cap_bytes": 1073741824
+      },
+      "new_native_or_solver_executed": false,
+      "wall_s": 26.45746193267405,
+      "work_parts": {
+        "c78_complete_integer_prefix": 53970736,
+        "c78_complete_restored_LIVE_traversal": 42950185,
+        "c78_exact_pointer_page_zero": 672768,
+        "c78_shared_exact_token_buffer": 32768,
+        "owned_decode_array_header": 14316,
+        "owned_decode_readonly_copy_and_bits": 1864,
+        "owned_decode_temporary_root_retirement": 128
+      }
+    },
+    "restored": {
+      "resident_bytes": 500661000,
+      "resident_entries": 47235662,
+      "numeric_storage_count": 1057,
+      "object_counts": [
+        [
+          "Bounds",
+          80
+        ],
+        [
+          "SparseHZAffineExpr",
+          40
+        ],
+        [
+          "SparseHZAffineTerm",
+          58
+        ],
+        [
+          "SparseHZono",
+          13
+        ],
+        [
+          "known_pickle_bytearray",
+          393
+        ],
+        [
+          "numpy.ndarray",
+          394
+        ],
+        [
+          "operator.ImplicitConv2DOp",
+          11
+        ],
+        [
+          "scipy.csr",
+          95
+        ],
+        [
+          "torch.Tensor",
+          663
+        ]
+      ],
+      "storage_kind_totals": {
+        "torch": [
+          663,
+          116103072,
+          14512884
+        ],
+        "pickle_bytearray": [
+          393,
+          384556328,
+          32722578
+        ],
+        "numpy": [
+          1,
+          1600,
+          200
+        ]
+      }
+    },
+    "original_live": {
+      "resident_bytes": 466367392,
+      "resident_entries": 42948961,
+      "numeric_storage_count": 915,
+      "object_counts": [
+        [
+          "Bounds",
+          80
+        ],
+        [
+          "SparseHZAffineExpr",
+          40
+        ],
+        [
+          "SparseHZAffineTerm",
+          58
+        ],
+        [
+          "SparseHZono",
+          13
+        ],
+        [
+          "numpy.ndarray",
+          394
+        ],
+        [
+          "operator.ImplicitConv2DOp",
+          11
+        ],
+        [
+          "scipy.csr",
+          95
+        ],
+        [
+          "torch.Tensor",
+          663
+        ]
+      ],
+      "storage_kind_totals": {
+        "torch": [
+          522,
+          81811064,
+          10226383
+        ],
+        "numpy": [
+          393,
+          384556328,
+          32722578
+        ]
+      }
+    },
+    "events": [
+      {
+        "event": "complete_root_traversal_finished",
+        "integer_visits": 6746342,
+        "integer_unique": 1300611,
+        "integer_token_bytes": 1177976461,
+        "identity_page_bytes": 5382144,
+        "integer_prefixes": 6132,
+        "other_seen_objects": 8522,
+        "numeric_roots": 662,
+        "work": 97642765,
+        "worker_elapsed_s": 25.93411221448332,
+        "rss_bytes": 1516523520,
+        "lifetime_hwm_bytes": 1603715072,
+        "traced_current_bytes": 589096323,
+        "traced_peak_bytes": 676617426,
+        "tracer_metadata_bytes": 76817248
+      },
+      {
+        "event": "after_complete_root_collect",
+        "numeric_roots": 662,
+        "python_shallow_bytes": 93506276,
+        "unique_objects": 1309133,
+        "worker_elapsed_s": 25.934326733462512,
+        "rss_bytes": 1516523520,
+        "lifetime_hwm_bytes": 1603715072,
+        "traced_current_bytes": 589096291,
+        "traced_peak_bytes": 676617426,
+        "tracer_metadata_bytes": 76817312
+      },
+      {
+        "event": "after_complete_numeric_owner_layout",
+        "layout": {
+          "resident_bytes": 500661000,
+          "resident_entries": 47235662,
+          "numeric_storage_count": 1057,
+          "object_counts": [
+            [
+              "Bounds",
+              80
+            ],
+            [
+              "SparseHZAffineExpr",
+              40
+            ],
+            [
+              "SparseHZAffineTerm",
+              58
+            ],
+            [
+              "SparseHZono",
+              13
+            ],
+            [
+              "known_pickle_bytearray",
+              393
+            ],
+            [
+              "numpy.ndarray",
+              394
+            ],
+            [
+              "operator.ImplicitConv2DOp",
+              11
+            ],
+            [
+              "scipy.csr",
+              95
+            ],
+            [
+              "torch.Tensor",
+              663
+            ]
+          ],
+          "storage_kind_totals": {
+            "torch": [
+              663,
+              116103072,
+              14512884
+            ],
+            "pickle_bytearray": [
+              393,
+              384556328,
+              32722578
+            ],
+            "numpy": [
+              1,
+              1600,
+              200
+            ]
+          }
+        },
+        "worker_elapsed_s": 26.279328105971217,
+        "rss_bytes": 1518297088,
+        "lifetime_hwm_bytes": 1603715072,
+        "traced_current_bytes": 624667417,
+        "traced_peak_bytes": 676617426,
+        "tracer_metadata_bytes": 77045056
+      }
+    ]
+  },
+  "read_only_original_payload_headers": [
+    {
+      "offset": 282745475,
+      "bytes": 10035445,
+      "sha256": "dd39c17ceb02b5fb38e363c43a338b50b2e490751a06fd751f9bad74c7ec96ed",
+      "data_offset": 237,
+      "headers": [
+        [
+          [
+            "PROTO",
+            2,
+            0
+          ],
+          [
+            "LONG1",
+            1.195470371460388e+23,
+            2
+          ],
+          [
+            "STOP",
+            null,
+            14
+          ]
+        ],
+        [
+          [
+            "PROTO",
+            2,
+            15
+          ],
+          [
+            "BININT2",
+            1001,
+            17
+          ],
+          [
+            "STOP",
+            null,
+            20
+          ]
+        ],
+        [
+          [
+            "PROTO",
+            2,
+            21
+          ],
+          [
+            "EMPTY_DICT",
+            null,
+            23
+          ],
+          [
+            "BINPUT",
+            0,
+            24
+          ],
+          [
+            "MARK",
+            null,
+            26
+          ],
+          [
+            "BINUNICODE",
+            "protocol_version",
+            27
+          ],
+          [
+            "BINPUT",
+            1,
+            48
+          ],
+          [
+            "BININT2",
+            1001,
+            50
+          ],
+          [
+            "BINUNICODE",
+            "little_endian",
+            53
+          ],
+          [
+            "BINPUT",
+            2,
+            71
+          ],
+          [
+            "NEWTRUE",
+            null,
+            73
+          ],
+          [
+            "BINUNICODE",
+            "type_sizes",
+            74
+          ],
+          [
+            "BINPUT",
+            3,
+            89
+          ],
+          [
+            "EMPTY_DICT",
+            null,
+            91
+          ],
+          [
+            "BINPUT",
+            4,
+            92
+          ],
+          [
+            "MARK",
+            null,
+            94
+          ],
+          [
+            "BINUNICODE",
+            "short",
+            95
+          ],
+          [
+            "BINPUT",
+            5,
+            105
+          ],
+          [
+            "BININT1",
+            2,
+            107
+          ],
+          [
+            "BINUNICODE",
+            "int",
+            109
+          ],
+          [
+            "BINPUT",
+            6,
+            117
+          ],
+          [
+            "BININT1",
+            4,
+            119
+          ],
+          [
+            "BINUNICODE",
+            "long",
+            121
+          ],
+          [
+            "BINPUT",
+            7,
+            130
+          ],
+          [
+            "BININT1",
+            4,
+            132
+          ],
+          [
+            "SETITEMS",
+            null,
+            134
+          ],
+          [
+            "SETITEMS",
+            null,
+            135
+          ],
+          [
+            "STOP",
+            null,
+            136
+          ]
+        ],
+        [
+          [
+            "PROTO",
+            2,
+            137
+          ],
+          [
+            "MARK",
+            null,
+            139
+          ],
+          [
+            "BINUNICODE",
+            "storage",
+            140
+          ],
+          [
+            "BINPUT",
+            0,
+            152
+          ],
+          [
+            "GLOBAL",
+            "torch DoubleStorage",
+            154
+          ],
+          [
+            "BINPUT",
+            1,
+            175
+          ],
+          [
+            "BINUNICODE",
+            "510393008",
+            177
+          ],
+          [
+            "BINPUT",
+            2,
+            191
+          ],
+          [
+            "BINUNICODE",
+            "cpu",
+            193
+          ],
+          [
+            "BINPUT",
+            3,
+            201
+          ],
+          [
+            "BININT",
+            1254400,
+            203
+          ],
+          [
+            "NONE",
+            null,
+            208
+          ],
+          [
+            "TUPLE",
+            null,
+            209
+          ],
+          [
+            "BINPUT",
+            4,
+            210
+          ],
+          [
+            "BINPERSID",
+            null,
+            212
+          ],
+          [
+            "STOP",
+            null,
+            213
+          ]
+        ],
+        [
+          [
+            "PROTO",
+            2,
+            214
+          ],
+          [
+            "EMPTY_LIST",
+            null,
+            216
+          ],
+          [
+            "BINPUT",
+            0,
+            217
+          ],
+          [
+            "BINUNICODE",
+            "510393008",
+            219
+          ],
+          [
+            "BINPUT",
+            1,
+            233
+          ],
+          [
+            "APPEND",
+            null,
+            235
+          ],
+          [
+            "STOP",
+            null,
+            236
+          ]
+        ]
+      ]
+    },
+    {
+      "offset": 518211900,
+      "bytes": 10035445,
+      "sha256": "dd39c17ceb02b5fb38e363c43a338b50b2e490751a06fd751f9bad74c7ec96ed",
+      "data_offset": 237,
+      "headers": [
+        [
+          [
+            "PROTO",
+            2,
+            0
+          ],
+          [
+            "LONG1",
+            1.195470371460388e+23,
+            2
+          ],
+          [
+            "STOP",
+            null,
+            14
+          ]
+        ],
+        [
+          [
+            "PROTO",
+            2,
+            15
+          ],
+          [
+            "BININT2",
+            1001,
+            17
+          ],
+          [
+            "STOP",
+            null,
+            20
+          ]
+        ],
+        [
+          [
+            "PROTO",
+            2,
+            21
+          ],
+          [
+            "EMPTY_DICT",
+            null,
+            23
+          ],
+          [
+            "BINPUT",
+            0,
+            24
+          ],
+          [
+            "MARK",
+            null,
+            26
+          ],
+          [
+            "BINUNICODE",
+            "protocol_version",
+            27
+          ],
+          [
+            "BINPUT",
+            1,
+            48
+          ],
+          [
+            "BININT2",
+            1001,
+            50
+          ],
+          [
+            "BINUNICODE",
+            "little_endian",
+            53
+          ],
+          [
+            "BINPUT",
+            2,
+            71
+          ],
+          [
+            "NEWTRUE",
+            null,
+            73
+          ],
+          [
+            "BINUNICODE",
+            "type_sizes",
+            74
+          ],
+          [
+            "BINPUT",
+            3,
+            89
+          ],
+          [
+            "EMPTY_DICT",
+            null,
+            91
+          ],
+          [
+            "BINPUT",
+            4,
+            92
+          ],
+          [
+            "MARK",
+            null,
+            94
+          ],
+          [
+            "BINUNICODE",
+            "short",
+            95
+          ],
+          [
+            "BINPUT",
+            5,
+            105
+          ],
+          [
+            "BININT1",
+            2,
+            107
+          ],
+          [
+            "BINUNICODE",
+            "int",
+            109
+          ],
+          [
+            "BINPUT",
+            6,
+            117
+          ],
+          [
+            "BININT1",
+            4,
+            119
+          ],
+          [
+            "BINUNICODE",
+            "long",
+            121
+          ],
+          [
+            "BINPUT",
+            7,
+            130
+          ],
+          [
+            "BININT1",
+            4,
+            132
+          ],
+          [
+            "SETITEMS",
+            null,
+            134
+          ],
+          [
+            "SETITEMS",
+            null,
+            135
+          ],
+          [
+            "STOP",
+            null,
+            136
+          ]
+        ],
+        [
+          [
+            "PROTO",
+            2,
+            137
+          ],
+          [
+            "MARK",
+            null,
+            139
+          ],
+          [
+            "BINUNICODE",
+            "storage",
+            140
+          ],
+          [
+            "BINPUT",
+            0,
+            152
+          ],
+          [
+            "GLOBAL",
+            "torch DoubleStorage",
+            154
+          ],
+          [
+            "BINPUT",
+            1,
+            175
+          ],
+          [
+            "BINUNICODE",
+            "510393008",
+            177
+          ],
+          [
+            "BINPUT",
+            2,
+            191
+          ],
+          [
+            "BINUNICODE",
+            "cpu",
+            193
+          ],
+          [
+            "BINPUT",
+            3,
+            201
+          ],
+          [
+            "BININT",
+            1254400,
+            203
+          ],
+          [
+            "NONE",
+            null,
+            208
+          ],
+          [
+            "TUPLE",
+            null,
+            209
+          ],
+          [
+            "BINPUT",
+            4,
+            210
+          ],
+          [
+            "BINPERSID",
+            null,
+            212
+          ],
+          [
+            "STOP",
+            null,
+            213
+          ]
+        ],
+        [
+          [
+            "PROTO",
+            2,
+            214
+          ],
+          [
+            "EMPTY_LIST",
+            null,
+            216
+          ],
+          [
+            "BINPUT",
+            0,
+            217
+          ],
+          [
+            "BINUNICODE",
+            "510393008",
+            219
+          ],
+          [
+            "BINPUT",
+            1,
+            233
+          ],
+          [
+            "APPEND",
+            null,
+            235
+          ],
+          [
+            "STOP",
+            null,
+            236
+          ]
+        ]
+      ]
+    }
+  ],
+  "constructor_execution_in_followup": false,
+  "formal_gain": 0
+}

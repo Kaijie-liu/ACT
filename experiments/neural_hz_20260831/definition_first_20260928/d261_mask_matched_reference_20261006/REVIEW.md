@@ -1,0 +1,18 @@
+# 公平参照的独立证据审查
+
+主线程审阅全部候选源码和合同，负责冻结与唯一执行。数学、来源身份/资源、精确分类由协作者分工进行只读复核，没有重跑候选或改写工件。外部审计时间不是候选内部免费步骤，不改变来源 RUN 的冻结账或授予额外资格。
+
+数学审查确认 manifest、inventory、JUnit 完整有序 4281/230，D259 的全部4277项为原序前缀；8冻结源和37个数学工件哈希匹配。8038 source身份及14 input保持；所有旧证据 writer 仅重定向至隔离RUN，继承 D259 summary 与原件逐字哈希一致。只有本轮 mask_matched_reference_math_passed 及数学标志授予，旧组件及原生/GPU资格不转授。
+
+来源审查确认5工件、8冻结源及3个原model/spec/manifest当前哈希一致，D241 input_box、70 initializer描述、全部前缀形状与消费者一致。对D259的frame、logical phases、channel_bounds和全部BN carrier逐字段相等，未改H。8076 source和14 input前后认证通过，provenance一致，生产tracked diff仍为29baf0c0fcc19070a97a5ddf0fea3d1591ff937d00abca28689e9a871a530bc5。
+
+分类审查对完整2853条记录独立使用Fraction重算旧/公平两套四个支付和阈值，比较条件与状态全部一致。e/tau、父order/scales/u、selected coefficients、旧child upper逐float.hex一致；全部97532人口、九mask和单调性无遗漏。新增8564普通排除均来自边界；15408内部未排除人口未变化。以上只证明诊断记录，不证明新增相位关系严格强化。
+
+关键收据 SHA256 如下：
+
+- freeze.json：f144af5315d4b4f4595844dd5712e133c106b8df0cb1d14a10aa7d2133a5f360
+- 数学 exit.json：96ebb901ab64e67c1fbad3165ecbfddfe43dbf44b2f3539ecdd306db643786a1
+- 来源 report.json：d6f2b19ae7e2541def1c4977d12e7b1c72f3c6b45cc5cd7d17e458be3404e63d
+- 来源 exit.json：8081c191ea87148fca8ba143d0581e3c4b87423ea0d1e4bdfa4e9d19dc082362
+
+本版相对失败D260的core/observer/test只有版本标识和路径变化；入口修正D259 freeze哈希并加入失败provenance。冻结之前主线程额外逐一核对50个历史锚点的实际SHA，避免重复抄写错误。D260的冻结源和失败结果保持原样并单独归档。

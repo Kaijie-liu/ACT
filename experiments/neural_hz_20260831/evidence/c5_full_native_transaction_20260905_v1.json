@@ -1,0 +1,221 @@
+{
+  "both_native_stages_passed": true,
+  "branch_sequence_products": [
+    74585216,
+    6053888
+  ],
+  "complete_runtime_prefix": false,
+  "complete_sequence_products": 80639104,
+  "followup_rows": 1097,
+  "formal_gain": 0,
+  "ledger_failure": {
+    "reason": "csr_data_not_full_owner:active['probe'].value.Gc.data",
+    "type": "WholeStateReject"
+  },
+  "max_rss_kib_including_test_oracles": 1429464,
+  "probe_admission": {
+    "admitted": false,
+    "generator_nnz": 7711,
+    "threshold": 25875
+  },
+  "probe_rows": 318,
+  "promotion_passed": false,
+  "provenance": {
+    "branch": "redu-hz",
+    "candidate_sha256": "15198f4ddc40dfa1c37456737b0f2080ddee2c653e2b9d0010cf245b6c5fec75",
+    "commit": "f1bc0f16612bd3f2112f2970174ec2f7cc3bf5ac"
+  },
+  "relu_transform_executed": false,
+  "schema": "c5_full_native_transaction_v1",
+  "snapshot_sha256": "3cb6d229300aaa8755cfcf6794f5671f9b0486fc50d0375e4d106a2b1757af8d",
+  "solver_calls": 0,
+  "source_sha256": [
+    "bac79410293bbcfeb09b3669a57aeb658932c501b9b2f894c180ec3e40931dd5",
+    "c1f90bb7b74f188729f8325ba3dc0e656fb47d91b4ea222941c45d95872e52eb"
+  ],
+  "stages": [
+    {
+      "bitwise_checks": {
+        "Ab": true,
+        "Ac": true,
+        "Aub": true,
+        "Auc": true,
+        "Gb": true,
+        "Gc": true,
+        "all_operators": true,
+        "b": true,
+        "c": true,
+        "exact": true,
+        "frame_id": true,
+        "n_bin": true,
+        "n_cont": true,
+        "n_out": true,
+        "sources_unchanged": true,
+        "ub": true
+      },
+      "bitwise_passed": true,
+      "candidate_s": 1.454777529463172,
+      "hz_dimensions": {
+        "frame_id": 1,
+        "n_bin": 874,
+        "n_cont": 11156,
+        "n_eq": 874,
+        "n_ineq": 1748,
+        "n_out": 25088
+      },
+      "name": "probe",
+      "oracle_s": 22.63966858573258,
+      "remaining_branch_products": [
+        170624000,
+        197232640
+      ],
+      "remaining_whole_products": 223856640,
+      "rows": 318,
+      "term_stats": [
+        {
+          "actual_channel_products": 29376000,
+          "additions": 29376000,
+          "channel_product_upper_bound": 29376000,
+          "compile_cache_numeric_bytes": 2501248,
+          "compile_cache_retained_after_return": false,
+          "demanded_coefficients": 70297,
+          "elapsed_s": 1.228735606186092,
+          "emitted_csr_numeric_bytes": 1627264,
+          "emitted_nnz": 135499,
+          "ordered_patterns": 1685,
+          "peak_dot_numeric_workspace_bytes": 3264,
+          "python_workspace_in_numeric_bytes": false,
+          "quarter_product_gate": true,
+          "scale_products": 140032,
+          "selected_row_bytes": 2544,
+          "source_and_predicates_retained": true,
+          "source_live_rows": 3906,
+          "source_restricted_spatial_products": 56944512,
+          "source_support_bytes": 25088,
+          "source_total_rows": 25088,
+          "spatial_group_visits": 13526,
+          "unrestricted_spatial_channel_products": 364298240,
+          "whole_state_reduction_proved": false
+        },
+        {
+          "actual_channel_products": 2767360,
+          "additions": 2767360,
+          "channel_product_upper_bound": 2767360,
+          "compile_cache_numeric_bytes": 875200,
+          "compile_cache_retained_after_return": false,
+          "demanded_coefficients": 21620,
+          "elapsed_s": 0.17540751118212938,
+          "emitted_csr_numeric_bytes": 836500,
+          "emitted_nnz": 69602,
+          "ordered_patterns": 547,
+          "peak_dot_numeric_workspace_bytes": 1888,
+          "python_workspace_in_numeric_bytes": false,
+          "quarter_product_gate": true,
+          "scale_products": 140032,
+          "selected_row_bytes": 2544,
+          "source_and_predicates_retained": true,
+          "source_live_rows": 18815,
+          "source_restricted_spatial_products": 8909056,
+          "source_support_bytes": 46656,
+          "source_total_rows": 46656,
+          "spatial_group_visits": 5258,
+          "unrestricted_spatial_channel_products": 21536768,
+          "whole_state_reduction_proved": false
+        }
+      ]
+    },
+    {
+      "bitwise_checks": {
+        "Ab": true,
+        "Ac": true,
+        "Aub": true,
+        "Auc": true,
+        "Gb": true,
+        "Gc": true,
+        "all_operators": true,
+        "b": true,
+        "c": true,
+        "exact": true,
+        "frame_id": true,
+        "n_bin": true,
+        "n_cont": true,
+        "n_out": true,
+        "sources_unchanged": true,
+        "ub": true
+      },
+      "bitwise_passed": true,
+      "candidate_s": 3.250902445986867,
+      "hz_dimensions": {
+        "frame_id": 1,
+        "n_bin": 874,
+        "n_cont": 11156,
+        "n_eq": 874,
+        "n_ineq": 1748,
+        "n_out": 25088
+      },
+      "name": "followup",
+      "oracle_s": 58.0733634121716,
+      "remaining_branch_products": [
+        125414784,
+        193946112
+      ],
+      "remaining_whole_products": 175360896,
+      "rows": 1097,
+      "term_stats": [
+        {
+          "actual_channel_products": 45209216,
+          "additions": 45209216,
+          "channel_product_upper_bound": 45209216,
+          "compile_cache_numeric_bytes": 2907776,
+          "compile_cache_retained_after_return": false,
+          "demanded_coefficients": 109291,
+          "elapsed_s": 2.691659627482295,
+          "emitted_csr_numeric_bytes": 5447172,
+          "emitted_nnz": 453565,
+          "ordered_patterns": 2005,
+          "peak_dot_numeric_workspace_bytes": 3904,
+          "python_workspace_in_numeric_bytes": false,
+          "quarter_product_gate": true,
+          "scale_products": 149504,
+          "selected_row_bytes": 8776,
+          "source_and_predicates_retained": true,
+          "source_live_rows": 3906,
+          "source_restricted_spatial_products": 189763712,
+          "source_support_bytes": 25088,
+          "source_total_rows": 25088,
+          "spatial_group_visits": 46346,
+          "unrestricted_spatial_channel_products": 1243561984,
+          "whole_state_reduction_proved": false
+        },
+        {
+          "actual_channel_products": 3286528,
+          "additions": 3286528,
+          "channel_product_upper_bound": 3286528,
+          "compile_cache_numeric_bytes": 934400,
+          "compile_cache_retained_after_return": false,
+          "demanded_coefficients": 25676,
+          "elapsed_s": 0.3848685398697853,
+          "emitted_csr_numeric_bytes": 2724804,
+          "emitted_nnz": 226701,
+          "ordered_patterns": 584,
+          "peak_dot_numeric_workspace_bytes": 1888,
+          "python_workspace_in_numeric_bytes": false,
+          "quarter_product_gate": true,
+          "scale_products": 149504,
+          "selected_row_bytes": 8776,
+          "source_and_predicates_retained": true,
+          "source_live_rows": 18815,
+          "source_restricted_spatial_products": 29017728,
+          "source_support_bytes": 46656,
+          "source_total_rows": 46656,
+          "spatial_group_visits": 17960,
+          "unrestricted_spatial_channel_products": 73564160,
+          "whole_state_reduction_proved": false
+        }
+      ]
+    }
+  ],
+  "wall_s": 97.1234605256468,
+  "whole_runtime_gate_passed": false,
+  "worker_sha256": "53111d43a935ee7bdff5d8514515c10b4cfe3561ba4356a480b63e61acd74e8d"
+}

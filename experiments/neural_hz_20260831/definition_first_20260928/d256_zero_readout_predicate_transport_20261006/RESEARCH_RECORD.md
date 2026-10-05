@@ -1,0 +1,15 @@
+# 本轮研究记录
+
+上一轮D255完成4257项完整数学回放和封存，属于progress。本轮没有重复运行或新增测试；完成了局部延拓对完整共同状态的提升证明、零值谓词项的语义与精确零链规则、一个保留非凸binary的普通精度反例，以及相应生产源码与成本审查。它们改变了下一实现选择，属于progress而非状态复述。
+
+关键修订是：从P_live=>P_S即可把D255的canonical延拓提升到完整联合读出，不必先要求某个core覆盖全部source或建立全输出显式矩阵。保留原其他source与其谓词，加一个合法的零值谓词项即可表达增强。D255 SOURCE_ENTRY中更强的carrier设想保持原文只读，本轮以THEORY.md记录其不必要之处；这不减少用户要求的完整消费者、来源、数值或验证范围。
+
+独立数学与源码审查均确认该方向，并指出零项不能连谓词一起删除、物化前必须避免无谓的反向大矩阵组合、多关系不能错误共享辅助列、所有实际消费者与全frame分配器必须一致。真实终端和前向bounds的消费缺口仍明确保留。SOURCE_AUDIT.md也限定了原费用否决的实际执行表，避免把某一算法的超账误报为所有CPU路线不可行。
+
+本轮没有候选实现、导入、AST/compile、collection、数值试跑、模型执行、GPU或求解器调用，也没有创建RUN/freeze或伪造通过收据。纸面代数反例不是测试、CERT或ADV。原4257/227数学人口及全部晋级门不变；后继实现须另在新版本预注册并完整验证。
+
+所有写入仅为新D256目录的理论、源码审查、记录和校验清单。生产与此前冻结源/结果只读，不修改/data1/Kane/HyZor，不commit/push。分支redu-hz，HEAD f1bc0f16612bd3f2112f2970174ec2f7cc3bf5ac，tracked binary diff保持29baf0c0fcc19070a97a5ddf0fea3d1591ff937d00abca28689e9a871a530bc5。
+
+采用本地write-page归档规范，分别说明证明、推断、执行资格和成绩；文档读回核验，不声称有Markdown渲染预览。ARCHIVE.sha256绑定当前文档和所依赖的实际源码/关键旧证据；它不是远端备份或一次新的全历史复审。
+
+正式1870/2413与独立CIFAR10025+TinyImageNet36=61/400不变，formal_gain=independent_e0_gain=new_benchmark_solves=0。new_domain_qualified、new_capability_qualified、native在线、真实模型、完整物理与GPU资格均未取得。本轮结论是有用的接入语义，不是完成新域定义。Goal继续active，保留全部Neural-HZ、GPU、smooth/Transformer、新家族和2413/2413目标。

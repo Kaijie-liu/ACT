@@ -1,0 +1,15 @@
+# 出生证书与跨层观察组合的单次资格
+
+冻结六文件：CONTRACT.md、PREREG.md、certified_relay.py、test_certified_relay.py、run_math.py、collection_contract.py。schema为d097_certified_observation_relay_v1。冻结前仅文本与数学静审，不进行候选AST、import、compile、collect或数值执行。
+
+唯一RUN是experiments/neural_hz_20260831/results/d097_certified_observation_relay_20261001_v1，首次独占创建即消费。完整继承D096的3837项186文件及有序nodeids，新增test_born_relations_match_zero_constant_reference、test_common_extension_and_strict_next_layer_gain、test_full_bank_reuses_authenticated_relations、test_certified_binding_and_resource_fail_closed，共3841项187文件。不得缩人口、先预跑或把失败用例拆走。
+
+继承D096全部源身份、历史合同、9inputs、4417GPU依赖、1011decoder依赖、116项目源码闭包和D088/D090失败记录；D096成功回执、freeze、runner/plugin及NEXT_INTEGRATION另作锚。源身份冲突拒绝，不修改旧冻结依赖。一次pytest同时收集、在测试前认证完整人口并执行，不另收集预跑。
+
+CPU亲和1、线程1、CUDA空、AS16GiB。测试子进程含启动、导入、收集、测试与JUnit限60秒；监督器前后身份核查时间单列。日志、manifest、inventory、JUnit及exit自动独占写入新RUN。失败或超时也保存原回执，不改源码、不重启消费版本、不升门槛。
+
+本次仅数学/小型原生结构组件资格，无model、archive worker、终端求解、GPU、shadow、逐家族或完整回放。single_archive_probe_registered=false、worker_stage_registered=false。新测试hard pool为256M；原whole256M、branch200M、evidence40M、numeric与provedtemp合计64M、512bit、RSSabsolute及growth加tracer1GiB和后续240秒worker门不变。局部费用与数值buffer、监督器峰值不能代替完整物理过门。
+
+成功也只记数学组件，真实模型、全入口/phase绑定、完整物理及GPU资格仍false，formal_gain=0。正式1870/2413及独立CIFAR100 25、TinyImageNet 36共61/400不变。候选默认关闭，无生产默认改变，无commit或push。文档技能用于把定义假设、数学证明、具体测试和未知资格分别落盘。
+
+2026年10月1日，分支redu-hz，commit f1bc0f16612bd3f2112f2970174ec2f7cc3bf5ac；本轮前tracked差异9文件、3806 insertions、57 deletions保持。候选完成不意味着整个Neural HZ目标完成。

@@ -1,0 +1,20 @@
+/data1/Kane/miniconda3/bin/python - <<'PY'
+from pathlib import Path
+import fractions,hashlib,json,os,subprocess,sys,time
+p=Path('experiments/neural_hz_20260831').resolve();r=p/'results/c80_fraction_fatal_control_20260913_v1';r.mkdir()
+files=[p/'C80_FRACTION_STACK_PROBE_PREREG_20260913.md',p/'c80_fraction_fatal_control_v1.py',Path(sys.executable).resolve(),Path(fractions.__file__).resolve()]
+hashes={}
+for f in files:
+ with f.open('rb') as s:hashes[str(f)]=hashlib.file_digest(s,'sha256').hexdigest()
+with (r/'preregistered.json').open('x') as f:json.dump(dict(source_sha256=hashes,parent_timeout_s=5,formal_gain=0),f,indent=2)
+a=time.monotonic();record=dict(formal_gain=0)
+try:
+ with (r/'probe.log').open('x') as f:
+  job=subprocess.run([sys.executable,str(p/'c80_fraction_fatal_control_v1.py')],stdout=f,stderr=subprocess.STDOUT,timeout=5,env=dict(os.environ,CUDA_VISIBLE_DEVICES='',OMP_NUM_THREADS='1',OPENBLAS_NUM_THREADS='1',MKL_NUM_THREADS='1',PYTHONDONTWRITEBYTECODE='1'))
+ record['worker_exit']=job.returncode
+except subprocess.TimeoutExpired:record['timeout_s']=5
+record['wall_s']=time.monotonic()-a
+record['artifacts']={f.name:hashlib.sha256(f.read_bytes()).hexdigest() for f in r.iterdir() if f.is_file()}
+with (r/'exit.json').open('x') as f:json.dump(record,f,indent=2)
+print(json.dumps(record))
+PY

@@ -1,0 +1,15 @@
+# ReLU出生算子的单次数学资格预注册
+
+冻结六文件：CONTRACT.md、PREREG.md、phase_birth.py、test_phase_birth.py、run_math.py、collection_contract.py。freeze schema为d096_verified_phase_birth_v1。冻结前只有文本、数学和来源静态审查，没有候选AST、import、compile、collect或数值执行。D095草稿与审查记录只作未执行来源，D093才是最近成功前驱。
+
+唯一RUN为experiments/neural_hz_20260831/results/d096_verified_phase_birth_20261001_v1，首次独占创建即消费版本。完整继承D093的3833项185文件及有序nodeids，加新文件四项，共3837项186文件。固定新名为test_exact_birth_and_zero_phase_labels、test_reused_carriers_and_transported_gate_certificates、test_birth_bank_population_and_literal_equations、test_birth_binding_and_resource_fail_closed；不得缩人口、拆出更容易的单项资格或先预跑。
+
+绑定D093 manifest、exit、inventory、freeze、runner与plugin，保留其全部历史合同及D088/D090归档失败回执。继承项目116源码闭包、9inputs、4417GPU依赖、1011decoder依赖和完整冲突身份检查；这些依赖身份不意味着本版执行了GPU。新增绑定D094理论和D095草稿及审查的原身份。旧已消费版本不编辑、不重跑。
+
+单CPU亲和、线程1、CUDA空、AS16GiB，单pytest从启动、导入、完整收集、测试至JUnit共不超过60秒。完整有序收集人口必须在同进程测试前认证。监督器前后身份核查时间单列。日志、manifest、inventory、JUnit、exit以独占新文件保存；超时、失败同样保留并退出，不放宽预算或覆盖本RUN。
+
+本候选只注册数学和受控原生结构阶段；single_archive_probe_registered=false、worker_stage_registered=false。没有模型、终端LP/MILP、GPU、shadow或完整回放阶段。whole256M、branch200M、evidence40M、numeric与provedtemp合计64M、rational512bit、RSSabsolute及growth加tracer1GiB等原后续门不变。数值buffer局部报告和监督器峰值不代替完整候选物理资格。四项新测试中的hard pool固定256M，违反即失败。
+
+如果成功，只记数学组件资格，actual_model、source_census、native_HZ_admitted、complete_physical和GPU资格仍false，formal_gain=0。若失败，原样封存错误、来源和终态；静态或数学诊断可以改变下一版，但不能将失败改名成功。
+
+2026年10月1日，branch redu-hz，commit f1bc0f16612bd3f2112f2970174ec2f7cc3bf5ac。生产tracked差异在本轮前为9文件、3806 insertions、57 deletions，本轮不修改。正式1870/2413（1063 CERT、807 validated ADV）及独立CIFAR100 25、TinyImageNet 36共61/400不变。文档技能用于分开定理、实现、执行证据和未取得资格；无commit或push。

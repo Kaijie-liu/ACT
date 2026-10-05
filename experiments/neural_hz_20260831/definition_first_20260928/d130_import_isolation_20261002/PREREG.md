@@ -1,0 +1,21 @@
+# 路径隔离版本预注册
+
+D128的3913项数学测试通过，来源在参数解码前因protobuf输入容器count失败；D129使用tuple修正接口但在测试收集阶段遇到同名模块冲突。两次失败完整保留。本版固定pytest importlib导入模式，原3933项测试路径不改、不断言放宽、不跳过，再测试本版20项，共3953项/207文件。数学门60秒、来源门240秒及全部费用/身份/原模型人口不变。若仍失败只保存真实结果，不重跑此冻结版本。
+
+# 首层完整查询预注册
+
+本次唯一运行目录是 experiments/neural_hz_20260831/results/d130_import_isolation_20261002_v1。先冻结合同、定理、源码、测试、runner、collection plugin和输入身份，再唯一执行 run_math.py --enabled。前一目标回合是状态核查 no progress；本次继续实际候选研究。
+
+## 固定来源和测试人口
+
+官方 vit_2023/instances.csv SHA256 为 c6a6326577c2bf5b5d860f19ee4b04c6bfd075050341cbbe5a8c9f05b2576fba。模型出现顺序为 PGD、IBP。第一行性质 pgd_2_3_16_2446.vnnlib 的SHA256为c97aa0ec74aaf13cf3bbeba0860ee1b4e0680fe8a850b1d89d8aeb1735a30cac；第101行 ibp_3_3_8_3031.vnnlib 为e53ef11eacedf1d66b077143a1a4e84060d2f592de888a9a2f95d98583b946d4。不使用解状态选择来源。
+
+查询两模型各96个CLS首MLP前激活，正负方向各3head，全人口192个前激活/1152个root。报告每个区间、与同输入矩形对照差、下一ReLU是否有改善；不把中间层数目当性质数。按官方首出现顺序执行，任何失败停止，不换顺序挑子集；部分结果不能通过全人口门。
+
+测试完整保留此前登记的3933项，另测本版20项。fast_query测试8项为positive_geometry、strong_product_reference、negative_outer_loss、degenerate_shift、bisection_uncertainty、fail_closed、exponential16_certificate、exponential16_fail_closed；完整函数名由冻结runner列出。source_binding和source_worker各6个plain无参数test函数，也在freeze前固定。禁止测试后修改或只运行新增测试。
+
+## 合格与不合格的结果
+
+数学资格要求3953项/207文件零失败、错误、跳过且原60秒门通过。来源资格另外要求两模型96+96项全部完成、全部输入/源码/provenance一致、每次区间sound、完整费用及物理观察在原门内。所有未取得资格显式false。全新候选默认关闭，不导入生产快照，不允许attack、split、救援或按实例状态菜单。
+
+纯数学或来源成功不是能力晋级：正式1870及独立61均不更新，除非后来同路径完整回放满足原要求。若来源失败，必须保留失败类型、阶段、模型、方向/完成数、费用和已保存证据；不放宽门或重跑冻结版本。普通CNN并行纸面研究另行保存，不拼接成此候选收益。

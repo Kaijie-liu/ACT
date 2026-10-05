@@ -1,0 +1,95 @@
+{
+  "schema": "c51_preparation_diagnostics_v1",
+  "compiler_probe": {
+    "schema": "c51_compile_reuse_probe_v1",
+    "paired_rounds": 3,
+    "definition_sources": 77,
+    "reference_compilations": 154,
+    "candidate_compilations": 77,
+    "reference_s": [
+      1.609558928757906,
+      1.6068280776962638,
+      1.6086102379485965
+    ],
+    "candidate_s": [
+      0.8565317867323756,
+      0.8583527095615864,
+      0.8678322676569223
+    ],
+    "reference_median_s": 1.6086102379485965,
+    "candidate_median_s": 0.8583527095615864,
+    "median_saved_s": 0.7502575283870101,
+    "all_independent_compiler_images_identical": true,
+    "complete_compiler_receipts_sha256": "6cf267852b79e8e5c56ce6a3680bb537b0c0836ca6c02158e9166bdf3542848e",
+    "tests_executed": 0,
+    "HZ_operations_executed": 0,
+    "full_suite_timing_gate_proved": false,
+    "formal_gain": 0
+  },
+  "final_collection": {
+    "completed": false,
+    "formal_gain": 0,
+    "collection_only": true,
+    "pytest_exit_code": 0,
+    "cases": 2139,
+    "phase_reports": 0,
+    "imported_test_items": 31,
+    "source_compilations": 77,
+    "collection_recompilations": 0,
+    "all_original_ordered_cases_retained": true,
+    "compiler_hooks_restored": true,
+    "diagnostic_wall_s": 4.498557041399181,
+    "events": [
+      {
+        "event": "exact_canaries_passed",
+        "cases": 17
+      },
+      {
+        "event": "complete_loaded_source_code_and_order_checked",
+        "original_cases": 2104,
+        "total_cases": 2139,
+        "original_ordered_ids_sha256": "143258636d9b6840970829d30810ae55649671a30f0e40a43a63cd7302797c0e",
+        "selected_files": 77,
+        "definition_files": 77,
+        "imported_items": 31,
+        "source_compilations": 77,
+        "collection_recompilations": 0
+      },
+      {
+        "event": "diagnostic_collection_only_finished",
+        "pytest_exit_code": 0,
+        "tests_executed": 0
+      }
+    ],
+    "log_tail": "ry_output_mask\nexperiments/neural_hz_20260831/test_c5_ordered_union_contraction_v3.py::test_exact_cancellation_zero_source_and_zero_diagonals\nexperiments/neural_hz_20260831/test_c5_ordered_union_contraction_v3.py::test_repeated_spatial_demands_share_final_coefficients\nexperiments/neural_hz_20260831/test_c5_ordered_union_contraction_v3.py::test_fail_closed[middle]\nexperiments/neural_hz_20260831/test_c5_ordered_union_contraction_v3.py::test_fail_closed[output]\nexperiments/neural_hz_20260831/test_c5_ordered_union_contraction_v3.py::test_fail_closed[mask]\nexperiments/neural_hz_20260831/test_c5_ordered_union_contraction_v3.py::test_fail_closed[products]\nexperiments/neural_hz_20260831/test_c5_ordered_union_contraction_v3.py::test_fail_closed[nnz]\nexperiments/neural_hz_20260831/test_c5_ordered_union_contraction_v3.py::test_fail_closed[rows]\nexperiments/neural_hz_20260831/test_c5_ordered_union_contraction_v3.py::test_fail_closed[nonfinite]\nexperiments/neural_hz_20260831/test_c5_ordered_union_contraction_v3.py::test_bound_source_mutation_rejected\nexperiments/neural_hz_20260831/test_c5_partial_csr_owner_ledger_v3.py::test_short_csr_keeps_full_owner_bytes_and_active_entries[False]\nexperiments/neural_hz_20260831/test_c5_partial_csr_owner_ledger_v3.py::test_short_csr_keeps_full_owner_bytes_and_active_entries[True]\nexperiments/neural_hz_20260831/test_c5_partial_csr_owner_ledger_v3.py::test_identical_and_disjoint_csr_views_union_entries[False]\nexperiments/neural_hz_20260831/test_c5_partial_csr_owner_ledger_v3.py::test_identical_and_disjoint_csr_views_union_entries[True]\nexperiments/neural_hz_20260831/test_c5_partial_csr_owner_ledger_v3.py::test_old_rejection_conditions_not_relaxed[overlap]\nexperiments/neural_hz_20260831/test_c5_partial_csr_owner_ledger_v3.py::test_old_rejection_conditions_not_relaxed[dtype]\nexperiments/neural_hz_20260831/test_c5_partial_csr_owner_ledger_v3.py::test_old_rejection_conditions_not_relaxed[dense]\nexperiments/neural_hz_20260831/test_c5_partial_csr_owner_ledger_v3.py::test_old_rejection_conditions_not_relaxed[gapped]\nexperiments/neural_hz_20260831/test_c5_partial_csr_owner_ledger_v3.py::test_full_owner_ledger_unchanged\n\n2139 tests collected in 4.12s\n",
+    "module_audits_count": 77
+  },
+  "development_collection_failures": [
+    {
+      "tests_executed": 0,
+      "wall_s": 5.251332574523985,
+      "collected_cases": 1277,
+      "collection_errors": 23,
+      "cause": "rejecting duplicated nested code keys caused six source compilation failures and cascading imports"
+    },
+    {
+      "tests_executed": 0,
+      "wall_s": 4.232141457498074,
+      "collected_cases": 2139,
+      "cause": "imported external library wrappers incorrectly treated as own test-source functions"
+    },
+    {
+      "tests_executed": 0,
+      "wall_s": 4.512953395955265,
+      "collected_cases": 2139,
+      "cause": "distinct ordinary module namespaces incorrectly conflated by source path"
+    }
+  ],
+  "focused_tests": {
+    "cases": 19,
+    "passed": 19,
+    "wall_s": 0.9
+  },
+  "real_target_executed": false,
+  "formal_gain": 0
+}

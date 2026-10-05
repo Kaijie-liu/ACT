@@ -1,0 +1,245 @@
+{
+  "probe": {
+    "schema": "c50_fixed_private_cleanup_probe_v1",
+    "canaries": {
+      "cases": 17,
+      "all_outcomes_messages_and_side_effects_equal": true,
+      "original_chained_comparison_and_walrus_evaluations_retained": true,
+      "short_circuit_loop_and_temporary_owner_release_preserved": true,
+      "compiler_only_payment_not_HZ_gain": true,
+      "corpus": [
+        {
+          "compile": {
+            "source_assert_statements": 16,
+            "changed_cleanup_assignments": 16,
+            "proved_defined_private_deletes": 84,
+            "possibly_unassigned_targets_still_cleared": 8,
+            "original_rewritten_code_bytes": 12022,
+            "cleanup_code_bytes": 11864,
+            "source_sha256": "b7b58aa4c487f3a950ebd0af3fb06ceeeb1da96afbdeed9dad78a454ab5ae4dd",
+            "original_assertion_rewriting_retained": true,
+            "condition_or_failure_branch_removed": false,
+            "formal_gain": 0
+          },
+          "identical_rows": [
+            {
+              "mode": 0,
+              "outcome": "returned",
+              "message": "returned",
+              "trace": [
+                "condition"
+              ]
+            },
+            {
+              "mode": 1,
+              "outcome": "AssertionError",
+              "message": "explicit failure\nassert False\n +  where False = <function evaluate.<locals>.v at 0xADDR>('condition', False)",
+              "trace": [
+                "condition",
+                "message"
+              ]
+            },
+            {
+              "mode": 2,
+              "outcome": "AssertionError",
+              "message": "assert (False)\n +  where False = <function evaluate.<locals>.v at 0xADDR>('first', False)",
+              "trace": [
+                "first"
+              ]
+            },
+            {
+              "mode": 3,
+              "outcome": "returned",
+              "message": "returned",
+              "trace": [
+                "first"
+              ]
+            },
+            {
+              "mode": 4,
+              "outcome": "returned",
+              "message": "returned",
+              "trace": [
+                "a",
+                "b",
+                "c"
+              ]
+            },
+            {
+              "mode": 5,
+              "outcome": "AssertionError",
+              "message": "assert 3 < 2\n +  where 3 = <function evaluate.<locals>.v at 0xADDR>('a', 3)\n +  and   2 = <function evaluate.<locals>.v at 0xADDR>('b', 2)",
+              "trace": [
+                "a",
+                "b",
+                "c"
+              ]
+            },
+            {
+              "mode": 6,
+              "outcome": "returned",
+              "message": "returned",
+              "trace": [
+                "0",
+                "1",
+                "2",
+                "3"
+              ]
+            },
+            {
+              "mode": 7,
+              "outcome": "returned",
+              "message": "returned",
+              "trace": [
+                "array"
+              ]
+            },
+            {
+              "mode": 8,
+              "outcome": "returned",
+              "message": "returned",
+              "trace": [
+                "condition"
+              ]
+            },
+            {
+              "mode": 9,
+              "outcome": "ValueError",
+              "message": "The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()",
+              "trace": [
+                "array"
+              ]
+            },
+            {
+              "mode": 10,
+              "outcome": "ZeroDivisionError",
+              "message": "division by zero",
+              "trace": [
+                "before",
+                "zero"
+              ]
+            },
+            {
+              "mode": 11,
+              "outcome": "AssertionError",
+              "message": "assert np.False_\n +  where np.False_ = <class 'numpy.bool'>(False)\n +    where <class 'numpy.bool'> = np.bool_\n +    and   False = <function evaluate.<locals>.v at 0xADDR>('condition', False)",
+              "trace": [
+                "condition"
+              ]
+            },
+            {
+              "mode": 12,
+              "outcome": "returned",
+              "message": "returned",
+              "trace": [
+                "condition"
+              ]
+            },
+            {
+              "mode": 13,
+              "outcome": "returned",
+              "message": "returned",
+              "trace": [
+                "walrus",
+                "walrus"
+              ]
+            },
+            {
+              "mode": 14,
+              "outcome": "returned",
+              "message": "returned",
+              "trace": [
+                "condition"
+              ]
+            },
+            {
+              "mode": 15,
+              "outcome": "AssertionError",
+              "message": "forced failure\nassert False",
+              "trace": []
+            }
+          ]
+        },
+        {
+          "compile": {
+            "source_assert_statements": 2,
+            "changed_cleanup_assignments": 2,
+            "proved_defined_private_deletes": 11,
+            "possibly_unassigned_targets_still_cleared": 8,
+            "original_rewritten_code_bytes": 2814,
+            "cleanup_code_bytes": 2792,
+            "source_sha256": "c0e2abe151ae56fb5f8e984a5a3ec6f07511f16fd9f907d6e117224b85585cd2",
+            "original_assertion_rewriting_retained": true,
+            "condition_or_failure_branch_removed": false,
+            "formal_gain": 0
+          },
+          "identical_rows": [
+            {
+              "mode": 0,
+              "outcome": "returned",
+              "message": "returned",
+              "trace": [
+                "equal",
+                "release:left",
+                "release:right",
+                "after"
+              ]
+            }
+          ]
+        }
+      ],
+      "formal_gain": 0
+    },
+    "compile": {
+      "source_assert_statements": 2,
+      "changed_cleanup_assignments": 2,
+      "proved_defined_private_deletes": 5,
+      "possibly_unassigned_targets_still_cleared": 2,
+      "original_rewritten_code_bytes": 1404,
+      "cleanup_code_bytes": 1394,
+      "source_sha256": "198acd0e21380e1a5f6d1ae487033250f54917eb13d9b4819c371c9bd0f90317",
+      "original_assertion_rewriting_retained": true,
+      "condition_or_failure_branch_removed": false,
+      "formal_gain": 0
+    },
+    "rounds": 7,
+    "loop_iterations_per_arm_per_round": 100000,
+    "all_checksums_equal": true,
+    "reference_s": [
+      0.007751147262752056,
+      0.00748717226088047,
+      0.007755590602755547,
+      0.007351423613727093,
+      0.0073353610932827,
+      0.007422642782330513,
+      0.007540218532085419
+    ],
+    "candidate_s": [
+      0.007332339882850647,
+      0.00749256182461977,
+      0.007328060455620289,
+      0.007279111072421074,
+      0.00704803504049778,
+      0.007302082143723965,
+      0.007361500523984432
+    ],
+    "reference_median_s": 0.00748717226088047,
+    "candidate_median_s": 0.007328060455620289,
+    "median_speed_ratio": 1.021712676392858,
+    "strict_probe_time_payment": true,
+    "full_test_suite_or_generator_payment_proved": false,
+    "formal_gain": 0
+  },
+  "complete_original_test_source_compile": {
+    "files": 75,
+    "assert_statements": 1502,
+    "changed_cleanup_assignments": 1498,
+    "proved_defined_private_deletes": 6324,
+    "possibly_unassigned_targets_still_cleared": 1143,
+    "original_rewritten_code_bytes": 1482820,
+    "cleanup_code_bytes": 1471320,
+    "compile_wall_s": 0.687482450157404,
+    "all_conditions_and_failure_branches_retained": true
+  },
+  "real_tests_or_generator_executed": false
+}

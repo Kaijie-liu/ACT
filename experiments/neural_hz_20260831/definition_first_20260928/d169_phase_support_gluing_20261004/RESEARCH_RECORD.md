@@ -1,0 +1,15 @@
+# Neural-HZ phase-support and common-image research record
+
+2026-10-04 Australia/Sydney. This continues the full definition-first goal. D168 was research progress because its common-witness counterexample and TV redundancy proof changed the next action; it did not complete or block the goal.
+
+Three parallel paper investigations examined a uniform phase-support compiler, a birth-shared two-layer witness, and exact separator gluing. THEORY.md records a positive inequality family, an ordinary strict finite-outer control, a conditional LP containment theorem, a supplemental independent-bank correlation control, costs and scope. Independent reviewers checked the mathematical claims; that is paper review, not execution qualification.
+
+The phase-support family is an implication of the common D157 native predicate, not a new concretization. The canonical control increases rather than reduces row cost and does not beat the old exact HZ on that chart. The birth-shared construction has a sound whole-parent extension but does not yet supply a cheaper, stronger joint-image query. Neither proposal is selected for implementation. Known gluing identities do not supply the missing complete separator representation for ordinary networks.
+
+All work was source/document reading, background web searches, paper mathematics, isolated documentation and integrity checks. Background searches did not establish novelty; no unread search snippet supplies a theorem in this record. No candidate import, AST, compile, collection, numerical execution, test, LP/MILP, model, GPU or shadow run was performed. This is a retrospective research record, not a fabricated execution preregistration. Any later execution needs a fresh complete preregistration and frozen source manifest, with all original population and resource gates intact.
+
+The last executed component qualification is still D158: 4032 tests / 212 files. D159 through D169 add no execution qualification. Formal gain=0 and external gain=0. Formal 1870/2413=1063 CERT+807 validated ADV and independent E0 61/400 were not rerun or changed. No new ADV was attempted or validated. GPU, smooth activations, Transformer, new families and complete baseline-preserving capability improvement remain unfinished. Goal active.
+
+Provenance: branch redu-hz; HEAD f1bc0f16612bd3f2112f2970174ec2f7cc3bf5ac; tracked binary diff SHA256 29baf0c0fcc19070a97a5ddf0fea3d1591ff937d00abca28689e9a871a530bc5. Configuration paper-only/default-off/no execution. Source authorities and immediate mathematical dependencies are frozen by ANCHOR_SOURCE.sha256; new documents by ARCHIVE.sha256.
+
+New writes are confined to this fresh directory and RESUME_RESEARCH_20261004_D169.md. Historical models, results, prior frozen experiments and all existing production dirty changes are preserved. No commit, push, default change or new background job. The write-page skill organized proofs, limitations, costs and benchmark accounting separately in local Markdown; no external Page publication or rendered-preview claim is made, and no verification or permission boundary was relaxed.
