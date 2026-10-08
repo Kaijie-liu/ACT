@@ -1,6 +1,7 @@
 # MoE project handoff — current entry point
 
 Block capacity assessment and sparse row design completed: 2026-10-02.
+Goal acceptance criteria refined: 2026-10-08; documentation only.
 Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
 
@@ -22,6 +23,16 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
 ## Current decision: address sparse row source checking before another wrapper
+
+The [refined goal contract](ALGORITHM_RESEARCH_GOAL.md) now explicitly requires
+one compatible algorithm/source/device/evidence chain, GPU coverage preservation
+before paired end-to-end acceleration, and practical-effect/uncertainty gates for
+independent external confirmation. Sparse parsing and capacity work alone cannot
+close the MoE-specific algorithm goal. Common expert templates cannot inherit
+pair-only tightened facts without a new scope proof. Each execution stage needs
+a finite request/attempt/resource envelope and a continue/repair/stop decision.
+This is not a new execution freeze, experiment result or physical GPU admission;
+the current sparse-row task and all six OPEN gates are unchanged.
 
 [Remaining block capacity](hz_block_capacity_20261002.md) has been checked from
 registered metadata and current code only. Eight standard-library controls pass;

@@ -8,7 +8,7 @@
 | 你要做什么 | 第一入口 | 注意 |
 |---|---|---|
 | 接手工程、决定下一步 | [当前交接](CODEX_HANDOFF.md) | 已压缩；封存边界优先于旧 NEXT |
-| 看算法改进目标与下一门 | [研究目标合同](ALGORITHM_RESEARCH_GOAL.md) | HybridZ 算法、GPU 全流程收益、同源证明及外部竞争分别验收；不是新实验冻结 |
+| 看算法改进目标与下一门 | [研究目标合同](ALGORITHM_RESEARCH_GOAL.md) | 2026-10-08 细化：HybridZ 算法、GPU 覆盖保持与完整成本、同源证据及外部确认分别验收；不是新实验冻结 |
 | 看实际 HybridZ 多目标支持 | [CPU 控制与保证](hz_batch_support_controls_20261001.md)、[先行冻结合同](hz_batch_support_design_20261001.md)、[硬预算监督控制](hz_batch_supervision_20261001.md) | 显式启用支持接口；CPU 16 项、监督 14 项控制通过，GPU／生产收益仍未完成 |
 | 看支持界如何进入实际 HybridZ 传播 | [先行冻结](hz_checked_propagation_design_20261001.md)、[接线控制与保证](hz_checked_propagation_20261001.md)、[完整 CPU 监督](hz_propagation_supervision_20261001.md) | 真实 analyzer/ReLU 接线及有限监督通过；native 比较、真实请求与 GPU 收益未完成 |
 | 看 HybridZ GPU 候选路线 | [设备候选合同](hz_device_candidates_design_20261001.md)、[实现与 CPU 控制](hz_device_candidates_20261001.md)、[设备监督](hz_device_supervision_20261001.md)、[有界生命周期](hz_device_lifecycle_20261001.md) | 新有界清理与归还模拟控制通过；实际 CUDA 清理、实机及端到端收益尚未验证 |
