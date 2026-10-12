@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Later-affine V2 source references and general CPU operator archived: 2026-10-13.
 Checked source-reference complete endpoint consumption archived: 2026-10-13.
 Captured source coefficient-reference construction checked and archived: 2026-10-13.
 Coefficient-reference support component checked and archived: 2026-10-13.
@@ -34,7 +35,40 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: stop small endpoint controls; assess later affine references
+## Current decision: later affine references complete; full-query capacity refused
+
+The [V2 later-affine representation](hz_affine_references_20261013.md),
+[frozen first](hz_affine_references_design_20261013.md), now avoids producer and
+checker expansion at non-input affine layers. Exact source-weight references,
+independent centers/compensation and guard rhs remain source-bound. Overlapping
+references use a sound triangle radius, not an exact L1 norm; this is a new
+enclosure, not V1 coefficient/bound equivalence. The separate CPU operator uses
+topological forward and accumulated reverse products for general DAGs.
+
+56 archived tests plus three supplemental archive tests pass. Mixed and deep
+captured sources pass full-source and same-V2 operator checking, relocation with
+`-I -S` and independent stdlib audit. No V2 endpoint optimization/certificate ran.
+V1 complete-output consumers still reject V2. The five-call archive is 6.882s
+before terminal publication and 928918 logical bytes; audit separately 0.042s.
+No real model/GPU/external gain; all G1–G6 remain OPEN.
+
+Do not repeat these small controls or run the dense source. Existing prefix
+7202670 plus just one necessary zero-dual endpoint's 1447977 counts is already
+8650647 > 8M; native preparation independently exceeds the prefix's remaining
+budget. Later references do not fix this. Next is bounded **read-only capacity
+and algebra analysis** of source-row/factor-scale representation and multi-target
+exact residual consumption, preserving every source/candidate check. Input
+diagonal scales retained until shared residual aggregation are a possible new
+mechanism, not an execution admission. No native-buffer-only cache can remove
+the exact arithmetic lower bound. Do not change counting, raise caps, adopt
+old 96M, or claim GPU gain; full-source/query capacity precedes execution.
+Any scale separation must retain distinct global factors, weighted ReLU norms,
+nonzero input-center arithmetic and heterogeneous clipped radii. The fixed
+zero-center/common-radius source cannot establish generic capacity.
+Trained-source correspondence and convolution stay open. No sealed request,
+real solve or physical GPU retry is admitted.
+
+## Completed prerequisite: checked small complete endpoint consumption
 
 The [source-reference endpoint consumer](hz_forest_endpoints_20261013.md),
 [frozen first](hz_forest_endpoints_design_20261013.md), now connects the checked
@@ -54,16 +88,13 @@ terminal publication and about 0.95 MB logical bytes. Native/eager diagnostics
 are separately nested/charged, not production speedup evidence. No real model,
 GPU or external comparison ran; all G1–G6 remain OPEN.
 
-Stop this small functional integration. From the existing dense-prefix record,
+This small functional integration is closed. From the existing dense-prefix record,
 only 797330 counts remain; merely expanding the next layer's input costs at
 least 965318, and producer/checker affine combinations need at least 5791908
-more. No rerun is needed to establish refusal. Next assess a bounded later-layer
-affine reference-composition contract, retaining source weights, independent rhs,
-expert identity, exact compensation and a sound norm for overlapping references.
-Do not silently expand into Store, raise caps or generalize the current one-level
-native scatter to arbitrary DAGs. Full-source/query capacity must precede new
-execution. Convolution, trained-source correspondence, real endpoints and GPU
-benefit remain open. No sealed request, real solve or GPU retry is admitted.
+more. No rerun was needed. The subsequent V2 reference mechanism above removes
+that expansion but does not admit the complete large query. Its general DAG
+operator is separate from this one-level native scatter; never relax the V1
+input contract to pass V2. All full-source/query and scientific gates remain.
 
 ## Completed prerequisite: checked source forest construction
 

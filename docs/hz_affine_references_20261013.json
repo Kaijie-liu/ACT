@@ -1,0 +1,86 @@
+{
+  "schema": "AFFINE_REFERENCE_COMPONENT_RESULT_V1",
+  "status": "PASS_INDEPENDENT_V2_COMPONENT_AUDIT",
+  "date": "2026-10-13",
+  "protocol": "docs/hz_affine_references_design_20261013.md",
+  "protocol_sha256": "1b09da542fa2a15aa64c0fdfa0938000f128e3c4dcb53cf1a0449bc94d380425",
+  "frozen_protocol_commit": "1163cf8ef8c8bab4c6fcc9619b82e077fdf87170",
+  "execution_commit": "39868aa4c1a963b370f42a54c7fcf9091fa45273",
+  "archive": "/data1/Kane/MOE/runs/hz_affine_references_20261013_r1",
+  "execution_sha256": "f9d04fbc7bf32d94125f89a2722321dd24014dbf6065631b9c8d01e0948312d5",
+  "terminal_sha256": "d6a42f2cf6237ef713963a061ebffd5ae3d5f05140b5e6b86fbce9ce7954b09a",
+  "audit_path": "/data1/Kane/MOE/runs/hz_affine_references_20261013_r1_audit.json",
+  "audit_sha256": "d6e8f8735dd0910d332ec1ee522a060db0175c7998e83198c06acaadbf3dea09",
+  "archive_tests": 56,
+  "supplemental_archive_tests": 3,
+  "archive_parent_seconds": 6.88185147382319,
+  "offline_audit_seconds": 0.042248163372278214,
+  "archive_logical_bytes": 928918,
+  "sources": [
+    {
+      "name": "mixed",
+      "source": "24155a8113346d6964b6a4497be0abc0e5dcebbb169c949931468d6fdbb92a22",
+      "forest": "abb69d1806bc120d054ea8370f49cc4fc14d837db3592b2b247850268b31c2f9",
+      "stats": {
+        "factors": 29,
+        "forest_bytes": 9871,
+        "local_nnz": 73,
+        "nodes": 59,
+        "references": 48,
+        "views": 19
+      },
+      "oracle": {
+        "expanded_nnz": 109,
+        "forward_values": 118,
+        "adjoint_values": 58
+      },
+      "execution_work": 4401,
+      "audit_work": 3666,
+      "parent_seconds": 1.8096121214330196,
+      "portable_parent_seconds": 0.11686390079557896
+    },
+    {
+      "name": "deep",
+      "source": "91a9cd3551e5f63e500e6db435a3039d6e158d7d671e88b7780a735267f4ba62",
+      "forest": "b93a7863d8d335d034433f43f6994b403d32aa5a4fd1a18917b61176a515502b",
+      "stats": {
+        "factors": 53,
+        "forest_bytes": 14511,
+        "local_nnz": 116,
+        "nodes": 77,
+        "references": 75,
+        "views": 28
+      },
+      "oracle": {
+        "expanded_nnz": 257,
+        "forward_values": 154,
+        "adjoint_values": 106
+      },
+      "execution_work": 7941,
+      "audit_work": 6977,
+      "parent_seconds": 1.8091513086110353,
+      "portable_parent_seconds": 0.11752703227102757
+    }
+  ],
+  "dense_capacity": {
+    "status": "NOT_ADMITTED_NO_NEW_EXECUTION",
+    "prefix_work": 7202670,
+    "limit": 8000000,
+    "native_preparation_minimum_extra": 800622,
+    "required_zero_endpoint_minimum_extra": 1447977,
+    "prefix_plus_zero_minimum": 8650647,
+    "scope": "fixed two-expert/two-class synthetic source: 1 pair, 1 property, 2 endpoints; no full-source/query execution"
+  },
+  "guarantee": "checked captured real-source enclosure and same-V2 exact/operator differential; no V2 output proof, real model, native-float proof, external gain or GPU benefit",
+  "real_models": 0,
+  "gpu_calls": 0,
+  "full_request_certificates": 0,
+  "goals": {
+    "G1": "OPEN",
+    "G2": "OPEN",
+    "G3": "OPEN",
+    "G4": "OPEN",
+    "G5": "OPEN",
+    "G6": "OPEN"
+  }
+}
