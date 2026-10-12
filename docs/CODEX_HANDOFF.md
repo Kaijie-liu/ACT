@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-Block capacity assessment and sparse row design completed: 2026-10-02.
+Checked sparse row primitive completed: 2026-10-12.
 Goal acceptance criteria refined: 2026-10-08; documentation only.
 Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
@@ -22,7 +22,7 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: address sparse row source checking before another wrapper
+## Current decision: integrate checked sparse rows before real admission
 
 The [refined goal contract](ALGORITHM_RESEARCH_GOAL.md) now explicitly requires
 one compatible algorithm/source/device/evidence chain, GPU coverage preservation
@@ -31,8 +31,8 @@ independent external confirmation. Sparse parsing and capacity work alone cannot
 close the MoE-specific algorithm goal. Common expert templates cannot inherit
 pair-only tightened facts without a new scope proof. Each execution stage needs
 a finite request/attempt/resource envelope and a continue/repair/stop decision.
-This is not a new execution freeze, experiment result or physical GPU admission;
-the current sparse-row task and all six OPEN gates are unchanged.
+The goal contract is not an execution freeze or physical GPU admission;
+all six gates stay OPEN after the finite implementation recorded below.
 
 [Remaining block capacity](hz_block_capacity_20261002.md) has been checked from
 registered metadata and current code only. Eight standard-library controls pass;
@@ -41,22 +41,32 @@ dimensions, complete class/property inventories and package sizes. Conv/pooling
 remain unsupported. Its 28-pair recipe still means 252 duties and 252–504 endpoints,
 not fewer obligations. Source template snapshots still repeat per pair.
 
-Two concrete findings set the next task. The old 6684-factor scenario excludes
+Two concrete findings motivated the sparse-row task. The old 6684-factor scenario excludes
 new output/equality enclosure compensation and is not a bound for this path.
-The row checker also reparses the whole reference R+1 times on a complete R-row
+The old row checker also reparses the whole reference R+1 times on a complete R-row
 check. Its local eight-factor gate is a finite contract, not a corner-enumeration
 necessity; exact coefficient L1 residual checking works at arbitrary row width.
 Actual trained row widths and final source sizes are still unknown.
 
-Next implement the separately [frozen sparse row design](hz_sparse_rows_design_20261002.md):
-independent one-pass source/target parsing, sparse union residual accumulation,
-one outward rounding/compensation per row, preserved shared/private identities.
-Use the eight old references/two overflow cases plus the one fixed 3072-factor
-mixed row; no new network, support solve or timing search. All old source,
-block, query and production limits stay unchanged. The new row-only contract
-does not admit real models. Preserve exact checks and failure/cost inventories.
-Its implementation, source integration and full-request benefit are not done.
-No extra supervisor, physical GPU retry or sealed-input rerun is next.
+The separately [frozen sparse row design](hz_sparse_rows_design_20261002.md) is
+now [implemented and independently audited](hz_sparse_rows_20261012.md).
+Nine groups and 101 regressions pass: eight old references agree exactly with
+the old path; the fixed 3072-factor mixed reference has identical targets at
+chunk 1/256 and independently reconstructed analytic compensation. Each check
+parses source/target once, retains shared/private identities and covers every
+original sparse union entry plus added-factor layout. Fifteen exact embeddings,
+36 concrete mutations, eight arithmetic refusals and eight fault receipts close.
+R1/R2 remain pre-final audit-hardening archives; all ten normal mathematical
+objects are identical across R1/R2/R3. No native solve, network or CUDA ran.
+
+This is a given-HZ inclusion primitive, not new tightening or measured speedup.
+Stop its width/timing study. Next decide a separately scoped integration into
+the checked affine/ReLU/guard source path, preserving exact reference checks
+and generating fresh output evidence for new matrices. Source integration and
+full-request benefit are not done. All old source, block, query, production and
+portable limits stay unchanged; complete properties, source dimensions,
+operators and package capacity remain open. No extra supervisor, physical GPU
+retry or sealed-input rerun is next. All six goal gates remain OPEN.
 
 ## Block support checked but performance and capacity open
 
