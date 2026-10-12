@@ -126,6 +126,33 @@ objects, negative constructions, all attempts, actual storage/object counts and
 all executed costs are audited. Success requires genuine reference sharing and
 direct row consumption, not merely successful serialization.
 
+### Coefficient recipe fixed before first execution
+
+For both layouts, assign contiguous registry blocks: common continuous then
+common binary, followed by each expert's continuous then binary factors. Common
+outputs number 3 (small) or 3,072 (large); distribute common factors by their
+index modulo the output count, with coefficient 1 and constant 0. Each expert
+has 2 (small) or 10 (large) outputs. Distribute its ordered active factors by
+position modulo that count, coefficient 1, with constant `(expert+1)/16` on
+each output. Every factor is consequently consumed, not just listed.
+
+Common equality/inequality counts are 1/2 (small), 128/256 (large); expert
+private counts 1/2 or 384/768. Row `j` uses its block's factor `j modulo block
+length` with coefficient 1; equality RHS is 0 and inequality RHS is 1. Pair
+guards have 2 or 12 inequalities, RHS 0, with alternating +1/-1 coefficients
+on common factor `j modulo common length`. These are supplied abstract rows,
+not a network/router guard derivation.
+
+Every query takes all left output weights +1, all right weights -1 and offset
+1/8. Its exact objective constant is
+`output_count*(left_expert-right_expert)/16 + 1/8`; common output residuals
+cancel. The two complete dual records are zero and the fixed values above.
+An independent control oracle updates residuals using these integer index
+formulae, never by invoking the store's row iterator or producer. It checks
+every residual coordinate as well as the final bound. The small expanded oracle
+also compares flattened supplied coefficients. Positive end-to-end certificates
+are not the aim of these capacity objects.
+
 ## Continue or stop
 
 If these given-HZ controls pass, stop their timing/width study and implement
