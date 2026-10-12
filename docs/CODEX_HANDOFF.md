@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Request-store device interface CPU/stub controls completed: 2026-10-13.
 Request-store bounded supervision completed: 2026-10-13.
 Request-store complete endpoint consumption completed: 2026-10-13.
 Request-store source-row operators completed: 2026-10-13.
@@ -27,7 +28,26 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: endpoint consumption completed; bind bounded execution next
+## Current decision: bind the store device interface to hard-budget lifecycle
+
+The [store device protocol](hz_store_device_design_20261013.md) is now
+[implemented and checked](hz_store_device_20261013.md). Four once-only CPU
+differentials match the archived CPU implementation on all 41 endpoint records
+and exact shared residuals. Half closes 3/3; guarded affine closes 12/12; negative
+remains 3/6 and mixed 0/3, both UNKNOWN. 28 named controls and the offline stdlib
+audit pass. No CUDA initialized and no trained model ran. The guarded positive
+is a continuity control, not a new algorithm gain over the identical CPU path.
+
+Stop this CPU-equivalence study. Next integrate the **same request-store/block**
+device kernel into the existing lifecycle with identity-bound admission,
+pre-CUDA resource recheck, hard cutoff, candidate/partial reception, actual driver
+release and full costs. First CPU/stub wiring controls, then a separately frozen
+physical comparison after fresh admission. Old flat-LP GPU controls are not this
+integration, and the old eight NOT_RUN slots must not be automatically retried.
+No goal gate closes and no GPU speedup is currently supported. Captured source
+streaming/convolution and real-source closure remain separate blockers.
+
+## Completed endpoint and CPU supervision components
 
 The [frozen endpoint component](hz_store_endpoints_design_20261013.md) is now
 [implemented and independently checked](hz_store_endpoints_20261013.md). Original
