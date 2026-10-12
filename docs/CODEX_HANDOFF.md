@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Joint residual-template capacity proposal stopped: 2026-10-13 (static analysis).
 First-affine tensor alias standalone refusal checked: 2026-10-13 (no execution).
 Complete V3 dense source/query capacity checked and archived: 2026-10-13.
 Scaled source / batched exact consumer checked and archived: 2026-10-13.
@@ -39,7 +40,30 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: tensor aliases alone cannot admit the registered recipe
+## Current decision: residual templates do not supply a complete capacity contract
+
+The [joint source/residual capacity decision](hz_residual_template_capacity_20261013.md)
+is closed: six new static tests and six parent regressions pass. Retaining even
+one checker with current center/norm arithmetic costs at least N₁+Z+K; actual
+Z,K were not observed. For the allowed dense nonzero-adjoint case, 72 expert
+templates need 113,246,208 exact calls plus 12,582,912 first-bank visits, before
+all other work. This refutes a general 8M contract for that proposed mechanism,
+not all algorithms or actual candidate sparsity. No new source/query/GPU ran.
+
+Stop the alias-plus-template capacity plan. Symbolic centers/coarse ranges or
+frontier cuts would change precision; none has an admitted full cost/accuracy
+contract. Do not start more small controls. User approval has been requested
+only to draft/evaluate a separately source-scaled resource protocol, retaining
+300s and all acceptance checks; no cap change or execution is authorized while
+pending. Merely raising Work cannot establish wall-time feasibility or safety.
+Independently continue G6 semantic/evidence work from existing artifacts: make
+the function/domain/property/probability-quantifier and missing-premise admission
+decisions explicit for the six works; do not rebuild the already checked table
+kit as another control. The related-work deployment-only statement is corrected
+from the archived training/pilot/comparison results, not new execution. This is
+not a substitute for G1–G5. All goals remain OPEN; all sealed boundaries remain.
+
+## Prior decision: tensor aliases alone cannot admit the registered recipe
 
 The [complete-query static analysis](hz_tensor_alias_capacity_20261013.md) is
 closed: six arithmetic/identity tests pass and its report is code-bound. No

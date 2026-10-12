@@ -61,9 +61,22 @@ robustness of low-rank experts. J-TLAT studies joint router/expert video attacks
 Robust Experts studies adversarially trained intermediate CNN MoE layers, and
 Feature Noise studies iso-parameter noise robustness in modular computations.
 Their empirical robustness measures are not per-input formal SAFE rates.
-These works must be compared at the appropriate task/guarantee level; no fresh
-author-method accuracy or same-task competitive result is established by the
-current source deployment and initialization controls.
+These works must be compared at the appropriate task/guarantee level. Our
+archived work has progressed beyond deployment controls: a Robust Experts
+compatibility variant completed dense/ConvMoE training for 200 epochs and
+empirical evaluation on all 10,000 CIFAR-100 test inputs, without reproducing
+a ConvMoE advantage in those two runs. Its source entropy objective differs
+from the paper formula, so it is not an unchanged full-paper reproduction
+([training and recipe audit](../../docs/robust_experts_landing_20260922_r1/README.md)).
+Dual RS also completed a two-input statistical certification pilot, not an
+ACT comparison on the same smoothed function
+([pilot archive](../../docs/dual_rs_certification_archive_20260922_r1.json)).
+The MetaMoE comparison above is a completed same-object comparison with disclosed
+compatibility and guarantee boundaries. These executions do not establish
+ACT dominance, all six author-paper reproductions, or full-model ACT results
+for the native RoME/Robust Experts semantics. The
+[six-work execution ledger](../../docs/author_baselines_status_20260924.md)
+separates completed runs from remaining semantic and artifact gaps.
 
 ## Empirically robust and large sparse MoE
 
