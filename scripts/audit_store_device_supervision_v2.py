@@ -42,7 +42,8 @@ def parse(events,stage):
         for frame in stack:
             rows.append(dict(operation=frame['event']['operation'],seconds=None,status='RIGHT_CENSORED',
                 depth=frame['depth'],additive=frame['depth']==0,
-                observed_lower_seconds=max(0.,stage['end_seconds']-frame['event']['elapsed']-stage['cleanup_seconds'])))
+                observed_phase_span_seconds=stage['end_seconds']-frame['event']['elapsed'],
+                span_is_operation_duration_bound=False))
     if stage['status']=='COMPLETED':
         require(events and events[-1].get('event')=='WORKER_COMPLETE'
                 and events[-1].get('phase')==stage['phase'],'complete phase event receipt')
@@ -117,6 +118,8 @@ class Controls(unittest.TestCase):
         rows=parse(events[:2],stage)
         self.assertEqual([r['seconds'] for r in rows],[None,None])
         self.assertEqual([r['additive'] for r in rows],[True,False])
+        self.assertTrue(all(not r['span_is_operation_duration_bound'] for r in rows))
+        self.assertTrue(all('observed_lower_seconds' not in r for r in rows))
         stage['status']='COMPLETED'
         with self.assertRaises(ValueError): parse(events[:2],stage)
 
