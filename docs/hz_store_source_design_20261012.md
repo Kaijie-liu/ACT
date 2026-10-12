@@ -106,3 +106,15 @@ tiling against these views. If not, record the concrete failure without a real
 rerun. Full source capture/tensor streaming, convolution/pooling, all 252 duties,
 portable full-budget supervision and block GPU remain separate open work.
 All G1–G6 gates stay OPEN.
+
+## Recorded receipt repair before the second allowed attempt
+
+R1 completed all four fixed objects and all mathematical/refusal controls.
+Its internal suite clock covers declaration creation through report publication,
+but no saved parent clock binds process startup/imports/return. Preserve R1 as
+component evidence, not complete observed execution cost. The second and last
+allowed execution changes only the test harness: a parent records the same child
+suite's startup, output, return, deadline and report hashes. No operator, fixture,
+threshold, resource ceiling or normal mathematical object changes. It is not a
+new production supervisor or a speed comparison. An unexpected second failure
+stops this stage; an audit may re-read saved objects without a third generation.

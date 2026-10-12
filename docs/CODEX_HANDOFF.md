@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Request-store source-row operators completed: 2026-10-13.
 Request-owned given-HZ store and direct view controls completed: 2026-10-12.
 Combined source/block capacity decision completed: 2026-10-12.
 Checked sparse row source integration completed: 2026-10-12.
@@ -24,7 +25,34 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: source consumers and complete endpoint tiling on the checked store
+## Current decision: complete endpoint tiling on checked source views
+
+The [separately frozen source-row component](hz_store_source_design_20261012.md)
+is now [implemented and independently rechecked](hz_store_source_20261013.md).
+Input containment, affine exact residuals, ReLU/enclosure, restored common inputs
+and all pair guards consume immutable rows directly, without the old parsers.
+The complete 3072-row diagonal affine has 6144 factors and checked residuals
+2^-104; mixed affine/ReLU sources preserve private factors, nonzero rounding
+compensation and the same full mathematics at page sizes 1/64. Four saved source
+objects, 19 independently reconstructed source refusals and 68 regressions pass.
+There are 69 recorded live CSR matches and 15 live refusal controls; the stdlib
+audit does not independently re-prove archived native CSR objects. Wide/mixed
+relocated `-I -S` checks pass without numerical packages, model or solver.
+
+R1 retains the pre-parent-clock execution. R2 changes only the test harness;
+all four normal manifests are identical. Child launch through observed parent
+receipt is 5.035 seconds, not a production speedup. The retained stage is about
+8.18 MB, within its 64 MiB cap. No output lower bound, native solve, real source
+or CUDA ran. All six gates remain OPEN.
+
+Stop this component's width/timing study. Next connect the complete output-duty
+inventory and bounded endpoint tiles to these views. Do not reconstruct repeated
+whole-source dictionaries or omit distinct endpoints. Full captured-source/tensor
+intake, conv operators, production hard-budget supervision and the block GPU
+kernel remain separate gates. A 3072-row diagonal control is not trained-density
+capacity or full 252-duty source-to-output closure.
+
+## Request-owned given-HZ store retained
 
 The first component of the [request-store freeze](hz_request_store_design_20261012.md)
 is now [implemented and independently rechecked](hz_request_store_20261012.md).
@@ -40,9 +68,9 @@ R2 rechecks unchanged objects rather than copying the whole archive; 37.46 MB
 regular-file payload remains below the 64 MiB stage cap. Its costs are offline
 checking, not full generation or production speedup. This is a given-HZ store,
 not checked network provenance, 252 output duties or trained sparsity capacity.
-Stop its width/timing study. Next implement row-consuming exact source/enclosure
-checks and actual SparseHZono matching, then complete endpoint tiles on these
-views. Do not expand views through old whole-source parsers. Full supervision,
+Stop its width/timing study. Row-consuming source/enclosure checks and actual
+SparseHZono matching are completed in the finite component above; complete
+endpoint tiles remain next. Do not expand views through old whole-source parsers. Full supervision,
 conv operators and block GPU execution remain separate later gates.
 
 The [refined goal contract](ALGORITHM_RESEARCH_GOAL.md) now explicitly requires
@@ -102,8 +130,8 @@ stores 112 source snapshot occurrences, not 112 independent propagations.
 
 The mechanism is one request-owned checked source/block store with complete
 row/endpoint tiling, changing source and support consumers together. Its given-HZ
-store/direct-consumption component is completed above; source and endpoint
-consumers remain next. Do not
+store/direct-consumption and finite source components are completed above;
+complete endpoint consumers remain next. Do not
 expand references into the same four copies for every pair. Freeze finite
 capacity objects and resource/attempt limits before controls; this decision is
 not real or GPU execution admission. Conv operators, portable/hard-budget
