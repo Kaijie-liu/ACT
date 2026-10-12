@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Factor-scale standalone capacity refusal analyzed: 2026-10-13 (no execution).
 Later-affine V2 source references and general CPU operator archived: 2026-10-13.
 Checked source-reference complete endpoint consumption archived: 2026-10-13.
 Captured source coefficient-reference construction checked and archived: 2026-10-13.
@@ -35,7 +36,38 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: later affine references complete; full-query capacity refused
+## Current decision: factor scales alone still exceed full-query capacity
+
+The [source-scale algebra and static ledger](hz_factor_scale_capacity_20261013.md)
+are checked against the reviewed source recipe/code without lowering a source,
+running a candidate or polling GPU. Exact input-scale separation is sound only
+with clipped-interval centers/radii, weighted ReLU/gate norms, unchanged global
+factor identity and independent source/center compensation checks. It genuinely
+removes first-affine coefficient products/error accumulation, but is a new
+enclosure, not a V2 cache or old-bound reuse.
+
+For the fixed two-expert source and current three-pass scalar consumer, the
+necessary partial counts are 3993600 source plus 4396032 endpoints = **8389632**,
+already over 8M without native preparation; including its first bank gives
+9188352. The noncancellable node argument is specific to the 157 active rows
+and constraint structure, not a general lower bound on all candidates/verifiers.
+No standalone factor-scale implementation or large rerun is admitted.
+
+The next bounded decision is the **complete static ledger** for a joint consumer
+change: independently checked objective pullback once, bounded multi-column
+dual residuals, and checker-owned receipts after checking BOTH proposed and
+zero candidates. Portable checking still recomputes from raw evidence; terminal
+receipt aggregation cannot trust caller JSON. Large-bank main terms total
+7778304, leaving only 221696 for all remaining work; this is not an upper bound
+or admission. Account for all metadata/layers, groups, gates, RHS/references,
+merges, norms, serialization and finalization, including cases where splitting
+objective/dual loses early cancellation. If a conservative complete ledger
+cannot fit, stop this path rather than another small-control cycle. Preserve
+distinct representation/consumer ablations if later admitted. No count/cap
+change, old96M, deleted check, zero-candidate omission or physical GPU retry.
+All G1–G6 OPEN; no new real model, output certificate or external result.
+
+## Completed prerequisite: later affine references and CPU operator
 
 The [V2 later-affine representation](hz_affine_references_20261013.md),
 [frozen first](hz_affine_references_design_20261013.md), now avoids producer and
@@ -55,9 +87,10 @@ No real model/GPU/external gain; all G1–G6 remain OPEN.
 Do not repeat these small controls or run the dense source. Existing prefix
 7202670 plus just one necessary zero-dual endpoint's 1447977 counts is already
 8650647 > 8M; native preparation independently exceeds the prefix's remaining
-budget. Later references do not fix this. Next is bounded **read-only capacity
-and algebra analysis** of source-row/factor-scale representation and multi-target
-exact residual consumption, preserving every source/candidate check. Input
+budget. Later references do not fix this. The subsequent **read-only capacity
+and algebra analysis** of source-row/factor-scale representation is now above.
+Multi-target exact residual consumption must preserve every source/candidate
+check. Input
 diagonal scales retained until shared residual aggregation are a possible new
 mechanism, not an execution admission. No native-buffer-only cache can remove
 the exact arithmetic lower bound. Do not change counting, raise caps, adopt
