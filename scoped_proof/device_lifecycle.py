@@ -61,10 +61,13 @@ def supervise(policy,root,spec,*,spec_sha256,permit=None):
                  MKL_NUM_THREADS='1',CUDA_VISIBLE_DEVICES=visible)
         cmd=[PYTHON,'-B']+(['-S'] if phase in ('admit','release','receive') else [])+[
             '-m',policy.WORKER,str(root),'--invocation-sha',inv_sha,'--plan-sha',psha]
+        if hasattr(policy,'worker_command'):
+            cmd=policy.worker_command(phase,root,inv_sha,psha)
         r=execute(cmd,root/(phase+'.log'),run_deadline=p['run_deadline'],cleanup_deadline=end,
                   env=env,rss_limit=inv['rss_limit'])
         r.update(phase=phase,plan_sha256=psha,start_seconds=begin-start,executable=PYTHON,
                  cpu_threads=1,cuda_visible_devices=visible)
+        if hasattr(policy,'worker_command'): r['command']=cmd
         if r['status']=='COMPLETED':
             try:
                 load(root/(phase+'.json'),limit=LIMIT); r['output_sha256']=sha(root/(phase+'.json'))
@@ -97,6 +100,10 @@ def supervise(policy,root,spec,*,spec_sha256,permit=None):
     term={'invocation_sha256':inv_sha,'status':status,'error':error,'release':release,
           'accepted':accepted if status==policy.DONE else None,'stages':stages,'inventory':inventory,
           'seconds':now-start,'stage_seconds':sum(s['seconds'] for s in stages)}
+    if hasattr(policy,'evidence_inventory'):
+        term['evidence_inventory']=policy.evidence_inventory(root)
+        now=time.monotonic(); status=finalize_status(status,now,inv['work'])
+        term.update(status=status,seconds=now-start,accepted=accepted if status==policy.DONE else None)
     term['parent_seconds']=term['seconds']-term['stage_seconds']; tsha=save(root/'terminal.json',term)['sha256']
     now=time.monotonic(); status=finalize_status(status,now,inv['deadline'])
     fsha=save(root/'finish.json',{'terminal_sha256':tsha,'status':status,'seconds':now-start})['sha256']
@@ -111,6 +118,8 @@ def audit(policy,root,*,observation=None,recheck=False):
     names={p.name for p in root.iterdir() if p.is_file()}-{'terminal.json','finish.json'}
     if t['invocation_sha256']!=inv_sha or t['inventory']!={n:sha(root/n) for n in names}:
         raise ValueError('complete terminal/prefix inventory')
+    if hasattr(policy,'evidence_inventory') and t.get('evidence_inventory')!=policy.evidence_inventory(root):
+        raise ValueError('complete nested evidence inventory')
     stages=t['stages']; phases=[s['phase'] for s in stages]; anchors={}; previous=0
     if not phases or phases!=list(PHASES[:len(phases)]): raise ValueError('phase prefix')
     if {p.name for p in root.glob('*_stage.json')}!={p+'_stage.json' for p in phases}:
@@ -130,6 +139,8 @@ def audit(policy,root,*,observation=None,recheck=False):
                   {'produce':sha(root/'produce_stage.json')} if phase=='release' else
                   {k:anchors[k] for k in ('produce','release')+(('check',) if phase=='receive' else ())})
         if p['inputs']!=expected: raise ValueError('parent launch input anchor')
+        if hasattr(policy,'worker_command') and s.get('command')!=policy.worker_command(phase,root,inv_sha,s['plan_sha256']):
+            raise ValueError('phase interpreter isolation')
         if 'output_sha256' in s:
             load(root/(phase+'.json'),required_hash(s['output_sha256']),LIMIT); anchors[phase]=s['output_sha256']
         if s['cleanup_status']!='CLEANUP_INCOMPLETE' and not cleanup_confirmed(s): raise ValueError('cleanup contradiction')
@@ -157,14 +168,19 @@ def audit(policy,root,*,observation=None,recheck=False):
         result=policy.check(root,inv,anchors['produce'],time.monotonic()+30)
         if result!=load(root/'check.json',anchors['check']): raise ValueError('independent exact recheck')
         bounds=len(result['result']['results'])
-    observed=None
-    if observation is not None:
-        r=observation['result']
-        for v in (observation['begin'],observation['end'],r['seconds']): finite(v)
-        if (r['invocation_sha256']!=inv_sha or r['finish_sha256']!=sha(root/'finish.json')
-                or observation['begin']>inv['start'] or observation['end']-inv['start']<r['seconds']
-                or r['seconds']<f['seconds'] or r['complete_moe_proof'] is not False): raise ValueError('API anchor/cost')
-        observed=finalize_status(f['status'],observation['end'],inv['deadline'])
-        if r['status']!=observed: raise ValueError('late API acceptance')
+    observed=check_observation(root,inv,inv_sha,f,observation)
     return {'status':'PASS','execution_status':observed,'bounds_rechecked':bounds,
             'budget_acceptance_observed':observed==policy.DONE,'release':release,'complete_moe_proof':False}
+
+
+def check_observation(root,inv,inv_sha,finish,observation):
+    """Same observer contract as audit; factored out for no-process controls."""
+    if observation is None: return None
+    r=observation['result']
+    for v in (observation['begin'],observation['end'],r['seconds']): finite(v)
+    if (r['invocation_sha256']!=inv_sha or r['finish_sha256']!=sha(root/'finish.json')
+            or observation['begin']>inv['start'] or observation['end']-inv['start']<r['seconds']
+            or r['seconds']<finish['seconds'] or r['complete_moe_proof'] is not False): raise ValueError('API anchor/cost')
+    observed=finalize_status(finish['status'],observation['end'],inv['deadline'])
+    if r['status']!=observed: raise ValueError('late API acceptance')
+    return observed

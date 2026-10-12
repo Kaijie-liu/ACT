@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Request-store supervision interface implemented/frozen, process controls pending: 2026-10-13.
 Request-store complete endpoint consumption completed: 2026-10-13.
 Request-store source-row operators completed: 2026-10-13.
 Request-owned given-HZ store and direct view controls completed: 2026-10-12.

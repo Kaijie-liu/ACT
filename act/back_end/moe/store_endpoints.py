@@ -12,12 +12,11 @@ import torch
 
 from scoped_source.hz_request_store import compact, digest, require
 from scoped_source.check_store_endpoints import PROOF, ALGORITHM, objectives, evaluate_tile
+from scoped_proof.io import save
 
 
 def write(path, value):
-    raw=compact(value)
-    with Path(path).open('xb') as stream: stream.write(raw)
-    return dict(sha256=digest(raw),bytes=len(raw))
+    return save(path,value)
 
 
 class Native:
@@ -112,16 +111,22 @@ class Native:
         self.work.tick(); return result
 
 
-def produce(root, store, plan, *, tile_width, work):
+def produce(root, store, plan, *, tile_width, work, missing_slots=(), event=None):
+    missing_slots=frozenset(missing_slots)
+    require(missing_slots<={t.slot for t in plan.tasks}, 'partial endpoint identity')
     root=Path(root); root.mkdir(exist_ok=False); native=Native(store,work)
     refs=[]; prior=None; blocks=None; serialization=0.; total=0
     for i,tasks in enumerate(plan.tiles(tile_width)):
         if tasks[0].pair!=prior:
             prior=tasks[0].pair; blocks=native.blocks(prior)
         records=native.propose(tasks,blocks); work.tick(); start=time.monotonic()
+        for record in records:
+            if record['slot'] in missing_slots: record['candidate']=None
+        if event is not None: event('before_tile',i,None)
         raw=compact(records); require(len(raw)<=4*2**20, 'producer tile capacity')
         total+=len(raw); require(total<=64*2**20, 'producer proof capacity')
         name=f'{i:05d}.json'; ref=write(root/name,records); refs.append(dict(file=name,**ref))
+        if event is not None: event('tile',i,refs[-1])
         serialization+=time.monotonic()-start; work.tick()
     ref=write(root/'manifest.json',dict(schema=PROOF,contract=plan.contract,tile_width=tile_width,tiles=refs))
     work.tick()
