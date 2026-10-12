@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+First-affine tensor alias standalone refusal checked: 2026-10-13 (no execution).
 Complete V3 dense source/query capacity checked and archived: 2026-10-13.
 Scaled source / batched exact consumer checked and archived: 2026-10-13.
 Factor-scale standalone capacity refusal analyzed: 2026-10-13 (no execution).
@@ -38,7 +39,28 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: dense capacity closed; registered trained recipe still refused
+## Current decision: tensor aliases alone cannot admit the registered recipe
+
+The [complete-query static analysis](hz_tensor_alias_capacity_20261013.md) is
+closed: six arithmetic/identity tests pass and its report is code-bound. No
+source, checkpoint, solver or GPU was run. With current factors/nodes/consumer,
+even free source and native preparation leave at least 8,524,656 Work if the
+eight represented router forms are not all identical. Their actual equality
+was NOT observed. Keeping only one first-weight checker visit plus the minimum
+consumer costs 13,579,392, including the all-identical case. These are conditional
+code-path lower bounds, not universal verifier lower bounds or safety results.
+
+Stop standalone first-affine tensor aliases, source-only prefixes and repeated
+small controls. Next analyze a **joint source/tensor and scoped residual-template
+algorithm**, with a complete registered-recipe ledger before implementation:
+nonzero-center/compensation arithmetic, later references, all 28 pairs/nine
+properties, both candidates, source checking and portable evidence. Residual
+templates restrict the candidate family; equivalence or coverage cannot be
+assumed, and fallback cost must be included. This is not an implementation or
+execution freeze. No raised caps, redefined counts, deleted checks, easier
+objects, real solve or physical GPU retry. All G1–G6 remain OPEN.
+
+## Prior decision: dense capacity closed; registered trained recipe still refused
 
 The once-only [complete V3 dense query](hz_scaled_dense_20261013.md),
 [separately frozen](hz_scaled_dense_design_20261013.md), finished source-to-all
@@ -54,8 +76,8 @@ producer+checker cost of 2*3072*(128+8*256)=13,369,344 visits for the registered
 eight-expert MLP recipe, already above 8M before all other work. No trained run
 is admitted. Next investigate source-linked tensor/reference consumption with
 a **complete all-query static contract first**: nonzero centers, compensation,
-all 28 pairs/nine properties and independent checks. Source-only savings are
-insufficient. Stop if it cannot fit; do not redefine counts, raise caps, drop
+all 28 pairs/nine properties and independent checks. This investigation is now
+closed above. Source-only savings are insufficient; do not redefine counts, raise caps, drop
 checks, choose easier models, or retry GPU. This is not a frozen new experiment.
 All G1–G6 remain OPEN; historical source limitations and sealed inputs unchanged.
 

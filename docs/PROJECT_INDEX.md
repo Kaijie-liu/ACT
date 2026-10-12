@@ -21,6 +21,7 @@
 | 看后层仿射引用与完整容量门 | [V2 冻结](hz_affine_references_design_20261013.md)、[结果](hz_affine_references_20261013.md)、[尺度分离静态裁决](hz_factor_scale_capacity_20261013.md) | V2 已通过有限控制；尺度分离单独接三遍消费仍超 8M，不单独执行 |
 | 看尺度分离与精确多目标消费 | [V3 冻结](hz_scaled_batch_design_20261013.md)、[实现与控制](hz_scaled_batch_20261013.md)、[独立审计](hz_scaled_batch_20261013.json) | 84 测试、六固定源、106 精确候选差分及搬迁通过；deep 保留 UNKNOWN；后续完整容量结果见下一行 |
 | 看完整密集查询容量 | [冻结](hz_scaled_dense_design_20261013.md)、[结果](hz_scaled_dense_20261013.md)、[独立审计](hz_scaled_dense_20261013.json) | 24.989秒、7,351,435/8M，全部端点完成但非正未决；搬迁通过。注册八专家首层访问已超8M，不准入实模或 GPU |
+| 看为什么不能只加首层张量别名 | [完整查询静态裁决](hz_tensor_alias_capacity_20261013.md)、[绑定计数](hz_tensor_alias_capacity_20261013.json) | 六静态测试通过；现有消费者在非全同 router 条件下至少8,524,656 Work，来源免费也超限；未观察真实权重，不是通用复杂度下界。下一机制须联合来源与残差复用，不单独实现 alias |
 | 看 H2 与实际 HybridZ 接入 | [端点接入结果](hz_endpoint_controls_20261001.md)、[CPU 完整监督](hz_endpoint_supervision_20261001.md)、[映射合同](../act/back_end/moe/proofs/hz_endpoint_mapping.md)、[先行设计](hz_endpoint_design_20261001.md) | 18 项数学控制、12 项监督控制通过；给定 HZ/gate，不是来源完整或生产性能结果 |
 | 看声明来源怎样接入实际 HybridZ | [同源控制与边界](hz_source_connection_20261001.md)、[冻结合同](hz_source_connection_design_20261001.md)、[完整 CPU 监督](hz_source_supervision_20261001.md)、[隔离搬迁检查](hz_source_portable_20261001.md) | 来源、完整监督和八组搬迁控制通过；有限保存对象可重查，尚非真实模型或原生浮点证明 |
 | 看同源 HybridZ 表示是否真有差异 | [端点与 MC 对照](hz_source_representation_20261001.md)、[先行冻结](hz_source_representation_design_20261001.md) | 四源八臂和 13 项控制通过；同一新 HZ 的正端点界与精确负 MC 可行点形成有限分离，不是真实模型或外部收益 |
