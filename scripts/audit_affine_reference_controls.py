@@ -56,6 +56,8 @@ def audit(root):
         require(set(r['work'])=={'arithmetic','coefficient_visits','row_visits'} and
                 all(type(v) is int and v>=0 for v in r['work'].values()) and
                 sum(r['work'].values())<=8000000 and 0<r['worker_before_receipt_seconds']<300,'worker work/cost')
+        parent_call=next(c for c in t['calls'] if c['name']==name)
+        require(r['worker_before_receipt_seconds']<=parent_call['parent_observed_seconds'],'worker within parent cost')
         require(all(type(v) in (float,int) and v>=0 for v in r['phases'].values()) and
                 sum(r['phases'].values())<=r['worker_before_receipt_seconds'],'phase cost')
         require(all(r[k]==0 for k in ('real_models','gpu_calls','full_request_certificates')),'claim boundary')

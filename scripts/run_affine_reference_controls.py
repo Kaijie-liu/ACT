@@ -105,6 +105,8 @@ def execute(root):
         except subprocess.TimeoutExpired as e:
             entry.update(status='TIMEOUT',returncode=None)
             (root/(name+'.stdout')).write_bytes(e.stdout or b''); (root/(name+'.stderr')).write_bytes(e.stderr or b''); raise
+        except BaseException as exc:
+            entry.update(status='ERROR',returncode=entry.get('returncode'),exception=type(exc).__name__,message=str(exc)); raise
         finally: entry['parent_observed_seconds']=time.monotonic()-begin
     try:
         for name in FILES:
