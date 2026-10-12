@@ -1,0 +1,324 @@
+{
+  "schema": "SOURCE_FOREST_COMPONENT_REPORT_V1",
+  "scope": "captured synthetic source lowering; no output certificates, real model or GPU",
+  "protocol_commit": "7dfb917fb",
+  "archive": "/data1/Kane/MOE/runs/hz_source_dag_20261013_r1",
+  "files": {
+    "execution.json": "6f97a0e25e726e7ee8d6d628bb756f906301105555f172dc109668203bf75837",
+    "terminal.json": "ca9bfc23bc74470ab3ad6e5c289d88fdc1c5272935c5684e056d53957818ac28",
+    "small40.receipt.json": "64ae10cb398c9fb9dca21d3b0a7884a5f3974901f96e6f6478782a8d3b6587e4",
+    "dense.receipt.json": "ce4ccf03205eebf3f70ecd52c49cec25ec318b5ad752690ef5af48a675d4826c"
+  },
+  "execution_code": {
+    "docs/hz_source_dag_design_20261013.md": "6a161cf33baf9a845c64cd7c4a543d4d1713834cbd80561bdb69517320ca69d7",
+    "scoped_source/check_hz_store_source.py": "d72ae98852cb75f2e9e1d631accad1b3d43a82a2e3c13391fe1d9e710c467f1e",
+    "scoped_source/check_source_dag.py": "420bfdf2eb6685f1863be1fae0e277990ec9b1cccaf7a5baafad5340c7bd5a6a",
+    "scoped_source/factored_io.py": "d51bcd7eae6734fe6cd676f584a9e9f2220eeea4400d497ccb1dc6950dce120d",
+    "scoped_source/factored_source.py": "f7f04c64989a179c36759876edc425ffd3efad4eeb9fbf8118ea2934f4a385cc",
+    "scoped_source/hz_request_store.py": "7cb2be7647039f59d3c896b7856f634f43be9c532d9d2fd43632be09ab3230e0",
+    "scoped_source/hz_store_source.py": "fec79e9cc1a67b524320b37328d24179a5c09dd21b9943f36cc11c5f40b56268",
+    "scoped_source/hz_store_sparse.py": "e1682d697dd56993cda3e64a171f0356e0ed3cc8349b81345b91f8c3ba3a23c3",
+    "scoped_source/hz_store_write.py": "2c26fa3ee2f0b50d2bdafea511bc59e80ccd5d025de48b32ca78513b9e40cd1e",
+    "scoped_source/source_dag.py": "98eb44cf1ab230cf631d76ec402517a4d4f3a2a4726f9e2fe2019462b251940b",
+    "scoped_source/source_dag_controls.py": "9f4e6e2de02b1b0b9e01754ea3f7e27229be5e977bfd5aa093dd942912308d41",
+    "scoped_source/tensor_row_controls.py": "262bd2d3511ce5e10641a542d99c9b57ceb34d18285a8f14568deb820066abd2",
+    "scoped_source/tensor_rows.py": "5c3ad6d642868e257ac9dd2edbc5e066b4cd793d4c7567a4ea800fc8e8f97f82",
+    "scripts/audit_source_dag_controls.py": "924106b121b8f22a131523ca6216a2e50e402a82e8bf64340a543b946317c7d4",
+    "scripts/run_source_dag_controls.py": "792f577ce8f064b7af0aad19c8100e03d39b50dcb49638bf3324f5700de76344",
+    "scripts/run_tensor_rows_controls.py": "923e8647244a8b9db3fb2458d01ac76c2fea6b7252443d3541be48e404e477e6",
+    "scripts/test_source_dag.py": "c53885b6d5ab6e43e528721e5494097d7748f21ac33592a3b55a3daa003068e0",
+    "source_enclosure/format.py": "ba79d394824abc84aac1509518bf9416be3510a4eecef5b107ba60e63418f7ef",
+    "upstream_source/checker.py": "d14f75fd660d7ecab44994c24371d055407f5ca911e64867d94094b212a8c47c"
+  },
+  "execution_calls": [
+    {
+      "argv": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "scripts.test_source_dag",
+        "-v"
+      ],
+      "hard_cap_seconds": 300,
+      "name": "unit",
+      "parent_observed_seconds": 2.0368855949491262,
+      "returncode": 0,
+      "status": "COMPLETE"
+    },
+    {
+      "argv": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "-c",
+        "import sys;from scripts.run_source_dag_controls import worker;worker(sys.argv[1],sys.argv[2],float(sys.argv[3]))",
+        "/data1/Kane/MOE/runs/hz_source_dag_20261013_r1",
+        "small40",
+        "10671608.787344338"
+      ],
+      "hard_cap_seconds": 300,
+      "name": "small40",
+      "parent_observed_seconds": 1.7533697877079248,
+      "returncode": 0,
+      "status": "COMPLETE"
+    },
+    {
+      "argv": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "-c",
+        "import sys;from scripts.run_source_dag_controls import worker;worker(sys.argv[1],sys.argv[2],float(sys.argv[3]))",
+        "/data1/Kane/MOE/runs/hz_source_dag_20261013_r1",
+        "dense",
+        "10671610.540727252"
+      ],
+      "hard_cap_seconds": 300,
+      "name": "dense",
+      "parent_observed_seconds": 22.616220768541098,
+      "returncode": 0,
+      "status": "COMPLETE"
+    },
+    {
+      "argv": [
+        "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "-B",
+        "-I",
+        "-S",
+        "-c",
+        "import sys,json;sys.path.insert(0,sys.argv[1]);from scripts.run_source_dag_controls import relocated;print(json.dumps(relocated(*sys.argv[2:])))",
+        "/data1/Kane/MOE/runs/hz_source_dag_20261013_r1/relocated/code",
+        "/data1/Kane/MOE/runs/hz_source_dag_20261013_r1/relocated",
+        "079e4312b473549204b8ea2913196d299bce28d5396e6616c07d396d0a4e425a",
+        "28c41d0da9493f2b80de1dab910a769868f12240ac00dc55727b9a716dc8fe65"
+      ],
+      "hard_cap_seconds": 300,
+      "name": "relocated",
+      "parent_observed_seconds": 0.10982690565288067,
+      "returncode": 0,
+      "status": "COMPLETE"
+    }
+  ],
+  "source_anchors": {
+    "dense": "0745027b58f00c608a9db921204cb2feae58273600fee658d4c9ccc3d8c19dbc",
+    "small40": "28c41d0da9493f2b80de1dab910a769868f12240ac00dc55727b9a716dc8fe65"
+  },
+  "cases": [
+    {
+      "check": {
+        "cut": null,
+        "full_request_certificates": 0,
+        "guarantee": "captured real source enclosure; no output property or deployed floating-point proof",
+        "request": "288f80318059f5a4a8c8d945cc5924e181877a3771e318e4af3470dd4574b12b",
+        "source": "28c41d0da9493f2b80de1dab910a769868f12240ac00dc55727b9a716dc8fe65",
+        "source_receipt": {
+          "request_sha256": "288f80318059f5a4a8c8d945cc5924e181877a3771e318e4af3470dd4574b12b",
+          "schema": "CAPTURED_TENSOR_ROWS_RECEIPT_V1",
+          "scope": "captured binary64 parameters only; not HZ lowering or model safety",
+          "source_bytes": 5868,
+          "source_sha256": "28c41d0da9493f2b80de1dab910a769868f12240ac00dc55727b9a716dc8fe65",
+          "statistics": {
+            "affine_rows": 10,
+            "chunk_reads": 14,
+            "max_chunk_bytes": 40,
+            "max_row_values": 4,
+            "raw_bytes": 360,
+            "values": 45
+          },
+          "tensor_hashes": {
+            "@center": "4f84cd1bf141f1277c391e376a1db6366fdc8a7d4fd16650ec7df207e03963e4",
+            "experts.0.1.bias": "d80477b259736e482d0db6fa813e159ee77e2db240a8bf38f8c95088d0e0d0c3",
+            "experts.0.1.weight": "542b84e36632b5e5feb4b2b41e5cd5b5730af8009e0cb5f5521f90b64049703e",
+            "experts.0.3.bias": "3baae34c10387b97cc01b1c8f6fa9ebf30f0f054af10d25fbc394dcd71ba049e",
+            "experts.0.3.weight": "e18586d15b01db95abc2141a36d88b8919e82d25c266e54ad15ffca4bb1ebb39",
+            "experts.1.1.bias": "2ea5dcd71af2051abcd7dde4c7c7cee8cee785553b2e3d2bbea06d604f120c04",
+            "experts.1.1.weight": "58115dc43d4f1cb7dedce5a4304efaaffcdb6815f330735aed51ab89645877f7",
+            "router.1.bias": "1e636a610c584e5b110104035fe180e595bf562f5cfad5da28d72df4b8625040",
+            "router.1.weight": "2b483caf35b1ce5792850534d20b342934155eba68ab35b46ca4e335f9f9f571"
+          }
+        },
+        "stats": {
+          "factors": 22,
+          "forest_bytes": 7385,
+          "local_nnz": 49,
+          "nodes": 19,
+          "references": 1,
+          "views": 11
+        },
+        "status": "CHECKED_SOURCE_FOREST",
+        "work": {
+          "arithmetic": 355,
+          "coefficient_visits": 153,
+          "row_visits": 172
+        }
+      },
+      "cut": null,
+      "forest_sha256": "079e4312b473549204b8ea2913196d299bce28d5396e6616c07d396d0a4e425a",
+      "full_request_certificates": 0,
+      "gpu_calls": 0,
+      "name": "small40",
+      "phases": {
+        "file_write_seconds": 0.00009031593799591064,
+        "generation_and_encode_seconds": 1.3519930001348257,
+        "independent_parse_source_check_seconds": 0.004872731864452362,
+        "native_coordinates": 47,
+        "native_seconds": 0.004541965201497078
+      },
+      "real_models": 0,
+      "source": "28c41d0da9493f2b80de1dab910a769868f12240ac00dc55727b9a716dc8fe65",
+      "status": "CHECKED_SOURCE_FOREST",
+      "work": {
+        "arithmetic": 355,
+        "coefficient_visits": 153,
+        "row_visits": 172
+      },
+      "worker_seconds": 1.3569636512547731
+    },
+    {
+      "check": {
+        "cut": [
+          "expert0",
+          2
+        ],
+        "full_request_certificates": 0,
+        "guarantee": "captured real source enclosure; no output property or deployed floating-point proof",
+        "request": "dcacbd2a0a62cf6a8f3fa18d195a3f50dcfdd7434611ca447c9a1251c9f33888",
+        "source": "0745027b58f00c608a9db921204cb2feae58273600fee658d4c9ccc3d8c19dbc",
+        "source_receipt": {
+          "request_sha256": "dcacbd2a0a62cf6a8f3fa18d195a3f50dcfdd7434611ca447c9a1251c9f33888",
+          "schema": "CAPTURED_TENSOR_ROWS_RECEIPT_V1",
+          "scope": "captured binary64 parameters only; not HZ lowering or model safety",
+          "source_bytes": 6426146,
+          "source_sha256": "0745027b58f00c608a9db921204cb2feae58273600fee658d4c9ccc3d8c19dbc",
+          "statistics": {
+            "affine_rows": 262,
+            "chunk_reads": 14,
+            "max_chunk_bytes": 1048576,
+            "max_row_values": 3072,
+            "raw_bytes": 6420528,
+            "values": 802566
+          },
+          "tensor_hashes": {
+            "@center": "5e8d6918f96bd28359742f6d251dbda3cd2901962f06c91eb771b0f4bb8fe6b7",
+            "experts.0.1.bias": "4327eb95a6f70e623243517702c16240e7f6719df725438daecb69e16ff59705",
+            "experts.0.1.weight": "7c69e3028ca1a2fb840cdd6cdc05c748cc2f025b394219fb2cc8d02c133e73fb",
+            "experts.0.3.bias": "3baae34c10387b97cc01b1c8f6fa9ebf30f0f054af10d25fbc394dcd71ba049e",
+            "experts.0.3.weight": "a7757beb73ae226526fde5566878cf166aa9fcf3a5dc8934339df92f4c570aef",
+            "experts.1.1.bias": "2ea5dcd71af2051abcd7dde4c7c7cee8cee785553b2e3d2bbea06d604f120c04",
+            "experts.1.1.weight": "52133db1d98f7d1482a3722764add71985dcc8de61936bdf6431c10ca69bbee2",
+            "router.1.bias": "1e636a610c584e5b110104035fe180e595bf562f5cfad5da28d72df4b8625040",
+            "router.1.weight": "03b0c028415d81b91ccacffcf5ef2020e2c1b21826d9f8534e3b44142b9a8a03"
+          }
+        },
+        "stats": {
+          "factors": 3825,
+          "forest_bytes": 36889704,
+          "local_nnz": 796896,
+          "nodes": 3726,
+          "references": 99,
+          "views": 7
+        },
+        "status": "CHECKED_SOURCE_PREFIX",
+        "work": {
+          "arithmetic": 4779508,
+          "coefficient_visits": 2388291,
+          "row_visits": 34871
+        }
+      },
+      "cut": [
+        "expert0",
+        2
+      ],
+      "forest_sha256": "3045bc8ca22b753994b91fb06dc358b42f1400e6e8fb1b8477ee67eb972d47f0",
+      "full_request_certificates": 0,
+      "gpu_calls": 0,
+      "name": "dense",
+      "phases": {
+        "file_write_seconds": 0.016019340604543686,
+        "generation_and_encode_seconds": 10.226917270570993,
+        "independent_parse_source_check_seconds": 11.925087040290236,
+        "native_coordinates": 798720,
+        "native_seconds": 0.3136165142059326
+      },
+      "real_models": 0,
+      "source": "0745027b58f00c608a9db921204cb2feae58273600fee658d4c9ccc3d8c19dbc",
+      "status": "CHECKED_SOURCE_PREFIX",
+      "work": {
+        "arithmetic": 4779508,
+        "coefficient_visits": 2388291,
+        "row_visits": 34871
+      },
+      "worker_seconds": 22.18272503092885
+    }
+  ],
+  "audit": {
+    "status": "PASS_SOURCE_FOREST_RECHECK",
+    "audit_version": 2,
+    "cases": [
+      {
+        "name": "small40",
+        "status": "CHECKED_SOURCE_FOREST",
+        "source": "28c41d0da9493f2b80de1dab910a769868f12240ac00dc55727b9a716dc8fe65",
+        "forest": "079e4312b473549204b8ea2913196d299bce28d5396e6616c07d396d0a4e425a",
+        "stats": {
+          "nodes": 19,
+          "local_nnz": 49,
+          "references": 1,
+          "factors": 22,
+          "views": 11,
+          "forest_bytes": 7385
+        },
+        "seconds": 0.006483182311058044,
+        "independent_work": {
+          "row_visits": 108,
+          "coefficient_visits": 94,
+          "arithmetic": 170
+        }
+      },
+      {
+        "name": "dense",
+        "status": "CHECKED_SOURCE_PREFIX",
+        "source": "0745027b58f00c608a9db921204cb2feae58273600fee658d4c9ccc3d8c19dbc",
+        "forest": "3045bc8ca22b753994b91fb06dc358b42f1400e6e8fb1b8477ee67eb972d47f0",
+        "stats": {
+          "nodes": 3726,
+          "local_nnz": 796896,
+          "references": 99,
+          "factors": 3825,
+          "views": 7,
+          "forest_bytes": 36889704
+        },
+        "seconds": 11.722000047564507,
+        "independent_work": {
+          "row_visits": 20920,
+          "coefficient_visits": 1589571,
+          "arithmetic": 2386682
+        }
+      }
+    ],
+    "full_request_certificates": 0
+  },
+  "tests": {
+    "source_controls": 17,
+    "audit_controls": 3,
+    "regressions": 49,
+    "total": 69,
+    "status": "PASS"
+  },
+  "cost_boundary": {
+    "native": "nested within generation_and_encode",
+    "encoding_seconds": null,
+    "encoding_reason": "not isolated from generation in original receipts",
+    "stage_seconds_before_terminal": 26.56848420202732,
+    "offline_recheck_separate": true
+  },
+  "real_models": 0,
+  "gpu_calls": 0,
+  "full_request_certificates": 0,
+  "all_goal_gates": "OPEN",
+  "final_review_bindings": {
+    "scripts/audit_source_dag_controls.py": "509e349a26df0cc7b95fed8f21ae9a9bc1d39fbc0eae7dfee74d7d790b459ab5",
+    "scripts/test_source_dag_audit.py": "c39a803d1fa69b25772173591339e7536f2cd98725244ace76a08013c74e1af3",
+    "audit_v2.json": "98058422dc5dc6ec2b00c05666809cd12c6306cc44ba248095b31e6b852bb420",
+    "final_regressions.json": "0cccc3231537b4ac3a990e8f63f03963e6e888f9e075889e84b7aded61c2e467"
+  }
+}

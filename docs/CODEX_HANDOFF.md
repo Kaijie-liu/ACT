@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Captured source coefficient-reference construction checked and archived: 2026-10-13.
 Coefficient-reference support component checked and archived: 2026-10-13.
 Bounded captured tensor-row intake checked and archived: 2026-10-13.
 Request-store physical admission refused and archived: 2026-10-13.
@@ -32,7 +33,34 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: source-check coefficient-reference construction
+## Current decision: connect the checked source forest to support
+
+The [captured source reference construction](hz_source_dag_20261013.md),
+[frozen before implementation](hz_source_dag_design_20261013.md), now passes
+17 source controls, 3 archive controls and 49 regressions. The small source is
+fully lowered and matches the old compensated implementation. The unchanged
+dense 256×3072 layer plus ReLU prefix is source-checked in one 22.616-second
+parent-observed call: 796896 local entries, 99 references, 3825 factors and
+7202670/8000000 cumulative work. All 802566 source values are read, but later
+layers are not lowered; it is not a large full-source or output certificate.
+
+All layer errors precede lifts, ReLU rhs remain independent, intermediate roots
+are retained, experts have private factors and each guard is a separate view.
+Native affine output is independently compensated. The checker is stdlib-only;
+small relocation passes. Final audit V2 adds fixed anchors/caps, code/cost and
+relocation checks over unchanged R1 bytes. No large rerun, native solver, real
+model or GPU occurred. Archive about 43.8 MB; all G1–G6 remain OPEN.
+
+Stop this prefix experiment. Next use existing source/forest records to specify
+a bounded checked-forest-to-support mapping, retaining separate route domains,
+all original rhs and global factor identity. Assess later-layer and full-query
+work capacity first; 797330 remaining counts do not admit a large support query
+automatically. Do not silently expand into the old eager Store, raise caps,
+splice the old given-HZ large fixture into a source proof or retry GPU. General
+later layers, convolution, trained-source binding and all endpoint consumption
+remain open.
+
+## Completed prerequisite: coefficient-reference support
 
 The [new coefficient-reference component](hz_coefficient_dag_20261013.md),
 [frozen first](hz_coefficient_dag_design_20261013.md), passes 69 tests, final-code
@@ -50,14 +78,11 @@ not repaired by changing the frozen fixture. Exact negative candidate bounds
 match; it is not a nonempty/source-complete large HZ or an output certificate.
 No native solver, trained model or CUDA ran; all G1–G6 remain OPEN.
 
-Stop these given-row size/timing controls. Next connect captured tensor rows to
-an explicit source-checked coefficient graph: small complete source plus bounded
-large affine/ReLU prefix. Preserve layer-wide error-before-lift factor ordering,
-scope/guard ancestry, independent rhs and exact compensation. Do not silently
-expand references into old eager Store/list paths. Byte-aware paging, old source
-nnz/work limits, later layers, convolution and all endpoint consumption remain
-separate admission questions. This new support API alone does not connect the
-captured model to a complete proof; no real solve or GPU retry is admitted.
+These given-row size/timing controls are closed. Captured tensor integration is
+now partially completed above; the source forest is not yet the support graph's
+complete endpoint consumer. Byte-aware paging, full-query work, later layers,
+convolution and all endpoint consumption remain separate admission questions.
+No real solve or GPU retry is admitted.
 
 ## Completed prerequisite: bounded captured tensor rows
 
