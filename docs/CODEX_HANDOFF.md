@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Six-work object/quantifier admission contracts checked: 2026-10-13 (no execution).
 Joint residual-template capacity proposal stopped: 2026-10-13 (static analysis).
 First-affine tensor alias standalone refusal checked: 2026-10-13 (no execution).
 Complete V3 dense source/query capacity checked and archived: 2026-10-13.
@@ -40,7 +41,32 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: residual templates do not supply a complete capacity contract
+## Current decision: comparison contracts clarified; algorithm capacity still closed
+
+The [six-work semantic contract](baseline_semantic_admission_20261013.md) now
+defines the actual functions, domains, quantifiers, guarantee grades and missing
+premises. Nine stdlib arithmetic/identity controls pass; 15 dated source files
+are bound and checked without model loading, solves or GPU. This completes a G6
+contract subtask, not the six-paper reproduction/comparison goal.
+
+Two material corrections guide later work. The trained Robust Experts softmax
+router has a real top-2 selected mass at least 1/2, but its epsilon denominator
+makes weights subnormalized; original non-STE rejection is missing support,
+not evidence that this concrete real source is undefined. Its unpruned k2
+catalog is 7776, not the old untrained k1 control's 1024 (default cap 4096).
+MetaMoE's disjoint [10,10] zero-filled blocks make a cross-domain route change
+incompatible with all strictly positive global margins. Compare that object's
+verification coverage/cost; do not chase route-changing positives on it.
+
+Dual RS's diffusion/selector/ViT smoothed composition and conditional confidence
+cannot be equated to unsmoothed ACT by norm conversion. RoME uses continuous
+all-expert token mixtures, not discrete top-k histories. J-TLAT/Feature Noise
+artifact limitations are dated observations, not fresh online absence claims.
+Existing numerical/empirical results are unchanged; no new real execution is
+admitted. All G1–G6 remain OPEN. The source-scaled resource-protocol proposal
+below still awaits user direction; no cap change or physical GPU retry.
+
+## Prior capacity decision: residual templates do not supply a complete contract
 
 The [joint source/residual capacity decision](hz_residual_template_capacity_20261013.md)
 is closed: six new static tests and six parent regressions pass. Retaining even

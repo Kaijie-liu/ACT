@@ -39,6 +39,7 @@
 | 清理磁盘与防止缓存堆积 | [存储维护规则](organization/STORAGE_MAINTENANCE.md) | 只清经过核对的可重建缓存；实验、失败证据和权重保留 |
 | 看当前实验对比 | [比较与保证裁决](competition_guarantee_disposition_20260923.md) | 内部优势不等于外部优势，策略接受不等于严格证书 |
 | 看六篇作者基线跑到了哪 | [作者基线实际状态](author_baselines_status_20260924.md) | 分开部署、控制、训练与完整匹配比较 |
+| 看六篇能否作为同任务对照 | [逐对象语义准入](baseline_semantic_admission_20261013.md)、[绑定算术](baseline_semantic_admission_20261013.json) | 平滑函数／概率与确定性分开；Meta类别分离、Robust实际k2与RoME连续混合分别处理；不是新执行许可 |
 | 看最新证明研究结论 | [证明闭合决策](proof_closure_decision_20260925_r1.md) | 停止自动缓存/计时循环，不再重开封存输入 |
 | 看论文 | [论文阅读顺序](../paper/README.md)、[短稿](../paper/review_main.tex) | 短稿不是已完成的匿名投稿版本 |
 | 做独立评审 | [人类技术审阅与复现地图](SUBMISSION_REVIEW.md) | AI 自检和 JSON 审计不替代独立人类审阅 |

@@ -77,6 +77,18 @@ ACT dominance, all six author-paper reproductions, or full-model ACT results
 for the native RoME/Robust Experts semantics. The
 [six-work execution ledger](../../docs/author_baselines_status_20260924.md)
 separates completed runs from remaining semantic and artifact gaps.
+The [object-level admission contracts](../../docs/baseline_semantic_admission_20261013.md)
+further distinguish Dual RS's diffusion-based smoothed composition from an
+unsmoothed ACT function; norm containment alone does not equate them. The trained
+Robust Experts router admits a real-softmax nonzero argument, but its local
+epsilon-denominator weights are not normalized convex weights and its trained
+top-2 history catalog is not the old top-1 compatibility control. RoME uses
+continuous all-expert token mixtures, not finite top-k selection. These are
+specific adapter obligations, not evidence that the author functions are unsafe.
+For the fixed MetaMoE disjoint-class zero-filled object, changing to the other
+class block gives a zero global margin between two unselected classes. Thus
+that comparison tests coverage and cost, not the possibility of a positive
+cross-domain route-changing certificate under our strict global-margin task.
 
 ## Empirically robust and large sparse MoE
 
