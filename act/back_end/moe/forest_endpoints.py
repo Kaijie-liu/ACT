@@ -33,7 +33,9 @@ class Native:
         self.shape=(len(forest.nodes),len(forest.factors))
         self.local=torch.sparse_coo_tensor(self.indices([rr,cc]),self.tensor(vv),self.shape,
                                           dtype=torch.float64,device='cpu').coalesce()
-        self.transpose=self.local.transpose(0,1)  # index/value view; no second coefficient conversion
+        # No second rational conversion; torch may allocate transpose storage.
+        # This is NOT a promise that native coefficient values have one allocation.
+        self.transpose=self.local.transpose(0,1)
         self.children=self.indices(children); self.parents=self.indices(parents)
         self.stats=dict(algorithm=ALGORITHM,device='cpu',dtype='float64',local_nnz=len(vv),
                         references=len(children),coefficient_conversions=len(vv),expanded_constraint_entries=0,

@@ -16,7 +16,8 @@
 | 看当前块算法的设备执行状态 | [CPU 等价控制](hz_store_device_20261013.md)、[设备生命周期](hz_store_device_supervision_20261013.md)、[六槽物理准入与归档](hz_store_physical_20261013.md) | 新块路径六槽全部 NOT_RUN：一次准入因其他计算 PID 拒绝，终态审计通过；无实机加速，停止重试并转向训练来源容量 |
 | 看训练来源张量读取与下一容量门 | [冻结合同](hz_tensor_rows_design_20261013.md)、[结果与边界](hz_tensor_rows_20261013.md) | 已捕获合成源的 799494 参数逐项读取、字节身份与搬迁通过；42 回归。不是实模、HZ 转换或 GPU；下一项为受限仿射构造／检查消费 |
 | 看系数重复如何进入 HybridZ 支持改进 | [有限合同](hz_coefficient_dag_design_20261013.md)、[结果与限制](hz_coefficient_dag_20261013.md) | 系数引用／精确伴随累加及实际小 SparseHZono 接口已实现；大给定行复制控制是空域，不是来源完整或真实模型收益 |
-| 看引用构造的来源检查 | [冻结合同](hz_source_dag_design_20261013.md)、[结果](hz_source_dag_20261013.md) | 小来源全转换与固定大 affine/ReLU 前缀通过；69 测试，22.616 秒大前缀，无输出证书／GPU；下一步核对 forest 到支持消费者及后续层容量 |
+| 看引用构造的来源检查 | [冻结合同](hz_source_dag_design_20261013.md)、[结果](hz_source_dag_20261013.md) | 小来源全转换与固定大 affine/ReLU 前缀通过；69 测试，22.616 秒大前缀；大后续层仍超剩余工作预算 |
+| 看引用表示如何完成全部输出支持 | [冻结合同](hz_forest_endpoints_design_20261013.md)、[结果与数学合同](hz_forest_endpoints_20261013.md) | 直接局部系数矩阵＋引用 scatter，82 测试／61 同候选精确端点差分及搬迁通过；3 个小合成源正、1 个未决，无实模或 GPU 收益；下一步为后层仿射引用容量 |
 | 看 H2 与实际 HybridZ 接入 | [端点接入结果](hz_endpoint_controls_20261001.md)、[CPU 完整监督](hz_endpoint_supervision_20261001.md)、[映射合同](../act/back_end/moe/proofs/hz_endpoint_mapping.md)、[先行设计](hz_endpoint_design_20261001.md) | 18 项数学控制、12 项监督控制通过；给定 HZ/gate，不是来源完整或生产性能结果 |
 | 看声明来源怎样接入实际 HybridZ | [同源控制与边界](hz_source_connection_20261001.md)、[冻结合同](hz_source_connection_design_20261001.md)、[完整 CPU 监督](hz_source_supervision_20261001.md)、[隔离搬迁检查](hz_source_portable_20261001.md) | 来源、完整监督和八组搬迁控制通过；有限保存对象可重查，尚非真实模型或原生浮点证明 |
 | 看同源 HybridZ 表示是否真有差异 | [端点与 MC 对照](hz_source_representation_20261001.md)、[先行冻结](hz_source_representation_design_20261001.md) | 四源八臂和 13 项控制通过；同一新 HZ 的正端点界与精确负 MC 可行点形成有限分离，不是真实模型或外部收益 |

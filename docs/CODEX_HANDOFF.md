@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Checked source-reference complete endpoint consumption archived: 2026-10-13.
 Captured source coefficient-reference construction checked and archived: 2026-10-13.
 Coefficient-reference support component checked and archived: 2026-10-13.
 Bounded captured tensor-row intake checked and archived: 2026-10-13.
@@ -33,7 +34,38 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: connect the checked source forest to support
+## Current decision: stop small endpoint controls; assess later affine references
+
+The [source-reference endpoint consumer](hz_forest_endpoints_20261013.md),
+[frozen first](hz_forest_endpoints_design_20261013.md), now connects the checked
+forest directly to CPU candidate support and independent exact acceptance.
+The local sparse operator plus reference scatter replaces expanded constraints
+(native torch transpose also allocates values; no one-allocation memory claim);
+pair guards stay separate and global shared residuals combine before abs.
+82 tests, all 61 same-candidate endpoint differentials and offline audit pass.
+Mixed, guarded and half close all small captured-source output obligations;
+small40 remains UNKNOWN_NONPOSITIVE. The guarded width-1 repeat is not another
+source result. The half (0,2) guard is empty, not a new margin gain.
+
+Four relocated bundles pass source-plus-all-endpoints checking with `-I -S`,
+without native packages, checkpoint or historical run access. Five calls remain
+within their 300s/8M limits; the whole control archive is 12.530 seconds before
+terminal publication and about 0.95 MB logical bytes. Native/eager diagnostics
+are separately nested/charged, not production speedup evidence. No real model,
+GPU or external comparison ran; all G1–G6 remain OPEN.
+
+Stop this small functional integration. From the existing dense-prefix record,
+only 797330 counts remain; merely expanding the next layer's input costs at
+least 965318, and producer/checker affine combinations need at least 5791908
+more. No rerun is needed to establish refusal. Next assess a bounded later-layer
+affine reference-composition contract, retaining source weights, independent rhs,
+expert identity, exact compensation and a sound norm for overlapping references.
+Do not silently expand into Store, raise caps or generalize the current one-level
+native scatter to arbitrary DAGs. Full-source/query capacity must precede new
+execution. Convolution, trained-source correspondence, real endpoints and GPU
+benefit remain open. No sealed request, real solve or GPU retry is admitted.
+
+## Completed prerequisite: checked source forest construction
 
 The [captured source reference construction](hz_source_dag_20261013.md),
 [frozen before implementation](hz_source_dag_design_20261013.md), now passes
@@ -51,14 +83,9 @@ small relocation passes. Final audit V2 adds fixed anchors/caps, code/cost and
 relocation checks over unchanged R1 bytes. No large rerun, native solver, real
 model or GPU occurred. Archive about 43.8 MB; all G1–G6 remain OPEN.
 
-Stop this prefix experiment. Next use existing source/forest records to specify
-a bounded checked-forest-to-support mapping, retaining separate route domains,
-all original rhs and global factor identity. Assess later-layer and full-query
-work capacity first; 797330 remaining counts do not admit a large support query
-automatically. Do not silently expand into the old eager Store, raise caps,
-splice the old given-HZ large fixture into a source proof or retry GPU. General
-later layers, convolution, trained-source binding and all endpoint consumption
-remain open.
+The prefix experiment stays closed. Small complete endpoint consumption is now
+implemented above; large later-layer/full-query capacity is not. Do not splice
+the old given-HZ large fixture or a separate small positive into this source.
 
 ## Completed prerequisite: coefficient-reference support
 
@@ -78,10 +105,10 @@ not repaired by changing the frozen fixture. Exact negative candidate bounds
 match; it is not a nonempty/source-complete large HZ or an output certificate.
 No native solver, trained model or CUDA ran; all G1–G6 remain OPEN.
 
-These given-row size/timing controls are closed. Captured tensor integration is
-now partially completed above; the source forest is not yet the support graph's
-complete endpoint consumer. Byte-aware paging, full-query work, later layers,
-convolution and all endpoint consumption remain separate admission questions.
+These given-row size/timing controls are closed. Captured tensor integration and
+small complete endpoint consumption are now completed above. Full-size query
+work, later layers, convolution and trained-source endpoints remain separate
+admission questions.
 No real solve or GPU retry is admitted.
 
 ## Completed prerequisite: bounded captured tensor rows

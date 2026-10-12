@@ -1,0 +1,132 @@
+{
+  "schema": "CHECKED_FOREST_ENDPOINT_COMPONENT_SUMMARY_V1",
+  "protocol_commit": "4ad52becf",
+  "implementation_commit": "77784b5f5",
+  "protocol": "ed44073ef5b251aec1088bf5c7fb87e7ef7ad49f5533f3db1cad697ba6a09c4a",
+  "archive": "/data1/Kane/MOE/runs/hz_forest_endpoints_20261013_r1",
+  "audit_sha256": "33137d88f52e95bbed5bf6ce8d219fbed2abab65b50ab77aa78a91dbe346f4a1",
+  "execution_sha256": "7d9ae69d3d7cfcafc9d27a273da91de9c261aed42364d5d62c1c944ccffa0d46",
+  "status": "PASS_CHECKED_FOREST_ENDPOINT_RECHECK",
+  "tests": 82,
+  "total_before_terminal_seconds": 12.530460774898529,
+  "archive_logical_bytes": 946645,
+  "guarded_width_results_equal": true,
+  "cases": [
+    {
+      "name": "small40",
+      "source": "28c41d0da9493f2b80de1dab910a769868f12240ac00dc55727b9a716dc8fe65",
+      "forest": "079e4312b473549204b8ea2913196d299bce28d5396e6616c07d396d0a4e425a",
+      "binding": "8cdd44039174583617fbc08ef00c68afb72d7623d92f91c6cf2bb36e5573c84b",
+      "status": "UNKNOWN_NONPOSITIVE",
+      "positive": 0,
+      "required": 1,
+      "endpoints": 2,
+      "work": 3605,
+      "parent_seconds": 1.8144297190010548,
+      "independent_seconds": 0.007701391354203224,
+      "stats": {
+        "factors": 22,
+        "forest_bytes": 7385,
+        "local_nnz": 49,
+        "nodes": 19,
+        "references": 1,
+        "views": 11
+      }
+    },
+    {
+      "name": "mixed",
+      "source": "24155a8113346d6964b6a4497be0abc0e5dcebbb169c949931468d6fdbb92a22",
+      "forest": "62ea0b52cc5cf35a3e7c50b9dae8f474f8f76da475934965ecbe8628c18ca677",
+      "binding": "4ddd39c5723f68bf09302eac3324f61c0014b9de09256087378b4399119ad117",
+      "status": "CHECKED_POSITIVE_CAPTURED_REAL_SOURCE",
+      "positive": 3,
+      "required": 3,
+      "endpoints": 6,
+      "work": 11981,
+      "parent_seconds": 1.888089356943965,
+      "independent_seconds": 0.009901285171508789,
+      "stats": {
+        "factors": 29,
+        "forest_bytes": 9666,
+        "local_nnz": 103,
+        "nodes": 59,
+        "references": 6,
+        "views": 19
+      }
+    },
+    {
+      "name": "guarded_w8",
+      "source": "0be644fc20d28ab6d811f4c933f58456d9039e7a1d513e38d41f929b92cfc8da",
+      "forest": "7ac2ee893ebd7d3fb041f126f7321bb6f4a4d7e5a495053f09064c7c3dc01bbe",
+      "binding": "97d29e8bdb01ff27b27e5d64b2fb6b672d9825eb7e6fc542ac92185e29fa1a5c",
+      "status": "CHECKED_POSITIVE_CAPTURED_REAL_SOURCE",
+      "positive": 12,
+      "required": 12,
+      "endpoints": 24,
+      "work": 8201,
+      "parent_seconds": 1.8706335723400116,
+      "independent_seconds": 0.006558703258633614,
+      "stats": {
+        "factors": 1,
+        "forest_bytes": 3874,
+        "local_nnz": 19,
+        "nodes": 25,
+        "references": 0,
+        "views": 13
+      }
+    },
+    {
+      "name": "half",
+      "source": "cf4dbc3dff90da9d71fc9a056e29cdefa69a2aa8dae768f08555a7b84fb4c8a0",
+      "forest": "39ab4c452421b826db76d27fde0ce632660726fb26687c86008e5d57d18769fd",
+      "binding": "ae2db454975005899931fce14f6496aed225973c8487b79d5f32eb64dae5d5b5",
+      "status": "CHECKED_POSITIVE_CAPTURED_REAL_SOURCE",
+      "positive": 3,
+      "required": 3,
+      "endpoints": 5,
+      "work": 4193,
+      "parent_seconds": 1.928172891959548,
+      "independent_seconds": 0.005597800016403198,
+      "stats": {
+        "factors": 10,
+        "forest_bytes": 5697,
+        "local_nnz": 34,
+        "nodes": 31,
+        "references": 3,
+        "views": 19
+      }
+    },
+    {
+      "name": "guarded_w1",
+      "source": "0be644fc20d28ab6d811f4c933f58456d9039e7a1d513e38d41f929b92cfc8da",
+      "forest": "7ac2ee893ebd7d3fb041f126f7321bb6f4a4d7e5a495053f09064c7c3dc01bbe",
+      "binding": "61b57e5fd9273accbe44c56715392b8f1b24d64a883feeec50ce13f5cc375e12",
+      "status": "CHECKED_POSITIVE_CAPTURED_REAL_SOURCE",
+      "positive": 12,
+      "required": 12,
+      "endpoints": 24,
+      "work": 11162,
+      "parent_seconds": 2.132977856323123,
+      "independent_seconds": 0.00801464356482029,
+      "stats": {
+        "factors": 1,
+        "forest_bytes": 3874,
+        "local_nnz": 19,
+        "nodes": 25,
+        "references": 0,
+        "views": 13
+      }
+    }
+  ],
+  "real_models": 0,
+  "gpu_calls": 0,
+  "post_archive_native_storage_observation": {
+    "torch": "2.9.1+cu128",
+    "cpu_sparse_transpose_shares_value_storage": false,
+    "backend_change": "comment only; current and archived Python ASTs identical",
+    "numerical_rerun": false
+  },
+  "goal_gates_closed": [],
+  "conditional_on": "Captured real-arithmetic declaration corresponds to intended program; not checkpoint or native float proof",
+  "next": "No more small timing or dense-prefix reruns. Bound later-affine reference composition and full-source capacity before any new execution."
+}
