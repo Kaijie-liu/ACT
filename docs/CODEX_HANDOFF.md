@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Request-store complete endpoint consumption completed: 2026-10-13.
 Request-store source-row operators completed: 2026-10-13.
 Request-owned given-HZ store and direct view controls completed: 2026-10-12.
 Combined source/block capacity decision completed: 2026-10-12.
@@ -25,7 +26,39 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: complete endpoint tiling on checked source views
+## Current decision: endpoint consumption completed; bind bounded execution next
+
+The [frozen endpoint component](hz_store_endpoints_design_20261013.md) is now
+[implemented and independently checked](hz_store_endpoints_20261013.md). Original
+immutable common/private rows feed cached sparse blocks and at most eight target
+columns; the exact checker traverses original constraints and combines shared
+residuals before box support. All pair/property/distinct gate endpoints remain.
+One cumulative 96M composition work limit is explicit; the old primitive policy
+is not changed. No per-tile reset or numerical-threshold change occurs.
+
+All five frozen calls complete inside their own 300-second deadlines. A **32-factor
+synthetic source** closes 252/252 duties and 504 endpoints at tile widths 8 and 1,
+all bounds exactly 2. The separate **25,648-factor given-HZ** layout checks all
+504 endpoints in 114.405 seconds but has **0/252 positive duties**. Never combine
+these into a large source-complete positive result. Negative3 is 3/6 positive but
+overall UNKNOWN; mixed is 0/3. No negative bound establishes UNSAFE. This positive
+fixture is individually safe by construction, not evidence of relational gain.
+
+83 regressions (15 new), six relocated stdlib controls and final audit V3 pass.
+Initial audit receipt-prefix failure and audit V2 remain; V3 also checks frozen
+property/tile configuration and all large-recipe coefficients. No numerical rerun.
+Raw stage is about 13.84 MB. All G1–G6 remain OPEN; no real model or CUDA ran.
+
+Stop endpoint-count/width/timing controls. Next bind this schema to the existing
+bounded reception/supervision contract (including partial evidence and complete
+costs), not another source-copy wrapper. The same block GPU candidate kernel is
+a separate device factor: first CPU-equivalence/fault controls, then fresh scoped
+admission, never automatic retry of previous GPU slots. Captured tensor/source
+streaming and conv operators remain separate blockers. The normal controls did
+not exercise sign-restricted half-gates; do not claim every gate branch was tested.
+No new real freeze or sealed input is admitted by this component result.
+
+## Completed source-row component
 
 The [separately frozen source-row component](hz_store_source_design_20261012.md)
 is now [implemented and independently rechecked](hz_store_source_20261013.md).
@@ -45,12 +78,12 @@ receipt is 5.035 seconds, not a production speedup. The retained stage is about
 8.18 MB, within its 64 MiB cap. No output lower bound, native solve, real source
 or CUDA ran. All six gates remain OPEN.
 
-Stop this component's width/timing study. Next connect the complete output-duty
-inventory and bounded endpoint tiles to these views. Do not reconstruct repeated
-whole-source dictionaries or omit distinct endpoints. Full captured-source/tensor
+Stop this component's width/timing study. The complete output-duty inventory and
+bounded endpoint tiles are connected in the component above. Do not reconstruct
+repeated whole-source dictionaries or omit distinct endpoints. Full captured-source/tensor
 intake, conv operators, production hard-budget supervision and the block GPU
 kernel remain separate gates. A 3072-row diagonal control is not trained-density
-capacity or full 252-duty source-to-output closure.
+capacity; the new 252-duty source positive has only 32 factors.
 
 ## Request-owned given-HZ store retained
 
@@ -69,8 +102,8 @@ regular-file payload remains below the 64 MiB stage cap. Its costs are offline
 checking, not full generation or production speedup. This is a given-HZ store,
 not checked network provenance, 252 output duties or trained sparsity capacity.
 Stop its width/timing study. Row-consuming source/enclosure checks and actual
-SparseHZono matching are completed in the finite component above; complete
-endpoint tiles remain next. Do not expand views through old whole-source parsers. Full supervision,
+SparseHZono matching and complete endpoint tiles are now covered by the finite
+components above. Do not expand views through old whole-source parsers. Full supervision,
 conv operators and block GPU execution remain separate later gates.
 
 The [refined goal contract](ALGORITHM_RESEARCH_GOAL.md) now explicitly requires
@@ -131,7 +164,7 @@ stores 112 source snapshot occurrences, not 112 independent propagations.
 The mechanism is one request-owned checked source/block store with complete
 row/endpoint tiling, changing source and support consumers together. Its given-HZ
 store/direct-consumption and finite source components are completed above;
-complete endpoint consumers remain next. Do not
+complete endpoint consumers are completed in the new component above. Do not
 expand references into the same four copies for every pair. Freeze finite
 capacity objects and resource/attempt limits before controls; this decision is
 not real or GPU execution admission. Conv operators, portable/hard-budget
