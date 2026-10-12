@@ -1,0 +1,91 @@
+{
+  "schema": "STORE_PHYSICAL_COMPACT_V1",
+  "archive": "/data1/Kane/MOE/baseline_runs/hz_store_physical_20261013_r1",
+  "execution_commit": "25f58572fad6b87620394e66ae61090311511635",
+  "bindings": {
+    "/data1/Kane/MOE/baseline_runs/hz_store_physical_20261013_r1/summary.json": "c15838014a1e830ef7546826fdbca070aa1cc6e9f87736fbe230fa567a738204",
+    "/data1/Kane/MOE/baseline_runs/hz_store_physical_20261013_r1/freeze.json": "16641bae0dfeeccdd95e237186bb14622b9ededc4f346bf800c6d5370961a1ad",
+    "/data1/Kane/MOE/baseline_runs/hz_store_physical_20261013_r1/permit.json": "dc90d44136db751adc5a1b01f9c6d29e49eeacd0862585a4a8a451a8fa3b66dd",
+    "/data1/Kane/MOE/baseline_runs/hz_store_physical_20261013_r1/start.json": "3ca6555cedaf585bf5fab24d6de9f6aa2e314d5cc7485e7d694a73e23c5fc5b8",
+    "/data1/Kane/MOE/baseline_runs/hz_store_physical_20261013_r1/preflight_observed.json": "21cd73bce8828acb78bb70c684ad701d93815308b2b48e606721d9485beffbbb",
+    "/data1/Kane/MOE/baseline_runs/hz_store_physical_20261013_r1/prerequisites_recheck.json": "3167f9b9f9cd05a93aaf4177681594ed3cf3a2b7e8192360445c972e771c2624",
+    "/data1/Kane/MOE/baseline_runs/hz_store_physical_20261013_r1/preflight/probe.json": "4d7e2029a5d8ec1d9b4b7a6ac80e59c4a4728b6b842333569b9b407d29926730",
+    "/data1/Kane/MOE/baseline_runs/hz_store_physical_20261013_r1_observed.json": "b56c9d192369d21bc679a1c37420ed11f3c9f7dcae398a3eec7af8c8c1eae23e",
+    "/data1/Kane/MOE/baseline_runs/hz_store_physical_20261013_r1_audit.json": "12d74d819b1dd9418f9563911273795784fd50dbee88906eef16885629db8bb0",
+    "/data1/Kane/MOE/baseline_runs/hz_store_physical_controls_20261013_r1/summary.json": "0ae3de2e6a50adb55e2fc9c2b47efd8f765f258fd0550423f2860d4ee2935cf3",
+    "/data1/Kane/MOE/baseline_runs/hz_store_physical_controls_20261013_r2/summary.json": "f6e5708f841ffbec9984916bb718f4959c1c9bee403f32ebd04e8610fd3f8b25"
+  },
+  "archives": {
+    "/data1/Kane/MOE/baseline_runs/hz_store_physical_20261013_r1": {
+      "files": 89,
+      "bytes": 850793
+    },
+    "/data1/Kane/MOE/baseline_runs/hz_store_physical_controls_20261013_r1": {
+      "files": 81,
+      "bytes": 802081
+    },
+    "/data1/Kane/MOE/baseline_runs/hz_store_physical_controls_20261013_r2": {
+      "files": 81,
+      "bytes": 802729
+    }
+  },
+  "audit": {
+    "batch_within_budget": true,
+    "complete_cuda_calls": 0,
+    "complete_real_model_proofs": 0,
+    "cuda_intents": 0,
+    "execution_status": "NOT_ADMITTED",
+    "freeze_sha256": "7262837b861ada6b082739a6b8a1b9e5da165bcf8b44695f7a91559fa5cfec20",
+    "gpu_speedup_established": false,
+    "observed_batch_seconds": 0.5094929989427328,
+    "offline_seconds": 0.2431074194610119,
+    "paired": {},
+    "pending_slots": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "planned_calls": 6,
+    "preflight": {
+      "cleanup_confirmed": true,
+      "proves_exclusive_reservation": false,
+      "ready": false,
+      "seconds": 0.24776102043688297,
+      "status": "PASS"
+    },
+    "prerequisite_check_seconds": 0.18292978778481483,
+    "real_model_calls": 0,
+    "recorded_execution_status": "NOT_ADMITTED",
+    "started_calls": 0,
+    "status": "PASS",
+    "summary_sha256": "c15838014a1e830ef7546826fdbca070aa1cc6e9f87736fbe230fa567a738204"
+  },
+  "probe": {
+    "deadline": 10666106.815307332,
+    "device": "cuda:0",
+    "exclusive_reservation": false,
+    "gpu_uuid": "GPU-f491c2c6-a093-590a-6b8a-13b5f76aadcc",
+    "invocation": "57c56475a3714222bc695003a206bb83",
+    "observations": [
+      {
+        "compute_pids": [
+          3554445
+        ],
+        "end": 10666104.225726731,
+        "gpu_text": "GPU-f491c2c6-a093-590a-6b8a-13b5f76aadcc, 97887, 43302, 0\n",
+        "gpu_uuid": "GPU-f491c2c6-a093-590a-6b8a-13b5f76aadcc",
+        "process_text": "GPU-f491c2c6-a093-590a-6b8a-13b5f76aadcc, 3554445\n",
+        "ready": false,
+        "start": 10666104.163662745,
+        "total_mib": 97887,
+        "used_mib": 43302,
+        "utilization_percent": 0
+      }
+    ],
+    "simulated": false,
+    "status": "RESOURCE_UNAVAILABLE"
+  }
+}

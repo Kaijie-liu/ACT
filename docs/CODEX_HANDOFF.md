@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Request-store physical admission refused and archived: 2026-10-13.
 Request-store device lifecycle CPU/stub controls completed: 2026-10-13.
 Request-store device interface CPU/stub controls completed: 2026-10-13.
 Request-store bounded supervision completed: 2026-10-13.
@@ -29,7 +30,28 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: separately freeze a physical store/block device comparison
+## Current decision: physical attempt closed and trained-source capacity remains
+
+The [separate physical store/block protocol](hz_store_physical_design_20261013.md)
+is now [executed through its resource gate and archived](hz_store_physical_20261013.md).
+Six pure wrapper controls pass, including actual archive-cap refusal and failed
+prefix accounting. The configuration binds final lifecycle V2, all 79 source
+files and the exact six CPU/CUDA positions. The single fresh preflight found
+another compute PID: **NOT_ADMITTED, all six NOT_RUN**. Independent terminal
+audit passes; zero CUDA intents, numerical requests or trained models ran.
+This is neither device compatibility nor acceleration evidence. All G1–G6 OPEN.
+
+Stop this physical attempt and further small device/lifecycle controls. Do not
+poll or rename a retry. The next separate task is captured trained-source/tensor
+streaming capacity, followed by required convolution operators: connect one
+compatible model/input/eval declaration to the same checked source store and
+all route/property/endpoint obligations. Start with existing source metadata and
+intake code to identify a finite, bounded control contract, not a new real solve.
+The large given-HZ layout and small source-positive fixture cannot be spliced
+into a real-source positive. No sealed input, holdout, larger budget or changed
+acceptance rule is admitted. GPU benefit remains required but unestablished.
+
+## Completed device lifecycle prerequisite
 
 The [device lifecycle protocol](hz_store_device_supervision_design_20261013.md)
 has now been [implemented, executed and audited](hz_store_device_supervision_20261013.md).
@@ -44,14 +66,11 @@ requests or changing frozen execution. Only top-level times are additive;
 incomplete durations remain null, not zero. Raw archive is about 1.19 MB.
 No physical CUDA or trained model ran; all G1–G6 remain OPEN.
 
-Stop lifecycle controls. Next separately freeze a finite physical CPU/GPU
-comparison of this **same immutable store/block algorithm**, binding final V2
-audit/source, complete duties, same algorithm and full request costs. Fresh UUID
-admission and pre-initialization recheck are mandatory. Owned-PID absence is not
-proof of all driver-memory reclamation or admission for the next call. Do not
-retry the old eight unstarted GPU slots or claim acceleration without results.
-Captured trained-source streaming/convolution and real-source closure remain
-separate blockers. No sealed input or holdout is reopened.
+The subsequent six-slot physical freeze and refused admission are recorded above.
+Fresh UUID admission and pre-initialization recheck remain mandatory for any
+separately authorized future device execution. Owned-PID absence is not proof
+of all driver-memory reclamation or admission for the next call. The old eight
+unstarted flat-LP GPU slots remain preserved, not automatically retried.
 
 ## Completed store-device interface
 
@@ -64,7 +83,8 @@ audit pass. No CUDA initialized and no trained model ran. The guarded positive
 is a continuity control, not a new algorithm gain over the identical CPU path.
 
 This CPU-equivalence study is closed. Its store/block device kernel is now
-connected to the lifecycle above; the physical comparison has not yet run.
+connected to the lifecycle above; the new physical attempt stopped at admission,
+so no CPU/CUDA comparison ran.
 Old flat-LP GPU controls are not this integration, and their old eight NOT_RUN
 slots must not be automatically retried. No goal gate closes or speedup is
 supported by synthetic CPU/stub controls.
@@ -245,7 +265,8 @@ Keep opt-in, stop tiny timing/positive-count tuning. The subsequent metadata-onl
 assessment above identifies the remaining source/operator/row/global/package
 obstacles; omitting joint allocation alone is not real admission. Any later
 full-budget/portable stage must bind this schema.
-The block GPU kernel is not implemented; flat device controls do not cover it.
+At that stage the block GPU kernel was not implemented. The current store/block
+device kernel has since passed CPU/stub controls above, but not physical CUDA.
 No native solve, real input, CUDA or sealed request ran. All six gates stay OPEN.
 
 ## Prior expert-template factorization retained
