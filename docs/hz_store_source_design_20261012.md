@@ -72,6 +72,17 @@ These are four saved normal objects (wide, mixed at two page sizes, input).
 Any extra small object used for ties/mutations is auxiliary and fully counted.
 No accepting result may be a hash-only test of a producer-created object.
 
+Pre-execution coefficient clarification: every expert's final two-output
+projection selects coordinates 0 and 1 with unit weights and zero biases;
+the wide experts have no preceding hidden layers. Mixed experts use identity
+affine → ReLU → identity affine → ReLU before that projection. The input
+control uses three constant-one router outputs (all three pairs remain), and
+the same expert projections. Every input center is the nearest binary64 exact
+midpoint; its radius is the least binary64 not below the larger exact endpoint
+distance from that center. ReLU ranges are the exact coefficient box ranges.
+Actual first-layer compensation at mixed rows 0 and 65 must be checked, not just
+an aggregate nonzero count. These clarifications precede all numerical controls.
+
 ## Resources, costs and decision
 
 Existing Store V1 capacities remain unchanged. Operator declarations are bounded
