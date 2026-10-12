@@ -60,9 +60,11 @@ R1/R2 remain pre-final audit-hardening archives; all ten normal mathematical
 objects are identical across R1/R2/R3. No native solve, network or CUDA ran.
 
 This is a given-HZ inclusion primitive, not new tightening or measured speedup.
-Stop its width/timing study. Next decide a separately scoped integration into
-the checked affine/ReLU/guard source path, preserving exact reference checks
-and generating fresh output evidence for new matrices. Source integration and
+Stop its width/timing study. The [separate source integration freeze](hz_sparse_source_design_20261012.md)
+now keeps once-per-expert templates and direct block support, replacing only the
+enclosure step. It requires exact affine/ReLU/guard checks and fresh evidence,
+eight complete old/new calls on the original four declarations, operator bridges
+and the intersection of old/new admission limits. Source integration and
 full-request benefit are not done. All old source, block, query, production and
 portable limits stay unchanged; complete properties, source dimensions,
 operators and package capacity remain open. No extra supervisor, physical GPU
