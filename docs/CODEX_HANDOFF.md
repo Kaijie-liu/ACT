@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-Request-store supervision interface implemented/frozen, process controls pending: 2026-10-13.
+Request-store bounded supervision completed: 2026-10-13.
 Request-store complete endpoint consumption completed: 2026-10-13.
 Request-store source-row operators completed: 2026-10-13.
 Request-owned given-HZ store and direct view controls completed: 2026-10-12.
@@ -50,13 +50,19 @@ Initial audit receipt-prefix failure and audit V2 remain; V3 also checks frozen
 property/tile configuration and all large-recipe coefficients. No numerical rerun.
 Raw stage is about 13.84 MB. All G1–G6 remain OPEN; no real model or CUDA ran.
 
-Stop endpoint-count/width/timing controls. Next bind this schema to the existing
-bounded reception/supervision contract (including partial evidence and complete
-costs), not another source-copy wrapper. The same block GPU candidate kernel is
+Stop endpoint-count/width/timing controls. The same schema is now
+[bound to existing owned-process supervision](hz_store_supervision_20261013.md):
+13/13 finite calls and independent audit pass (3 normal, 6 expected TIMEOUT,
+4 expected ERROR); 95 regressions pass. Partial evidence remains UNKNOWN; the
+serialization cutoff retains one tile without a final manifest. Cumulative 96M
+counters carry across processes; full costs and cleanup are retained in about
+1.18 MB. Stop this finite supervision study: it is not general trained-model
+admission. No real model or GPU ran. The same block GPU candidate kernel is
 a separate device factor: first CPU-equivalence/fault controls, then fresh scoped
 admission, never automatic retry of previous GPU slots. Captured tensor/source
-streaming and conv operators remain separate blockers. The normal controls did
-not exercise sign-restricted half-gates; do not claim every gate branch was tested.
+streaming and conv operators remain separate blockers. The original normal
+controls did not exercise sign-restricted half-gates; the new supervision fixture
+checks both orientations against independently recomputed endpoint identities.
 No new real freeze or sealed input is admitted by this component result.
 
 ## Completed source-row component

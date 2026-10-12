@@ -22,6 +22,7 @@
 | 看 HybridZ 块支持算法 | [直接块支持冻结](hz_block_support_design_20261002.md)、[实现与结果](hz_blocks_20261002.md) | 18 组控制及独立审计通过；15 域／84 候选差分一致，无 joint 分配；三项小控制总耗时更差，不是实模或 GPU 收益 |
 | 看块算法后的真实容量与下一机制 | [组合容量决定](hz_combined_capacity_20261012.md)、[给定-HZ 存储结果](hz_request_store_20261012.md)、[来源行结果](hz_store_source_20261013.md)、[完整端点冻结](hz_store_endpoints_design_20261013.md)、[端点结果](hz_store_endpoints_20261013.md) | 32 因子合成源完成 252 正义务；独立 25648 因子给定-HZ 完成 504 端点但全部义务未决。83 回归、搬迁及审计通过；不是大来源正证、实模或 GPU 加速 |
 | 看 H1 代码与合成证明 | [来源依赖控制](h1_sparse_source_controls_20260930.md)、[完整监督与搬迁](h1_supervision_20260930.md)、[对象适配及停止裁决](h1_model_intake_20260930.md) | 适配控制完成；稠密隐藏依赖未缩小，不自动推进真实比较 |
+| 看新存储的完整执行合同 | [冻结](hz_store_supervision_design_20261013.md)、[结果](hz_store_supervision_20261013.md) | 13 调用、95 回归及审计通过；部分证据与六截止／四错误均不误收；工作额度及成本跨阶段保留。固定合成控制，不是实模或 GPU 收益 |
 | 看 H2 加权义务机制 | [gate 端点支持](h2_gate_endpoint_20260930.md)、[声明来源控制](h2_source_controls_20260930.md)、[监督与搬迁](h2_supervision_20260930.md)、[对象接入与容量](h2_model_intake_20260930.md)、[分块来源与 pair 表示](h2_factored_representation_20260930.md)、[分块监督与搬迁](h2_factored_supervision_20260930.md)、[全路径容量审计](h2_factored_capacity_20260930.md)、[逐行检查控制](h2_rowwise_controls_20260930.md)、[逐行完整监督](h2_rowwise_supervision_20260930.md)、[数学证明](../act/back_end/moe/proofs/gate_interval_endpoint_support.md) | 新核完整监督控制通过；全尺寸容量未准入，不是新增真实证书 |
 | 看完整工程目录 | [目录分类](organization/DIRECTORY_CATALOG.md) | 目录还在原位；分类不是删除许可 |
 | 看 H2 全尺寸容量状态 | [来源身份准备与结果](h2_capacity_preparation_20261001.md)、[完整容量监督与结果](h2_capacity_execution_20261001.md) | 两臂输出提议阶段超时；完整 pair 与正证明均为零，真实准入仍关闭 |
