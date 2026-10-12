@@ -197,7 +197,8 @@ def batch(root,permit):
 
 def audit(root):
     begin=time.monotonic(); s=load(root/'summary.json'); permit=load(root/'permit.json'); f=validate(permit)
-    require(load(root/'freeze.json')==f and s['inventory']==inventory(root),'whole physical archive identity')
+    require(load(root/'freeze.json')==f and s['inventory']==inventory(root,enforce=False),'whole physical archive identity')
+    archive_bytes=sum(p.stat().st_size for p in root.rglob('*') if p.is_file())
     require(all(sha(root/'implementation'/n)==h for n,h in f['batch_sources'].items()),'archived implementation')
     require(s['schema']=='STORE_PHYSICAL_BATCH_V1' and s['real_model_calls']==s['complete_real_model_proofs']==0,
             'unchanged scope')
@@ -206,6 +207,10 @@ def audit(root):
     for value in (observation['begin'],observation['end'],start['begin'],s['seconds_before_final_publication']): policy.finite(value)
     require(observation['summary_sha256']==sha(root/'summary.json') and observation['begin']<=start['begin']
             and observation['end']>=start['begin']+s['seconds_before_final_publication'],'whole batch observed return')
+    if archive_bytes>64*2**20:
+        return dict(status='FAIL',execution_status=s['status'],error='physical batch archive cap',archive_bytes=archive_bytes,
+                    attempted_slots=s['attempted_slots'],pending_slots=s['pending_slots'],
+                    observed_batch_seconds=observation['end']-start['begin'],summary_sha256=sha(root/'summary.json'))
     if s['error'] is not None:
         return dict(status='FAIL',execution_status=s['status'],error=s['error'],
                     attempted_slots=s['attempted_slots'],pending_slots=s['pending_slots'],

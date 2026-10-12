@@ -79,7 +79,7 @@ class Controls(unittest.TestCase):
                 calls=p.execute_slots(Path(tmp),{},dict(ready=True),time.monotonic()+1,
                                       invoke=lambda *a,**k:self.fail('no request allowance'))
             self.assertFalse(calls); self.assertEqual(load(Path(tmp)/'batch_deadline.json')['next_slot'],0)
-        self.wrapper('REFUSED'); self.wrapper('API_ERROR'); self.wrapper('PREFIX_ERROR')
+        self.wrapper('REFUSED'); self.wrapper('API_ERROR'); self.wrapper('PREFIX_ERROR'); self.wrapper('ACTUAL_CAP')
         # Startup publication consumes the remaining allowance; no invocation.
         with tempfile.TemporaryDirectory(dir=p.ROOT.parent) as tmp:
             original=p.save; now=time.monotonic()
@@ -103,7 +103,10 @@ class Controls(unittest.TestCase):
                 return dict(ready=mode!='REFUSED',seconds=0.)
             def invoke(*args,**kwargs):
                 if mode=='API_ERROR': raise RuntimeError('before owned directory')
-                args[1].mkdir(); return dict(status=p.policy.DONE)
+                args[1].mkdir()
+                if mode=='ACTUAL_CAP':
+                    with (args[1]/'oversized_control').open('xb') as stream: stream.truncate(64*2**20+1)
+                return dict(status=p.policy.DONE)
             count=[0]
             def capacity(path,**kwargs):
                 if mode=='PREFIX_ERROR' and kwargs.get('enforce',True):
