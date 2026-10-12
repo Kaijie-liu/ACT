@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Combined source/block capacity decision completed: 2026-10-12.
 Checked sparse row source integration completed: 2026-10-12.
 Goal acceptance criteria refined: 2026-10-08; documentation only.
 Real-model scientific status remains
@@ -22,7 +23,7 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: assess combined source/block capacity before real admission
+## Current decision: request-owned source/block storage and complete obligation tiling
 
 The [refined goal contract](ALGORITHM_RESEARCH_GOAL.md) now explicitly requires
 one compatible algorithm/source/device/evidence chain, GPU coverage preservation
@@ -69,13 +70,25 @@ once-per-expert templates and direct block support remain. All 21 bound mutation
 three capacity refusals and five fault receipts recheck; partial evidence is UNKNOWN.
 R1 remains before import/auxiliary cost repairs; R2 retains identical normal math.
 
-Stop this integration control study. The next task is a bounded end-to-end
-capacity/compatibility decision for the combined sparse source/block schema,
-not another wrapper or automatic cap raise. The old global 128/256 limits
-intersect the new sixteen-row limits; complete properties, source dimensions,
-operators and package capacity remain open. Full-request benefit, physical GPU
-and real-model certificates are not established. No extra supervisor, physical
-GPU retry or sealed-input rerun is next. All six goal gates remain OPEN.
+Stop this integration control study. The [combined capacity decision](hz_combined_capacity_20261012.md)
+is now complete, with a [46-file-bound static report](hz_combined_capacity_20261012_r1.json)
+and eleven standard-library controls. No numerical source or device ran. Current
+producer rules give common/template/pair factor bounds 3984/6692/9400 including
+enclosure compensation; these are not trained sizes or bounds for arbitrary
+checker-accepted overcompensation. The old global 128/256 limits intersect the
+new sixteen-row-per-entire-vector limit. The whole request's distinct factor
+bound is 25648, not 9400. All 252 duties remain; support still
+stores 112 source snapshot occurrences, not 112 independent propagations.
+
+The next mechanism is one request-owned checked source/block store with complete
+row/endpoint tiling, changing source and support consumers together. Do not
+expand references into the same four copies for every pair. Freeze finite
+capacity objects and resource/attempt limits before controls; this decision is
+not real or GPU execution admission. Conv operators, portable/hard-budget
+integration and actual full costs remain open. Implement the same block GPU
+candidate algorithm only as a separate device factor after representation is
+fixed; flat-device controls do not cover it. No extra supervisor, physical GPU
+retry or sealed-input rerun is next. All six goal gates remain OPEN.
 
 ## Block support checked but performance and capacity open
 
