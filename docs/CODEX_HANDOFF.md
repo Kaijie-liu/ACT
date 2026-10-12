@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Request-owned given-HZ store and direct view controls completed: 2026-10-12.
 Combined source/block capacity decision completed: 2026-10-12.
 Checked sparse row source integration completed: 2026-10-12.
 Goal acceptance criteria refined: 2026-10-08; documentation only.
@@ -23,7 +24,26 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: request-owned source/block storage and complete obligation tiling
+## Current decision: source consumers and complete endpoint tiling on the checked store
+
+The first component of the [request-store freeze](hz_request_store_design_20261012.md)
+is now [implemented and independently rechecked](hz_request_store_20261012.md).
+The immutable store retains one common block, expert-private suffixes and pair
+guard views; pair residuals consume original rows directly and sum shared terms
+before box support. Complete coefficient/ownership checks cover the fixed 25,648
+factor layout, all 28 pairs of 9,400 active factors/2,700 constraints, and 56 exact
+given-HZ bounds. Thirty-eight negative cases and portable `-I -S` checks pass;
+57 regressions pass. No model, solver or GPU ran. All six gates remain OPEN.
+
+R1 remains before deletion/alias/recipe/cost hardening, with exact executed code.
+R2 rechecks unchanged objects rather than copying the whole archive; 37.46 MB
+regular-file payload remains below the 64 MiB stage cap. Its costs are offline
+checking, not full generation or production speedup. This is a given-HZ store,
+not checked network provenance, 252 output duties or trained sparsity capacity.
+Stop its width/timing study. Next implement row-consuming exact source/enclosure
+checks and actual SparseHZono matching, then complete endpoint tiles on these
+views. Do not expand views through old whole-source parsers. Full supervision,
+conv operators and block GPU execution remain separate later gates.
 
 The [refined goal contract](ALGORITHM_RESEARCH_GOAL.md) now explicitly requires
 one compatible algorithm/source/device/evidence chain, GPU coverage preservation
@@ -80,8 +100,10 @@ new sixteen-row-per-entire-vector limit. The whole request's distinct factor
 bound is 25648, not 9400. All 252 duties remain; support still
 stores 112 source snapshot occurrences, not 112 independent propagations.
 
-The next mechanism is one request-owned checked source/block store with complete
-row/endpoint tiling, changing source and support consumers together. Do not
+The mechanism is one request-owned checked source/block store with complete
+row/endpoint tiling, changing source and support consumers together. Its given-HZ
+store/direct-consumption component is completed above; source and endpoint
+consumers remain next. Do not
 expand references into the same four copies for every pair. Freeze finite
 capacity objects and resource/attempt limits before controls; this decision is
 not real or GPU execution admission. Conv operators, portable/hard-budget
