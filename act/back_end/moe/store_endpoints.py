@@ -1,4 +1,4 @@
-"""CPU tiled support on the original request-owned HybridZ row store.
+"""Device-selectable tiled support on the original request-owned HybridZ rows.
 
 Common/private sparse matrices persist once per request. Pair guards are local;
 only objective columns and dual iterates are tiled. No joint HZ or LP export.
@@ -13,6 +13,7 @@ import torch
 from scoped_source.hz_request_store import compact, digest, require
 from scoped_source.check_store_endpoints import PROOF, ALGORITHM, objectives, evaluate_tile
 from scoped_proof.io import save
+from act.back_end.moe.store_device import Runtime
 
 
 def write(path, value):
@@ -20,9 +21,13 @@ def write(path, value):
 
 
 class Native:
-    def __init__(self, store, work):
+    def __init__(self, store, work, *, device='cpu', cuda_context=None,
+                 expected_context_sha256=None, contract=None):
         require(torch.get_num_threads()==1, 'one CPU thread required')
         self.store,self.work=store,work; self.width=len(store.factors)
+        self.runtime=Runtime(device,cuda_context,expected_context_sha256,store=store.identity,
+                             request=store.request,contract=contract,work=work)
+        self.device=device
         self.stats=dict(matrix_constructions=0,coefficient_conversions=0,
                         proposal_tiles=0,proposal_columns=0,iterations_per_tile=128,
                         native_preparation_seconds=0.,proposal_seconds=0.,exact_selection_seconds=0.)
@@ -51,6 +56,7 @@ class Native:
 
     def block(self, eq, ine):
         a,at,b=self.matrix(ine); e,et,h=self.matrix(eq)
+        a,at,b,e,et,h=self.runtime.move((a,at,b,e,et,h))
         return dict(a=a,at=at,b=b,e=e,et=et,h=h)
 
     def blocks(self, pair):
@@ -66,12 +72,14 @@ class Native:
             for j,v in coeff.items(): c[j,i]=float(v)
         d=self.tensor([float(value) for value,_ in targets])
         require(bool(torch.isfinite(c).all()), 'finite objective conversion')
+        c,d=self.runtime.move((c,d))
         states=[]
         for p in blocks:
-            y=torch.zeros((len(p['b']),k),dtype=torch.float64,device='cpu')
-            z=torch.zeros((len(p['h']),k),dtype=torch.float64,device='cpu')
+            y=torch.zeros((len(p['b']),k),dtype=torch.float64,device=self.device)
+            z=torch.zeros((len(p['h']),k),dtype=torch.float64,device=self.device)
             states.append(dict(p,y=y,z=z,by=y.clone(),bz=z.clone()))
-        best=torch.full((k,),-math.inf,dtype=torch.float64,device='cpu')
+        best=torch.full((k,),-math.inf,dtype=torch.float64,device=self.device)
+        self.runtime.sync(); optimization=time.monotonic()
         with torch.no_grad():
             for step in range(129):
                 self.work.tick(); r=c.clone(); value=d.clone()
@@ -87,14 +95,18 @@ class Native:
                 if step==128: break
                 x=-torch.sign(r); rate=.125/math.sqrt(step+1)
                 for p in states:
-                    p['y']=torch.minimum(p['y']+rate*(p['b']-torch.sparse.mm(p['a'],x)),torch.zeros_like(p['y']))
+                    p['y']=torch.minimum(p['y']+rate*(p['b']-torch.sparse.mm(p['a'],x)),
+                                         torch.zeros_like(p['y'],device=self.device))
                     p['z']=p['z']+rate*(p['h']-torch.sparse.mm(p['e'],x))
+        self.runtime.sync()
+        self.runtime.costs['optimization_sync_seconds']+=time.monotonic()-optimization
+        readbacks=[self.runtime.read(p['by'],p['bz']) for p in states]
         proposed=[]; zeros=[]
         for i,task in enumerate(tasks):
             candidate=dict(query=task.query_id,equality=[],inequality=[],lower='0')
-            for p in states:
-                candidate['equality'].extend(str(F(v)) for v in p['bz'][:,i].tolist())
-                candidate['inequality'].extend(str(F(v)) for v in p['by'][:,i].tolist())
+            for ys,zs in readbacks:
+                candidate['equality'].extend(str(F(v)) for v in zs[i])
+                candidate['inequality'].extend(str(F(v)) for v in ys[i])
             proposed.append(candidate)
             zeros.append(dict(query=task.query_id,equality=['0']*len(candidate['equality']),
                               inequality=['0']*len(candidate['inequality']),lower='0'))
@@ -111,10 +123,14 @@ class Native:
         self.work.tick(); return result
 
 
-def produce(root, store, plan, *, tile_width, work, missing_slots=(), event=None):
+def produce(root, store, plan, *, tile_width, work, missing_slots=(), event=None,
+            device='cpu',cuda_context=None,expected_context_sha256=None):
+    api_start=time.monotonic()
     missing_slots=frozenset(missing_slots)
     require(missing_slots<={t.slot for t in plan.tasks}, 'partial endpoint identity')
-    root=Path(root); root.mkdir(exist_ok=False); native=Native(store,work)
+    root=Path(root); root.mkdir(exist_ok=False)
+    native=Native(store,work,device=device,cuda_context=cuda_context,
+                  expected_context_sha256=expected_context_sha256,contract=plan.contract)
     refs=[]; prior=None; blocks=None; serialization=0.; total=0
     for i,tasks in enumerate(plan.tiles(tile_width)):
         if tasks[0].pair!=prior:
@@ -128,7 +144,10 @@ def produce(root, store, plan, *, tile_width, work, missing_slots=(), event=None
         name=f'{i:05d}.json'; ref=write(root/name,records); refs.append(dict(file=name,**ref))
         if event is not None: event('tile',i,refs[-1])
         serialization+=time.monotonic()-start; work.tick()
+    device_report=native.runtime.report()
     ref=write(root/'manifest.json',dict(schema=PROOF,contract=plan.contract,tile_width=tile_width,tiles=refs))
     work.tick()
-    return ref['sha256'],dict(native.stats,algorithm=ALGORITHM,device='cpu',dtype='float64',
+    return ref['sha256'],dict(native.stats,algorithm=ALGORITHM if device=='cpu' else
+                             'CUDA_BLOCK_PROJECTED_SUBGRADIENT_128_V1',device=device,dtype='float64',
+                             device_report=device_report,api_seconds=time.monotonic()-api_start,
                              serialization_seconds=serialization,proof_bytes=total+ref['bytes'])
