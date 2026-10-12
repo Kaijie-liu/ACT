@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Coefficient-reference support component checked and archived: 2026-10-13.
 Bounded captured tensor-row intake checked and archived: 2026-10-13.
 Request-store physical admission refused and archived: 2026-10-13.
 Request-store device lifecycle CPU/stub controls completed: 2026-10-13.
@@ -31,7 +32,34 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: connect bounded tensor rows to source and store capacity
+## Current decision: source-check coefficient-reference construction
+
+The [new coefficient-reference component](hz_coefficient_dag_20261013.md),
+[frozen first](hz_coefficient_dag_design_20261013.md), passes 69 tests, final-code
+rechecking of unchanged R1 bytes and independent stdlib recipe/residual audit.
+Actual small SparseHZono rows enter an opt-in exact adjoint support interface.
+Repeated affine/ReLU coefficient vectors can reference earlier vectors; rhs and
+root obligations remain separate. Common residuals combine before box support.
+The native bridge checks the actual consumed-row identity, factor maps and all
+coefficients. Review repairs and original R1 code/receipts are preserved in R2.
+
+The fixed dense given-row duplication control stores 786432 local entries
+instead of 1572864 expanded occurrences. Its equalities are **infeasible**:
+rows 0 and 62 share coefficients but rhs differ by 93/16. This is disclosed,
+not repaired by changing the frozen fixture. Exact negative candidate bounds
+match; it is not a nonempty/source-complete large HZ or an output certificate.
+No native solver, trained model or CUDA ran; all G1–G6 remain OPEN.
+
+Stop these given-row size/timing controls. Next connect captured tensor rows to
+an explicit source-checked coefficient graph: small complete source plus bounded
+large affine/ReLU prefix. Preserve layer-wide error-before-lift factor ordering,
+scope/guard ancestry, independent rhs and exact compensation. Do not silently
+expand references into old eager Store/list paths. Byte-aware paging, old source
+nnz/work limits, later layers, convolution and all endpoint consumption remain
+separate admission questions. This new support API alone does not connect the
+captured model to a complete proof; no real solve or GPU retry is admitted.
+
+## Completed prerequisite: bounded captured tensor rows
 
 The [frozen tensor-row intake component](hz_tensor_rows_design_20261013.md) is now
 [implemented and reviewed](hz_tensor_rows_20261013.md). It validates a captured H2
@@ -44,7 +72,7 @@ archive-terminal boundary controls. R1's ~6.6-MB archive is preserved; no large
 control was rerun for that wrapper-only repair.
 
 Stop this intake timing/width study. It is a two-expert synthetic captured source,
-not a trained model, HZ lowering or output certificate. Next freeze the explicit
+not a trained model, HZ lowering or output certificate. Integration must freeze the explicit
 captured-source-to-store mapping and bounded affine producer/checker consumption:
 old whole-layer construction, 262144 layer nnz, 1048576 Store nnz/eager rows and
 live base64 capture are still separate obstacles. Do not merely raise caps or
