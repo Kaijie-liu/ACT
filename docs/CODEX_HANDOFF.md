@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Model-scaled resource policy statically assessed: 2026-10-13 (design only).
 Six-work object/quantifier admission contracts checked: 2026-10-13 (no execution).
 Joint residual-template capacity proposal stopped: 2026-10-13 (static analysis).
 First-affine tensor alias standalone refusal checked: 2026-10-13 (no execution).
@@ -41,7 +42,36 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: comparison contracts clarified; algorithm capacity still closed
+## Current decision: resource policy design approved, execution still closed
+
+The user approved drafting and statically assessing a model-scaled resource
+policy, not changing runtime limits or starting real requests. The
+[new proposal and resource-vector assessment](hz_model_scaled_resources_20261013.md)
+bind 20 existing code/metadata files; nine new arithmetic/identity tests and
+18 parent/manuscript regressions pass. No model, source, solver or GPU ran.
+
+Work-only adjustment cannot admit the registered eight-expert topology. The
+current view layout requires at least 126,632 root entries (pair aliases alone
+86,016), above the independent 65,536 limit. Conservative local/reference/active
+factor bounds also exceed their current caps; actual sparsity is unobserved.
+The complete roster stays 252 duties, up to 504 endpoints and 1,008 candidates.
+Shape-derived structural ceilings are proposals, not runtime changes. Complete
+Work, encoded-byte and live-memory bounds remain missing; the new Work quota
+and wall-time forecast are explicitly null. Do not adopt 96M or extrapolate the
+24.989-second synthetic timing.
+
+Next complete the per-phase Work and storage/lifetime ledger for the full
+registered topology and an explicitly selected comparable internal reference.
+Keep current representation for the resource-only proposal; deduplicating roots
+or changing enclosure is a separate algorithm factor. Both internal algorithms
+must receive the same new policy; external tools are compared on actual resource
+budgets, not ACT's custom Work units. Old 8M, all 300s deadlines, acceptance and
+bit limits remain. No monkeypatch, new small-source run, source-only prefix,
+physical GPU retry, sealed input or real execution is admitted. If an essential
+bound remains missing or exceeds a retained memory/storage envelope, report that
+specific limit before any implementation freeze. All G1–G6 remain OPEN.
+
+## Prior decision: comparison contracts clarified
 
 The [six-work semantic contract](baseline_semantic_admission_20261013.md) now
 defines the actual functions, domains, quantifiers, guarantee grades and missing
@@ -63,8 +93,8 @@ cannot be equated to unsmoothed ACT by norm conversion. RoME uses continuous
 all-expert token mixtures, not discrete top-k histories. J-TLAT/Feature Noise
 artifact limitations are dated observations, not fresh online absence claims.
 Existing numerical/empirical results are unchanged; no new real execution is
-admitted. All G1–G6 remain OPEN. The source-scaled resource-protocol proposal
-below still awaits user direction; no cap change or physical GPU retry.
+admitted. All G1–G6 remain OPEN. The source-scaled protocol proposal has since
+received design-only approval above; no cap change or physical GPU retry.
 
 ## Prior capacity decision: residual templates do not supply a complete contract
 
@@ -78,10 +108,11 @@ not all algorithms or actual candidate sparsity. No new source/query/GPU ran.
 
 Stop the alias-plus-template capacity plan. Symbolic centers/coarse ranges or
 frontier cuts would change precision; none has an admitted full cost/accuracy
-contract. Do not start more small controls. User approval has been requested
+contract. Do not start more small controls. User approval was requested
 only to draft/evaluate a separately source-scaled resource protocol, retaining
-300s and all acceptance checks; no cap change or execution is authorized while
-pending. Merely raising Work cannot establish wall-time feasibility or safety.
+300s and all acceptance checks. That limited approval and assessment are now
+above; actual cap changes and execution are not authorized. Merely raising Work
+cannot establish wall-time feasibility or safety.
 Independently continue G6 semantic/evidence work from existing artifacts: make
 the function/domain/property/probability-quantifier and missing-premise admission
 decisions explicit for the six works; do not rebuild the already checked table
