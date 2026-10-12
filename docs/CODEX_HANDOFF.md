@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-Checked sparse row primitive completed: 2026-10-12.
+Checked sparse row source integration completed: 2026-10-12.
 Goal acceptance criteria refined: 2026-10-08; documentation only.
 Real-model scientific status remains
 the audited 2026-09-25 decision. No new real experiment has been launched.
@@ -22,7 +22,7 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: integrate checked sparse rows before real admission
+## Current decision: assess combined source/block capacity before real admission
 
 The [refined goal contract](ALGORITHM_RESEARCH_GOAL.md) now explicitly requires
 one compatible algorithm/source/device/evidence chain, GPU coverage preservation
@@ -61,14 +61,21 @@ objects are identical across R1/R2/R3. No native solve, network or CUDA ran.
 
 This is a given-HZ inclusion primitive, not new tightening or measured speedup.
 Stop its width/timing study. The [separate source integration freeze](hz_sparse_source_design_20261012.md)
-now keeps once-per-expert templates and direct block support, replacing only the
-enclosure step. It requires exact affine/ReLU/guard checks and fresh evidence,
-eight complete old/new calls on the original four declarations, operator bridges
-and the intersection of old/new admission limits. Source integration and
-full-request benefit are not done. All old source, block, query, production and
-portable limits stay unchanged; complete properties, source dimensions,
-operators and package capacity remain open. No extra supervisor, physical GPU
-retry or sealed-input rerun is next. All six goal gates remain OPEN.
+is now [implemented and independently audited](hz_sparse_source_20261012.md).
+Twelve groups and 109 regressions pass. Eight complete old/new calls preserve
+all 42 endpoint bounds per arm and 3/3, 18/18, 0/6, 6/6 positive duties; six
+operator bridges cover nonzero affine/ReLU/guard rounding. Exact source checks,
+once-per-expert templates and direct block support remain. All 21 bound mutations,
+three capacity refusals and five fault receipts recheck; partial evidence is UNKNOWN.
+R1 remains before import/auxiliary cost repairs; R2 retains identical normal math.
+
+Stop this integration control study. The next task is a bounded end-to-end
+capacity/compatibility decision for the combined sparse source/block schema,
+not another wrapper or automatic cap raise. The old global 128/256 limits
+intersect the new sixteen-row limits; complete properties, source dimensions,
+operators and package capacity remain open. Full-request benefit, physical GPU
+and real-model certificates are not established. No extra supervisor, physical
+GPU retry or sealed-input rerun is next. All six goal gates remain OPEN.
 
 ## Block support checked but performance and capacity open
 
