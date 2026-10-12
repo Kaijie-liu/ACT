@@ -19,7 +19,7 @@
 | 看引用构造的来源检查 | [冻结合同](hz_source_dag_design_20261013.md)、[结果](hz_source_dag_20261013.md) | 小来源全转换与固定大 affine/ReLU 前缀通过；69 测试，22.616 秒大前缀；大后续层仍超剩余工作预算 |
 | 看引用表示如何完成全部输出支持 | [冻结合同](hz_forest_endpoints_design_20261013.md)、[结果与数学合同](hz_forest_endpoints_20261013.md) | V1 局部矩阵＋一层 scatter，82 测试／61 同候选精确端点差分；3 小源正、1 未决，无实模或 GPU 收益；不接受新 V2 |
 | 看后层仿射引用与完整容量门 | [V2 冻结](hz_affine_references_design_20261013.md)、[结果](hz_affine_references_20261013.md)、[尺度分离静态裁决](hz_factor_scale_capacity_20261013.md) | V2 已通过有限控制；尺度分离单独接三遍消费仍超 8M，不单独执行 |
-| 看尺度分离与精确多目标消费 | [V3 冻结](hz_scaled_batch_design_20261013.md)、[实现与控制](hz_scaled_batch_20261013.md) | V3 表示及 check-once/batched support 已实现；完整静态账 <8M。先归档六个固定有限控制；没有大源、实模或 GPU 准入 |
+| 看尺度分离与精确多目标消费 | [V3 冻结](hz_scaled_batch_design_20261013.md)、[实现与控制](hz_scaled_batch_20261013.md)、[独立审计](hz_scaled_batch_20261013.json) | 84 测试、六固定源、106 精确候选差分及搬迁通过；deep 保留 UNKNOWN。下一步单独冻结大完整查询容量；没有实模或 GPU 准入 |
 | 看 H2 与实际 HybridZ 接入 | [端点接入结果](hz_endpoint_controls_20261001.md)、[CPU 完整监督](hz_endpoint_supervision_20261001.md)、[映射合同](../act/back_end/moe/proofs/hz_endpoint_mapping.md)、[先行设计](hz_endpoint_design_20261001.md) | 18 项数学控制、12 项监督控制通过；给定 HZ/gate，不是来源完整或生产性能结果 |
 | 看声明来源怎样接入实际 HybridZ | [同源控制与边界](hz_source_connection_20261001.md)、[冻结合同](hz_source_connection_design_20261001.md)、[完整 CPU 监督](hz_source_supervision_20261001.md)、[隔离搬迁检查](hz_source_portable_20261001.md) | 来源、完整监督和八组搬迁控制通过；有限保存对象可重查，尚非真实模型或原生浮点证明 |
 | 看同源 HybridZ 表示是否真有差异 | [端点与 MC 对照](hz_source_representation_20261001.md)、[先行冻结](hz_source_representation_design_20261001.md) | 四源八臂和 13 项控制通过；同一新 HZ 的正端点界与精确负 MC 可行点形成有限分离，不是真实模型或外部收益 |

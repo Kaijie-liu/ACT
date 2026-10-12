@@ -1,6 +1,6 @@
 # MoE project handoff — current entry point
 
-Scaled source / batched exact consumer implemented: 2026-10-13; finite archive pending.
+Scaled source / batched exact consumer checked and archived: 2026-10-13.
 Factor-scale standalone capacity refusal analyzed: 2026-10-13 (no execution).
 Later-affine V2 source references and general CPU operator archived: 2026-10-13.
 Checked source-reference complete endpoint consumption archived: 2026-10-13.
@@ -37,7 +37,7 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: archive the frozen joint scaled/batched controls
+## Current decision: finite V3 controls closed; separately freeze full-query capacity
 
 The [joint V3 implementation](hz_scaled_batch_20261013.md),
 [frozen first](hz_scaled_batch_design_20261013.md), now retains input D separately,
@@ -46,16 +46,22 @@ bounded dual columns with exact factor-wise residual merging. Both proposed and
 zero candidates remain mandatory; immutable raw bytes precede exact acceptance.
 Private receipts close only the complete request in the same Work session;
 portable checking recomputes from raw source and all candidates. V1/V2 defaults
-are unchanged. 84 pre-archive tests pass, including raw publication before
-exact failure and complete code/phase inventories.
+are unchanged. 84 archived tests pass, including raw publication before exact
+failure and complete code/phase inventories. Six finite sources, all 106 exact
+proposed/zero candidate differentials, relocated `-I -S` checking and independent
+stdlib audit pass. Five control sources close their duties; deep remains
+UNKNOWN_NONPOSITIVE. Zero-radius/empty-guard controls are not new route-changing
+model evidence. The archive is 1,240,059 logical bytes and took 15.948s before
+terminal publication; audit separately 0.100s. This is not a speedup study.
 
 Complete static review fits the unchanged 8M count for the fixed dense recipe:
 4,072,655 source + 3,890,637 consumer = 7,963,292, under the frozen conservative
-7,963,310. This is not measured cost or a dense execution admission. First
-complete the six fixed finite calls and their relocated independent audit in
-`runs/hz_scaled_batch_20261013_r1`; only afterward consider a separate dense
-execution freeze. No real model, source-only large rerun, CUDA poll/retry or
-external experiment is admitted. All G1–G6 remain OPEN.
+7,963,310. This is not measured cost or a dense execution admission. The six
+fixed finite calls in `runs/hz_scaled_batch_20261013_r1` are closed. Next prepare
+a separate once-only complete dense-query capacity freeze, with the same
+source, all duties, 300s/8M, peak-memory and partial-evidence accounting. Do not
+repeat small controls or a large source-only prefix. No real model, CUDA
+poll/retry or external experiment is admitted. All G1–G6 remain OPEN.
 
 ## Prior decision: factor scales alone still exceed full-query capacity
 

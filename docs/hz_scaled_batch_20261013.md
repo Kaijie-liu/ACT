@@ -62,7 +62,7 @@ cap or permission to skip checks. JSON/hash/I/O/native work remains fully timed
 even where the existing Work policy only ticks the deadline. Capacity is still
 conditional on the fixed inventory, not arbitrary clipped inputs or runtime.
 
-## Control status
+## Archived controls
 
 Pre-archive tests: 84 tests passed across V3, parent/audit controls and V1/V2
 regressions. This includes complete archived-code inventory, all eight worker
@@ -70,13 +70,49 @@ and seven nested native phase fields, and raw publication before exact failure.
 The initial test-import syntax error is recorded; no source,
 threshold or numerical recipe was changed to obtain these results.
 
-The six-call archive and relocated `-I -S` independent audit are pending this
-implementation commit. Their fixed order is mixed, deep, clipped, zero, half,
-guarded, width 8, each with a 300s parent deadline and cumulative 8M limit. Test
-oracle work is charged separately within those same calls. Half contains an
-empty guard; it is not evidence of a nonempty route-changing domain.
+Execution used clean committed code
+`a5fb2cfb434f50bfdd2a0cf349695a26292f4a2d`. The
+[independent audit / compact results](hz_scaled_batch_20261013.json) bind the
+unchanged archive `/data1/Kane/MOE/runs/hz_scaled_batch_20261013_r1`, protocol,
+source and evidence hashes. All six source-worker calls completed in the fixed order and
+width 8. The 84 tests also passed inside the supervised archive.
+
+| Fixed captured source | Checked property duties | Endpoint candidates checked | Production Work | Parent seconds |
+|---|---:|---:|---:|---:|
+| mixed | 3/3 positive | 12 | 6,119 | 1.840 |
+| deep | 0/3 positive; UNKNOWN_NONPOSITIVE | 12 | 9,587 | 1.902 |
+| clipped | 3/3 positive | 12 | 7,153 | 1.864 |
+| zero | 3/3 positive | 12 | 7,075 | 1.885 |
+| half | 3/3 positive | 10 | 3,074 | 1.925 |
+| guarded | 12/12 positive | 48 | 4,835 | 1.841 |
+
+All **106** proposed/zero candidate bounds match independently expanded exact
+V3 matrices; all 53 required endpoints are checked. The six relocated bundles
+recompute source and endpoint evidence with `python -I -S`, without torch,
+NumPy, SciPy, a checkpoint, solver or historical run access. The separate
+stdlib archive audit passes. It checks sources and exact bounds as well as
+the full execution-code inventory and terminal accounting.
+
+Each of the six source-worker calls retains one 300s parent deadline and
+cumulative 8M Work. The unit-suite and six-source relocation subprocesses each
+also have a 300s parent deadline, but do not share one Work across their
+separate requests; there are eight outer calls in total. Production
+Work is recorded before the test-only expanded oracle; parent time above
+includes that oracle, startup, capture, checking, serialization and reception.
+Thus these times are not production speedup estimates. The entire control
+archive took 15.948s before terminal publication (including unit and relocation
+calls), occupies 1,240,059 logical bytes, and independent audit took 0.100s.
+All eight worker phases and seven nested native phases are retained.
+
+Half contains an empty guard, zero has radius zero, and clipped is a distinct
+pre-frozen input domain: none upgrades deep's UNKNOWN or establishes a new
+nonempty route-changing model result. No recipe, threshold, denominator, time
+cap or failed result was changed after observing these outcomes.
 
 All G1–G6 remain OPEN. These controls can validate the representation and exact
 support path, not trained-checkpoint correspondence, physical GPU speedup,
-external competitiveness or admission to a dense query. A separate execution
-freeze is required after the complete archive and capacity review.
+external competitiveness or admission to a dense query. Small-source controls
+are now closed. The next bounded stage is a separate full-query capacity freeze
+for the unchanged fixed dense source, retaining 300s/8M and peak-memory/partial
+evidence accounting. Do not repeat or enlarge these small controls, run only a
+large source prefix, or infer GPU/real-model admission from the static ledger.
