@@ -15,6 +15,8 @@ SCHEMA = 'SOURCE_COEFFICIENT_FOREST_V1'
 
 
 class Builder:
+    schema = SCHEMA
+
     def __init__(self, reader, work):
         self.reader, self.work = reader, work
         self.factors, self.nodes, self.views = [], [], []
@@ -36,7 +38,7 @@ class Builder:
         require(self.local_nnz<=POLICY['nnz'] and self.reference_count<=65536,'forest local/reference capacity')
         n = F(0)
         for _, q in local: n = self.work.exact(n+abs(q))
-        # Only used for local nodes or disjoint fresh terms and one parent.
+        # A sound triangle bound; equals L1 only for nonoverlapping terms.
         for p, s in refs: n = self.work.exact(n+abs(s)*self.norms[p])
         j = len(self.nodes); self.nodes.append([owner, local, tuple(refs)])
         self.norms.append(n); return j
@@ -177,6 +179,13 @@ class Builder:
         out=enclose('output',outputs); eq=enclose('eq',eqs); ine=enclose('ine',neg+pos)
         return self.view(name,scope,parent,'ReLU',first,out,eq,ine)
 
+    def guard(self, owner, other, selected):
+        rc,rn=other; sc,sn=selected; d=self.expand(rn)
+        for k,q in self.expand(sn).items(): d[k]=self.work.exact(d.get(k,F(0))-q)
+        nd={k:nearest(q) for k,q in d.items()}; delta=sum(abs(q-nd[k]) for k,q in d.items())
+        rhs=upward(self.work.exact(sc-rc+delta))
+        return rhs,self.node(owner,nd)
+
     def finish(self, cut):
         initial=self.input(); stream=iter(self.reader.rows()); common=None; router=None
         ends={}; parent=None; previous=None; stopped=False
@@ -204,19 +213,15 @@ class Builder:
                 for selected in (a,b):
                     for j in range(self.reader.request['experts']):
                         if j in (a,b): continue
-                        rc,rn=self.views[router]['output'][j]; sc,sn=self.views[router]['output'][selected]
-                        d=self.expand(rn)
-                        for k,q in self.expand(sn).items(): d[k]=self.work.exact(d.get(k,F(0))-q)
-                        nd={k:nearest(q) for k,q in d.items()}; delta=sum(abs(q-nd[k]) for k,q in d.items())
-                        rhs=upward(self.work.exact(sc-rc+delta))
-                        inequalities.append((rhs,self.node(owner,nd)))
+                        inequalities.append(self.guard(owner,self.views[router]['output'][j],
+                                                       self.views[router]['output'][selected]))
                 v=self.view(f'pair/{a}-{b}',-1,common,'guard',len(self.factors),
                             self.views[common]['output'],ine=inequalities)
                 entries.append([a,b,v])
         roles=dict(input=initial,router=router,common=common,
                    experts=[ends.get(f'expert{i}') if cut is None else None for i in range(self.reader.request['experts'])],
                    pairs=entries,prefix=parent if cut is not None else None)
-        doc=dict(schema=SCHEMA,source=self.reader.receipt()['source_sha256'],request=identity(self.reader.request),
+        doc=dict(schema=self.schema,source=self.reader.receipt()['source_sha256'],request=identity(self.reader.request),
                  frame=1,cut=cut,policy=dict(POLICY),factors=self.factors,
                  nodes=[[o,[[j,str(q)] for j,q in local],[[j,str(q)] for j,q in refs]] for o,local,refs in self.nodes],
                  views=[{**v,**{k:[[str(c),n] for c,n in v[k]] for k in ('output','eq','ine')}} for v in self.views],

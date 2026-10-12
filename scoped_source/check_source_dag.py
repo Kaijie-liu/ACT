@@ -27,13 +27,15 @@ def upper(q):
 
 
 class Checker:
+    schema = 'SOURCE_COEFFICIENT_FOREST_V1'
+
     def __init__(self, raw, root, source, expected, work, cut):
         self.work=work; work.tick()
         require(type(raw) is bytes and len(raw)<=POLICY['total_bytes'] and digest(raw)==sha(expected),'forest identity/bytes')
         d=decode(raw)
         require(compact(d)==raw and type(d) is dict and set(d)=={
             'schema','source','request','frame','cut','policy','factors','nodes','views','roles','source_receipt'},'forest canonical schema')
-        require(d['schema']=='SOURCE_COEFFICIENT_FOREST_V1' and d['source']==sha(source)
+        require(d['schema']==self.schema and d['source']==sha(source)
             and d['frame']==1 and type(d['frame']) is int and d['cut']==cut and d['policy']==dict(POLICY),'source/frame/mode/policy')
         require(cut is None or type(cut) is list and len(cut)==2 and type(cut[0]) is str and type(cut[1]) is int,'explicit prefix')
         self.reader=TensorRows(root,source,deadline=work.deadline)
@@ -209,6 +211,13 @@ class Checker:
                 require(all(j>=v['factors'][0] for j in d),'ReLU local parent overlap')
         self.done(i); return i
 
+    def guard(self,i,actual,other,selected):
+        c,n=other; sc,sn=selected; d=self.expand(n)
+        for k,q in self.expand(sn).items(): d[k]=self.work.exact(d.get(k,F(0))-q)
+        nd={k:nearest(q) for k,q in d.items()}; err=sum(abs(q-nd[k]) for k,q in d.items())
+        rc=upper(self.work.exact(sc-c+err)); ac,an=actual
+        require(ac==rc and self.node(i,an)=={k:q for k,q in nd.items() if q},'guard construction/sign')
+
     def run(self):
         initial=self.initial(); stream=iter(self.reader.rows()); parent=None; previous=None
         common=router=None; ends={}; stopped=False
@@ -232,16 +241,14 @@ class Checker:
         pairs=[]
         if self.cut is None:
             for a,b in combinations(range(self.reader.request['experts']),2):
-                i,v=self.view(f'pair/{a}-{b}',-1,common,'guard'); expected=[]
+                i,v=self.view(f'pair/{a}-{b}',-1,common,'guard')
+                require(v['output']==self.views[common]['output'] and not v['eq']
+                    and len(v['ine'])==2*(self.reader.request['experts']-2),'guard roster')
+                row=0
                 for selected in (a,b):
                     for j in range(self.reader.request['experts']):
                         if j in (a,b): continue
-                        c,n=self.views[router]['output'][j]; sc,sn=self.views[router]['output'][selected]; d=self.expand(n)
-                        for k,q in self.expand(sn).items(): d[k]=self.work.exact(d.get(k,F(0))-q)
-                        nd={k:nearest(q) for k,q in d.items()}; err=sum(abs(q-nd[k]) for k,q in d.items())
-                        expected.append((upper(self.work.exact(sc-c+err)),{k:q for k,q in nd.items() if q}))
-                require(v['output']==self.views[common]['output'] and not v['eq'] and len(v['ine'])==len(expected),'guard roster')
-                for (c,n),(rc,rd) in zip(v['ine'],expected): require(c==rc and self.node(i,n)==rd,'guard construction/sign')
+                        self.guard(i,v['ine'][row],self.views[router]['output'][j],self.views[router]['output'][selected]); row+=1
                 self.done(i); pairs.append([a,b,i])
         roles=dict(input=initial,router=router,common=common,experts=[ends.get(f'expert{i}') if self.cut is None else None
             for i in range(self.reader.request['experts'])],pairs=pairs,prefix=parent if self.cut is not None else None)
