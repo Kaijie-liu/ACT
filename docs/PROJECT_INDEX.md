@@ -14,6 +14,7 @@
 | 看 HybridZ GPU 候选路线 | [设备候选合同](hz_device_candidates_design_20261001.md)、[实现与 CPU 控制](hz_device_candidates_20261001.md)、[设备监督](hz_device_supervision_20261001.md)、[有界生命周期](hz_device_lifecycle_20261001.md) | 新有界清理与归还模拟控制通过；实际 CUDA 清理、实机及端到端收益尚未验证 |
 | 看小型实机执行冻结 | [接线控制与准入](hz_physical_device_20261001.md)、[执行配置](../configs/hz_physical_execution_20261001.json) | 八项控制及六次 CPU/模拟调用通过；实机准入拒绝，八个位置未启动，无 CUDA 或加速结果 |
 | 看当前块算法的设备执行状态 | [CPU 等价控制](hz_store_device_20261013.md)、[设备生命周期](hz_store_device_supervision_20261013.md)、[六槽物理准入与归档](hz_store_physical_20261013.md) | 新块路径六槽全部 NOT_RUN：一次准入因其他计算 PID 拒绝，终态审计通过；无实机加速，停止重试并转向训练来源容量 |
+| 看训练来源张量读取与下一容量门 | [冻结合同](hz_tensor_rows_design_20261013.md)、[结果与边界](hz_tensor_rows_20261013.md) | 已捕获合成源的 799494 参数逐项读取、字节身份与搬迁通过；42 回归。不是实模、HZ 转换或 GPU；下一项为受限仿射构造／检查消费 |
 | 看 H2 与实际 HybridZ 接入 | [端点接入结果](hz_endpoint_controls_20261001.md)、[CPU 完整监督](hz_endpoint_supervision_20261001.md)、[映射合同](../act/back_end/moe/proofs/hz_endpoint_mapping.md)、[先行设计](hz_endpoint_design_20261001.md) | 18 项数学控制、12 项监督控制通过；给定 HZ/gate，不是来源完整或生产性能结果 |
 | 看声明来源怎样接入实际 HybridZ | [同源控制与边界](hz_source_connection_20261001.md)、[冻结合同](hz_source_connection_design_20261001.md)、[完整 CPU 监督](hz_source_supervision_20261001.md)、[隔离搬迁检查](hz_source_portable_20261001.md) | 来源、完整监督和八组搬迁控制通过；有限保存对象可重查，尚非真实模型或原生浮点证明 |
 | 看同源 HybridZ 表示是否真有差异 | [端点与 MC 对照](hz_source_representation_20261001.md)、[先行冻结](hz_source_representation_design_20261001.md) | 四源八臂和 13 项控制通过；同一新 HZ 的正端点界与精确负 MC 可行点形成有限分离，不是真实模型或外部收益 |

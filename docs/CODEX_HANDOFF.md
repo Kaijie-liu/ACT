@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Bounded captured tensor-row intake checked and archived: 2026-10-13.
 Request-store physical admission refused and archived: 2026-10-13.
 Request-store device lifecycle CPU/stub controls completed: 2026-10-13.
 Request-store device interface CPU/stub controls completed: 2026-10-13.
@@ -30,7 +31,29 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: physical attempt closed and trained-source capacity remains
+## Current decision: connect bounded tensor rows to source and store capacity
+
+The [frozen tensor-row intake component](hz_tensor_rows_design_20261013.md) is now
+[implemented and reviewed](hz_tensor_rows_20261013.md). It validates a captured H2
+graph and consumes weight/bias raw chunks one exact affine row at a time, with
+complete tensor hashes and final exhaustion required. Twenty archived controls,
+the fixed dense 256×3072 layer source, and relocated `-I -S` checking pass. A separate
+stdlib traversal verifies all 799494 parameters plus 3072 input coordinates and
+their original bytes. Forty-two final regressions pass, including two supplemental
+archive-terminal boundary controls. R1's ~6.6-MB archive is preserved; no large
+control was rerun for that wrapper-only repair.
+
+Stop this intake timing/width study. It is a two-expert synthetic captured source,
+not a trained model, HZ lowering or output certificate. Next freeze the explicit
+captured-source-to-store mapping and bounded affine producer/checker consumption:
+old whole-layer construction, 262144 layer nnz, 1048576 Store nnz/eager rows and
+live base64 capture are still separate obstacles. Do not merely raise caps or
+call the old list checker on an unchecked lazy representation. Preserve factor
+allocation, shared/private ownership, exact compensation, inherited constraints
+and every output obligation. Convolution/pooling remains an independent operator
+contract. All G1–G6 remain OPEN; no real solve or GPU retry is admitted.
+
+## Physical attempt closed and preserved
 
 The [separate physical store/block protocol](hz_store_physical_design_20261013.md)
 is now [executed through its resource gate and archived](hz_store_physical_20261013.md).
@@ -42,8 +65,8 @@ audit passes; zero CUDA intents, numerical requests or trained models ran.
 This is neither device compatibility nor acceleration evidence. All G1–G6 OPEN.
 
 Stop this physical attempt and further small device/lifecycle controls. Do not
-poll or rename a retry. The next separate task is captured trained-source/tensor
-streaming capacity, followed by required convolution operators: connect one
+poll or rename a retry. Captured trained-source/tensor streaming capacity is the
+separate task above, followed by required convolution operators: connect one
 compatible model/input/eval declaration to the same checked source store and
 all route/property/endpoint obligations. Start with existing source metadata and
 intake code to identify a finite, bounded control contract, not a new real solve.
