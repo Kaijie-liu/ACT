@@ -1,0 +1,124 @@
+{
+  "archive": "/data1/Kane/MOE/runs/hz_scaled_dense_20261013_r1",
+  "archive_bytes": 37856616,
+  "audit": {
+    "code_sha256": "7ff24c624b580ad18e8f2f8be9f5ac3e5b43cb85e6436af5ab1a2e22702c0388",
+    "command": "python -B -I -S; scripts.audit_scaled_dense_capacity.audit",
+    "seconds": 11.307790631428361,
+    "status": "PASS_COMPLETE_DENSE_CAPACITY_AUDIT"
+  },
+  "checker_work": 4915948,
+  "execution_head": "f6c6d4d4311b37a4921e0b57b7b9abadaaa5e3f3",
+  "execution_sha256": "aa6815d8cdabdd117771f19ad1444656c4aa39e831909adee6471aacd16d1473",
+  "gpu_calls": 0,
+  "outer_before_terminal_seconds": 37.178470665588975,
+  "production_work": 7351435,
+  "protocol": "00210f1470fd187c777ea0d1fffd7813d425cc1bfbad346a09be929d86773785",
+  "query_parent_seconds": 24.988800397142768,
+  "query_sampled_rss_bytes": 899596288,
+  "real_models": 0,
+  "receipt": {
+    "binding": "89c41116c7b25f7328ce4aecac9c6aada1aee47a59f3108df327c38cd5cb5e5f",
+    "environment": {
+      "address_space_cap_bytes": 17179869184,
+      "python": "3.12.12 | packaged by conda-forge | (main, Oct 22 2025, 23:25:55) [GCC 14.3.0]",
+      "threads": 1,
+      "torch": "2.9.1+cu128"
+    },
+    "forest": "01606b50ad244bf41e3dbbfb9cfeeb6cd3dea3bc433b6fa60da7783024c8b40f",
+    "generation": {
+      "native_coordinates": 0,
+      "native_seconds": 0
+    },
+    "gpu_calls": 0,
+    "native": {
+      "algorithm": "CPU_SCALED_REFERENCE_PROJECTED_SUBGRADIENT_128_V3",
+      "candidates": 4,
+      "device": "cpu",
+      "dtype": "float64",
+      "endpoints": 2,
+      "exact_check_seconds": 1.0941556468605995,
+      "expanded_constraint_entries": 0,
+      "factors": 3569,
+      "levels": 1,
+      "local_nnz": 802784,
+      "nodes": 3730,
+      "objective_seconds": 1.4316194783896208,
+      "partial_publish_seconds": 0.0012221969664096832,
+      "planning_seconds": 0.027995295822620392,
+      "preparation_seconds": 0.6206109020859003,
+      "proposal_seconds": 6.567789198830724,
+      "references": 611,
+      "terminal_encode_seconds": 0.00023662112653255463,
+      "tiles": 1
+    },
+    "phases": {
+      "complete_candidate_and_check": 9.748905587941408,
+      "forest_publish": 0.006111647933721542,
+      "imports": 1.1414615493267775,
+      "proof_binding_publish": 0.006685994565486908,
+      "source_build_encode": 4.791875891387463,
+      "source_check": 8.89664446003735,
+      "source_copy": 0.0054499488323926926
+    },
+    "production_work": {
+      "arithmetic": 3258221,
+      "coefficient_visits": 4039088,
+      "row_visits": 54126
+    },
+    "real_models": 0,
+    "result": {
+      "checked_endpoints": 2,
+      "checkpoint_correspondence_checked": false,
+      "missing_endpoints": 0,
+      "native_float_proof": false,
+      "positive": 0,
+      "required": 1,
+      "required_endpoints": 2,
+      "results": [
+        {
+          "lower": "-1638016559839389544708037/1180591620717411303424",
+          "other": 1,
+          "pair": [
+            0,
+            1
+          ],
+          "positive": false
+        }
+      ],
+      "status": "UNKNOWN_NONPOSITIVE"
+    },
+    "source": "0745027b58f00c608a9db921204cb2feae58273600fee658d4c9ccc3d8c19dbc",
+    "source_work": {
+      "arithmetic": 1632836,
+      "coefficient_visits": 2405428,
+      "row_visits": 34379
+    },
+    "stats": {
+      "factors": 3569,
+      "forest_bytes": 12041896,
+      "local_nnz": 802784,
+      "nodes": 3730,
+      "references": 611,
+      "views": 11
+    },
+    "status": "COMPLETE_DENSE_QUERY",
+    "work": {
+      "arithmetic": 3258221,
+      "coefficient_visits": 4039088,
+      "row_visits": 54126
+    },
+    "worker_before_receipt_seconds": 24.603108095005155,
+    "worker_peak_rss_bytes": 914264064
+  },
+  "relocated_parent_seconds": 11.260440476238728,
+  "relocated_sampled_rss_bytes": 293228544,
+  "source": "0745027b58f00c608a9db921204cb2feae58273600fee658d4c9ccc3d8c19dbc",
+  "source_work": 4072643,
+  "status": "COMPLETE_QUERY_AND_PORTABLE_CHECK",
+  "supervisor_tests": 6,
+  "terminal_sha256": "bbcf43b54888f3dff2f81c23667cb746e30fb27a85e0867f3cdec80d3989a69c",
+  "trained_recipe_admitted": false,
+  "trained_recipe_first_weights": 6684672,
+  "trained_recipe_unconditional_source_visits_lower_bound": 13369344
+}

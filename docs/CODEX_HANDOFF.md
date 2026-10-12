@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Complete V3 dense source/query capacity checked and archived: 2026-10-13.
 Scaled source / batched exact consumer checked and archived: 2026-10-13.
 Factor-scale standalone capacity refusal analyzed: 2026-10-13 (no execution).
 Later-affine V2 source references and general CPU operator archived: 2026-10-13.
@@ -37,7 +38,28 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: finite V3 controls closed; separately freeze full-query capacity
+## Current decision: dense capacity closed; registered trained recipe still refused
+
+The once-only [complete V3 dense query](hz_scaled_dense_20261013.md),
+[separately frozen](hz_scaled_dense_design_20261013.md), finished source-to-all
+outputs in 24.989s and 7,351,435/8M Work. All two endpoints/four candidates
+were checked; the one property is UNKNOWN_NONPOSITIVE. The 871.91 MiB OS peak,
+11.260s relocated stdlib check and independent audit are archived with six
+supervisor controls. There was no numerical retry, expanded oracle or GPU.
+This closes fixed synthetic full-query capacity, not a trained model or new
+route-changing certificate. Do not chase a positive on this source.
+
+Read-only shape/code checking gives an unavoidable current V3 first-affine
+producer+checker cost of 2*3072*(128+8*256)=13,369,344 visits for the registered
+eight-expert MLP recipe, already above 8M before all other work. No trained run
+is admitted. Next investigate source-linked tensor/reference consumption with
+a **complete all-query static contract first**: nonzero centers, compensation,
+all 28 pairs/nine properties and independent checks. Source-only savings are
+insufficient. Stop if it cannot fit; do not redefine counts, raise caps, drop
+checks, choose easier models, or retry GPU. This is not a frozen new experiment.
+All G1–G6 remain OPEN; historical source limitations and sealed inputs unchanged.
+
+## Prior decision: finite V3 controls closed before full-query capacity
 
 The [joint V3 implementation](hz_scaled_batch_20261013.md),
 [frozen first](hz_scaled_batch_design_20261013.md), now retains input D separately,
