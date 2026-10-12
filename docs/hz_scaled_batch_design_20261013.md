@@ -102,6 +102,12 @@ Then group by exact D: sum_g D_g sum_{j:D_j=D_g}|residual_j|. This preserves the
 shared input relation and avoids repeated scale multiplication.
 
 Both proposed and explicit zero candidates are completely parsed and checked.
+The zero role requires every parsed equality/inequality multiplier to equal
+zero, not just a role label. For P=L^T(I-R)^(-T), each candidate is checked as
+d+b^T dual-sum_j D_j |P beta+P(-A^T dual)|_j; original RHS values are counted
+once, never propagated along references or scaled by D. Endpoints select max
+over the two checked candidates, then each property takes min over all of its
+required endpoints. Every pair/property must strictly pass for a positive result.
 The checker constructs the entire plan from the checked source and properties;
 caller plans are not accepted. All pair/property/endpoint slots and constraint
 rosters are mandatory. The deterministic selection is max(proposed, zero), with
@@ -137,6 +143,13 @@ depth. Add exactly two declared input variations of the deep graph: center
 They exercise distinct clipped scales, nonzero centers and zero D. Also retain
 the one-dimensional half/guarded controls for complete endpoint aggregation.
 Do not select a source based on its output bounds. No dense fixture is generated.
+The six normal calls run in order mixed, deep, clipped, zero, half, guarded,
+all with tile width 8. Clipped must reconstruct c=(13/16,-3/4), D=(3/16,1/4);
+zero must reconstruct c=(7/8,-3/4), D=(0,0), with distinct unit factors retained.
+Guarded supplies five classes. Half's empty (0,2) guard is only a coverage
+control, not nonempty-domain margin evidence. Prefix source checking must not
+authorize a full plan; explicit partial and nonpositive controls must remain
+UNKNOWN, and late positive receipts cannot authorize a positive terminal.
 
 Required controls:
 
