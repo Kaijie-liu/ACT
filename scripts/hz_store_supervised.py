@@ -109,9 +109,10 @@ def evidence_inventory(root):
     return out
 
 
-def payload(root,inv,digest):
+def source_payload(root,inv,digest,extra_fields=()):
+    """Common source/cost envelope; device policies must add their own checks."""
     p=load(root/'produce.json',base.required_hash(digest),LIMIT); s=inv['spec']
-    require(set(p)=={'invocation','spec_sha256','contract','proof','counts','costs','candidate'}
+    require(set(p)=={'invocation','spec_sha256','contract','proof','counts','costs','candidate'}|set(extra_fields)
             and p['invocation']==inv['invocation'] and p['spec_sha256']==identity(s), 'producer identity')
     stage=load(root/'produce_stage.json',limit=LIMIT)
     require(stage.get('output_sha256')==digest, 'parent producer receipt')
@@ -126,6 +127,11 @@ def payload(root,inv,digest):
     require(set(p['costs'])=={'imports','source','plan','candidates'}, 'producer cost inventory')
     for value in p['costs'].values(): base.finite(value)
     require(sum(p['costs'].values())<=stage['seconds'], 'producer cost envelope')
+    return p
+
+
+def payload(root,inv,digest):
+    p=source_payload(root,inv,digest); s=inv['spec']
     c=p['candidate']
     require(c['algorithm']==s['algorithm'] and c['device']=='cpu' and c['dtype']=='float64'
             and c['iterations_per_tile']==128 and c['proposal_tiles']==3
@@ -137,8 +143,12 @@ def produced(root,inv,stage): payload(root,inv,stage['output_sha256']); return T
 
 
 def check(root,inv,digest,deadline):
+    return check_payload(root,inv,digest,deadline,payload(root,inv,digest))
+
+
+def check_payload(root,inv,digest,deadline,p):
     from scoped_source.check_store_endpoints import check_directory
-    p=payload(root,inv,digest); w=resume_work(deadline,p['counts'])
+    w=resume_work(deadline,p['counts'])
     agg=check_directory(root/'evidence',expected_contract=p['contract'],expected_proof=p['proof'],work=w)
     w.tick()
     return dict(invocation=inv['invocation'],payload_sha256=digest,counts=w.counts,
@@ -163,7 +173,11 @@ def expected_rows(contract,anchor,s):
 
 
 def receive(root,inv,inputs):
-    p=payload(root,inv,inputs['produce'])
+    return receive_payload(root,inv,inputs,payload(root,inv,inputs['produce']))
+
+
+def receive_payload(root,inv,inputs,p):
+    """Aggregate only after the caller validates its complete producer envelope."""
     c=load(root/'check.json',base.required_hash(inputs['check']),LIMIT)
     require(set(c)=={'invocation','payload_sha256','counts','result'} and c['invocation']==inv['invocation']
             and c['payload_sha256']==inputs['produce'], 'independent checker receipt binding')
