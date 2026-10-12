@@ -28,13 +28,22 @@ def upper(q):
 
 class Checker:
     schema = 'SOURCE_COEFFICIENT_FOREST_V1'
+    extra_fields = frozenset()
+
+    def init_extra(self, doc): pass
+
+    def local_norm_start(self): return F(0)
+
+    def local_norm_add(self, state, j, q): return self.work.exact(state+abs(q))
+
+    def local_norm_finish(self, state): return state
 
     def __init__(self, raw, root, source, expected, work, cut):
         self.work=work; work.tick()
         require(type(raw) is bytes and len(raw)<=POLICY['total_bytes'] and digest(raw)==sha(expected),'forest identity/bytes')
         d=decode(raw)
         require(compact(d)==raw and type(d) is dict and set(d)=={
-            'schema','source','request','frame','cut','policy','factors','nodes','views','roles','source_receipt'},'forest canonical schema')
+            'schema','source','request','frame','cut','policy','factors','nodes','views','roles','source_receipt'}|self.extra_fields,'forest canonical schema')
         require(d['schema']==self.schema and d['source']==sha(source)
             and d['frame']==1 and type(d['frame']) is int and d['cut']==cut and d['policy']==dict(POLICY),'source/frame/mode/policy')
         require(cut is None or type(cut) is list and len(cut)==2 and type(cut[0]) is str and type(cut[1]) is int,'explicit prefix')
@@ -45,6 +54,7 @@ class Checker:
         require(all(len(f)==4 and type(f[0]) is str and len(f[0])<=200 and f[1] in ('continuous','binary')
             and type(f[2]) is int and -1<=f[2]<self.reader.request['experts'] and type(f[3]) is int for f in self.factors), 'factor fields')
         require(len({f[0] for f in self.factors})==len(self.factors),'factor unique names')
+        self.init_extra(d)
         require(type(d['views']) is list and 0<len(d['views'])<=POLICY['views'],'view inventory')
         self.views=[]
         for v in d['views']:
@@ -69,7 +79,7 @@ class Checker:
         for ni,n in enumerate(d['nodes']):
             work.visit('row_visits')
             require(type(n) is list and len(n)==3 and type(n[0]) is int and 0<=n[0]<len(self.views),'node fields')
-            parsed=[]; norm=F(0)
+            parsed=[]; norm=self.local_norm_start()
             for z,size in ((1,len(self.factors)),(2,ni)):
                 require(type(n[z]) is list,'node entries'); entries=[]; last=-1
                 for item in n[z]:
@@ -77,14 +87,14 @@ class Checker:
                     require(type(item) is list and len(item)==2 and type(item[0]) is int and last<item[0]<size,'entry order/range')
                     j,q=item[0],rational(item[1]); require(q!=0,'zero stored entry')
                     if z==1:
-                        binary(q); norm=work.exact(norm+abs(q)); active.add(j)
+                        binary(q); norm=self.local_norm_add(norm,j,q); active.add(j)
                     entries.append((j,q)); last=j
                 parsed.append(tuple(entries))
             nnz+=len(parsed[0]); refs+=len(parsed[1])
             require(nnz<=POLICY['nnz'] and refs<=65536 and len(active)<=POLICY['active'],'local/reference/active capacity')
             depth=1+max((depths[j] for j,_ in parsed[1]),default=0)
             require(depth<=POLICY['depth'],'node depth'); depths.append(depth)
-            self.nodes.append((n[0],parsed[0],parsed[1])); self.local_norms.append(norm); self.norms.append(None)
+            self.nodes.append((n[0],parsed[0],parsed[1])); self.local_norms.append(self.local_norm_finish(norm)); self.norms.append(None)
         self.fid=self.vid=self.nid=0; self.receipt=d['source_receipt']; self.roles=d['roles']; self.cut=d['cut']
         self.stats=dict(nodes=len(self.nodes),local_nnz=nnz,references=refs,factors=len(self.factors),
                         views=len(self.views),forest_bytes=len(raw))

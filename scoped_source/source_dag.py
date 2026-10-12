@@ -30,14 +30,20 @@ class Builder:
         require(len(self.factors) < POLICY['factors'], 'factor capacity')
         j = len(self.factors); self.factors.append([name, kind, scope, owner]); return j
 
+    def local_norm(self, local):
+        n = F(0)
+        for _, q in local: n = self.work.exact(n+abs(q))
+        return n
+
+    def document_extra(self): return {}
+
     def node(self, owner, local, refs=()):
         self.work.visit('row_visits')
         require(len(self.nodes) < POLICY['rows'], 'node capacity')
         local = tuple(sorted((j, q) for j, q in local.items() if q))
         self.local_nnz += len(local); self.reference_count += len(refs)
         require(self.local_nnz<=POLICY['nnz'] and self.reference_count<=65536,'forest local/reference capacity')
-        n = F(0)
-        for _, q in local: n = self.work.exact(n+abs(q))
+        n = self.local_norm(local)
         # A sound triangle bound; equals L1 only for nonoverlapping terms.
         for p, s in refs: n = self.work.exact(n+abs(s)*self.norms[p])
         j = len(self.nodes); self.nodes.append([owner, local, tuple(refs)])
@@ -226,6 +232,7 @@ class Builder:
                  nodes=[[o,[[j,str(q)] for j,q in local],[[j,str(q)] for j,q in refs]] for o,local,refs in self.nodes],
                  views=[{**v,**{k:[[str(c),n] for c,n in v[k]] for k in ('output','eq','ine')}} for v in self.views],
                  roles=roles,source_receipt=self.reader.receipt())
+        doc.update(self.document_extra())
         require(sum(len(n[1]) for n in self.nodes)<=POLICY['nnz'] and sum(len(n[2]) for n in self.nodes)<=65536,
                 'forest local/reference capacity')
         raw=compact(doc); require(len(raw)<=POLICY['total_bytes'],'forest byte capacity'); self.work.tick()

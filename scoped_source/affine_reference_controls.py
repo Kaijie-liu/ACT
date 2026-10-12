@@ -8,12 +8,12 @@ import struct
 from scoped_source.hz_request_store import compact, identity
 
 
-def deep(root):
+def deep(root,*,center=(0.,0.),radius='1'):
     from scoped_source.tensor_row_controls import fixture
     from scoped_source.factored_io import write, HEADER_LIMIT
     root=Path(root); fixture(root/'template')
     old=json.loads((root/'template/manifest.json').read_bytes()); target=root/'source'; target.mkdir()
-    tensors={'@center':((1,1,2),[0.,0.])}; graphs=[]
+    tensors={'@center':((1,1,2),list(center))}; graphs=[]
     for name in ('router','expert0','expert1','expert2'):
         prefix='router' if name=='router' else 'experts.'+name[6:]
         dims=[2,3,3,3] if name=='router' else [2,2,2,2,2]
@@ -37,7 +37,7 @@ def deep(root):
         records.append(dict(name=name,dtype='torch.float64',shape=list(shape),byte_order='little',chunks=[dict(**ref,offset=0)]))
     h=hashlib.sha256()
     for v in state: h.update(v['name'].encode()); h.update(v['sha256'].encode())
-    request={**old['declaration']['request'],'experts':3,'center':center,'radius':'1',
+    request={**old['declaration']['request'],'experts':3,'center':center,'radius':radius,
         'model_state':dict(sha256=h.hexdigest(),tensor_count=len(state),
             parameter_count=sum(len(v) for k,(s,v) in tensors.items() if k!='@center'))}
     manifest=dict(schema=old['schema'],tensors=records,declaration=dict(schema='SCOPED_DECLARED_TOP2_V1',

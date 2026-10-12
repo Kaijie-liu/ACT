@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Scaled source / batched exact consumer implemented: 2026-10-13; finite archive pending.
 Factor-scale standalone capacity refusal analyzed: 2026-10-13 (no execution).
 Later-affine V2 source references and general CPU operator archived: 2026-10-13.
 Checked source-reference complete endpoint consumption archived: 2026-10-13.
@@ -36,7 +37,27 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: factor scales alone still exceed full-query capacity
+## Current decision: archive the frozen joint scaled/batched controls
+
+The [joint V3 implementation](hz_scaled_batch_20261013.md),
+[frozen first](hz_scaled_batch_design_20261013.md), now retains input D separately,
+checks the captured source once, computes objective adjoints once and consumes
+bounded dual columns with exact factor-wise residual merging. Both proposed and
+zero candidates remain mandatory; immutable raw bytes precede exact acceptance.
+Private receipts close only the complete request in the same Work session;
+portable checking recomputes from raw source and all candidates. V1/V2 defaults
+are unchanged. 84 pre-archive tests pass, including raw publication before
+exact failure and complete code/phase inventories.
+
+Complete static review fits the unchanged 8M count for the fixed dense recipe:
+4,072,655 source + 3,890,637 consumer = 7,963,292, under the frozen conservative
+7,963,310. This is not measured cost or a dense execution admission. First
+complete the six fixed finite calls and their relocated independent audit in
+`runs/hz_scaled_batch_20261013_r1`; only afterward consider a separate dense
+execution freeze. No real model, source-only large rerun, CUDA poll/retry or
+external experiment is admitted. All G1–G6 remain OPEN.
+
+## Prior decision: factor scales alone still exceed full-query capacity
 
 The [source-scale algebra and static ledger](hz_factor_scale_capacity_20261013.md)
 are checked against the reviewed source recipe/code without lowering a source,
@@ -53,7 +74,7 @@ already over 8M without native preparation; including its first bank gives
 and constraint structure, not a general lower bound on all candidates/verifiers.
 No standalone factor-scale implementation or large rerun is admitted.
 
-The next bounded decision is the **complete static ledger** for a joint consumer
+That bounded decision was the **complete static ledger** for a joint consumer
 change: independently checked objective pullback once, bounded multi-column
 dual residuals, and checker-owned receipts after checking BOTH proposed and
 zero candidates. Portable checking still recomputes from raw evidence; terminal
@@ -65,7 +86,8 @@ objective/dual loses early cancellation. If a conservative complete ledger
 cannot fit, stop this path rather than another small-control cycle. Preserve
 distinct representation/consumer ablations if later admitted. No count/cap
 change, old96M, deleted check, zero-candidate omission or physical GPU retry.
-All G1–G6 OPEN; no new real model, output certificate or external result.
+The full ledger and next control stage are now above. All G1–G6 OPEN; no new
+real model or external result.
 
 ## Completed prerequisite: later affine references and CPU operator
 
