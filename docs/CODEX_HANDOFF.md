@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Request-store device lifecycle CPU/stub controls completed: 2026-10-13.
 Request-store device interface CPU/stub controls completed: 2026-10-13.
 Request-store bounded supervision completed: 2026-10-13.
 Request-store complete endpoint consumption completed: 2026-10-13.
@@ -28,7 +29,31 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: bind the store device interface to hard-budget lifecycle
+## Current decision: separately freeze a physical store/block device comparison
+
+The [device lifecycle protocol](hz_store_device_supervision_design_20261013.md)
+has now been [implemented, executed and audited](hz_store_device_supervision_20261013.md).
+All ten CPU/simulated calls retain expected terminals: three checked executions,
+two resource refusals, two errors, one readback timeout, two release refusals.
+Half closes 3/3; negative and partial remain UNKNOWN. Twelve interface controls,
+six supplemental audit/batch controls and 88 overlapping regressions pass.
+
+The initial offline audit failed on nested operation events. Supplemental V2
+preserves that failure and audits the same records, without rerunning numerical
+requests or changing frozen execution. Only top-level times are additive;
+incomplete durations remain null, not zero. Raw archive is about 1.19 MB.
+No physical CUDA or trained model ran; all G1–G6 remain OPEN.
+
+Stop lifecycle controls. Next separately freeze a finite physical CPU/GPU
+comparison of this **same immutable store/block algorithm**, binding final V2
+audit/source, complete duties, same algorithm and full request costs. Fresh UUID
+admission and pre-initialization recheck are mandatory. Owned-PID absence is not
+proof of all driver-memory reclamation or admission for the next call. Do not
+retry the old eight unstarted GPU slots or claim acceleration without results.
+Captured trained-source streaming/convolution and real-source closure remain
+separate blockers. No sealed input or holdout is reopened.
+
+## Completed store-device interface
 
 The [store device protocol](hz_store_device_design_20261013.md) is now
 [implemented and checked](hz_store_device_20261013.md). Four once-only CPU
@@ -38,14 +63,11 @@ remains 3/6 and mixed 0/3, both UNKNOWN. 28 named controls and the offline stdli
 audit pass. No CUDA initialized and no trained model ran. The guarded positive
 is a continuity control, not a new algorithm gain over the identical CPU path.
 
-Stop this CPU-equivalence study. Next integrate the **same request-store/block**
-device kernel into the existing lifecycle with identity-bound admission,
-pre-CUDA resource recheck, hard cutoff, candidate/partial reception, actual driver
-release and full costs. First CPU/stub wiring controls, then a separately frozen
-physical comparison after fresh admission. Old flat-LP GPU controls are not this
-integration, and the old eight NOT_RUN slots must not be automatically retried.
-No goal gate closes and no GPU speedup is currently supported. Captured source
-streaming/convolution and real-source closure remain separate blockers.
+This CPU-equivalence study is closed. Its store/block device kernel is now
+connected to the lifecycle above; the physical comparison has not yet run.
+Old flat-LP GPU controls are not this integration, and their old eight NOT_RUN
+slots must not be automatically retried. No goal gate closes or speedup is
+supported by synthetic CPU/stub controls.
 
 ## Completed endpoint and CPU supervision components
 

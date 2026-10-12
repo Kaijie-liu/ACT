@@ -1,0 +1,42 @@
+{
+  "schema": "STORE_DEVICE_LIFECYCLE_COMPACT_V1",
+  "archive": "/data1/Kane/MOE/baseline_runs/hz_store_device_supervision_20261013_r1",
+  "protocol_commit": "a3a521fe4",
+  "execution_commit": "9ebd9586f9e3e6525af2731779f112c13deea2f6",
+  "supplemental_auditor_commit": "cbea561a6",
+  "bindings": {
+    "freeze.json": "f46883e0aca1cc86fd1c0bc699f0dc2fb5648a88fdb08ba1c47764c7afb9eafc",
+    "implementation.json": "03afd50ba16eba580c365563ea93239d083a6010a3e36cbe6abe3fc0619d105b",
+    "calls.json": "b32c357823b346f5729aae0145f940d577093c709802631b9311b5e4ddc9a76e",
+    "summary.json": "b57193b543f227269662094c4f58caa4435a2a52cd48a322353ebf5cd24f4ca1",
+    "unit_outcomes.json": "7777621be7e7bc926fca2f9a1ed4fd1b453980fdaa0da40544f66c99bbbcaf97",
+    "audit_v1_failure.json": "8e96007204f65634170e0da113c8ea8f36c74fcb8e82e4a81e4a1d8be5b3903c",
+    "audit_v2_tests.json": "10af44a96331136da529f8ef2fc274232221c21881f6bb406e25445db6d93bf8",
+    "audit_v2_source.json": "c817f3656879c92a7b72d02412dabcfb40d55cb0d53e93cef1397431042c240e",
+    "audit_v2.json": "405817bcca65b5a9daa7a7da8407c3de864dda2a9809b0741f7aaede0b14de15"
+  },
+  "audit": {"status": "PASS", "issues": 0, "version": 2, "numerical_reruns": 0},
+  "initial_audit": {"status": "FAIL", "reason": "unexpected nested operation", "preserved": true},
+  "request_budget_seconds": 300,
+  "calls": 10,
+  "terminal_counts": {
+    "CHECKED_STORE_DEVICE_EXECUTION": 3,
+    "RESOURCE_UNAVAILABLE": 2,
+    "ERROR": 2,
+    "TIMEOUT": 1,
+    "DEVICE_RELEASE_UNCONFIRMED": 2
+  },
+  "controls": {"policy": 12, "supplemental_audit": 6, "status": "ALL_PASS"},
+  "normal_mathematics": {
+    "half": {"status": "CHECKED_POSITIVE_DECLARED_SOURCE", "positive": 3, "required": 3, "checked_endpoints": 5, "missing_endpoints": 0},
+    "negative": {"status": "UNKNOWN_NONPOSITIVE", "positive": 3, "required": 6, "checked_endpoints": 6, "missing_endpoints": 0},
+    "partial": {"status": "UNKNOWN_MISSING_EVIDENCE", "positive": 2, "required": 3, "checked_endpoints": 4, "missing_endpoints": 1}
+  },
+  "payload_after_audit": {"regular_files": 539, "bytes": 1191595, "limit_bytes": 67108864},
+  "physical_cuda_calls": 0,
+  "real_model_calls": 0,
+  "complete_real_model_proofs": 0,
+  "performance_claim": false,
+  "native_float_proof": false,
+  "all_goal_gates_open": true
+}
