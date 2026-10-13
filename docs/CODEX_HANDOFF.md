@@ -72,6 +72,16 @@ change resource caps or source semantics, retry GPUs, or execute real requests.
 Current quota/ceiling/time prediction stay null; G1–G6 remain OPEN. This enabling
 work does not replace MoE-specific algorithm, GPU or external-benefit evidence.
 
+The same proposal now records a read-only capture/archive lifetime follow-up.
+The existing live capture plus graph-validation path would convert 20,890,248
+values to Fractions on this topology before downstream propagation; this is a
+conditional code-path count, not Work, measured time or peak memory. The old
+128 MiB archive includes both run-local bundles and partial evidence; reserve
+checks plus final refusal are not a continuous byte cap on logs or metadata.
+The new bounded writers, capture adapter and relocation lifecycle must not be
+silently assumed implemented. Production code and historical results remain
+unchanged; scoped implementation approval is still required.
+
 ## Prior decision: counted Work closes but storage and memory do not admit execution
 
 The [complete captured-topology ledger](hz_full_resource_ledger_20261014.md)

@@ -205,6 +205,89 @@ allocator high-water behavior, and previous-loop `points`/`residual` lifetimes
 still require accounting. The 8 GiB RSS/16 GiB address-space stop rules are not
 completion guarantees. No memory optimization or native call was executed here.
 
+## Remaining capture and archive lifetime costs
+
+A follow-up code inspection at `e3c27d4f9e43dd6506d6231e1630abf2faab9205`
+separates the existing captured-source consumer from the earlier live-object
+path. It does not connect or execute those paths. In particular, the current
+dense runner copies an already captured source; its Work bound does not cover
+the following capture costs.
+
+The [live capture function](../scoped_source/capture.py) first stores all
+parameter tensors as base64 strings. Its inventory calls
+[`tensor(t)[0]`](../router_source/checker.py), which still decodes the entire
+tensor, builds a list of Python floats and converts every entry to `Fraction`,
+even though capture uses only the returned identity. This is not row streaming.
+
+The existing [capture-bound wrapper](../scoped_source/sparse_intake.py) then
+calls [graph validation](../scoped_source/graph.py). For every Linear layer,
+validation parses weight and bias once for inventory correspondence, then
+`operator()` parses both again and constructs the whole layer's nonzero-weight
+dictionaries. The caller's `dims,_,_=operator(...)` does not prevent those
+objects from being constructed. These checks are not removed by making the
+eventual evidence file compact.
+
+For a successful invocation of **that existing capture-plus-validation path**
+on the registered shape, let P=6,961,368 parameter values and n=3,072 input
+values. Calls to `Fraction.from_float` inside `tensor()` are:
+
+| Operation | Number of value conversions |
+|---|---:|
+| Capture parameter and center identities | P+n |
+| Validate the center and parameter inventory | P+n |
+| Validate Linear dimensions through `operator()` | P |
+| **Total** | **3P+2n = 20,890,248** |
+
+This is a code-derived operation count, **not** the custom Work counter, an
+elapsed-time prediction, or a simultaneous object count. It excludes model
+loading, JSON hashing, base64 decoding, packing, propagation and endpoint work.
+One largest weight tensor already contains 786,432 values, compared with the
+later `TensorRows` reader's 3,072-value input row. The full capture path needs
+its own lifetime account or a separately approved bounded implementation; a
+streaming reader downstream cannot establish a streaming capture claim.
+
+The old archive's scope is also broader than one portable bundle:
+
+| Lifetime | Existing files and accounting scope |
+|---|---|
+| Before execution | Original captured `SOURCE_ROOT`, outside the run archive; retained |
+| Online request | Copied source, forest and full proof under `query/bundle`; separate raw candidate tiles under `query/partial`; receipts, progress, code and logs |
+| Relocation | A second independent file copy of code and the complete bundle under `relocated`; both copies retained |
+| Final accounting | All files recursively under the run root, including relocation and terminal, count toward 128 MiB |
+
+See [`reserve`, `worker` and `execute`](../scripts/run_scaled_dense_capacity.py)
+and the [archive auditor](../scripts/audit_scaled_dense_capacity.py). The source
+can therefore have its original plus two run-local copies in project storage.
+The external original is not charged to this particular run's archive bytes;
+the two run-local copies are. There is no existing deletion, move or hardlink
+transition that makes the proposed one-copy envelope an unchanged-run total.
+Candidate bodies may appear three times inside the archive: as partial tiles,
+inside the online proof, and inside the relocated proof. The byte accounting
+uses logical file lengths, not filesystem metadata or allocated blocks. The
+supervisor control tests also use temporary directories outside the archive;
+normal context-manager cleanup is not a hard-kill orphan-retention contract.
+
+Furthermore, `reserve()` checks before selected large writes and copies, with
+a 2 MiB allowance for small files. It is **not a continuous filesystem byte
+limit**: stdout/stderr, progress, receipts and other metadata use ordinary file
+writes. The supervisor polls time and RSS, not disk growth. Final
+`terminal_bytes()` changes an oversized archive's status to
+`ARCHIVE_LIMIT_REFUSED`; the auditor rejects oversize success but permits the
+preserved refusal archive. This prevents an oversized accepting result, not
+all temporary or failed-run byte excess. The proposed bounded log and terminal
+writers are thus implementation requirements, not controls already supplied by
+the old runner. No historical result is relabelled by this observation.
+
+The outer timer is recorded before terminal serialization and writing. A new
+end-to-end protocol must also charge and deadline-check that final work; the
+existing pre-publication timestamp is not a complete terminal-publication cost.
+
+The next implementation decision must therefore cover checked row intake,
+candidate publication, bounded log/terminal writers and a stated relocation
+lifecycle. Live-model capture is a separate unclosed adapter: it is neither
+silently included in the codec nor free preprocessing. Complete resident memory
+and all-in online cost remain unproved; no new source or execution is admitted.
+
 ## Bounded next scope and stop rule
 
 There is now a testable design hypothesis: preserve the exact V3 logical
@@ -246,3 +329,11 @@ pass within their separate mathematics/identity, encoding/storage and native
 component scopes; these do not replace human review. Workspace checking retains
 619 frozen source identities and 4,632 history lines, verifies 435 navigation
 links and eight local report links, and records no experiment or deletion.
+
+The capture/archive follow-up adds no implementation or experiment. Its
+conversion formula was recomputed from the bound topology, and two read-only
+agent reviews checked the capture and archive code paths separately. Forty-eight
+existing static, manuscript, handoff and layout regressions pass after the
+documentation update. Those tests do not measure capture cost or establish a
+complete memory bound. No new result directory, source, candidate or file
+deletion was created by the follow-up.
