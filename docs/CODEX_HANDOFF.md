@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Lossless evidence envelope and bounded-intake proposal assessed: 2026-10-14.
 Full captured-topology Work ledger and archive obstruction checked: 2026-10-14.
 Model-scaled resource policy statically assessed: 2026-10-13 (design only).
 Six-work object/quantifier admission contracts checked: 2026-10-13 (no execution).
@@ -43,7 +44,35 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: counted Work closes but storage and memory do not admit execution
+## Current decision: compact evidence has a design envelope, not execution admission
+
+The [lossless encoding and bounded-intake proposal](hz_lossless_evidence_design_20261014.md)
+gives a conditional single-package envelope of 110,611,136 bytes below 128 MiB.
+It is a new design, not implemented compression or a measured file size. It
+preserves source bytes, all 252 duties, up to 504 endpoints, both candidate
+roles and all logical checks. Source-row references eliminate repeated first
+weights; binary64 encoding is justified only for the registered sequential
+source and native candidates. General exact bounds retain rational encoding.
+Explicit zero-vector encoding does not remove a role or its checks.
+
+Partial and final evidence sharing immutable tiles is a separate storage-layout
+factor. Two complete proposed copies total 221,222,272 bytes as an upper bound;
+this does not prove actual overflow but gives no two-copy 128 MiB contract.
+Relocation/retention must be separately specified. No archived copy is removed.
+
+Decoding back to whole JSON/Fraction objects would retain old memory peaks and
+add a source pass. A checked bounded-intake interface needs its own scope and
+controls, with new work/lifetime accounting. Pinned upstream CPU source narrows
+native COO memory to named components (notably 88L bytes for coalesce/sort), but
+neither complete RSS nor binary dispatch/capture correspondence is closed.
+
+Request a separate versioned codec/bounded-intake design and implementation
+decision before editing production code. Do not start another microbenchmark,
+change resource caps or source semantics, retry GPUs, or execute real requests.
+Current quota/ceiling/time prediction stay null; G1–G6 remain OPEN. This enabling
+work does not replace MoE-specific algorithm, GPU or external-benefit evidence.
+
+## Prior decision: counted Work closes but storage and memory do not admit execution
 
 The [complete captured-topology ledger](hz_full_resource_ledger_20261014.md)
 selects existing V3 whole-endpoint batching width 1 versus width 8 as the
