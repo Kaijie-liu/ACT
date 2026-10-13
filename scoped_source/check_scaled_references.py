@@ -99,6 +99,7 @@ class CheckedScaledForest(V1):
 
 
 def checked(forest,work):
-    require(type(forest) is CheckedScaledForest and getattr(forest,'_sealed',False) is True
+    from scoped_source.wire_forest import CheckedWireForest
+    require(type(forest) in (CheckedScaledForest,CheckedWireForest) and getattr(forest,'_sealed',False) is True
             and forest.complete and forest.session is work,'complete checked V3 / cumulative Work binding')
     work.tick()

@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Lossless wire / bounded intake / archive interfaces control-checked: 2026-10-14.
 Lossless evidence envelope and bounded-intake proposal assessed: 2026-10-14.
 Full captured-topology Work ledger and archive obstruction checked: 2026-10-14.
 Model-scaled resource policy statically assessed: 2026-10-13 (design only).
@@ -44,7 +45,24 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: wire interface implementation authorized with controls only
+## Current decision: opt-in wire interfaces passed finite controls, no real admission
+
+The [implementation/control archive](hz_wire_interface_controls_20261014.md)
+records 21 new groups and 48 legacy regressions passing, four unchanged finite
+fixtures, exact old-path/scalar differentials and standalone relocated checking.
+This closes the authorized interface-control stage, not G1–G6. No optimizer,
+real model or GPU experiment ran. All old physical/logical/Work/acceptance gates
+remain. Tiny wire forests are larger than JSON; no compression or speed claim.
+
+The new consumer is row/tile bounded; the first encoder still materializes old
+V3 input. Full construction/native memory and full registered-model capacity
+remain open. The registered topology is unadmitted. Do not auto-start a model,
+raise resources or treat the earlier 110.6 MB design as a measured guarantee.
+Next work, if authorized, is a complete changed-path capacity/lifetime assessment,
+not repeated toy optimization or reopening sealed cases. Portable packages are
+the frozen `relocated/` snapshots, separate from growing outer run archives.
+
+## Prior decision: wire interface implementation authorized with controls only
 
 The user approved the [versioned lossless interface controls](hz_wire_interface_design_20261014.md).
 Implement opt-in bounded intake and archive interfaces with full source/property

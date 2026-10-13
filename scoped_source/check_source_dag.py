@@ -44,6 +44,18 @@ class Checker:
         d=decode(raw)
         require(compact(d)==raw and type(d) is dict and set(d)=={
             'schema','source','request','frame','cut','policy','factors','nodes','views','roles','source_receipt'}|self.extra_fields,'forest canonical schema')
+        self.initialize(d, root, source, work, cut, forest_bytes=len(raw))
+
+    def initialize(self, d, root, source, work, cut, *, forest_bytes, node_table=None):
+        """Same mathematical checks, optionally backed by the closed wire table.
+
+        Only the opt-in wire constructor supplies this table. Ordinary JSON
+        intake still requires lists. No arbitrary sequence/duck-type is trusted.
+        """
+        self.work=work; work.tick()
+        if node_table is not None:
+            from scoped_source.wire_forest import NodeTable
+            require(type(node_table) is NodeTable, 'closed wire node table')
         require(d['schema']==self.schema and d['source']==sha(source)
             and d['frame']==1 and type(d['frame']) is int and d['cut']==cut and d['policy']==dict(POLICY),'source/frame/mode/policy')
         require(cut is None or type(cut) is list and len(cut)==2 and type(cut[0]) is str and type(cut[1]) is int,'explicit prefix')
@@ -74,9 +86,11 @@ class Checker:
             self.views.append({**v,**rows})
         require(len({v['name'] for v in self.views})==len(self.views),'unique view names')
         require(sum(len(v[k]) for v in self.views for k in ('output','eq','ine'))<=POLICY['rows'],'root capacity')
-        require(type(d['nodes']) is list and 0<len(d['nodes'])<=POLICY['rows'],'node inventory')
+        nodes=d['nodes'] if node_table is None else node_table
+        require((node_table is not None or type(nodes) is list) and 0<len(nodes)<=POLICY['rows'],'node inventory')
         self.nodes=[]; self.norms=[]; self.local_norms=[]; nnz=0; refs=0; active=set(); depths=[]
-        for ni,n in enumerate(d['nodes']):
+        for ni in range(len(nodes)):
+            n=nodes[ni] if node_table is None else node_table.document_row(ni)
             work.visit('row_visits')
             require(type(n) is list and len(n)==3 and type(n[0]) is int and 0<=n[0]<len(self.views),'node fields')
             parsed=[]; norm=self.local_norm_start()
@@ -94,10 +108,12 @@ class Checker:
             require(nnz<=POLICY['nnz'] and refs<=65536 and len(active)<=POLICY['active'],'local/reference/active capacity')
             depth=1+max((depths[j] for j,_ in parsed[1]),default=0)
             require(depth<=POLICY['depth'],'node depth'); depths.append(depth)
-            self.nodes.append((n[0],parsed[0],parsed[1])); self.local_norms.append(self.local_norm_finish(norm)); self.norms.append(None)
+            if node_table is None: self.nodes.append((n[0],parsed[0],parsed[1]))
+            self.local_norms.append(self.local_norm_finish(norm)); self.norms.append(None)
+        if node_table is not None: self.nodes=node_table
         self.fid=self.vid=self.nid=0; self.receipt=d['source_receipt']; self.roles=d['roles']; self.cut=d['cut']
         self.stats=dict(nodes=len(self.nodes),local_nnz=nnz,references=refs,factors=len(self.factors),
-                        views=len(self.views),forest_bytes=len(raw))
+                        views=len(self.views),forest_bytes=forest_bytes)
         self.visible=[]; self.depths=[]
 
     def factor(self,name,kind,scope,owner):

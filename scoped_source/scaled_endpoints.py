@@ -99,8 +99,10 @@ class Session:
     This is an in-process API trust boundary, not a sandbox against malicious
     Python code changing private memory. Durable inputs never trust receipts.
     """
-    def __init__(self,forest,doc,*,expected,work,width=8):
+    def __init__(self,forest,doc,*,expected,work,width=8,retain_raw=True):
         checked(forest,work); require(type(width) is int and 1<=width<=8,'bounded tile width')
+        require(type(retain_raw) is bool,'explicit evidence retention mode')
+        self.__retain_raw=retain_raw
         self.__forest=forest; self.__work=work; self.__plan=_plan(forest,doc,expected,work)
         self.__tiles=tuple(self.__plan.tiles(width)); self.__width=width; self.__next=0
         self.__live=None; self.__issued={}; self.__values={}; self.__raw=[]; self.__bytes=0
@@ -183,7 +185,9 @@ class Session:
                 ordinal=(self.__next,k),policy='EXACT_RESIDUAL_STRICT_GT_1E-7')
             work.visit('row_visits',len(record)); receipt=Receipt(frozen(record)); work.visit('row_visits')
             self.__issued[task.slot]=receipt; self.__values[task.slot]=value; issued.append(receipt)
-        work.tick(); self.__raw.append(raw); self.__next+=1; self.__live=None
+        work.tick()
+        if self.__retain_raw: self.__raw.append(raw)
+        self.__next+=1; self.__live=None
         return tuple(issued)
 
     def finish(self,receipts):
@@ -205,10 +209,13 @@ class Session:
             required=len(rows),positive=positive,required_endpoints=len(self.__plan.tasks),
             checked_endpoints=len(self.__values)-missing,missing_endpoints=missing,results=rows,
             native_float_proof=False,checkpoint_correspondence_checked=False)
+        from scoped_source.wire_forest import CheckedWireForest
+        if type(self.__forest) is CheckedWireForest: self.__forest.source_access.seal()
         work.visit('row_visits',len(result)); work.tick(); self.__closed=True; return result
 
     def proof(self):
         self.__work.tick(); require(self.__closed,'terminal before final proof serialization')
+        require(self.__retain_raw,'streaming session requires immutable tile manifest')
         result=dict(schema=PROOF,contract=self.__plan.contract,width=self.__width,
                     tiles=[decode(raw) for raw in self.__raw])
         self.__work.visit('row_visits',len(result)); require(len(compact(result))<=16*2**20,'full proof cap')
