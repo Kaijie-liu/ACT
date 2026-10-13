@@ -44,7 +44,17 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: compact evidence has a design envelope, not execution admission
+## Current decision: wire interface implementation authorized with controls only
+
+The user approved the [versioned lossless interface controls](hz_wire_interface_design_20261014.md).
+Implement opt-in bounded intake and archive interfaces with full source/property
+checks and unchanged old logical/physical resource gates. No real model, GPU,
+resource increase or acceptance relaxation is authorized. The registered full
+topology remains unadmitted. Live capture and native complete RSS are separate
+open items; the codec does not silently solve them. Freeze before implementation,
+then perform finite correctness and lifecycle controls, review, commit and push.
+
+## Prior decision: compact evidence has a design envelope, not execution admission
 
 The [lossless encoding and bounded-intake proposal](hz_lossless_evidence_design_20261014.md)
 gives a conditional single-package envelope of 110,611,136 bytes below 128 MiB.
