@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Full captured-topology Work ledger and archive obstruction checked: 2026-10-14.
 Model-scaled resource policy statically assessed: 2026-10-13 (design only).
 Six-work object/quantifier admission contracts checked: 2026-10-13 (no execution).
 Joint residual-template capacity proposal stopped: 2026-10-13 (static analysis).
@@ -42,7 +43,32 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: resource policy design approved, execution still closed
+## Current decision: counted Work closes but storage and memory do not admit execution
+
+The [complete captured-topology ledger](hz_full_resource_ledger_20261014.md)
+selects existing V3 whole-endpoint batching width 1 versus width 8 as the
+internal accounting reference. Both candidate generation and exact consumption
+change width; this is not a consumer-only ablation. The complete counted Work
+uppers are 6,461,408,549 and 5,587,795,529, not measured costs, new quotas or
+300-second predictions. All 252 duties, up to 504 endpoints and both candidate
+roles remain. Native kernels and serialization cost time despite not counting
+as exact Work arithmetic. Twenty-one code/metadata anchors are bound.
+
+A constructive encoding case with first-layer weights 1/2 needs at least
+140,203,072 bytes for raw source plus the first coefficient bank alone, exceeding
+the unchanged 128 MiB entire-archive cap. This is not an observation of the
+checkpoint. Candidate/forest component uppers and the object-lifetime ledger
+also expose missing complete encoded and resident-memory bounds. No runtime
+limits changed; no new source, real query or GPU ran.
+
+Do not implement a Work-only policy or repeat small/prefix controls. The next
+specific decision concerns a separately scoped compact evidence/source encoding
+design or explicit byte/resource-envelope change; neither is hidden in this
+ledger. Native workspace, live capture and complete metadata/log bounds still
+need closure. Current quota, absolute ceiling and wall-time forecast stay null;
+real execution and physical GPU retries remain closed. G1–G6 remain OPEN.
+
+## Prior decision: resource policy design approved, execution still closed
 
 The user approved drafting and statically assessing a model-scaled resource
 policy, not changing runtime limits or starting real requests. The
