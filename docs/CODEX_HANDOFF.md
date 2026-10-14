@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Exact dyadic domain and live-object gap assessed; full-cost admission stopped: 2026-10-14.
 Restricted source and whole-worker lifetime contract drafted: 2026-10-14.
 Runtime sub-ledger narrows arithmetic/native/capture/lifetime gaps: 2026-10-14.
 Direct identity and unique root resource protocol drafted: 2026-10-14.
@@ -49,7 +50,27 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: restricted source/lifetime design, no execution admission
+## Current decision: bounded runtime correspondence required; do not infer full cost
+
+The [exact-domain/lifetime assessment](hz_exact_domain_20261014.md) establishes
+a narrower dyadic value domain for the native binary64 candidate profile, not
+for generic rational inputs. The four-difference magnitude bound is 16,386
+numerator bits at B=8192; this is not CPython scratch/RSS. Margin/threshold and
+input-literal boundaries still need general rational handling. No check moved.
+
+Current Python allocations can retain capacity after logical cancellation;
+native, exact, source and old/new tile objects overlap. The mapped endpoint
+slot term and named native arrays do not establish a complete peak. Nine new
+static tests plus prior regressions preserve all gates and the 300-second budget.
+
+**Stop adding partial runtime ledgers as if they could authorize this current
+path. Full cost remains NOT CLOSED.** Next requires a separately scoped bounded
+representation/ownership implementation and controls, keeping the old path as
+reference. No such implementation, cap increase or real/GPU execution is
+authorized here. Do not retry capacity, benchmark small inputs or claim any
+G1–G6 outcome. See the linked report for the minimal scope and remaining trust.
+
+## Prior decision: restricted source/lifetime design, no execution admission
 
 The [adapter and lifetime contract](hz_source_lifetime_protocol_20261014.md)
 specifies the 52-tensor directory, non-executing descriptor parsing, immutable

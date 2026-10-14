@@ -1,0 +1,100 @@
+"""Static arithmetic-domain and named-live-data analysis; NOT a runtime.
+
+No production modules, checkpoints, tensors, solvers or workers are imported.
+The formulas bound specified mathematical values/payloads, not allocator RSS.
+"""
+import hashlib
+import json
+
+from scripts.assess_runtime_lifetime import ENV, ROOT
+
+ANCHORS = {
+    'docs/hz_source_lifetime_protocol_20261014.json': 'fba5f3e65d38ee69d00b3665d3f339c3a8cdafae3fc463749488e4c6297b53aa',
+    'scoped_source/check_source_dag.py': '58e5e2158843631c9e6ed324cfeeb2eb38e51df1205d2e14d1ed8ac8ce634458',
+    'scoped_source/check_scaled_references.py': '244dc7ee5cf7fe46ab7097b2494dfec64d818e926b4726eb19d59a53c5074f9e',
+    'scoped_source/check_affine_references.py': 'a0d688ee82bf88c42945edfd3abc9591a46998c01cf236cbf752ad5b549e9c62',
+    'scoped_source/forest_endpoints.py': '86396e9c662ba8c91f6ac3921dc7f410d9b977937df38a9fb782f82991c50a4c',
+    'scoped_source/scaled_endpoints.py': '93197c1b329e173b25795c48cf117b7113c2b23cc6958438889a7e912d13e8af',
+    'scoped_source/wire_forest.py': '981385019f93f97d41c02eab245cc21e8c430ccdfc8e0f853d5ffacb6981a3b3',
+    'scoped_source/tensor_rows.py': '5c3ad6d642868e257ac9dd2edbc5e066b4cd793d4c7567a4ea800fc8e8f97f82',
+    'act/back_end/moe/scaled_forest_endpoints.py': '118e88e3484ff4f4977f3b2535fa3aba8bdf7b1b1b7598da8232c0fe0ea57af1',
+}
+ENV_ANCHORS = {
+    'lib/python3.12/fractions.py': 'd52d1ab9d5be26924e4914a5e40069c992bbfa68f773694c2e5ee8452d0766a0',
+    'lib/python3.12/_pylong.py': '05da132ba902633430bf12b5007fa1983630de423e29402998e9edc349bdf591',
+}
+
+
+def dyadic_bounds(bits):
+    """Canonical p/2**e operands: bits(|p|)<=B, 0<=e<=B-1.
+
+    These are mathematical common-denominator envelopes, not sizes of every
+    intermediate allocated by CPython Fraction. No new acceptance point exists.
+    """
+    if type(bits) is not int or bits < 1:
+        raise ValueError('positive integer bit envelope required')
+    return dict(add_sub=[2*bits, bits-1], product=[2*bits, 2*bits-2],
+                fused_add_product=[3*bits, 2*bits-2],
+                four_absolute_differences=[2*bits+2, bits-1])
+
+
+def named_payload(width):
+    if type(width) is not int or not 1 <= width <= 8:
+        raise ValueError('registered tile width 1..8 required')
+    n, f, m, r, local = 19496, 32048, 2700, 277280, 6732720
+    return dict(width=width,
+        exact_endpoint_value_slots=2*width*(n+f),
+        exact_other_slots_without_object_correspondence=4*(n+f+m+3072)+16*504,
+        native_base_bank_bytes=8*n*width+16*m*width+16*m+16*width,
+        native_old_loop_locals_bytes=16*n*width+8*f*width+8*m*width+9*width,
+        native_level_select_and_product_bytes=16*r*width,
+        native_constructor_isfinite_temporaries_bytes=11*local,
+        components_are_not_a_complete_simultaneous_peak=True,
+        python_object_bytes=None, full_native_peak_bytes=None, full_rss_upper=None)
+
+
+def verify_files():
+    for base, anchors in ((ROOT, ANCHORS), (ENV, ENV_ANCHORS)):
+        for path, expected in anchors.items():
+            if hashlib.sha256((base/path).read_bytes()).hexdigest() != expected:
+                raise ValueError('static source anchor drift: '+path)
+
+
+def analyze():
+    verify_files()
+    return dict(schema='EXACT_DOMAIN_LIFETIME_STATIC_V1',
+        based_on='4ad9c1d34ad579ffdfa2fff434a583a666f0c0a5',
+        anchors=ANCHORS, environment_anchors=ENV_ANCHORS,
+        scope='native binary64 candidate profile; not generic rational Session',
+        dyadic_segments=['rounded source affine/ReLU/guard', 'objective alpha',
+                         'candidate duals', 'pullback', 'dual_rhs', 'residual', 'weighted_norm'],
+        general_segments=['radius/clip input enclosure', 'margin offset and final scalar bounds',
+                          'strict comparison to 1/10000000', 'generic rational candidates'],
+        native_domain_requires_complete_source_check=True,
+        existing_ref_parser_alone_proves_domain=False,
+        magnitude_envelopes=dict(operand_component_bits=8192,
+            entry_format=['numerator_bits_upper', 'denominator_exponent_upper'],
+            expressions=dyadic_bounds(8192),
+            includes_unchecked_composite_operands=False,
+            whole_fraction_runtime_scratch=False),
+        named_live_data=[named_payload(1), named_payload(8)],
+        current_path_obstructions=[
+            'PyLong logical size does not establish retained allocation capacity',
+            'Fraction/cache/container payload has no complete object-lifetime mapping',
+            'source row and native/exact/old tile state overlap',
+            'arbitrary Python object inputs compact before byte-cap checks',
+            'native allocator/thread/library high-water is not tensor payload',
+        ],
+        decision='STOP_INFERRING_FULL_COST_FROM_CURRENT_RUNTIME_PARTIAL_LEDGERS',
+        next_scope='separately scoped bounded representation/ownership implementation and controls',
+        complete_cost_upper_closed=False, full_peak_memory_upper=None,
+        wall_completion_seconds_upper=None, new_quota=None,
+        invariant=dict(request_seconds=300, visits=8000000,
+                       work_result_bits=8192, stored_component_bits=4096),
+        mathematical_checks_removed=False, check_points_moved=False,
+        production_changed=False, implementation_authorized=False,
+        execution_admitted=False, model_runs=0, gpu_calls=0, solver_calls=0)
+
+
+if __name__ == '__main__':
+    print(json.dumps(analyze(), indent=2, sort_keys=True))
