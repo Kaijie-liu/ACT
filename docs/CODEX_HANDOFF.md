@@ -85,6 +85,16 @@ bounds. Default-off fixed-stub interfaces are implemented; hard-supervisor/nativ
 join, full admission and real/GPU execution remain separately gated. No runtime
 or limit changed in this audit. G1–G6 remain open.
 
+The [native interface decision](hz_direct_join_cost_20261015.md#native-connection-and-matched-reference-decision)
+adds a concrete blocker: execute discards Driver roots, while the existing native
+Operator requires them and its wrapper creates another Session/JSON path. A
+restricted setup/propose/close lifecycle, checked root lease and producer plus
+production/replay consumer identity must be scoped before implementation. The
+same-candidate checker study and independently charged native study are separate;
+neither new full matched arm exists yet. Hard fail-closed supervision is not a
+successful-completion RSS upper. No native/capacity scope is inferred from the
+stub approval; stop at this contract pending the next implementation decision.
+
 ## Prior decision: direct join controls complete; reconcile actual full cost
 
 The approved [direct join results](hz_direct_join_controls_20261015.md) record

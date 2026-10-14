@@ -181,6 +181,67 @@ representation or resource-policy change. This assessment does not authorize
 those implementations, a quota increase or real/GPU execution. G1–G6 and all
 historical scientific claims remain open and unchanged.
 
+## Native connection and matched reference decision
+
+A further read-only review at `3d4a8a4eb02e743bcc1a1baac06d7348ab02a355`
+identifies an interface mismatch, not another capacity measurement.
+`direct_execution.execute` receives `(tasks, roots, token)` from Driver.prepare
+but discards roots and calls the arbitrary callback as `propose(forest,tasks)`.
+The existing [native Operator](../act/back_end/moe/scaled_forest_endpoints.py)
+instead requires one `Operator(forest,work)` setup and repeated
+`propose(tasks,roots)` calls. Its wrapper `produce()` creates a separate plain
+Session and old JSON proof. Putting that wrapper inside the callback would add
+another plan/consumer rather than connect the intended path.
+
+An arbitrary callable has no complete candidate-work or object-lifetime upper.
+Before a native full-path ledger is meaningful, the proposed integration must
+restrict it to a versioned lifecycle:
+
+| Proposed boundary | Required binding and accounting |
+| --- | --- |
+| `setup(checked_source, work)` | Exactly one operator per request; bind source, algorithm, dtype, device, thread policy, width and environment; charge constructor and failures |
+| `propose(tasks, checked_roots)` | Borrow the Driver-issued objective roots under a request/tile lease; immutable access, no producer-supplied replacement roots; charge every conversion and candidate allocation |
+| Publish and accept | Complete typed frames are published before the existing independent exact checks; a candidate or advisory lower never authorizes acceptance |
+| `close()` and receive | Revoke leases on acceptance/abort; release operator and candidate owners on every exit; measure through cleanup and timely terminal reception before portable replay |
+
+The native trajectory would remain CPU float64, candidate width eight,
+128 updates and 129 evaluations. Roots must not be recomputed off-ledger.
+Changing reduction order or recomputing roots is a separately disclosed factor,
+not a cost-free adapter. This lifecycle is a proposed interface, not implemented
+or approved native execution.
+
+The comparison contract must also distinguish two studies:
+
+| Study | Fixed quantities | Changed factor and full-path requirement |
+| --- | --- | --- |
+| Same-candidate checker comparison | Same source, properties, width-eight candidate values and roles | Dense-owned versus pair-scoped check-two, in both production and online portable replay; independently charge source and every check in each arm |
+| Native end-to-end comparison | Same registered algorithm/configuration, source, properties, resource policy and total deadline | Each arm independently sets up and runs its native proposer; use its actual candidates and costs, preserve any trajectory or result differences |
+
+The first is not a native solver speedup experiment and may not borrow a free
+candidate-generation cost when reporting end-to-end time. The second cannot
+borrow the historical width-one/width-eight JSON results. Current portable
+manifests hardcode pair-scoped checking, so neither new full comparison is
+implemented by merely changing a Python callback. A future method identity must
+bind the producer and both consumer selections and reject mixed-method packages.
+
+For process ownership, a separately approved implementation should use a bounded
+parent and fresh phase workers, with one deadline and cumulative resource ledger
+through source, native-plus-exact, and portable stages. It must either declare a
+limited trusted-native no-escaping-descendant assumption or implement authorized
+containment; process-group kill and one Torch compute thread do not establish it.
+This changes the implementation-correspondence boundary and must not be inferred
+from the fixed-stub approval. Standard-library lifecycle controls would test
+ownership/acceptance, not close the native allocator or kernel workspace bound.
+
+A fail-closed supervisor can refuse late/partial/resource-exhausted work. It
+does not prove successful completion or a complete RSS upper: `RLIMIT_AS`,
+sampled RSS and named tensor payload are different quantities. The remaining
+native allocator/kernel, Python backing-storage and process-tree assumptions
+must be explicit in any future capacity contract. No proposal here authorizes
+larger limits or bypasses the known source/storage refusals. Further integration
+requires a scoped implementation decision; until then stop at this interface
+contract rather than append more isolated bounds or controls.
+
 ## Reproduction and review
 
 ```sh
