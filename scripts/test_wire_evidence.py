@@ -41,7 +41,7 @@ def candidates(f,tasks,missing=False):
 
 CODE_FILES=tuple('scoped_source/'+n+'.py' for n in (
     'wire_forest','wire_proof','wire_archive','wire_package','check_source_dag','check_affine_references',
-    'check_scaled_references','forest_endpoints','scaled_endpoints','tensor_rows',
+    'check_scaled_references','forest_endpoints','scaled_endpoints','bounded_runtime','pair_workspace','tensor_rows',
     'factored_io','factored_source','hz_request_store'))+('source_enclosure/format.py','upstream_source/checker.py')
 
 

@@ -20,6 +20,10 @@ def pullback(forest,columns,work,workspace=None):
     """Unscaled P=L^T(I-R)^(-T); same coefficient visit, exact work per column."""
     checked(forest,work)
     require(0<len(columns)<=8,'bounded adjoint columns')
+    from scoped_source.pair_workspace import PairWorkspace
+    if type(workspace) is PairWorkspace:
+        workspace.bind(forest,work)
+        return workspace.pullback(columns)
     alpha=([dict(c) for c in columns] if workspace is None else
            [workspace.mapping('nodes',c) for c in columns])
     out=([{} for _ in columns] if workspace is None else
@@ -134,8 +138,12 @@ class Session:
         require(type(retain_raw) is bool,'explicit evidence retention mode')
         if workspace is not None:
             from scoped_source.bounded_runtime import Workspace
-            require(type(workspace) is Workspace and not retain_raw,'optional owned streaming workspace')
+            from scoped_source.pair_workspace import PairWorkspace,CANDIDATE_WIDTH
+            require(type(workspace) in (Workspace,PairWorkspace) and not retain_raw,'optional owned streaming workspace')
+            require(type(workspace) is not PairWorkspace or width==CANDIDATE_WIDTH,'scoped candidate width 8')
             workspace.bind(forest,work)
+        from scoped_source.pair_workspace import PairWorkspace
+        self.__scoped=type(workspace) is PairWorkspace
         self.__workspace=workspace
         self.__retain_raw=retain_raw
         self.__forest=forest; self.__work=work; self.__plan=_plan(forest,doc,expected,work)
@@ -159,16 +167,19 @@ class Session:
         self._check(); require(type(index) is int and index==self.__next and self.__live is None
                                and index<len(self.__tiles),'one next private tile')
         tasks=self.__tiles[index]; roots=[]; objectives=[]
+        if self.__scoped: self.__workspace.select(tasks[0].pair)
         for task in tasks:
             d,alpha=(objective_roots(self.__forest,task,self.__work) if self.__workspace is None
                      else self.__workspace.objective(task))
             roots.append((d,MappingProxyType(alpha)))
-            objectives.append(pullback(self.__forest,[alpha],self.__work,self.__workspace)[0])
+            if not self.__scoped:
+                objectives.append(pullback(self.__forest,[alpha],self.__work,self.__workspace)[0])
         self.__live=(tasks,tuple(roots),objectives)
         return tasks,tuple(roots)
 
     def accept(self,records):
         self._check(); require(self.__live is not None,'prepare before accepting raw candidates')
+        require(not self.__scoped,'pair-scoped consumer requires published direct frame')
         raw=records if type(records) is bytes else compact(records)
         require(len(raw)<=4*2**20,'bounded raw candidate tile')
         records=decode(raw); require(compact(records)==raw,'canonical raw candidate bytes')
@@ -184,33 +195,63 @@ class Session:
 
     def _consume(self,access,raw):
         # This private entry is reached only through the two closed accessors.
-        tasks,roots,objectives=self.__live; forest=self.__forest; work=self.__work
+        tasks,roots,objectives=self.__live; work=self.__work
         self.__bytes+=len(raw); require(self.__bytes<=16*2**20-8192,'bounded cumulative evidence')
+        issued=[]; candidate_hash=digest(raw)
+        from scoped_source.pair_workspace import CHECK_WIDTH
+        width=CHECK_WIDTH if self.__scoped else len(tasks)
+        for start in range(0,len(tasks),width):
+            stop=min(start+width,len(tasks))
+            try:
+                block_objectives=objectives[start:stop]
+                if self.__scoped:
+                    # Sparse descriptors are expanded only AFTER full publication.
+                    block_objectives=[]
+                    for _,alpha in roots[start:stop]:
+                        private=self.__workspace.mapping('nodes',alpha)
+                        block_objectives.append(pullback(self.__forest,[private],work,self.__workspace)[0])
+                issued.extend(self._consume_block(access,tasks[start:stop],roots[start:stop],
+                                                  block_objectives,start,candidate_hash))
+                if self.__scoped:
+                    self.__workspace.blocks_checked+=1
+                    self.__workspace.maximum_block=max(self.__workspace.maximum_block,stop-start)
+            finally:
+                if self.__scoped: self.__workspace.clear_block()
+            work.tick()  # Release cost is inside the original deadline.
+        work.tick()
+        if self.__retain_raw: self.__raw.append(raw)
+        self.__next+=1; self.__live=None
+        if self.__workspace is not None: self.__workspace.clear_tile()
+        return tuple(issued)
+
+    def _consume_block(self,access,tasks,roots,objectives,start,candidate_hash):
+        # Shared mathematical consumer for legacy, dense and scoped paths.
+        forest=self.__forest; work=self.__work
         present=[]; alpha=([{} for _ in tasks] if self.__workspace is None else
                            [self.__workspace.mapping('nodes') for _ in tasks])
         dual_rhs=[F(0) for _ in tasks]
         for k,task in enumerate(tasks):
-            if not access.present(k): continue
+            if not access.present(start+k): continue
             present.append(k)
             for role in ('proposed','zero'):
-                work.visit('row_visits',4); access.candidate(k,role)
+                work.visit('row_visits',4); access.candidate(start+k,role)
         for kind,key in (('eq','equality'),('ine','inequality')):
             rows=forest.rows(tasks[0].pair,kind)
             for k in present:
-                for role in ('proposed','zero'): access.dimensions(k,role,key,len(rows))
+                for role in ('proposed','zero'): access.dimensions(start+k,role,key,len(rows))
             for i,row in enumerate(rows):
                 work.visit('row_visits')
                 rhs,n=(forest.row(row) if self.__workspace is None else self.__workspace.roots.row(row))
                 for k in present:
                     for role in ('proposed','zero'):
-                        work.visit('coefficient_visits'); w=access.weight(k,role,key,i)
+                        work.visit('coefficient_visits'); w=access.weight(start+k,role,key,i)
                         require(kind!='ine' or w<=0,'inequality dual sign')
                         if role=='zero': require(w==0,'explicit zero must be zero'); continue
                         if w:
                             dual_rhs[k]=work.exact(dual_rhs[k]+work.exact(rhs*w))
                             alpha[k][n]=work.exact(alpha[k].get(n,F(0))-w)
         duals=pullback(forest,alpha,work,self.__workspace) if present else [{} for _ in tasks]
-        issued=[]; candidate_hash=digest(raw)
+        issued=[]
         for k,task in enumerate(tasks):
             if k not in present:
                 self.__values[task.slot]=None; issued.append(None); continue
@@ -227,13 +268,9 @@ class Session:
                 contract=self.__plan.contract,slot=task.slot,query=task.query_id,pair=task.pair,
                 other=task.other,weight=str(task.weight),raw_tile=candidate_hash,
                 proposed=str(proposed),zero=str(zero),selected=selected,lower=str(value),
-                ordinal=(self.__next,k),policy='EXACT_RESIDUAL_STRICT_GT_1E-7')
+                ordinal=(self.__next,start+k),policy='EXACT_RESIDUAL_STRICT_GT_1E-7')
             work.visit('row_visits',len(record)); receipt=Receipt(frozen(record)); work.visit('row_visits')
             self.__issued[task.slot]=receipt; self.__values[task.slot]=value; issued.append(receipt)
-        work.tick()
-        if self.__retain_raw: self.__raw.append(raw)
-        self.__next+=1; self.__live=None
-        if self.__workspace is not None: self.__workspace.clear_tile()
         return tuple(issued)
 
     def abort(self):

@@ -124,10 +124,14 @@ def encode(owner,forest,contract,tasks,ordinal,records,*,profile=0,remaining=MAX
 
 class Driver:
     """Single-owner execution boundary. A failure cannot be retried in-place."""
-    def __init__(self,forest,doc,*,expected,work,width=8,capacity=POLICY['total_bytes']):
+    def __init__(self,forest,doc,*,expected,work,width=8,capacity=POLICY['total_bytes'],pair_scoped=False):
         self.started=time.monotonic()
         from scoped_source.scaled_endpoints import Session
-        self.workspace=Workspace(forest,work,capacity=capacity); self.owner=self.workspace.owner
+        from scoped_source.pair_workspace import PairWorkspace,CANDIDATE_WIDTH
+        require(type(pair_scoped) is bool and (not pair_scoped or type(width) is int and width==CANDIDATE_WIDTH),
+                'optional pair-scoped candidate width 8')
+        workspace_type=PairWorkspace if pair_scoped else Workspace
+        self.workspace=workspace_type(forest,work,capacity=capacity); self.owner=self.workspace.owner
         self.contract=expected; self.forest=forest; self.work=work; self.closed=False
         self.pending=None; self.ordinal=0; self.receipts=[]; self.total_bytes=0
         self.costs=dict(init_seconds=0.,prepare_seconds=0.,encode_seconds=0.,receive_seconds=0.,

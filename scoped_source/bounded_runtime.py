@@ -15,6 +15,13 @@ HEADER = struct.Struct('<BBHHH8s')
 ROOT = struct.Struct('<dII')  # center, node owner, present
 
 
+def node_owner(forest, n):
+    """Checked wire metadata, without decoding a source coefficient row."""
+    from scoped_source.wire_forest import CheckedWireForest
+    return (forest.nodes.descriptor(n)[0] if type(forest) is CheckedWireForest
+            else forest.nodes[n][0])
+
+
 def scalar_size(bits, dyadic=False):
     require(type(bits) is int and 1 <= bits <= POLICY['work_bits'], 'fixed scalar bit ceiling')
     return HEADER.size + ((bits+7)//8)*(1 if dyadic else 2)
@@ -180,8 +187,8 @@ class RootTable:
             for kind in ('output','eq','ine'):
                 block=owner.allocate(4*len(view[kind])); self.members[vi,kind]=block
                 for k,(c,n) in enumerate(view[kind]):
-                    owner.work.visit('row_visits'); node_owner=f.nodes[n][0]
-                    raw=ROOT.pack(float(c),node_owner,1)
+                    owner.work.visit('row_visits'); owner_id=node_owner(f,n)
+                    raw=ROOT.pack(float(c),owner_id,1)
                     require(F(float(c))==c,'root exact binary64 center')
                     old=self.roots.get(n*ROOT.size,ROOT.size)
                     require(old==bytes(ROOT.size) or old==raw,'root center/owner alias')
@@ -190,8 +197,8 @@ class RootTable:
     def row(self,row_id):
         self.owner.check(); vi,kind,k=row_id
         block=self.members[vi,kind]; n=struct.unpack('<I',block.get(k*4,4))[0]
-        c,node_owner,present=ROOT.unpack(self.roots.get(n*ROOT.size,ROOT.size))
-        require(present==1 and self.owner.forest.nodes[n][0]==node_owner,'root ownership')
+        c,owner_id,present=ROOT.unpack(self.roots.get(n*ROOT.size,ROOT.size))
+        require(present==1 and node_owner(self.owner.forest,n)==owner_id,'root ownership')
         # Every lookup remains bound to its specific ordered source membership.
         require((F(c),n)==self.owner.forest.row(row_id),'ordered root membership')
         return F(c),n

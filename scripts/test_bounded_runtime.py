@@ -348,7 +348,7 @@ class Controls(unittest.TestCase):
         # Actual control artifacts, not code/config files; test temporary tree.
         (moved/'forest.bin').write_bytes(raw)
         modules=('check_source_dag','check_affine_references','check_scaled_references','forest_endpoints','scaled_endpoints',
-                 'bounded_runtime','direct_candidates','wire_forest','tensor_rows','factored_io','factored_source','hz_request_store')
+                 'bounded_runtime','pair_workspace','direct_candidates','wire_forest','tensor_rows','factored_io','factored_source','hz_request_store')
         repo=Path(__file__).resolve().parents[1]
         for path in [*(f'scoped_source/{m}.py' for m in modules),'source_enclosure/format.py','upstream_source/checker.py']:
             dest=moved/path; dest.parent.mkdir(exist_ok=True); shutil.copyfile(repo/path,dest)
@@ -368,6 +368,10 @@ for i in range(d.session.tile_count):
 print(json.dumps(d.finish(),sort_keys=True))
 assert not any(m in sys.modules for m in ('torch','numpy','scipy'))
 '''
+        from scoped_source.pair_workspace import PairWorkspace
+        if type(d.workspace) is PairWorkspace:
+            program=program.replace('expected=identity(c),work=w)',
+                                    'expected=identity(c),work=w,pair_scoped=True)')
         p=subprocess.run([sys.executable,'-B','-I','-S','-c',program,source],cwd=moved,
                          capture_output=True,text=True,timeout=30,check=True)
         self.assertEqual(json.loads(p.stdout),result)

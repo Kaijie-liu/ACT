@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Optional pair-scoped candidate-8/check-2 consumer control-checked: 2026-10-14.
 Pair-scoped microblock design assessed; no runtime change or admission: 2026-10-14.
 Implemented owned-workspace capacity assessed; width-8 lower bound refuses: 2026-10-14.
 Optional bounded workspace / direct candidate ownership controls completed: 2026-10-14.
@@ -53,7 +54,31 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: scoped microblock design addresses vector obstruction only
+## Current decision: optional pair-scoped consumer controls complete; no full admission
+
+The user approved implementation after the design below. The
+[frozen protocol](hz_pair_scoped_consumer_protocol_20261014.md) was pushed before
+code. [Results](hz_pair_scoped_consumer_controls_20261014.md) and its bound JSON
+record 88 passing tests, eight configurations and 164 exact proposed/zero-bound
+agreements with the old/dense consumers and expanded oracle; complete results
+agree. `Driver(..., pair_scoped=True)` is default-off, candidate width 8 and
+checking block width 2. Sparse roots, pair-local global-ID buffers, private
+in-place pullback and complete failure cleanup are implemented. Objective and
+dual propagation are not fused; all mathematical checks and old quotas remain.
+
+Owned peaks fall on these tiny controls, but Work rises. Scope is rebuilt per
+tile; Python grouping/scalars/planning and native/source coexistence remain
+outside the packed layout. The proposed 117,009,527-byte design is not an actual
+full-runtime bound. Wire metadata access changed in both optional workspace
+paths; no invariant-cost or speedup claim is made. No real model, native solver,
+GPU, new quota or production switch occurred. G1–G6 remain open.
+
+Next reconcile the **actual implementation** with the complete cost contract;
+do not rerun the full shape or expand controls as a substitute. Source membership,
+Work and candidate total barriers still stand. Full cost remains **NOT CLOSED**;
+any quota change or real/GPU run still needs separate approval.
+
+## Prior decision: scoped microblock design addresses vector obstruction only
 
 The [pair-scope design](hz_scoped_workspace_design_20261014.md) derives closure
 from the complete source check, preserving shared IDs and full global residual
