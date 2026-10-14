@@ -1,0 +1,536 @@
+{
+  "analysis_sha256": "bb512c0a447e33ff32d1c6afd2930fab4dd72f4b9ea5e6196d65af022d306049",
+  "anchors": {
+    "act/pipeline/moe/staged_verifier.py": "8361e88c5f0b609614af954117a457a26287be274fb3539e26fd252cf64fe871",
+    "docs/hz_runtime_lifetime_20261014.json": "67e30dafc4bd62ef7b425482ff384699ee11105822bac1d9de73c4f1b9425418",
+    "scoped_proof/supervisor.py": "a935cf6bf03d3604e2e2ce581939ca8c9ba120715ef8f289ba3fde59f7a8f14c",
+    "scoped_source/capture.py": "d3ca9b562c9840ace096d790d0fd6eb12d7105560a3c38767c85244c65f651e2",
+    "scoped_source/endpoint_verify.py": "17298b713a7e3039e8c7fc198904577dd48b46aadc125f95d8e1cb6f6cd31a90",
+    "scoped_source/wire_archive.py": "fdf0b0e97522527831a6f03f1c7188403bc8b7b844c3a9df092823e703295abd",
+    "scripts/assess_runtime_lifetime.py": "ca48bca0f4bb3e9603ff984c906d1179ebe29e07c856bba6f90081be466859d4"
+  },
+  "based_on_head": "f395e899de4bde927ddda775e387b43b2f0681f6",
+  "binary64_parameters_bytes": 55690944,
+  "checkpoints_loaded": 0,
+  "closure": {
+    "adapter_typed_arenas": "CONDITIONAL_FORMULAS_NOT_RUNTIME_PROOF",
+    "exact_runtime_scratch": "OPEN",
+    "full_cost_upper_closed": false,
+    "full_runtime_upper": null,
+    "logical_source_lifetime_contract": "SPECIFIED_NOT_IMPLEMENTED",
+    "native_dispatch_temporaries_threads": "OPEN",
+    "source_profile_and_promotion_equivalence": "OPEN",
+    "worker_containment": "OPEN"
+  },
+  "current_policy_unchanged": {
+    "active": 16384,
+    "depth": 64,
+    "factors": 32768,
+    "header_bytes": 8388608,
+    "member_bytes": 1048576,
+    "members": 4096,
+    "nnz": 1048576,
+    "page_rows": 64,
+    "rows": 65536,
+    "stored_bits": 4096,
+    "total_bytes": 134217728,
+    "view_rows": 16384,
+    "views": 128,
+    "visits": 8000000,
+    "work_bits": 8192
+  },
+  "dataset_loads": 0,
+  "date": "2026-10-14",
+  "environment_anchors": {
+    "lib/python3.12/pickle.py": "7e3447b6d993a6306a7893fd2fba916010ed79f8e09ceb56158a550fa8099a14",
+    "lib/python3.12/site-packages/torch/_utils.py": "b52db634d2378395685499de1fbb2b3a1bef21bb87677d830792179b492edc75",
+    "lib/python3.12/site-packages/torch/serialization.py": "7fe6755ba65409b510e75e0435a33f444c893a82ea817ff618a5be5943298a3c",
+    "lib/python3.12/site-packages/torchvision/datasets/cifar.py": "0a2d6786e8e9d1e9bc7db0664d0185bc14fb22c6733e8ee6dde750038b6ed835",
+    "lib/python3.12/site-packages/torchvision/transforms/functional.py": "0b2fdf8e6764f4be0113acd95b58d3b14158c13fa2374ed93fbbe1f4b8730ded"
+  },
+  "execution_admitted": false,
+  "gpu_calls": 0,
+  "implementation_authorized": false,
+  "input": {
+    "center_exact_denominator_bits_upper": 61,
+    "center_exact_numerator_bits_upper": 53,
+    "center_plus_literal_unreduced_bits": [
+      13669,
+      13668
+    ],
+    "center_replaced_with_exact_p_over_255": false,
+    "clipping_compare_product_bits_upper": 27276,
+    "clipping_compare_scope": "literal clip versus center plus/minus radius only",
+    "constructed_endpoints_compare_product_bits_upper": 27337,
+    "dataset_rows": 10000,
+    "float_radius_replaced_with_rational_two_over_255": false,
+    "four_literal_record_bytes_upper": 13672,
+    "frozen_totensor_bit_equivalence_proved": false,
+    "input_scan_free": false,
+    "literal_provenance_text_bytes_upper": 16384,
+    "materialized_center_bytes": 24576,
+    "native_256_value_control_run": false,
+    "new_request_bit_gate": null,
+    "one_literal_record_bytes_upper": 3418,
+    "preserve_original_literal_type_and_value": true,
+    "proposed_rn64_table_bytes": 2048,
+    "raw_data_blob_bytes": 30720000,
+    "request_integer_bits": 8192,
+    "request_literal_characters": 4096,
+    "rn64_table_integer_bits_upper": 68,
+    "selected_dataset_index": null,
+    "selected_row_bytes": 3072,
+    "string_rational_component_bits_upper": 13607
+  },
+  "invariant": {
+    "accept": "strictly greater than 1/10000000",
+    "all_tie_legal_pairs": true,
+    "old_results_unchanged": true,
+    "reference_and_proposed_share_resource_policy": true,
+    "request_seconds": 300,
+    "stored_bits": 4096,
+    "working_bits": 8192,
+    "zero_role_checked": true
+  },
+  "mathematical_checks_removed": false,
+  "model_runs": 0,
+  "new_quota": null,
+  "parameter_values": 6961368,
+  "parameterized_costs": {
+    "actual_source_bytes_read": 0,
+    "capture_peak_named_payload": "max(313*P,313*K) + bounded byte banks/descriptors/buffers",
+    "frozen_checkpoint_bytes": null,
+    "frozen_data_pickle_bytes": null,
+    "frozen_dataset_bytes": null,
+    "gather_read_bytes": "16*6961368 for two passes, including noncontiguous values",
+    "malformed_inclusive_zip_reads": "2*((2*S+5)*F+65557), S<=58, two checks",
+    "metadata_arena": "313*P; 313*K where K=R-30720000",
+    "parameterized_bounds_are_not_quotas": true,
+    "parser_cpu_comparisons": "sorting/memo/name comparisons separately charged; no linear-time claim",
+    "random_access_calls_upper": "2*6961368; not physical block traffic",
+    "snapshot_added_storage": "F+R",
+    "snapshot_hashes": "2*(F+R)",
+    "snapshot_reads": "2*(F+R), excluding parser/gathers",
+    "source_bytes_independently_read": "8*(6961368+3072)",
+    "total_store_upper": "A_width+F+R"
+  },
+  "production_changed": false,
+  "schema": "SOURCE_ADAPTER_LIFETIME_DESIGN_V1",
+  "solver_calls": 0,
+  "source_identity": {
+    "historical_checkpoint_and_state_bindings_exist": true,
+    "native_checkpoint_dtype_and_promoted_state_hashes_distinct": true,
+    "native_program_equivalence_claim": false,
+    "new_protocol": "ACT_MOE_DIRECT_UNIQUE_ROOT_DRAFT_V1",
+    "nonfinite_weights": "reject",
+    "old_json_replayed": false,
+    "permitted_storage_dtypes": [
+      "binary32",
+      "binary64"
+    ],
+    "real_format_compatibility_verified": false,
+    "repeated_view_roots_recounted_as_values": false,
+    "restricted_parser_implemented": false,
+    "selected_input": null,
+    "selected_live_checkpoint": null,
+    "tensor_rebuild_metadata": "absent/empty or false neg/conj only; empty hooks; no arbitrary tensor BUILD"
+  },
+  "status": "RESTRICTED_ADAPTER_AND_LIFETIME_DESIGN_ONLY_NO_COST_ADMISSION",
+  "tensor_count": 52,
+  "tensors": [
+    {
+      "name": "experts.0.1.bias",
+      "shape": [
+        256
+      ]
+    },
+    {
+      "name": "experts.0.1.weight",
+      "shape": [
+        256,
+        3072
+      ]
+    },
+    {
+      "name": "experts.0.3.bias",
+      "shape": [
+        128
+      ]
+    },
+    {
+      "name": "experts.0.3.weight",
+      "shape": [
+        128,
+        256
+      ]
+    },
+    {
+      "name": "experts.0.5.bias",
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "experts.0.5.weight",
+      "shape": [
+        10,
+        128
+      ]
+    },
+    {
+      "name": "experts.1.1.bias",
+      "shape": [
+        256
+      ]
+    },
+    {
+      "name": "experts.1.1.weight",
+      "shape": [
+        256,
+        3072
+      ]
+    },
+    {
+      "name": "experts.1.3.bias",
+      "shape": [
+        128
+      ]
+    },
+    {
+      "name": "experts.1.3.weight",
+      "shape": [
+        128,
+        256
+      ]
+    },
+    {
+      "name": "experts.1.5.bias",
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "experts.1.5.weight",
+      "shape": [
+        10,
+        128
+      ]
+    },
+    {
+      "name": "experts.2.1.bias",
+      "shape": [
+        256
+      ]
+    },
+    {
+      "name": "experts.2.1.weight",
+      "shape": [
+        256,
+        3072
+      ]
+    },
+    {
+      "name": "experts.2.3.bias",
+      "shape": [
+        128
+      ]
+    },
+    {
+      "name": "experts.2.3.weight",
+      "shape": [
+        128,
+        256
+      ]
+    },
+    {
+      "name": "experts.2.5.bias",
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "experts.2.5.weight",
+      "shape": [
+        10,
+        128
+      ]
+    },
+    {
+      "name": "experts.3.1.bias",
+      "shape": [
+        256
+      ]
+    },
+    {
+      "name": "experts.3.1.weight",
+      "shape": [
+        256,
+        3072
+      ]
+    },
+    {
+      "name": "experts.3.3.bias",
+      "shape": [
+        128
+      ]
+    },
+    {
+      "name": "experts.3.3.weight",
+      "shape": [
+        128,
+        256
+      ]
+    },
+    {
+      "name": "experts.3.5.bias",
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "experts.3.5.weight",
+      "shape": [
+        10,
+        128
+      ]
+    },
+    {
+      "name": "experts.4.1.bias",
+      "shape": [
+        256
+      ]
+    },
+    {
+      "name": "experts.4.1.weight",
+      "shape": [
+        256,
+        3072
+      ]
+    },
+    {
+      "name": "experts.4.3.bias",
+      "shape": [
+        128
+      ]
+    },
+    {
+      "name": "experts.4.3.weight",
+      "shape": [
+        128,
+        256
+      ]
+    },
+    {
+      "name": "experts.4.5.bias",
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "experts.4.5.weight",
+      "shape": [
+        10,
+        128
+      ]
+    },
+    {
+      "name": "experts.5.1.bias",
+      "shape": [
+        256
+      ]
+    },
+    {
+      "name": "experts.5.1.weight",
+      "shape": [
+        256,
+        3072
+      ]
+    },
+    {
+      "name": "experts.5.3.bias",
+      "shape": [
+        128
+      ]
+    },
+    {
+      "name": "experts.5.3.weight",
+      "shape": [
+        128,
+        256
+      ]
+    },
+    {
+      "name": "experts.5.5.bias",
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "experts.5.5.weight",
+      "shape": [
+        10,
+        128
+      ]
+    },
+    {
+      "name": "experts.6.1.bias",
+      "shape": [
+        256
+      ]
+    },
+    {
+      "name": "experts.6.1.weight",
+      "shape": [
+        256,
+        3072
+      ]
+    },
+    {
+      "name": "experts.6.3.bias",
+      "shape": [
+        128
+      ]
+    },
+    {
+      "name": "experts.6.3.weight",
+      "shape": [
+        128,
+        256
+      ]
+    },
+    {
+      "name": "experts.6.5.bias",
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "experts.6.5.weight",
+      "shape": [
+        10,
+        128
+      ]
+    },
+    {
+      "name": "experts.7.1.bias",
+      "shape": [
+        256
+      ]
+    },
+    {
+      "name": "experts.7.1.weight",
+      "shape": [
+        256,
+        3072
+      ]
+    },
+    {
+      "name": "experts.7.3.bias",
+      "shape": [
+        128
+      ]
+    },
+    {
+      "name": "experts.7.3.weight",
+      "shape": [
+        128,
+        256
+      ]
+    },
+    {
+      "name": "experts.7.5.bias",
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "experts.7.5.weight",
+      "shape": [
+        10,
+        128
+      ]
+    },
+    {
+      "name": "router.1.bias",
+      "shape": [
+        128
+      ]
+    },
+    {
+      "name": "router.1.weight",
+      "shape": [
+        128,
+        3072
+      ]
+    },
+    {
+      "name": "router.3.bias",
+      "shape": [
+        8
+      ]
+    },
+    {
+      "name": "router.3.weight",
+      "shape": [
+        8,
+        128
+      ]
+    }
+  ],
+  "workers": {
+    "cleanup_overrun": "count and reject, never backdate acceptance",
+    "concurrent_worker_upper": 1,
+    "conditional_process_rss_formula": "parent + max(source, native+exact+overlap, portable, reception)",
+    "current_capacity_entrypoint": "leader-only observation/wait; unchanged",
+    "deadline_reset": false,
+    "error_text": "bounded codes and checked spans; not str(exc) followed by slicing",
+    "failure": [
+      "STOP_OWNED_WORK",
+      "QUIESCE",
+      "PRESERVE_PREFIX",
+      "NONACCEPTING_TERMINAL"
+    ],
+    "fresh_exec": true,
+    "full_worker_lifetime_established": false,
+    "implementation_changed": false,
+    "later_offline_audit_can_complete_online_result": false,
+    "machine_page_cache_excluded_from_process_rss": true,
+    "missing_partial_or_late_evidence_can_accept": false,
+    "native_threads_upper": null,
+    "no_native_fork_proved": false,
+    "one_absolute_deadline_seconds": 300,
+    "os_cleanup_latency_upper": null,
+    "parent": "stdlib-only, metadata/FDs/counts/hash states; no numerical imports",
+    "parent_receives_traceback_objects": false,
+    "peak_process_rss_upper": null,
+    "phase_nonoverlap_condition": "all worker threads/allowed descendants exited; worker-owned FD/mapping references released",
+    "process_descendants": "not admitted without separately established ownership/no-fork contract",
+    "process_group_sample_proves_containment": false,
+    "production_native_and_exact": "sum with overlapping temporaries, never max",
+    "quota_reset": false,
+    "stronger_existing_entries": [
+      "scoped_source/wire_archive.py:run_child",
+      "scoped_proof/supervisor.py:execute"
+    ],
+    "timeout_limit_implies_completion": false,
+    "transitions": [
+      "INIT",
+      "SOURCE",
+      "QUIESCE_SOURCE",
+      "RECEIVE_SOURCE",
+      "PRODUCTION",
+      "QUIESCE_PRODUCTION",
+      "RECEIVE_CANDIDATES",
+      "PORTABLE",
+      "QUIESCE_PORTABLE",
+      "RECEIVE_RESULT",
+      "CLEANUP",
+      "PUBLISH_TERMINAL"
+    ],
+    "workers": [
+      "SOURCE",
+      "PRODUCTION",
+      "PORTABLE"
+    ]
+  }
+}

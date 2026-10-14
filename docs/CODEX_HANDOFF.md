@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Restricted source and whole-worker lifetime contract drafted: 2026-10-14.
 Runtime sub-ledger narrows arithmetic/native/capture/lifetime gaps: 2026-10-14.
 Direct identity and unique root resource protocol drafted: 2026-10-14.
 Implemented wire-path capacity/lifetime assessed; full topology refused: 2026-10-14.
@@ -48,7 +49,27 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: runtime sub-ledger identifies concrete remaining contracts
+## Current decision: restricted source/lifetime design, no execution admission
+
+The [adapter and lifetime contract](hz_source_lifetime_protocol_20261014.md)
+specifies the 52-tensor directory, non-executing descriptor parsing, immutable
+source ownership and the SOURCE/PRODUCTION/PORTABLE worker sequence. Native
+candidate and exact-consumer state coexist in PRODUCTION and must add. All
+mathematical checks and the one 300-second budget remain unchanged.
+
+New source snapshots require `F+R` additional logical storage beyond the prior
+~96.8 MB final store. File hash/length alone does not bound a generic unpickler;
+the new `313P` typed parser arena is a conditional layout, not an implemented
+parser or RSS proof. Original dtype/promotion and float64 input division/radius
+semantics must be bound; no model, input or native compatibility control ran.
+
+Nine new static tests supplement prior arithmetic/identity checks. **Complete
+cost is still NOT CLOSED; no quota change, production implementation or real/GPU
+execution is admitted.** Next close exact-runtime scratch, native/lifetime
+correspondence and total accounting; do not repeat tiny controls or infer a
+300-second completion guarantee from a deadline. Current G1–G6 stay OPEN.
+
+## Prior decision: runtime sub-ledger identifies concrete remaining contracts
 
 The [runtime/lifetime follow-up](hz_runtime_lifetime_20261014.md) preserves the
 direct-format proposal and narrows its open terms without executing it. Exact
