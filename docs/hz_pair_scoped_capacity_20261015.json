@@ -1,0 +1,883 @@
+{
+  "analysis_sha256": "63f9903b7b47c88d648d1721e07b463cbacd7abd6663c24316cd426731b445d6",
+  "anchors": {
+    "docs/hz_full_resource_ledger_20261014.json": "04c51e4765ada9445dcdd80f63f745459366154037443a68dd565c093acbe9d2",
+    "docs/hz_pair_scoped_consumer_controls_20261014.json": "9324e21aef911b2e1e7633e8348e9cd0e230f8399358ed8fde8d740badfb29d2",
+    "scoped_source/bounded_runtime.py": "c9c1d295e6a23bb92042f1060f99a5ee14e2e448d46e3f35af739663e750f7af",
+    "scoped_source/check_scaled_references.py": "244dc7ee5cf7fe46ab7097b2494dfec64d818e926b4726eb19d59a53c5074f9e",
+    "scoped_source/check_source_dag.py": "58e5e2158843631c9e6ed324cfeeb2eb38e51df1205d2e14d1ed8ac8ce634458",
+    "scoped_source/direct_candidates.py": "cb9b791b9a1b828c9d4fd6b351361c6fe59072b40caf0c91e55beefeaf2665a4",
+    "scoped_source/forest_endpoints.py": "86396e9c662ba8c91f6ac3921dc7f410d9b977937df38a9fb782f82991c50a4c",
+    "scoped_source/hz_request_store.py": "7cb2be7647039f59d3c896b7856f634f43be9c532d9d2fd43632be09ab3230e0",
+    "scoped_source/pair_workspace.py": "18df56b27f952189c52e268450c0e7dd53e58da5e4f2060a4eb098b0278a2829",
+    "scoped_source/scaled_endpoints.py": "48cf0be6fd9fe1776089f982a69d4100fdbd5867e207579286422bfbc45ad044",
+    "scoped_source/wire_forest.py": "981385019f93f97d41c02eab245cc21e8c430ccdfc8e0f853d5ffacb6981a3b3"
+  },
+  "any_admitted_frame_arena": {
+    "actual_peak": null,
+    "arena_headroom": 19827280,
+    "block_count_upper": 266,
+    "events": [
+      {
+        "delta": 0,
+        "event": "root index with all memberships",
+        "owned_upper": 856864
+      },
+      {
+        "delta": 274144,
+        "event": "scope forward/reverse maps",
+        "owned_upper": 1131008
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 0 fill",
+        "owned_upper": 1139280
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 0 seal overlap",
+        "owned_upper": 1147552
+      },
+      {
+        "delta": -8272,
+        "event": "descriptor 0 release fill",
+        "owned_upper": 1139280
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 1 fill",
+        "owned_upper": 1147552
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 1 seal overlap",
+        "owned_upper": 1155824
+      },
+      {
+        "delta": -8272,
+        "event": "descriptor 1 release fill",
+        "owned_upper": 1147552
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 2 fill",
+        "owned_upper": 1155824
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 2 seal overlap",
+        "owned_upper": 1164096
+      },
+      {
+        "delta": -8272,
+        "event": "descriptor 2 release fill",
+        "owned_upper": 1155824
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 3 fill",
+        "owned_upper": 1164096
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 3 seal overlap",
+        "owned_upper": 1172368
+      },
+      {
+        "delta": -8272,
+        "event": "descriptor 3 release fill",
+        "owned_upper": 1164096
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 4 fill",
+        "owned_upper": 1172368
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 4 seal overlap",
+        "owned_upper": 1180640
+      },
+      {
+        "delta": -8272,
+        "event": "descriptor 4 release fill",
+        "owned_upper": 1172368
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 5 fill",
+        "owned_upper": 1180640
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 5 seal overlap",
+        "owned_upper": 1188912
+      },
+      {
+        "delta": -8272,
+        "event": "descriptor 5 release fill",
+        "owned_upper": 1180640
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 6 fill",
+        "owned_upper": 1188912
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 6 seal overlap",
+        "owned_upper": 1197184
+      },
+      {
+        "delta": -8272,
+        "event": "descriptor 6 release fill",
+        "owned_upper": 1188912
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 7 fill",
+        "owned_upper": 1197184
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 7 seal overlap",
+        "owned_upper": 1205456
+      },
+      {
+        "delta": -8272,
+        "event": "descriptor 7 release fill",
+        "owned_upper": 1197184
+      },
+      {
+        "delta": 4194304,
+        "event": "frame fill or intake copy",
+        "owned_upper": 5391488
+      },
+      {
+        "delta": 4194304,
+        "event": "frame seal overlap",
+        "owned_upper": 9585792
+      },
+      {
+        "delta": -4194304,
+        "event": "frame release fill",
+        "owned_upper": 5391488
+      },
+      {
+        "delta": 15677480,
+        "event": "objective 0 node accumulator",
+        "owned_upper": 21068968
+      },
+      {
+        "delta": 19411000,
+        "event": "objective 0 factor output",
+        "owned_upper": 40479968
+      },
+      {
+        "delta": -15677480,
+        "event": "objective 0 consume nodes",
+        "owned_upper": 24802488
+      },
+      {
+        "delta": 15677480,
+        "event": "objective 1 node accumulator",
+        "owned_upper": 40479968
+      },
+      {
+        "delta": 19411000,
+        "event": "objective 1 factor output",
+        "owned_upper": 59890968
+      },
+      {
+        "delta": -15677480,
+        "event": "objective 1 consume nodes",
+        "owned_upper": 44213488
+      },
+      {
+        "delta": 31354960,
+        "event": "both dual node accumulators",
+        "owned_upper": 75568448
+      },
+      {
+        "delta": 19411000,
+        "event": "dual 0 factor output without node copy",
+        "owned_upper": 94979448
+      },
+      {
+        "delta": 19411000,
+        "event": "dual 1 factor output without node copy",
+        "owned_upper": 114390448
+      },
+      {
+        "delta": -31354960,
+        "event": "consume dual nodes",
+        "owned_upper": 83035488
+      },
+      {
+        "delta": -77644000,
+        "event": "release complete microblock factor maps",
+        "owned_upper": 5391488
+      },
+      {
+        "delta": -340320,
+        "event": "clear descriptors and scope",
+        "owned_upper": 5051168
+      },
+      {
+        "delta": -4194304,
+        "event": "release candidate",
+        "owned_upper": 856864
+      }
+    ],
+    "frame": 4194304,
+    "full_peak_rss_upper": null,
+    "global_factors": 32048,
+    "global_nodes": 19496,
+    "maps": 274144,
+    "owned_upper": 114390448,
+    "owned_upper_fits": true,
+    "pair_factors": 9400,
+    "pair_nodes": 7592,
+    "roots": 856864,
+    "sparse_roots": 66176,
+    "vector_peak": 108998960
+  },
+  "based_on": "d2c7a6f68184c7773ba3f2496db03398a9156ff4",
+  "complete_cost_closed": false,
+  "complete_rss_upper": null,
+  "complete_work_upper": null,
+  "conservative_global_arena": {
+    "actual_peak": null,
+    "arena_headroom": 23658640,
+    "block_count_upper": 266,
+    "events": [
+      {
+        "delta": 0,
+        "event": "root index with all memberships",
+        "owned_upper": 856864
+      },
+      {
+        "delta": 274144,
+        "event": "scope forward/reverse maps",
+        "owned_upper": 1131008
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 0 fill",
+        "owned_upper": 1139280
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 0 seal overlap",
+        "owned_upper": 1147552
+      },
+      {
+        "delta": -8272,
+        "event": "descriptor 0 release fill",
+        "owned_upper": 1139280
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 1 fill",
+        "owned_upper": 1147552
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 1 seal overlap",
+        "owned_upper": 1155824
+      },
+      {
+        "delta": -8272,
+        "event": "descriptor 1 release fill",
+        "owned_upper": 1147552
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 2 fill",
+        "owned_upper": 1155824
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 2 seal overlap",
+        "owned_upper": 1164096
+      },
+      {
+        "delta": -8272,
+        "event": "descriptor 2 release fill",
+        "owned_upper": 1155824
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 3 fill",
+        "owned_upper": 1164096
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 3 seal overlap",
+        "owned_upper": 1172368
+      },
+      {
+        "delta": -8272,
+        "event": "descriptor 3 release fill",
+        "owned_upper": 1164096
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 4 fill",
+        "owned_upper": 1172368
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 4 seal overlap",
+        "owned_upper": 1180640
+      },
+      {
+        "delta": -8272,
+        "event": "descriptor 4 release fill",
+        "owned_upper": 1172368
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 5 fill",
+        "owned_upper": 1180640
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 5 seal overlap",
+        "owned_upper": 1188912
+      },
+      {
+        "delta": -8272,
+        "event": "descriptor 5 release fill",
+        "owned_upper": 1180640
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 6 fill",
+        "owned_upper": 1188912
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 6 seal overlap",
+        "owned_upper": 1197184
+      },
+      {
+        "delta": -8272,
+        "event": "descriptor 6 release fill",
+        "owned_upper": 1188912
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 7 fill",
+        "owned_upper": 1197184
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 7 seal overlap",
+        "owned_upper": 1205456
+      },
+      {
+        "delta": -8272,
+        "event": "descriptor 7 release fill",
+        "owned_upper": 1197184
+      },
+      {
+        "delta": 362944,
+        "event": "frame fill or intake copy",
+        "owned_upper": 1560128
+      },
+      {
+        "delta": 362944,
+        "event": "frame seal overlap",
+        "owned_upper": 1923072
+      },
+      {
+        "delta": -362944,
+        "event": "frame release fill",
+        "owned_upper": 1560128
+      },
+      {
+        "delta": 15677480,
+        "event": "objective 0 node accumulator",
+        "owned_upper": 17237608
+      },
+      {
+        "delta": 19411000,
+        "event": "objective 0 factor output",
+        "owned_upper": 36648608
+      },
+      {
+        "delta": -15677480,
+        "event": "objective 0 consume nodes",
+        "owned_upper": 20971128
+      },
+      {
+        "delta": 15677480,
+        "event": "objective 1 node accumulator",
+        "owned_upper": 36648608
+      },
+      {
+        "delta": 19411000,
+        "event": "objective 1 factor output",
+        "owned_upper": 56059608
+      },
+      {
+        "delta": -15677480,
+        "event": "objective 1 consume nodes",
+        "owned_upper": 40382128
+      },
+      {
+        "delta": 31354960,
+        "event": "both dual node accumulators",
+        "owned_upper": 71737088
+      },
+      {
+        "delta": 19411000,
+        "event": "dual 0 factor output without node copy",
+        "owned_upper": 91148088
+      },
+      {
+        "delta": 19411000,
+        "event": "dual 1 factor output without node copy",
+        "owned_upper": 110559088
+      },
+      {
+        "delta": -31354960,
+        "event": "consume dual nodes",
+        "owned_upper": 79204128
+      },
+      {
+        "delta": -77644000,
+        "event": "release complete microblock factor maps",
+        "owned_upper": 1560128
+      },
+      {
+        "delta": -340320,
+        "event": "clear descriptors and scope",
+        "owned_upper": 1219808
+      },
+      {
+        "delta": -362944,
+        "event": "release candidate",
+        "owned_upper": 856864
+      }
+    ],
+    "frame": 362944,
+    "full_peak_rss_upper": null,
+    "global_factors": 32048,
+    "global_nodes": 19496,
+    "maps": 274144,
+    "owned_upper": 110559088,
+    "owned_upper_fits": true,
+    "pair_factors": 9400,
+    "pair_nodes": 7592,
+    "roots": 856864,
+    "sparse_roots": 66176,
+    "vector_peak": 108998960
+  },
+  "date": "2026-10-15",
+  "decision": "STOP_CURRENT_FULL_SHAPE_EXECUTION_INDEPENDENT_CONSUMER_WORK_REFUSAL",
+  "execution_admitted": false,
+  "general_stream": {
+    "actual_bytes": null,
+    "endpoints": 504,
+    "frame_upper_fits": false,
+    "largest_frame_upper": 44945344,
+    "per_pair_frame_upper": [
+      44945344,
+      44945344,
+      11236432
+    ],
+    "per_pair_widths": [
+      8,
+      8,
+      2
+    ],
+    "profile": 1,
+    "roles": 1008,
+    "stream_upper": 2831559360,
+    "stream_upper_fits": false,
+    "tiles": 84,
+    "upper_overflow_proves_actual_overflow": false
+  },
+  "gpu_runs": 0,
+  "inventory": {
+    "affine_outputs": 3288,
+    "candidates_upper": 1008,
+    "classes": 10,
+    "dual_scalar_entries_upper": 2721600,
+    "endpoints_min": 252,
+    "endpoints_upper": 504,
+    "expert_widths": [
+      3072,
+      256,
+      128,
+      10
+    ],
+    "experts": 8,
+    "factors_upper": 32048,
+    "first_weight_positions": 6684672,
+    "guards": 336,
+    "inputs": 3072,
+    "largest_weight_tensor": 786432,
+    "later_weight_positions": 273408,
+    "local_entries_upper": 6732720,
+    "mandatory_roots": 126632,
+    "nodes_upper": 19496,
+    "pair_dual_rows_upper": 2700,
+    "pair_local_tiles_upper": 84,
+    "pair_output_roots": 86016,
+    "pairs": 28,
+    "parameter_values": 6961368,
+    "property_duties": 252,
+    "raw_binary64_tensor_bytes": 55715520,
+    "references_upper": 277280,
+    "relu_units": 3200,
+    "roots_upper": 136232,
+    "router_widths": [
+      3072,
+      128,
+      8
+    ],
+    "source_values_with_center": 6964440,
+    "views": 82,
+    "width": 8
+  },
+  "large_allocations": 0,
+  "layout": {
+    "index": 4,
+    "prefix": 128,
+    "record": 72,
+    "root": 16,
+    "scalar": 2064,
+    "slot": 2065,
+    "stored": 1040
+  },
+  "model_runs": 0,
+  "native_stream": {
+    "actual_bytes": null,
+    "endpoints": 504,
+    "frame_upper_fits": true,
+    "largest_frame_upper": 362944,
+    "per_pair_frame_upper": [
+      362944,
+      362944,
+      90832
+    ],
+    "per_pair_widths": [
+      8,
+      8,
+      2
+    ],
+    "profile": 0,
+    "roles": 1008,
+    "stream_upper": 22868160,
+    "stream_upper_fits": false,
+    "tiles": 84,
+    "upper_overflow_proves_actual_overflow": false
+  },
+  "new_quota": null,
+  "next": "Separate complete source/evidence representation and common resource-policy decision; no quota from a lower bound",
+  "old_pair_once_count": 28,
+  "production_changed": false,
+  "schema": "PAIR_SCOPED_IMPLEMENTATION_CAPACITY_STATIC_V1",
+  "scope": {
+    "pair_factors": 9400,
+    "pair_nodes": 7592,
+    "tighter_global_factors": 25648
+  },
+  "scope_rebuilds_upper": 84,
+  "solver_calls": 0,
+  "source_builds": 0,
+  "support_work_floor": {
+    "dense_reference": {
+      "exceeds_work_cap": true,
+      "get_floor": 1,
+      "merge_floor": 5,
+      "omitted": [
+        "source",
+        "planning",
+        "scope construction",
+        "pullbacks",
+        "native candidates",
+        "dual rows",
+        "private factors",
+        "payload reads",
+        "scale-group final sum",
+        "publication"
+      ],
+      "one_norm_floor": 3,
+      "per_input_endpoint_floor": 11,
+      "required_endpoints_min": 252,
+      "requires_all_endpoint_candidate_pairs_present": true,
+      "set_floor": 1,
+      "shared_input_factors": 3072,
+      "work_lower": 8515584
+    },
+    "pair_scoped": {
+      "exceeds_work_cap": true,
+      "get_floor": 3,
+      "merge_floor": 12,
+      "omitted": [
+        "source",
+        "planning",
+        "scope construction",
+        "pullbacks",
+        "native candidates",
+        "dual rows",
+        "private factors",
+        "payload reads",
+        "scale-group final sum",
+        "publication"
+      ],
+      "one_norm_floor": 5,
+      "per_input_endpoint_floor": 22,
+      "required_endpoints_min": 252,
+      "requires_all_endpoint_candidate_pairs_present": true,
+      "set_floor": 4,
+      "shared_input_factors": 3072,
+      "work_lower": 17031168
+    }
+  },
+  "tighter_global_arena": {
+    "actual_peak": null,
+    "arena_headroom": 23684240,
+    "block_count_upper": 266,
+    "events": [
+      {
+        "delta": 0,
+        "event": "root index with all memberships",
+        "owned_upper": 856864
+      },
+      {
+        "delta": 248544,
+        "event": "scope forward/reverse maps",
+        "owned_upper": 1105408
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 0 fill",
+        "owned_upper": 1113680
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 0 seal overlap",
+        "owned_upper": 1121952
+      },
+      {
+        "delta": -8272,
+        "event": "descriptor 0 release fill",
+        "owned_upper": 1113680
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 1 fill",
+        "owned_upper": 1121952
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 1 seal overlap",
+        "owned_upper": 1130224
+      },
+      {
+        "delta": -8272,
+        "event": "descriptor 1 release fill",
+        "owned_upper": 1121952
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 2 fill",
+        "owned_upper": 1130224
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 2 seal overlap",
+        "owned_upper": 1138496
+      },
+      {
+        "delta": -8272,
+        "event": "descriptor 2 release fill",
+        "owned_upper": 1130224
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 3 fill",
+        "owned_upper": 1138496
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 3 seal overlap",
+        "owned_upper": 1146768
+      },
+      {
+        "delta": -8272,
+        "event": "descriptor 3 release fill",
+        "owned_upper": 1138496
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 4 fill",
+        "owned_upper": 1146768
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 4 seal overlap",
+        "owned_upper": 1155040
+      },
+      {
+        "delta": -8272,
+        "event": "descriptor 4 release fill",
+        "owned_upper": 1146768
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 5 fill",
+        "owned_upper": 1155040
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 5 seal overlap",
+        "owned_upper": 1163312
+      },
+      {
+        "delta": -8272,
+        "event": "descriptor 5 release fill",
+        "owned_upper": 1155040
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 6 fill",
+        "owned_upper": 1163312
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 6 seal overlap",
+        "owned_upper": 1171584
+      },
+      {
+        "delta": -8272,
+        "event": "descriptor 6 release fill",
+        "owned_upper": 1163312
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 7 fill",
+        "owned_upper": 1171584
+      },
+      {
+        "delta": 8272,
+        "event": "descriptor 7 seal overlap",
+        "owned_upper": 1179856
+      },
+      {
+        "delta": -8272,
+        "event": "descriptor 7 release fill",
+        "owned_upper": 1171584
+      },
+      {
+        "delta": 362944,
+        "event": "frame fill or intake copy",
+        "owned_upper": 1534528
+      },
+      {
+        "delta": 362944,
+        "event": "frame seal overlap",
+        "owned_upper": 1897472
+      },
+      {
+        "delta": -362944,
+        "event": "frame release fill",
+        "owned_upper": 1534528
+      },
+      {
+        "delta": 15677480,
+        "event": "objective 0 node accumulator",
+        "owned_upper": 17212008
+      },
+      {
+        "delta": 19411000,
+        "event": "objective 0 factor output",
+        "owned_upper": 36623008
+      },
+      {
+        "delta": -15677480,
+        "event": "objective 0 consume nodes",
+        "owned_upper": 20945528
+      },
+      {
+        "delta": 15677480,
+        "event": "objective 1 node accumulator",
+        "owned_upper": 36623008
+      },
+      {
+        "delta": 19411000,
+        "event": "objective 1 factor output",
+        "owned_upper": 56034008
+      },
+      {
+        "delta": -15677480,
+        "event": "objective 1 consume nodes",
+        "owned_upper": 40356528
+      },
+      {
+        "delta": 31354960,
+        "event": "both dual node accumulators",
+        "owned_upper": 71711488
+      },
+      {
+        "delta": 19411000,
+        "event": "dual 0 factor output without node copy",
+        "owned_upper": 91122488
+      },
+      {
+        "delta": 19411000,
+        "event": "dual 1 factor output without node copy",
+        "owned_upper": 110533488
+      },
+      {
+        "delta": -31354960,
+        "event": "consume dual nodes",
+        "owned_upper": 79178528
+      },
+      {
+        "delta": -77644000,
+        "event": "release complete microblock factor maps",
+        "owned_upper": 1534528
+      },
+      {
+        "delta": -314720,
+        "event": "clear descriptors and scope",
+        "owned_upper": 1219808
+      },
+      {
+        "delta": -362944,
+        "event": "release candidate",
+        "owned_upper": 856864
+      }
+    ],
+    "frame": 362944,
+    "full_peak_rss_upper": null,
+    "global_factors": 25648,
+    "global_nodes": 19496,
+    "maps": 248544,
+    "owned_upper": 110533488,
+    "owned_upper_fits": true,
+    "pair_factors": 9400,
+    "pair_nodes": 7592,
+    "roots": 856864,
+    "sparse_roots": 66176,
+    "vector_peak": 108998960
+  },
+  "unchanged_caps": {
+    "arena": 134217728,
+    "candidates": 16769024,
+    "frame": 4194304,
+    "seconds": 300,
+    "work": 8000000
+  },
+  "upstream": {
+    "first_weight_visit_lower": 13369344,
+    "membership_cap": 65536,
+    "memberships_min": 126632
+  }
+}

@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Actual pair-scoped arena fits; complete consumer Work independently refuses: 2026-10-15.
 Optional pair-scoped candidate-8/check-2 consumer control-checked: 2026-10-14.
 Pair-scoped microblock design assessed; no runtime change or admission: 2026-10-14.
 Implemented owned-workspace capacity assessed; width-8 lower bound refuses: 2026-10-14.
@@ -54,7 +55,29 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: optional pair-scoped consumer controls complete; no full admission
+## Current decision: complete present-candidate checking exceeds 8M Work
+
+[Actual-implementation accounting](hz_pair_scoped_capacity_20261015.md) binds
+`d2c7a6f68` without constructing a source or running a model. Pair-scoped native
+owned payload has upper 110,559,088 bytes (any admitted frame: 114,390,448), below
+128 MiB. These are not RSS or the old proposed packed-layout total.
+
+More decisively, merely merging and checking both norms on the 3072 mandatory
+input factors across the minimum 252 endpoints requires at least **17,031,168
+Work** for scoped, **8,515,584** for dense owned. Both exceed the unchanged 8M,
+before source, pullback or native work. Missing evidence can avoid this cost but
+cannot yield complete positive closure. Eight static and thirteen navigation
+checks pass; source and candidate-stream blockers remain separate.
+
+Stop full-shape retries and further vector shrinking as an admission strategy.
+Next needs a separate complete source/evidence/resource contract addressing
+checked traversal/access repetition and full candidate-role encoding. Scope
+caching or changing block width alone cannot remove this floor. Do not infer a
+new quota from a lower bound or implement a new representation without its
+scoped approval. Full Work/RSS remains **NOT CLOSED**, no real/GPU run is admitted,
+and no G1–G6 scientific claim is upgraded.
+
+## Prior decision: optional pair-scoped consumer controls complete; no full admission
 
 The user approved implementation after the design below. The
 [frozen protocol](hz_pair_scoped_consumer_protocol_20261014.md) was pushed before
