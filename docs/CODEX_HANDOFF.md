@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Direct source/checker/portable join authorized; finite control protocol frozen: 2026-10-15.
 Joint source/consumer/portable interfaces reviewed; new implementation decision required: 2026-10-15.
 Consumer-only traversal/zero encoding cannot close full-topology admission: 2026-10-15.
 Actual pair-scoped arena fits; complete consumer Work independently refuses: 2026-10-15.
@@ -57,7 +58,17 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: joint path is not connected; stop at implementation scope
+## Current decision: implement the approved optional direct join
+
+The user approved the [direct join protocol](hz_direct_join_protocol_20261015.md).
+Connect direct unique-root source construction, independent semantic checking
+and typed-frame portable replay; fixed-candidate/standard-library controls only.
+All memberships keep the old ceiling. One online Work/deadline covers fresh
+replay; copied-package audit is separately labelled offline. No Torch/native
+proposer, real source, GPU, quota increase or production-default change.
+Complete capacity and G1–G6 remain open.
+
+## Prior decision: joint path is not connected; stop at implementation scope
 
 The [joint interface review](hz_joint_path_decision_20261015.md) binds
 `822fc2c4e`: native `produce` still creates a plain Session; the portable
