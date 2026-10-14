@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Optional bounded workspace / direct candidate ownership controls completed: 2026-10-14.
 Exact dyadic domain and live-object gap assessed; full-cost admission stopped: 2026-10-14.
 Restricted source and whole-worker lifetime contract drafted: 2026-10-14.
 Runtime sub-ledger narrows arithmetic/native/capture/lifetime gaps: 2026-10-14.
@@ -50,7 +51,31 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: bounded runtime correspondence required; do not infer full cost
+## Current decision: optional interfaces checked; full-cost admission remains closed
+
+The user authorized optional bounded representation, buffers and ownership
+interfaces with differential/fault controls, not cap changes or real/GPU runs.
+The [frozen protocol](hz_bounded_runtime_protocol_20261014.md) was pushed before
+implementation. [Results and boundaries](hz_bounded_runtime_controls_20261014.md)
+record 55 passing tests: 21 new, 21 wire regressions and 13 handoff/navigation.
+Sixteen configurations give 328 exact candidate-bound agreements with the old
+consumer and expanded oracle, plus complete aggregate agreement.
+
+The new opt-in Driver uses fixed exact working slots, a checked unique-root
+index, direct immutable candidate frames and the same mathematical consumer.
+It retains the old source checker and all ordered dual obligations. No candidate
+JSON reconstruction, upward quota change or acceptance relaxation occurs.
+Publication, partial evidence, source reseal, late cleanup and relocation have
+controls; source capture/native/GPU integration is not part of this stage.
+
+**Full cost remains NOT CLOSED.** Owned payload counters are not RSS; upstream
+source storage, arithmetic temporaries, native coexistence, external copies and
+whole-process lifetime remain open. Next reconcile these implemented interfaces
+with the complete cost contract; do not retry a full topology or infer admission
+from passing controls. Real-model science, old failures, G1–G6 and sealed inputs
+are unchanged. Any new quota or real/GPU execution still needs separate approval.
+
+## Prior decision: bounded runtime correspondence required; do not infer full cost
 
 The [exact-domain/lifetime assessment](hz_exact_domain_20261014.md) establishes
 a narrower dyadic value domain for the native binary64 candidate profile, not

@@ -16,11 +16,14 @@ SCHEMA='SCALED_FOREST_ENDPOINT_CONTRACT_V3'
 PROOF='SCALED_FOREST_ALL_CANDIDATES_V3'
 
 
-def pullback(forest,columns,work):
+def pullback(forest,columns,work,workspace=None):
     """Unscaled P=L^T(I-R)^(-T); same coefficient visit, exact work per column."""
     checked(forest,work)
     require(0<len(columns)<=8,'bounded adjoint columns')
-    alpha=[dict(c) for c in columns]; out=[{} for _ in columns]
+    alpha=([dict(c) for c in columns] if workspace is None else
+           [workspace.mapping('nodes',c) for c in columns])
+    out=([{} for _ in columns] if workspace is None else
+         [workspace.mapping('factors') for _ in columns])
     for n in range(len(forest.nodes)-1,-1,-1):
         work.visit('row_visits'); weights=[(k,a.get(n,F(0))) for k,a in enumerate(alpha)]
         weights=[(k,v) for k,v in weights if v]
@@ -32,6 +35,8 @@ def pullback(forest,columns,work):
         for p,q in refs:
             work.visit('coefficient_visits')
             for k,w in weights: alpha[k][p]=work.exact(alpha[k].get(p,F(0))+work.exact(w*q))
+    if workspace is not None:
+        for a in alpha: a.close()
     return out
 
 
@@ -93,15 +98,45 @@ class Receipt:
     record: object
 
 
+class _JSONTile:
+    """Legacy wire format; mathematical consumption below is shared."""
+    def __init__(self,records,tasks):
+        require(type(records) is list and len(records)==len(tasks),'complete endpoint tile')
+        self.records=records; self.tasks=tasks
+
+    def present(self,k):
+        record=self.records[k]; task=self.tasks[k]
+        require(type(record) is dict and set(record)=={'slot','proposed','zero'} and record['slot']==task.slot,'slot binding/order')
+        require((record['proposed'] is None)==(record['zero'] is None),'partial candidate pair')
+        return record['proposed'] is not None
+
+    def candidate(self,k,role):
+        c=self.records[k][role]
+        require(type(c) is dict and set(c)=={'query','equality','inequality','lower'}
+                and c['query']==self.tasks[k].query_id,'raw candidate fields/binding')
+        rational(c['lower'])
+
+    def dimensions(self,k,role,key,count):
+        v=self.records[k][role][key]
+        require(type(v) is list and len(v)==count,'full dual roster')
+
+    def weight(self,k,role,key,i): return rational(self.records[k][role][key][i])
+
+
 class Session:
     """Private complete plan, one live tile; receipts authorized by object identity.
 
     This is an in-process API trust boundary, not a sandbox against malicious
     Python code changing private memory. Durable inputs never trust receipts.
     """
-    def __init__(self,forest,doc,*,expected,work,width=8,retain_raw=True):
+    def __init__(self,forest,doc,*,expected,work,width=8,retain_raw=True,workspace=None):
         checked(forest,work); require(type(width) is int and 1<=width<=8,'bounded tile width')
         require(type(retain_raw) is bool,'explicit evidence retention mode')
+        if workspace is not None:
+            from scoped_source.bounded_runtime import Workspace
+            require(type(workspace) is Workspace and not retain_raw,'optional owned streaming workspace')
+            workspace.bind(forest,work)
+        self.__workspace=workspace
         self.__retain_raw=retain_raw
         self.__forest=forest; self.__work=work; self.__plan=_plan(forest,doc,expected,work)
         self.__tiles=tuple(self.__plan.tiles(width)); self.__width=width; self.__next=0
@@ -125,9 +160,10 @@ class Session:
                                and index<len(self.__tiles),'one next private tile')
         tasks=self.__tiles[index]; roots=[]; objectives=[]
         for task in tasks:
-            d,alpha=objective_roots(self.__forest,task,self.__work)
+            d,alpha=(objective_roots(self.__forest,task,self.__work) if self.__workspace is None
+                     else self.__workspace.objective(task))
             roots.append((d,MappingProxyType(alpha)))
-            objectives.append(pullback(self.__forest,[alpha],self.__work)[0])
+            objectives.append(pullback(self.__forest,[alpha],self.__work,self.__workspace)[0])
         self.__live=(tasks,tuple(roots),objectives)
         return tasks,tuple(roots)
 
@@ -136,35 +172,44 @@ class Session:
         raw=records if type(records) is bytes else compact(records)
         require(len(raw)<=4*2**20,'bounded raw candidate tile')
         records=decode(raw); require(compact(records)==raw,'canonical raw candidate bytes')
+        return self._consume(_JSONTile(records,self.__live[0]),raw)
+
+    def accept_direct(self,tile):
+        self._check(); require(self.__live is not None and self.__workspace is not None,'owned direct tile only')
+        from scoped_source.direct_candidates import Tile
+        owner=self.__workspace.owner
+        require(type(tile) is Tile and tile is owner._tile and tile.owner is owner
+                and tile.tasks==self.__live[0] and tile.ordinal==self.__next,'issued direct tile identity')
+        return self._consume(tile,tile.raw)
+
+    def _consume(self,access,raw):
+        # This private entry is reached only through the two closed accessors.
         tasks,roots,objectives=self.__live; forest=self.__forest; work=self.__work
-        require(type(records) is list and len(records)==len(tasks),'complete endpoint tile')
         self.__bytes+=len(raw); require(self.__bytes<=16*2**20-8192,'bounded cumulative evidence')
-        present=[]; alpha=[{} for _ in tasks]; dual_rhs=[F(0) for _ in tasks]
-        for k,(record,task) in enumerate(zip(records,tasks,strict=True)):
-            require(type(record) is dict and set(record)=={'slot','proposed','zero'} and record['slot']==task.slot,'slot binding/order')
-            require((record['proposed'] is None)==(record['zero'] is None),'partial candidate pair')
-            if record['proposed'] is None: continue
+        present=[]; alpha=([{} for _ in tasks] if self.__workspace is None else
+                           [self.__workspace.mapping('nodes') for _ in tasks])
+        dual_rhs=[F(0) for _ in tasks]
+        for k,task in enumerate(tasks):
+            if not access.present(k): continue
             present.append(k)
             for role in ('proposed','zero'):
-                candidate=record[role]; work.visit('row_visits',4)
-                require(type(candidate) is dict and set(candidate)=={'query','equality','inequality','lower'}
-                        and candidate['query']==task.query_id,'raw candidate fields/binding')
-                rational(candidate['lower'])  # Format/cap only; never used as a bound.
+                work.visit('row_visits',4); access.candidate(k,role)
         for kind,key in (('eq','equality'),('ine','inequality')):
             rows=forest.rows(tasks[0].pair,kind)
-            require(all(type(records[k][role][key]) is list and len(records[k][role][key])==len(rows)
-                        for k in present for role in ('proposed','zero')),'full dual roster')
+            for k in present:
+                for role in ('proposed','zero'): access.dimensions(k,role,key,len(rows))
             for i,row in enumerate(rows):
-                work.visit('row_visits'); rhs,n=forest.row(row)
+                work.visit('row_visits')
+                rhs,n=(forest.row(row) if self.__workspace is None else self.__workspace.roots.row(row))
                 for k in present:
                     for role in ('proposed','zero'):
-                        work.visit('coefficient_visits'); w=rational(records[k][role][key][i])
+                        work.visit('coefficient_visits'); w=access.weight(k,role,key,i)
                         require(kind!='ine' or w<=0,'inequality dual sign')
                         if role=='zero': require(w==0,'explicit zero must be zero'); continue
                         if w:
                             dual_rhs[k]=work.exact(dual_rhs[k]+work.exact(rhs*w))
                             alpha[k][n]=work.exact(alpha[k].get(n,F(0))-w)
-        duals=pullback(forest,alpha,work) if present else [{} for _ in tasks]
+        duals=pullback(forest,alpha,work,self.__workspace) if present else [{} for _ in tasks]
         issued=[]; candidate_hash=digest(raw)
         for k,task in enumerate(tasks):
             if k not in present:
@@ -188,7 +233,13 @@ class Session:
         work.tick()
         if self.__retain_raw: self.__raw.append(raw)
         self.__next+=1; self.__live=None
+        if self.__workspace is not None: self.__workspace.clear_tile()
         return tuple(issued)
+
+    def abort(self):
+        """Fail-closed owner cleanup even after Work's deadline; no counter reset."""
+        self.__closed=True; self.__live=None; self.__issued.clear(); self.__values.clear(); self.__raw.clear()
+        if self.__workspace is not None: self.__workspace.close()
 
     def finish(self,receipts):
         self._check(); work=self.__work
