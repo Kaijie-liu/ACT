@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Joint source/consumer/portable interfaces reviewed; new implementation decision required: 2026-10-15.
 Consumer-only traversal/zero encoding cannot close full-topology admission: 2026-10-15.
 Actual pair-scoped arena fits; complete consumer Work independently refuses: 2026-10-15.
 Optional pair-scoped candidate-8/check-2 consumer control-checked: 2026-10-14.
@@ -56,7 +57,28 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: stop isolated consumer capacity fixes
+## Current decision: joint path is not connected; stop at implementation scope
+
+The [joint interface review](hz_joint_path_decision_20261015.md) binds
+`822fc2c4e`: native `produce` still creates a plain Session; the portable
+manifest still expands old JSON and uses a plain Session. Driver relocation is
+control-tested, but is not that production path. The direct unique-root source
+remains a design. The 96.8 MB proposed store and 110.56 MB implemented owned arena
+cannot be added into a complete RSS/storage guarantee.
+
+The review specifies proposed joins, ownership/release and full phase costs,
+and separates fixed-candidate dense/scoped checking from native width-1/8
+batching. It recommends one online deadline including portable recheck; later
+relocation remains separately charged offline, never an online rescue.
+
+Next needs explicit scope for a default-off direct-source/independent-checker
+implementation and its production/portable connections, initially synthetic
+CPU controls only. This would move implementation-correspondence work ahead of
+final runtime bound closure and must not be inferred from the previous consumer
+approval. No new runtime is implemented here. Full Work/RSS, resource ceiling,
+real/GPU admission and G1–G6 remain open; do not continue isolated refusal tests.
+
+## Prior decision: stop isolated consumer capacity fixes
 
 The [consumer-only option assessment](hz_consumer_only_decision_20261015.md)
 grants all physical mapping/buffer accesses free while retaining the current
