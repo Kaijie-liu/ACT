@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Direct identity and unique root resource protocol drafted: 2026-10-14.
 Implemented wire-path capacity/lifetime assessed; full topology refused: 2026-10-14.
 Lossless wire / bounded intake / archive interfaces control-checked: 2026-10-14.
 Lossless evidence envelope and bounded-intake proposal assessed: 2026-10-14.
@@ -46,7 +47,35 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: changed-path assessment still refuses full topology
+## Current decision: new logical resource design has conditional data bounds
+
+The user approved a new protocol without old JSON logical-byte replay or
+duplicate-root accounting, retaining every mathematical check and 300 seconds.
+The [direct unique-root proposal](hz_unique_root_protocol_20261014.md) and its
+[static ledger](hz_unique_root_protocol_20261014.json) separate at most 19,496
+root values from 136,232 still-checked view memberships. Both candidate roles
+and all 252 duties remain. No runtime cap or production checker changed.
+
+Single native-candidate store envelopes are 96,769,184 / 96,661,664 bytes for
+widths 1 / 8, including code, results, logs and partial-prefix accounting.
+They require a new direct constructor and single-store lifecycle, not the
+existing JSON migration encoder. Two retained copies do not have a 128-MiB
+guarantee. Generic rational candidates have a separate larger bound.
+
+Specified-core counts still include billions of exact evaluations. The
+conditional owned-data bounds are not full RSS: native dispatch/workspace,
+exact runtime/allocator scratch, live checkpoint capture and correspondence
+to a bounded implementation remain open. **Complete runtime cost is NOT
+closed; no quota is selected and no implementation/real/GPU run is admitted.**
+Do not substitute a memory stop value for a completion bound. Next close those
+specific implementation/lifetime terms statically before proposing a separate
+implementation or execution freeze. No sealed experiment or small timing study
+is reopened; G1–G6 and all historical scientific limitations remain unchanged.
+Fourteen new static tests and 29 regressions pass. Read-only review corrected
+hash-context multiplicity; a file scan is not a single hash pass. The new
+protocol is a proposal, not an implemented checker or completed full-cost gate.
+
+## Prior decision: changed-path assessment still refuses full topology
 
 The [implemented-wire assessment](hz_wire_capacity_20261014.md) binds current
 code and preserves prior reports. Ten new static tests pass; no source/model,

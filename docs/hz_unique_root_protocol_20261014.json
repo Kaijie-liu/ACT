@@ -1,0 +1,638 @@
+{
+  "absolute_ceiling": null,
+  "analysis_sha256": "d4e4f7ab509dfd94e050d672b75358c32186f702ff7228a27d620fd9cd5ddf9f",
+  "anchors": {
+    "act/back_end/moe/scaled_forest_endpoints.py": "118e88e3484ff4f4977f3b2535fa3aba8bdf7b1b1b7598da8232c0fe0ea57af1",
+    "docs/hz_full_resource_ledger_20261014.json": "04c51e4765ada9445dcdd80f63f745459366154037443a68dd565c093acbe9d2",
+    "docs/hz_wire_capacity_20261014.json": "805fd553080207e76aeb17c7efe2b425a8fb35bb519772028453f5de7fe7e3c6",
+    "scoped_source/capture.py": "d3ca9b562c9840ace096d790d0fd6eb12d7105560a3c38767c85244c65f651e2",
+    "scoped_source/check_scaled_references.py": "244dc7ee5cf7fe46ab7097b2494dfec64d818e926b4726eb19d59a53c5074f9e",
+    "scoped_source/check_source_dag.py": "58e5e2158843631c9e6ed324cfeeb2eb38e51df1205d2e14d1ed8ac8ce634458",
+    "scoped_source/hz_request_store.py": "7cb2be7647039f59d3c896b7856f634f43be9c532d9d2fd43632be09ab3230e0",
+    "scoped_source/scaled_endpoints.py": "93197c1b329e173b25795c48cf117b7113c2b23cc6958438889a7e912d13e8af",
+    "scoped_source/scaled_references.py": "534761cad44cbdf62ed31ee4d999fce0a5bd51aed4461b98d8f986b75d50d75d",
+    "scoped_source/source_dag.py": "38863bafe654242077732bac9d9862d928ceb62eb5a77dcc44991cf2fab934e0",
+    "scoped_source/wire_archive.py": "fdf0b0e97522527831a6f03f1c7188403bc8b7b844c3a9df092823e703295abd",
+    "scoped_source/wire_forest.py": "981385019f93f97d41c02eab245cc21e8c430ccdfc8e0f853d5ffacb6981a3b3",
+    "scripts/analyze_full_resource_ledger.py": "ae9e11ebf873924e48c7ba89bf42b60aa1968cbf991d839f8b97b67e26ec28fc",
+    "scripts/assess_model_scaled_resources.py": "4900b4f3682b27071e8e406c7e5bb955677719183171b13c429f6469999a0789"
+  },
+  "based_on_head": "f5baf0e599d6674fa079047b884e594ba36b5475",
+  "closure": {
+    "archive_format_envelope": "CONDITIONAL_CLOSED",
+    "execution_admitted": false,
+    "full_cost_upper_closed": false,
+    "full_runtime_and_capture": "NOT_CLOSED",
+    "specified_exact_core": "CONDITIONAL_CLOSED"
+  },
+  "current_policy_unchanged": {
+    "active": 16384,
+    "depth": 64,
+    "factors": 32768,
+    "header_bytes": 8388608,
+    "member_bytes": 1048576,
+    "members": 4096,
+    "nnz": 1048576,
+    "page_rows": 64,
+    "rows": 65536,
+    "stored_bits": 4096,
+    "total_bytes": 134217728,
+    "view_rows": 16384,
+    "views": 128,
+    "visits": 8000000,
+    "work_bits": 8192
+  },
+  "date": "2026-10-14",
+  "gpu_runs": 0,
+  "identity": {
+    "canonical_root_upper": 19496,
+    "duplicate_owner_merging": false,
+    "membership_checks_removed": false,
+    "membership_upper": 136232,
+    "new_domain": "ACT_MOE_DIRECT_UNIQUE_ROOT_DRAFT_V1",
+    "old_hash_equals_new_hash": false,
+    "replays_old_json": false
+  },
+  "implementation_authorized": false,
+  "invariant": {
+    "accept": "strictly greater than 1/10000000",
+    "all_tie_legal_pairs": true,
+    "old_results_unchanged": true,
+    "reference_and_proposed_share_resource_policy": true,
+    "request_seconds": 300,
+    "stored_bits": 4096,
+    "working_bits": 8192,
+    "zero_role_checked": true
+  },
+  "inventory": {
+    "affine_outputs": 3288,
+    "candidates_upper": 1008,
+    "classes": 10,
+    "dual_scalar_entries_upper": 2721600,
+    "endpoints_min": 252,
+    "endpoints_upper": 504,
+    "expert_widths": [
+      3072,
+      256,
+      128,
+      10
+    ],
+    "experts": 8,
+    "factors_upper": 32048,
+    "first_weight_positions": 6684672,
+    "guards": 336,
+    "inputs": 3072,
+    "largest_weight_tensor": 786432,
+    "later_weight_positions": 273408,
+    "local_entries_upper": 6732720,
+    "mandatory_roots": 126632,
+    "nodes_upper": 19496,
+    "pair_dual_rows_upper": 2700,
+    "pair_local_tiles_upper": 84,
+    "pair_output_roots": 86016,
+    "pairs": 28,
+    "parameter_values": 6961368,
+    "property_duties": 252,
+    "raw_binary64_tensor_bytes": 55715520,
+    "references_upper": 277280,
+    "relu_units": 3200,
+    "roots_upper": 136232,
+    "router_widths": [
+      3072,
+      128,
+      8
+    ],
+    "source_values_with_center": 6964440,
+    "views": 82,
+    "width": 8
+  },
+  "methods": {
+    "1": {
+      "archive": {
+        "actual_bytes": null,
+        "auxiliary_parts": {
+          "checker_files": 2097152,
+          "checker_index": 16384,
+          "combined_stdio": 1048576,
+          "events": 274432,
+          "execution_metadata": 262144,
+          "failure_context": 65536,
+          "store_index": 262144,
+          "terminal": 8192
+        },
+        "candidate_parts": {
+          "both_role_bindings": 258048,
+          "bounded_index": 262144,
+          "proposed_binary64": 10886400,
+          "tile_framing": 129024
+        },
+        "checked_result_record_bytes": 2064,
+        "component_bytes": {
+          "auxiliary": 4034560,
+          "candidate_proof": 11535616,
+          "diagnostics": 4428096,
+          "forest": 16861088,
+          "source": 59909824
+        },
+        "conditions": [
+          "registered binary64 native candidates; explicit zero role remains checked",
+          "direct typed construction; no old logical JSON materialization",
+          "all named member envelopes satisfied; any overflow is a refusal",
+          "partial/final use the same immutable payload; no additional full copy",
+          "no checkpoint/installed environment/data duplication inside this envelope"
+        ],
+        "diagnostic_parts": {
+          "bounded_index": 262144,
+          "endpoint_receipts": 3378816,
+          "gate_records": 234752,
+          "property_results": 552384
+        },
+        "forest_parts": {
+          "bounded_header": 1048576,
+          "factor_records": 8204288,
+          "membership_indices": 544928,
+          "node_records": 1247744,
+          "non_source_local_records": 768768,
+          "reference_records": 4436480,
+          "scales": 256384,
+          "unique_roots": 311936,
+          "view_records": 41984
+        },
+        "generic_profile_conditions": "rational dual scalars; same fixed bindings and native advisory lower=0 for both roles",
+        "generic_rational_single_store_bytes": 1501114784,
+        "immutable_single_store": true,
+        "incoming_rational_record_bytes": 1040,
+        "kind": "CONDITIONAL_NEW_FORMAT_SINGLE_ATTEMPT_UPPER",
+        "larger_upper_proves_actual_overflow": false,
+        "largest_native_tile_bytes": 22368,
+        "member_counts": {
+          "candidate_index": 1,
+          "candidate_tiles": 504,
+          "checker_files": 32,
+          "checker_index": 1,
+          "diagnostics_index": 1,
+          "endpoint_receipts": 1,
+          "events": 1,
+          "execution_metadata": 4,
+          "failure": 1,
+          "forest": 1,
+          "gate_records": 1,
+          "property_results": 1,
+          "source_chunks": 95,
+          "source_manifest": 1,
+          "stdio": 1,
+          "store_index": 1,
+          "terminal": 1
+        },
+        "members_upper": 648,
+        "native_single_store_bytes": 96769184,
+        "native_two_store_bytes": 193538368,
+        "no_retry_or_hidden_copy": true,
+        "old_archive_cap": 134217728,
+        "single_native_upper_fits_old_archive": true,
+        "two_native_upper_fits_old_archive": false
+      },
+      "core": {
+        "complete_request_work_upper": null,
+        "implementation_correspondence_proved": false,
+        "kind": "CONDITIONAL_SPECIFIED_CORE_NOT_COMPLETE_RUNTIME_COST",
+        "native_adjoint_calls": 65016,
+        "native_forward_calls": 64512,
+        "online_role_index_upper": 34188280,
+        "online_with_separate_replay": {
+          "arithmetic": 8518987738,
+          "coefficient_visits": 4306088352,
+          "row_visits": 51277452
+        },
+        "phases": {
+          "aggregation_and_proof": {
+            "counts": {
+              "arithmetic": 0,
+              "coefficient_visits": 0,
+              "row_visits": 769
+            },
+            "derivation": "E+D+13; 0; 0",
+            "kind": "UPPER"
+          },
+          "dual_check_merge_and_support": {
+            "counts": {
+              "arithmetic": 2126941992,
+              "coefficient_visits": 1085281344,
+              "row_visits": 14300496
+            },
+            "derivation": "T(M+N)+E(32+2S); 2EM+TK+3EF; 3EM+2EK+E(3F+4S+3)",
+            "kind": "UPPER"
+          },
+          "gate_and_obligation_plan": {
+            "counts": {
+              "arithmetic": 22724213,
+              "coefficient_visits": 11297664,
+              "row_visits": 546683
+            },
+            "derivation": "11+P+D+E+PN; P(Kr+Fr); 1+P(2Kr+3Fr+3)+2CE",
+            "kind": "UPPER"
+          },
+          "native_candidates": {
+            "counts": {
+              "arithmetic": 0,
+              "coefficient_visits": 2723616,
+              "row_visits": 1686384
+            },
+            "derivation": "3E+T(M+129+257J); 4E+TM+EM; 0",
+            "kind": "UPPER"
+          },
+          "native_preparation": {
+            "counts": {
+              "arithmetic": 0,
+              "coefficient_visits": 7042048,
+              "row_visits": 19496
+            },
+            "derivation": "N; L+R+F; 0",
+            "kind": "UPPER"
+          },
+          "objective_pullback": {
+            "counts": {
+              "arithmetic": 2068212384,
+              "coefficient_visits": 1034103168,
+              "row_visits": 9836064
+            },
+            "derivation": "E(N+2C); EK; E(2K+12)",
+            "kind": "UPPER"
+          },
+          "source_build": {
+            "counts": {
+              "arithmetic": 27745712,
+              "coefficient_visits": 6958080,
+              "row_visits": 54744
+            },
+            "derivation": "F+N+U; W1+W2; n+W1+2W2+2A+9U+G+3L+R",
+            "kind": "UPPER"
+          },
+          "source_check": {
+            "counts": {
+              "arithmetic": 27742424,
+              "coefficient_visits": 14000128,
+              "row_visits": 74404
+            },
+            "derivation": "2V+Q+N+F+U, Q<=N; all other V3 source algebra retained",
+            "kind": "UPPER"
+          }
+        },
+        "portable_replay": {
+          "arithmetic": 4245621013,
+          "coefficient_visits": 2144682304,
+          "row_visits": 24758412
+        },
+        "production": {
+          "arithmetic": 4273366725,
+          "coefficient_visits": 2161406048,
+          "row_visits": 26519040
+        },
+        "proposed_and_zero_scalar_checks": 2721600,
+        "role_index_access_upper_per_pass": 17094140,
+        "serialization_hash_decode_native_ops_in_core": false,
+        "wall_seconds_prediction": null
+      },
+      "io": {
+        "full_store_root_hashes_index_not_expanded_inventory": true,
+        "hash_closure": "CONDITIONAL_NAMED_CONTEXT_DISPATCH; not inferred from file traffic",
+        "hash_context_count_upper_per_pass": 2819,
+        "hash_input_bytes_upper": 1050950880,
+        "hash_input_bytes_upper_per_pass": 210190176,
+        "hash_semantic_frames_upper_per_pass": {
+          "contract": 8192,
+          "factor_identity": 8460736,
+          "pair_rosters_and_gates": 1070720,
+          "properties": 1032192,
+          "queries_and_slots": 1096704,
+          "root_misc": 16384,
+          "source_request": 4194304,
+          "view_scopes": 592160
+        },
+        "hash_updates_outside_named_schedule_allowed": false,
+        "kind": "CONDITIONAL_SINGLE_STORE_FILE_SCHEDULE",
+        "live_checkpoint_read_bytes_upper": null,
+        "named_passes": [
+          "input intake",
+          "independent online source check",
+          "portable full replay",
+          "parent inventory/reception"
+        ],
+        "no_disk_throughput_or_seconds_claim": true,
+        "one_file_pass_is_not_one_hash_pass": true,
+        "optional_relocation": {
+          "additional_hash_bytes": 193621312,
+          "additional_read_bytes": 96769184,
+          "additional_write_bytes": 96769184,
+          "authorized": false,
+          "independent_recheck_is_extra": true,
+          "retained_bytes": 193538368
+        },
+        "payload_second_contexts_must_partition": true,
+        "read_bytes_upper": 387076736,
+        "source_reread_cache_required": "owned immutable byte bank; native never receives writable alias",
+        "total_cpu_memory_traffic_upper": null,
+        "write_bytes_upper": 96769184
+      },
+      "memory": {
+        "accepted_working_bits": 8192,
+        "arithmetic_runtime_scratch_upper": null,
+        "child_lifetimes_sequential": true,
+        "example_is_not_all_fraction_or_gcd_scratch_bound": true,
+        "example_unreduced_addition_bits_upper": 16385,
+        "full_peak_rss_upper": null,
+        "full_rss_formula": "parent + max(construction, native_plus_exact, portable); each includes runtime, scratch, allocator and mapped pages",
+        "kind": "CONDITIONAL_DESIGN_OWNED_DATA_NOT_RSS",
+        "live_checkpoint_capture_upper": null,
+        "missing": [
+          "direct implementation and fixed-slot coverage proof",
+          "pinned exact-arithmetic/runtime allocation and allocator lifetime bound",
+          "pinned native kernel allocation/dispatch or separately controlled replacement",
+          "live checkpoint load/capture and complete parent/child/mapped-page lifetime"
+        ],
+        "native_workspace_upper": null,
+        "rational_slots_upper": 340416,
+        "retained_address_space_stop_bytes": 17179869184,
+        "retained_rss_stop_bytes": 8589934592,
+        "slot_formula": "2w(N+F)+4(N+F+M+n)+16E",
+        "source_construction_is_direct": true,
+        "stop_limits_are_not_completion_bounds": true,
+        "typed_payload_bytes_upper": 779542976,
+        "typed_payload_components": {
+          "exact_persistent_slots": 702618624,
+          "one_raw_tile": 22368,
+          "source_and_forest": 76770912,
+          "two_stream_buffers": 131072
+        }
+      }
+    },
+    "8": {
+      "archive": {
+        "actual_bytes": null,
+        "auxiliary_parts": {
+          "checker_files": 2097152,
+          "checker_index": 16384,
+          "combined_stdio": 1048576,
+          "events": 274432,
+          "execution_metadata": 262144,
+          "failure_context": 65536,
+          "store_index": 262144,
+          "terminal": 8192
+        },
+        "candidate_parts": {
+          "both_role_bindings": 258048,
+          "bounded_index": 262144,
+          "proposed_binary64": 10886400,
+          "tile_framing": 21504
+        },
+        "checked_result_record_bytes": 2064,
+        "component_bytes": {
+          "auxiliary": 4034560,
+          "candidate_proof": 11428096,
+          "diagnostics": 4428096,
+          "forest": 16861088,
+          "source": 59909824
+        },
+        "conditions": [
+          "registered binary64 native candidates; explicit zero role remains checked",
+          "direct typed construction; no old logical JSON materialization",
+          "all named member envelopes satisfied; any overflow is a refusal",
+          "partial/final use the same immutable payload; no additional full copy",
+          "no checkpoint/installed environment/data duplication inside this envelope"
+        ],
+        "diagnostic_parts": {
+          "bounded_index": 262144,
+          "endpoint_receipts": 3378816,
+          "gate_records": 234752,
+          "property_results": 552384
+        },
+        "forest_parts": {
+          "bounded_header": 1048576,
+          "factor_records": 8204288,
+          "membership_indices": 544928,
+          "node_records": 1247744,
+          "non_source_local_records": 768768,
+          "reference_records": 4436480,
+          "scales": 256384,
+          "unique_roots": 311936,
+          "view_records": 41984
+        },
+        "generic_profile_conditions": "rational dual scalars; same fixed bindings and native advisory lower=0 for both roles",
+        "generic_rational_single_store_bytes": 1501007264,
+        "immutable_single_store": true,
+        "incoming_rational_record_bytes": 1040,
+        "kind": "CONDITIONAL_NEW_FORMAT_SINGLE_ATTEMPT_UPPER",
+        "larger_upper_proves_actual_overflow": false,
+        "largest_native_tile_bytes": 177152,
+        "member_counts": {
+          "candidate_index": 1,
+          "candidate_tiles": 84,
+          "checker_files": 32,
+          "checker_index": 1,
+          "diagnostics_index": 1,
+          "endpoint_receipts": 1,
+          "events": 1,
+          "execution_metadata": 4,
+          "failure": 1,
+          "forest": 1,
+          "gate_records": 1,
+          "property_results": 1,
+          "source_chunks": 95,
+          "source_manifest": 1,
+          "stdio": 1,
+          "store_index": 1,
+          "terminal": 1
+        },
+        "members_upper": 228,
+        "native_single_store_bytes": 96661664,
+        "native_two_store_bytes": 193323328,
+        "no_retry_or_hidden_copy": true,
+        "old_archive_cap": 134217728,
+        "single_native_upper_fits_old_archive": true,
+        "two_native_upper_fits_old_archive": false
+      },
+      "core": {
+        "complete_request_work_upper": null,
+        "implementation_correspondence_proved": false,
+        "kind": "CONDITIONAL_SPECIFIED_CORE_NOT_COMPLETE_RUNTIME_COST",
+        "native_adjoint_calls": 10836,
+        "native_forward_calls": 10752,
+        "online_role_index_upper": 29376760,
+        "online_with_separate_replay": {
+          "arithmetic": 8518987738,
+          "coefficient_visits": 2581449072,
+          "row_visits": 31228752
+        },
+        "phases": {
+          "aggregation_and_proof": {
+            "counts": {
+              "arithmetic": 0,
+              "coefficient_visits": 0,
+              "row_visits": 769
+            },
+            "derivation": "E+D+13; 0; 0",
+            "kind": "UPPER"
+          },
+          "dual_check_merge_and_support": {
+            "counts": {
+              "arithmetic": 2126941992,
+              "coefficient_visits": 223528704,
+              "row_visits": 4978176
+            },
+            "derivation": "T(M+N)+E(32+2S); 2EM+TK+3EF; 3EM+2EK+E(3F+4S+3)",
+            "kind": "UPPER"
+          },
+          "gate_and_obligation_plan": {
+            "counts": {
+              "arithmetic": 22724213,
+              "coefficient_visits": 11297664,
+              "row_visits": 546683
+            },
+            "derivation": "11+P+D+E+PN; P(Kr+Fr); 1+P(2Kr+3Fr+3)+2CE",
+            "kind": "UPPER"
+          },
+          "native_candidates": {
+            "counts": {
+              "arithmetic": 0,
+              "coefficient_visits": 1589616,
+              "row_visits": 282324
+            },
+            "derivation": "3E+T(M+129+257J); 4E+TM+EM; 0",
+            "kind": "UPPER"
+          },
+          "native_preparation": {
+            "counts": {
+              "arithmetic": 0,
+              "coefficient_visits": 7042048,
+              "row_visits": 19496
+            },
+            "derivation": "N; L+R+F; 0",
+            "kind": "UPPER"
+          },
+          "objective_pullback": {
+            "counts": {
+              "arithmetic": 2068212384,
+              "coefficient_visits": 1034103168,
+              "row_visits": 9836064
+            },
+            "derivation": "E(N+2C); EK; E(2K+12)",
+            "kind": "UPPER"
+          },
+          "source_build": {
+            "counts": {
+              "arithmetic": 27745712,
+              "coefficient_visits": 6958080,
+              "row_visits": 54744
+            },
+            "derivation": "F+N+U; W1+W2; n+W1+2W2+2A+9U+G+3L+R",
+            "kind": "UPPER"
+          },
+          "source_check": {
+            "counts": {
+              "arithmetic": 27742424,
+              "coefficient_visits": 14000128,
+              "row_visits": 74404
+            },
+            "derivation": "2V+Q+N+F+U, Q<=N; all other V3 source algebra retained",
+            "kind": "UPPER"
+          }
+        },
+        "portable_replay": {
+          "arithmetic": 4245621013,
+          "coefficient_visits": 1282929664,
+          "row_visits": 15436092
+        },
+        "production": {
+          "arithmetic": 4273366725,
+          "coefficient_visits": 1298519408,
+          "row_visits": 15792660
+        },
+        "proposed_and_zero_scalar_checks": 2721600,
+        "role_index_access_upper_per_pass": 14688380,
+        "serialization_hash_decode_native_ops_in_core": false,
+        "wall_seconds_prediction": null
+      },
+      "io": {
+        "full_store_root_hashes_index_not_expanded_inventory": true,
+        "hash_closure": "CONDITIONAL_NAMED_CONTEXT_DISPATCH; not inferred from file traffic",
+        "hash_context_count_upper_per_pass": 1979,
+        "hash_input_bytes_upper": 1049606880,
+        "hash_input_bytes_upper_per_pass": 209921376,
+        "hash_semantic_frames_upper_per_pass": {
+          "contract": 8192,
+          "factor_identity": 8460736,
+          "pair_rosters_and_gates": 1070720,
+          "properties": 1032192,
+          "queries_and_slots": 1096704,
+          "root_misc": 16384,
+          "source_request": 4194304,
+          "view_scopes": 592160
+        },
+        "hash_updates_outside_named_schedule_allowed": false,
+        "kind": "CONDITIONAL_SINGLE_STORE_FILE_SCHEDULE",
+        "live_checkpoint_read_bytes_upper": null,
+        "named_passes": [
+          "input intake",
+          "independent online source check",
+          "portable full replay",
+          "parent inventory/reception"
+        ],
+        "no_disk_throughput_or_seconds_claim": true,
+        "one_file_pass_is_not_one_hash_pass": true,
+        "optional_relocation": {
+          "additional_hash_bytes": 193352512,
+          "additional_read_bytes": 96661664,
+          "additional_write_bytes": 96661664,
+          "authorized": false,
+          "independent_recheck_is_extra": true,
+          "retained_bytes": 193323328
+        },
+        "payload_second_contexts_must_partition": true,
+        "read_bytes_upper": 386646656,
+        "source_reread_cache_required": "owned immutable byte bank; native never receives writable alias",
+        "total_cpu_memory_traffic_upper": null,
+        "write_bytes_upper": 96661664
+      },
+      "memory": {
+        "accepted_working_bits": 8192,
+        "arithmetic_runtime_scratch_upper": null,
+        "child_lifetimes_sequential": true,
+        "example_is_not_all_fraction_or_gcd_scratch_bound": true,
+        "example_unreduced_addition_bits_upper": 16385,
+        "full_peak_rss_upper": null,
+        "full_rss_formula": "parent + max(construction, native_plus_exact, portable); each includes runtime, scratch, allocator and mapped pages",
+        "kind": "CONDITIONAL_DESIGN_OWNED_DATA_NOT_RSS",
+        "live_checkpoint_capture_upper": null,
+        "missing": [
+          "direct implementation and fixed-slot coverage proof",
+          "pinned exact-arithmetic/runtime allocation and allocator lifetime bound",
+          "pinned native kernel allocation/dispatch or separately controlled replacement",
+          "live checkpoint load/capture and complete parent/child/mapped-page lifetime"
+        ],
+        "native_workspace_upper": null,
+        "rational_slots_upper": 1062032,
+        "retained_address_space_stop_bytes": 17179869184,
+        "retained_rss_stop_bytes": 8589934592,
+        "slot_formula": "2w(N+F)+4(N+F+M+n)+16E",
+        "source_construction_is_direct": true,
+        "stop_limits_are_not_completion_bounds": true,
+        "typed_payload_bytes_upper": 2269113184,
+        "typed_payload_components": {
+          "exact_persistent_slots": 2192034048,
+          "one_raw_tile": 177152,
+          "source_and_forest": 76770912,
+          "two_stream_buffers": 131072
+        }
+      }
+    }
+  },
+  "model_runs": 0,
+  "new_quotas": null,
+  "next": "bound exact/native/capture implementation lifetimes before implementation or quota/execution freeze",
+  "production_files_changed": false,
+  "schema": "UNIQUE_ROOT_DIRECT_PROTOCOL_DESIGN_V1",
+  "scientific_claims_upgraded": false,
+  "solver_calls": 0,
+  "source_builds": 0,
+  "status": "DESIGN_DATA_ENVELOPES_ONLY_FULL_COST_NOT_CLOSED"
+}
