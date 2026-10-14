@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Implemented owned-workspace capacity assessed; width-8 lower bound refuses: 2026-10-14.
 Optional bounded workspace / direct candidate ownership controls completed: 2026-10-14.
 Exact dyadic domain and live-object gap assessed; full-cost admission stopped: 2026-10-14.
 Restricted source and whole-worker lifetime contract drafted: 2026-10-14.
@@ -51,7 +52,31 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: optional interfaces checked; full-cost admission remains closed
+## Current decision: dense workspace necessarily refuses width 8; stop full-shape retries
+
+The [implementation-bound assessment](hz_owned_capacity_20261014.md) uses pinned
+source text and frozen shape counts, without constructing a source or running a
+model. Width 8 requires at least 135,466,424 owned bytes at endpoint 6 preparation,
+above the unchanged 134,217,728-byte arena. This is a structural lower-bound
+refusal, conditional on reaching this stage; old source membership and Work
+checks still refuse earlier. Width 1 only has an overflowing conservative upper,
+not a demonstrated actual-request memory failure.
+
+Current native candidate frames have a 22,868,160-byte whole-stream upper at
+width 8, above their existing cumulative cap; generic frames have larger bounds.
+These are dimension-conditional sizes, not measured request files. Full explicit
+zero vectors remain encoded, so the old compact-zero design budget does not
+describe this implementation. The added root index does not replace source
+checks or free the forest. Eight static tests and 13 navigation checks pass.
+
+**Full cost remains NOT CLOSED; no new quota or execution admission.** Stop
+retrying this dense full-shape path or adding quota arithmetic. The next bounded
+representation decision should address sparse objective roots, overlapping
+working banks and direct-source correspondence, with all checks retained; no
+new mechanism is implemented by this static report. Real/GPU runs still require
+separate approval. No G1–G6 outcome or historical evidence changes.
+
+## Prior decision: optional interfaces checked; full-cost admission remains closed
 
 The user authorized optional bounded representation, buffers and ownership
 interfaces with differential/fault controls, not cap changes or real/GPU runs.
