@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Implemented wire-path capacity/lifetime assessed; full topology refused: 2026-10-14.
 Lossless wire / bounded intake / archive interfaces control-checked: 2026-10-14.
 Lossless evidence envelope and bounded-intake proposal assessed: 2026-10-14.
 Full captured-topology Work ledger and archive obstruction checked: 2026-10-14.
@@ -45,7 +46,30 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: opt-in wire interfaces passed finite controls, no real admission
+## Current decision: changed-path assessment still refuses full topology
+
+The [implemented-wire assessment](hz_wire_capacity_20261014.md) binds current
+code and preserves prior reports. Ten new static tests pass; no source/model,
+numerical library or GPU ran. The physical forest component upper is 17,277,720
+bytes, not the former 110.6 MB whole-package design. Full archive, new total Work
+and RSS contracts remain null. Two-copy component uppers above 128 MiB are not
+proof of actual overflow.
+
+Definite completion obstructions remain: at least 126,632 roots exceed 65,536;
+two lazy first-weight scans alone require 13,369,344 visits above 8M. A new exact
+binary64 coefficient encoding case exceeds the retained logical forest cap;
+this is not an observed checkpoint. The finite driver also cannot fit 252 result
+rows inside its 8-KiB inline terminal. Native `produce()` still retains JSON;
+the wire controls are not an integrated native full-model execution protocol.
+
+Stop retries on this version. The approved interface-control stage is complete,
+not full-model admission. Next scope needs an explicit logical/resource policy,
+bounded construction/native lifecycle and full-result publication contract;
+do not auto-raise caps, remove checks, optimize tiny fixtures or launch real/GPU
+experiments. Mathematical, numerical and historical acceptance boundaries stay
+unchanged; all G1–G6 remain OPEN.
+
+## Prior decision: opt-in wire interfaces passed finite controls, no real admission
 
 The [implementation/control archive](hz_wire_interface_controls_20261014.md)
 records 21 new groups and 48 legacy regressions passing, four unchanged finite
@@ -58,8 +82,8 @@ The new consumer is row/tile bounded; the first encoder still materializes old
 V3 input. Full construction/native memory and full registered-model capacity
 remain open. The registered topology is unadmitted. Do not auto-start a model,
 raise resources or treat the earlier 110.6 MB design as a measured guarantee.
-Next work, if authorized, is a complete changed-path capacity/lifetime assessment,
-not repeated toy optimization or reopening sealed cases. Portable packages are
+The changed-path capacity/lifetime assessment above now records the remaining
+refusals; no repeated toy optimization or sealed cases are admitted. Portable packages are
 the frozen `relocated/` snapshots, separate from growing outer run archives.
 
 ## Prior decision: wire interface implementation authorized with controls only
