@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Consumer-only traversal/zero encoding cannot close full-topology admission: 2026-10-15.
 Actual pair-scoped arena fits; complete consumer Work independently refuses: 2026-10-15.
 Optional pair-scoped candidate-8/check-2 consumer control-checked: 2026-10-14.
 Pair-scoped microblock design assessed; no runtime change or admission: 2026-10-14.
@@ -55,7 +56,28 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: complete present-candidate checking exceeds 8M Work
+## Current decision: stop isolated consumer capacity fixes
+
+The [consumer-only option assessment](hz_consumer_only_decision_20261015.md)
+grants all physical mapping/buffer accesses free while retaining the current
+three logical factor passes. At the maximum 504 endpoints its lower is still
+9,289,728 Work; at 252 it is only 4,644,864, but unchanged source construction
+and checking bring even that lower to 18,014,208. These are current-schedule
+bounds, not lower bounds for all MoE algorithms.
+
+A new explicit symbolic-zero role could bound native candidate bytes at
+11,981,760, but the general-rational envelope still exceeds the cap; neither
+changes source or logical norm checks. Scope object immutability is insufficient
+for a checked cursor because its mapping Blocks are not sealed. No new encoding
+or cursor is implemented. Four static checks and prior regressions pass.
+
+Do not freeze more isolated cursor/zero controls as a full-capacity fix. Retain
+the format subdesign for the joint direct-source/unique-root/resource contract;
+the old source's root-use and Work refusal must be addressed explicitly, not
+bypassed downstream. Complete new Work/RSS, absolute policy ceiling and runtime
+admission remain open. No real/GPU run, quota change or scientific upgrade.
+
+## Prior decision: complete present-candidate checking exceeds 8M Work
 
 [Actual-implementation accounting](hz_pair_scoped_capacity_20261015.md) binds
 `d2c7a6f68` without constructing a source or running a model. Pair-scoped native
