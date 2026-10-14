@@ -227,6 +227,10 @@ class Builder:
         roles=dict(input=initial,router=router,common=common,
                    experts=[ends.get(f'expert{i}') if cut is None else None for i in range(self.reader.request['experts'])],
                    pairs=entries,prefix=parent if cut is not None else None)
+        return self.serialize(roles,cut)
+
+    def serialize(self,roles,cut):
+        """Historical JSON terminal; optional formats override only this seam."""
         doc=dict(schema=self.schema,source=self.reader.receipt()['source_sha256'],request=identity(self.reader.request),
                  frame=1,cut=cut,policy=dict(POLICY),factors=self.factors,
                  nodes=[[o,[[j,str(q)] for j,q in local],[[j,str(q)] for j,q in refs]] for o,local,refs in self.nodes],

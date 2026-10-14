@@ -1,0 +1,14 @@
+{
+  "stage": "direct join synthetic controls",
+  "result": "FAILED_TEST_ASSERTION",
+  "tests_run": 17,
+  "failures": 1,
+  "seconds": 2.190,
+  "test": "test_full_connection_shared_budget_and_costs",
+  "observed": "25787 not greater than 25787",
+  "cause": "The test incorrectly required Work visits after portable replay; subsequent hashing, reception and deadline ticks consume wall time but need not increment Work visits.",
+  "repair": "Require nondecreasing cumulative Work, positive portable phase visits and exact phase accounting; retain all production checks and quotas.",
+  "real_model_runs": 0,
+  "native_optimizer_runs": 0,
+  "gpu_runs": 0
+}

@@ -20,11 +20,11 @@ def bundle(archive):
     return archive.put('bundle.json',raw)
 
 
-def inventory(root,expected,work):
+def inventory(root,expected,work,*,schema=BUNDLE):
     work.tick(); root=Path(root); raw=read(root,'bundle.json',2**20,sha(expected)); work.tick()
     d=decode(raw)
     require(compact(d)==raw and type(d) is dict and set(d)=={'schema','manifest','members'} and
-            d['schema']==BUNDLE and d['manifest']=='manifest.json' and type(d['members']) is list and
+            d['schema']==schema and d['manifest']=='manifest.json' and type(d['members']) is list and
             0<len(d['members'])<POLICY['members'],'package schema/count')
     refs={}; total=len(raw)
     for ref in d['members']:

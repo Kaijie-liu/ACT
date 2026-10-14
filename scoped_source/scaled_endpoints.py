@@ -299,6 +299,10 @@ class Session:
             native_float_proof=False,checkpoint_correspondence_checked=False)
         from scoped_source.wire_forest import CheckedWireForest
         if type(self.__forest) is CheckedWireForest: self.__forest.source_access.seal()
+        if type(self.__forest).__module__=='scoped_source.check_direct_source':
+            from scoped_source.check_direct_source import CheckedDirectForest
+            require(type(self.__forest) is CheckedDirectForest,'closed direct type')
+            self.__forest.seal()
         work.visit('row_visits',len(result)); work.tick(); self.__closed=True; return result
 
     def proof(self):

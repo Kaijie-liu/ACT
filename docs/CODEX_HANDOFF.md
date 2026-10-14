@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Optional direct source/checker/portable join passed 108 controls and regressions: 2026-10-15.
 Direct source/checker/portable join authorized; finite control protocol frozen: 2026-10-15.
 Joint source/consumer/portable interfaces reviewed; new implementation decision required: 2026-10-15.
 Consumer-only traversal/zero encoding cannot close full-topology admission: 2026-10-15.
@@ -58,7 +59,29 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: implement the approved optional direct join
+## Current decision: direct join controls complete; reconcile actual full cost
+
+The approved [direct join results](hz_direct_join_controls_20261015.md) record
+108 tests passed, eight scalar-profile configurations and 164 exact candidate
+checks against legacy/dense/expanded references. A direct unique-root format,
+independent source checker and typed-frame portable replay are connected;
+all ordered memberships keep the old cap. New identities never reuse old frames.
+Fresh online replay shares the same Work/deadline. Isolated copied-package
+checking passes under `python -I -S`; its costs are separately offline.
+
+No real model, native proposer, GPU or new quota. Defaults remain off. This is
+a cooperative fixed-stub entry, not an integrated outer hard supervisor. Durable
+terminal proposals are pending until timely reception. The source still retains
+the builder graph, uses explicit coefficients and conservatively refuses
+non-binary64 reference values. No full RSS or 96.8 MB format bound is inherited.
+
+Next reconcile the actual full source/consumer/replay ledger and these refusal
+domains; do not expand controls or use small timings for full-model admission.
+Native/hard-supervisor integration and real/GPU execution remain separately
+gated. The earlier joint-interface review below describes the pre-implementation
+commit, not the current direct control path. G1–G6 remain open.
+
+## Prior decision: implement the approved optional direct join
 
 The user approved the [direct join protocol](hz_direct_join_protocol_20261015.md).
 Connect direct unique-root source construction, independent semantic checking
