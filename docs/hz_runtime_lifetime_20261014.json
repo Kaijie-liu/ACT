@@ -1,0 +1,252 @@
+{
+  "analysis_sha256": "ca48bca0f4bb3e9603ff984c906d1179ebe29e07c856bba6f90081be466859d4",
+  "binary_review": {
+    "dynamically_executed": false,
+    "path": "lib/python3.12/site-packages/torch/lib/libtorch_cpu.so",
+    "size": 436938961,
+    "slices": [
+      {
+        "bytes": 1458,
+        "name": "double_worker",
+        "offset": 33646304,
+        "sha256": "2753a5d879177e342159316d8089a218dcc68c429985935578992ccf21b7f9da"
+      },
+      {
+        "bytes": 261,
+        "name": "axpy_template",
+        "offset": 29214288,
+        "sha256": "1e4805d3a0d495ba1b8c68531ed8c8eaf452d94df735d5f508fd58fb252818ed"
+      },
+      {
+        "bytes": 1025,
+        "name": "default_axpy",
+        "offset": 72776544,
+        "sha256": "f51964e18d0997e7ff0dead9eba437371dbb3e478717bb8b477c5a719f7e1286"
+      },
+      {
+        "bytes": 1259,
+        "name": "avx2_axpy",
+        "offset": 117806000,
+        "sha256": "1f7e6bdcb3e89696acd3fbde69037e4a6a2357f47d52b92b27493dbfa5d7f399"
+      }
+    ],
+    "whole_binary_verified": false
+  },
+  "capture": {
+    "bounded_adapter_implemented": false,
+    "complete_capture_upper": null,
+    "cpu_map_location_excludes_cuda_probe": false,
+    "file_size_bounds_unpickling": false,
+    "full_raw_source_binary64_bytes": 55715520,
+    "historical_bindings": {
+      "seed0": {
+        "checkpoint_sha256": "fbaa7c871d28763ac5acb29a9502dc5d146e1d5af0b4a03e9911899251bd43f7",
+        "model_state": {
+          "parameter_count": 6961368,
+          "sha256": "40e184c22e4f6c63fe4187a21df13b1ca9c74b296a59f2d6e32dd3f963e61c22",
+          "tensor_count": 52
+        }
+      },
+      "seed1": {
+        "checkpoint_sha256": "cfd5fb07b1c426c5b98309d56a5d0439f8a99dc52ff936bcbea43d4fe641139a",
+        "model_state": {
+          "parameter_count": 6961368,
+          "sha256": "8e8c459eb70c17cad6185808460c0b40ef978f798a214646fe124360384a12c4",
+          "tensor_count": 52
+        }
+      },
+      "seed2": {
+        "checkpoint_sha256": "a60517c7964177858d10303bc7b306293c8da3cde6caa93a5d8f442968e97758",
+        "model_state": {
+          "parameter_count": 6961368,
+          "sha256": "c1297bd70d5e72aa7d4de3cff325f3bccec637b43cf90126d9e40ee2e3f2f3d9",
+          "tensor_count": 52
+        }
+      }
+    },
+    "input_semantics": "TORCH_DEFAULT_FLOAT64_BEFORE_TOTENSOR",
+    "loaded_checkpoints": 0,
+    "old_loader_retains_model_and_payload": true,
+    "old_loader_weights_only": false,
+    "raw_parameters_binary64_bytes": 55690944,
+    "selected_live_object": null
+  },
+  "current_policy_unchanged": {
+    "active": 16384,
+    "depth": 64,
+    "factors": 32768,
+    "header_bytes": 8388608,
+    "member_bytes": 1048576,
+    "members": 4096,
+    "nnz": 1048576,
+    "page_rows": 64,
+    "rows": 65536,
+    "stored_bits": 4096,
+    "total_bytes": 134217728,
+    "view_rows": 16384,
+    "views": 128,
+    "visits": 8000000,
+    "work_bits": 8192
+  },
+  "date": "2026-10-14",
+  "environment_anchors": {
+    "include/python3.12/cpython/longintrepr.h": "e2acf37f668089278081539473eeedc8537b848fcd2eb91f53172701c014b9c3",
+    "lib/python3.12/fractions.py": "d52d1ab9d5be26924e4914a5e40069c992bbfa68f773694c2e5ee8452d0766a0"
+  },
+  "exact": {
+    "allocator_retained_upper": null,
+    "c_bigint_scratch_upper": null,
+    "expression_bits": {
+      "binary_add": [
+        16385,
+        16384
+      ],
+      "fused_multiply_add": [
+        24577,
+        24576
+      ],
+      "product": [
+        16384,
+        16384
+      ],
+      "relu_four_absolute_differences": [
+        65540,
+        65536
+      ]
+    },
+    "hash_cache": {
+      "clear_cache_implemented": false,
+      "conditions": [
+        "fresh checker process",
+        "all hashed operands independently bounded by 8192 bits"
+      ],
+      "entries": 16384,
+      "includes_python_objects_or_allocator": false,
+      "key_integer_magnitude_payload_upper": 33554432
+    },
+    "new_request_bit_limit": null,
+    "old_decimal_parse_magnitude_bits": {
+      "candidate_2470_chars": 8206,
+      "request_4096_chars": 13607
+    },
+    "preserve_request_domain": true,
+    "request_literal_gate": "4096 characters, not the candidate 4096-bit gate",
+    "scope": "checked B-bit operands only; not all ingress or C scratch",
+    "traceback_and_session_lifetime_bound": null
+  },
+  "execution_admitted": false,
+  "full_runtime_upper": null,
+  "gpu_calls": 0,
+  "implementation_authorized": false,
+  "invariant": {
+    "accept": "strictly greater than 1/10000000",
+    "all_tie_legal_pairs": true,
+    "old_results_unchanged": true,
+    "reference_and_proposed_share_resource_policy": true,
+    "request_seconds": 300,
+    "stored_bits": 4096,
+    "working_bits": 8192,
+    "zero_role_checked": true
+  },
+  "local_environment": "/data1/Kane/miniconda3/envs/act-py312",
+  "model_runs": 0,
+  "native": {
+    "1": {
+      "adjoints": 65016,
+      "array_cumulative_is_peak": false,
+      "axpy_coordinate_updates_upper": 872075756160,
+      "complete_native_peak_upper": null,
+      "coo_axpy_calls_upper": 872075756160,
+      "cumulative_two_spmm_output_payload_bytes": 53461739520,
+      "dag_level_select_product_payload_sum_per_call": 4436480,
+      "forwards": 64512,
+      "inferred_mkl_workspace": false,
+      "largest_two_spmm_output_payload_bytes": 512768,
+      "logical_coo_index_value_bytes_upper": 20929818147840,
+      "logical_reads_are_physical_dram": false,
+      "loop_source": "COO nnz loop -> axpy<double> template -> axpy_stub direct loop",
+      "persistent_operator_tensor_payload_upper": 330081664,
+      "runtime_dispatch_proved": false,
+      "scope": "conditional named-array and loop envelope; not measured time/RSS",
+      "spmm_calls": 129528,
+      "spmm_recoalesce_each_call": false,
+      "summed_tile_width": 504,
+      "tile_count": 504,
+      "unresolved": [
+        "runtime dispatch registration/overrides",
+        "index_add/boolean indexing/isfinite/TensorIterator internals",
+        "Python construction and old iterate/RHS lifetime overlap",
+        "allocator/runtime/mapped pages and failure frames"
+      ]
+    },
+    "8": {
+      "adjoints": 10836,
+      "array_cumulative_is_peak": false,
+      "axpy_coordinate_updates_upper": 872075756160,
+      "complete_native_peak_upper": null,
+      "coo_axpy_calls_upper": 145345959360,
+      "cumulative_two_spmm_output_payload_bytes": 53461739520,
+      "dag_level_select_product_payload_sum_per_call": 35491840,
+      "forwards": 10752,
+      "inferred_mkl_workspace": false,
+      "largest_two_spmm_output_payload_bytes": 4102144,
+      "logical_coo_index_value_bytes_upper": 3488303024640,
+      "logical_reads_are_physical_dram": false,
+      "loop_source": "COO nnz loop -> axpy<double> template -> axpy_stub direct loop",
+      "persistent_operator_tensor_payload_upper": 330081664,
+      "runtime_dispatch_proved": false,
+      "scope": "conditional named-array and loop envelope; not measured time/RSS",
+      "spmm_calls": 21588,
+      "spmm_recoalesce_each_call": false,
+      "summed_tile_width": 504,
+      "tile_count": 84,
+      "unresolved": [
+        "runtime dispatch registration/overrides",
+        "index_add/boolean indexing/isfinite/TensorIterator internals",
+        "Python construction and old iterate/RHS lifetime overlap",
+        "allocator/runtime/mapped pages and failure frames"
+      ]
+    }
+  },
+  "native_calls": 0,
+  "new_quota": null,
+  "production_changed": false,
+  "repo_anchors": {
+    "act/back_end/moe/factory.py": "da472b2bbb3d8f684cb9c9916a735fd7105ceaab925911e1cbc983785a4c7d2d",
+    "act/pipeline/moe/configs/schedule_confirmation_100_selection_r1.json": "b4167d8ab501df06570bfb49ad646263962c79736c2252f1398dc0499d3a7ee6",
+    "act/pipeline/moe/schedule_confirmation_selection.py": "944f2c56dd36201469791ab39c75c40cfdd3abd9569aa69ec0811641bf58c4c7",
+    "act/pipeline/moe/train.py": "bac0e9a50d98f316d577128909ac5c81bf41454debccbc0be54b14a2b1360dd5",
+    "docs/hz_real_intake_20261001_r1.json": "9f5f7f240bbe6757206b52ea2754d30051ebd98d829ab8d6341823f25c87a8ab",
+    "docs/hz_unique_root_protocol_20261014.json": "a36b6e393a4d25face25fc7b0ddfe422d54e2adf50035162245da13c20a3293c",
+    "scoped_source/check_affine_references.py": "a0d688ee82bf88c42945edfd3abc9591a46998c01cf236cbf752ad5b549e9c62",
+    "scoped_source/hz_request_store.py": "7cb2be7647039f59d3c896b7856f634f43be9c532d9d2fd43632be09ab3230e0",
+    "scoped_source/scaled_endpoints.py": "93197c1b329e173b25795c48cf117b7113c2b23cc6958438889a7e912d13e8af",
+    "scoped_source/tensor_rows.py": "5c3ad6d642868e257ac9dd2edbc5e066b4cd793d4c7567a4ea800fc8e8f97f82",
+    "scripts/assess_unique_root_protocol.py": "d4e4f7ab509dfd94e050d672b75358c32186f702ff7228a27d620fd9cd5ddf9f",
+    "scripts/run_scaled_dense_capacity.py": "4b80573abc480c5dde5fc3e9628e95c6284a4ae1d1fa1fa3d4441160227f6181"
+  },
+  "resource_limits_changed": false,
+  "reviewed_head": "f88d62478a5ce55b4dd86d87ff1fafc8daf83107",
+  "schema": "RUNTIME_LIFETIME_STATIC_SUBLEDGER_V1",
+  "solver_calls": 0,
+  "source_builds": 0,
+  "status": "CONCRETE_RUNTIME_GAPS_IDENTIFIED_NO_FULL_COST_ADMISSION",
+  "supervision": {
+    "descendants_cannot_outlive_phase_proved": false,
+    "existing_supervisor_changed": false,
+    "full_phase_nonoverlap_proved": false,
+    "needed": "whole-worker lifetime guarantee before using max(phase peaks)",
+    "old_rss_scope": "leader PID only",
+    "old_wait_scope": "leader PID only"
+  },
+  "upstream_review": {
+    "commit": "5811a8d7da873dd699ff6687092c225caffcf1bb",
+    "file_sha256": {
+      "aten/src/ATen/native/CPUBlas.h": "5972e9e6c61b7d317f39bf31d7c41931ced9f408296d41da64431a7f6d8e4154",
+      "aten/src/ATen/native/TensorCompare.cpp": "f17a64a3de2309f3baea7933d030c18cb7f4f945e3da447eae62477cbfcc3bd1",
+      "aten/src/ATen/native/cpu/BlasKernel.cpp": "29e4a32f71c9b92293fa03273eda399766d9c0a4f89968ff3ced127d8b1746fb",
+      "aten/src/ATen/native/sparse/SparseTensorMath.cpp": "13313cff8d04eba91196e309e8b0b937e2f49e9dbdd0d9a275369af3e678bafb"
+    },
+    "refetched_by_analysis": false
+  }
+}

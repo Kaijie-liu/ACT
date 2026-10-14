@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Runtime sub-ledger narrows arithmetic/native/capture/lifetime gaps: 2026-10-14.
 Direct identity and unique root resource protocol drafted: 2026-10-14.
 Implemented wire-path capacity/lifetime assessed; full topology refused: 2026-10-14.
 Lossless wire / bounded intake / archive interfaces control-checked: 2026-10-14.
@@ -47,7 +48,35 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: new logical resource design has conditional data bounds
+## Current decision: runtime sub-ledger identifies concrete remaining contracts
+
+The [runtime/lifetime follow-up](hz_runtime_lifetime_20261014.md) preserves the
+direct-format proposal and narrows its open terms without executing it. Exact
+compound expressions can require 24,577 or 65,540 numerator bits before the
+unchanged 8,192-bit result check; input literal character limits must not be
+silently replaced by candidate bit limits. Fraction's global hash cache and
+exception frames also need explicit lifetime accounting.
+
+Pinned source plus inspected local binary slices identify a COO/direct AXPY
+path, not an inferred MKL workspace. Batching reduces calls but the conservative
+coordinate-update upper remains 872,075,756,160 in both arms. Array payload and
+cumulative allocation are not full native RSS or elapsed time.
+
+Existing model loading plus capture uses a general pickle loader, redundant model/state storage
+and a CUDA-probing factory. Historical artifact hashes exist but no live object
+is selected for this protocol. The old supervisor samples/waits for the leader;
+it does not prove descendants cannot outlive a phase. Therefore sequential
+phase peaks cannot yet be combined as a whole-process bound.
+
+Next specify the restricted checkpoint/input adapter, exact-runtime scratch
+and retained-object model, named native temporaries and whole-worker lifetime.
+This remains static design: **full cost NOT CLOSED, no new quota, production
+implementation or real/GPU execution admitted.** Do not repeat small timing
+controls or reopen sealed inputs. All mathematical checks, 300 seconds and
+G1–G6 limitations remain. Nine new static checks supplement the prior ledger;
+see the report for bound assumptions and source identities.
+
+## Prior decision: new logical resource design has conditional data bounds
 
 The user approved a new protocol without old JSON logical-byte replay or
 duplicate-root accounting, retaining every mathematical check and 300 seconds.
