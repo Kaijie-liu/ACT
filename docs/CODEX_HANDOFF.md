@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Pair-scoped microblock design assessed; no runtime change or admission: 2026-10-14.
 Implemented owned-workspace capacity assessed; width-8 lower bound refuses: 2026-10-14.
 Optional bounded workspace / direct candidate ownership controls completed: 2026-10-14.
 Exact dyadic domain and live-object gap assessed; full-cost admission stopped: 2026-10-14.
@@ -52,7 +53,29 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: dense workspace necessarily refuses width 8; stop full-shape retries
+## Current decision: scoped microblock design addresses vector obstruction only
+
+The [pair-scope design](hz_scoped_workspace_design_20261014.md) derives closure
+from the complete source check, preserving shared IDs and full global residual
+checks. A tighter five-factor-per-ReLU bound gives at most 7,592 nodes and 9,400
+factors per pair. Scoping alone still lacks a width-eight capacity guarantee.
+
+Keeping candidate tiles at eight and separately declaring two-endpoint exact
+checking blocks, sparse objective descriptors and ownership-transfer pullback
+gives a proposed packed-payload upper of 117,009,527 bytes under the existing
+128 MiB arena. It is not implemented or a full RSS bound. The new schedule delays
+objective checks until after candidate publication and adds scans; it cannot be
+silently described as the old execution trace or a speedup. Eight static and
+13 navigation checks pass; no new source/model/solver/GPU execution occurs.
+
+Next is a separately scoped optional interface/control decision, with foreign
+scope, intermediate-bit, second-block fault, cutoff, publication and complete
+aggregation tests. Do not fuse objective/dual pullbacks or omit implicit-zero
+factor checks. Old source membership/Work and candidate-stream barriers remain.
+**Full cost is NOT CLOSED.** No quota adjustment, production switch, real/GPU
+run or G1–G6 success follows from this local design envelope.
+
+## Prior decision: dense workspace necessarily refuses width 8; stop full-shape retries
 
 The [implementation-bound assessment](hz_owned_capacity_20261014.md) uses pinned
 source text and frozen shape counts, without constructing a source or running a
