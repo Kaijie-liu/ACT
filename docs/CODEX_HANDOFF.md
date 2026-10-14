@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Actual direct join costs reconciled; full-topology admission still refused: 2026-10-15.
 Optional direct source/checker/portable join passed 108 controls and regressions: 2026-10-15.
 Direct source/checker/portable join authorized; finite control protocol frozen: 2026-10-15.
 Joint source/consumer/portable interfaces reviewed; new implementation decision required: 2026-10-15.
@@ -59,7 +60,32 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: direct join controls complete; reconcile actual full cost
+## Current decision: actual direct join reconciled; no full execution admission
+
+The [implementation-bound cost audit](hz_direct_join_cost_20261015.md) binds
+`8b22bcd9bd`. Online replay means three source semantic passes and two complete
+candidate checks: a conditional 54,116,352 Work lower bound, not observed usage
+or a quota. The source-core-only upper is 140,116,400; complete Work/RSS remain
+open. All ordered memberships still need at least 126,632 versus 65,536. The
+producer checks that after building the graph; reject this known shape statically.
+
+Actual encoding stores first-layer coefficients explicitly. Under a dense-
+nonzero first-layer condition, raw source plus those entries alone require
+135,931,584 bytes, exceeding the 128 MiB archive before other evidence; actual
+checkpoint sparsity is unknown. The source scalar domain remains binary64-only.
+Online replay retains the old graph/raw/receipts beside the new graph; closing
+the first arena is not releasing the full graph. The internal elapsed metric
+does not include final frame-owned object destruction. Source tensor bytes have
+at least ten logical full reads on the successful schedule, not one archive-size
+cost. These are static results; no source, native, model or GPU ran.
+
+Next needs a complete joint representation/resource/ownership contract and a
+matched full reference, not another isolated micro-control or quota from partial
+bounds. Default-off fixed-stub interfaces are implemented; hard-supervisor/native
+join, full admission and real/GPU execution remain separately gated. No runtime
+or limit changed in this audit. G1–G6 remain open.
+
+## Prior decision: direct join controls complete; reconcile actual full cost
 
 The approved [direct join results](hz_direct_join_controls_20261015.md) record
 108 tests passed, eight scalar-profile configurations and 164 exact candidate
@@ -71,8 +97,8 @@ checking passes under `python -I -S`; its costs are separately offline.
 
 No real model, native proposer, GPU or new quota. Defaults remain off. This is
 a cooperative fixed-stub entry, not an integrated outer hard supervisor. Durable
-terminal proposals are pending until timely reception. The source still retains
-the builder graph, uses explicit coefficients and conservatively refuses
+terminal proposals are pending until timely reception. Construction still
+materializes the builder graph, uses explicit coefficients and conservatively refuses
 non-binary64 reference values. No full RSS or 96.8 MB format bound is inherited.
 
 Next reconcile the actual full source/consumer/replay ledger and these refusal
