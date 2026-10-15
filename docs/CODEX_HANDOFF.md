@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Direct lifecycle and hard-supervisor stub controls authorized and frozen: 2026-10-15.
 Actual direct join costs reconciled; full-topology admission still refused: 2026-10-15.
 Optional direct source/checker/portable join passed 108 controls and regressions: 2026-10-15.
 Direct source/checker/portable join authorized; finite control protocol frozen: 2026-10-15.
@@ -60,7 +61,17 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: actual direct join reconciled; no full execution admission
+## Current decision: implement the approved lifecycle and hard supervisor
+
+The user approved the [separate lifecycle protocol](hz_direct_lifecycle_protocol_20261015.md):
+default-off setup/propose/close, read-only checked roots, matched production and
+portable consumers, and unified hard supervision. Use fixed candidates and
+standard-library stubs only. Keep all limits, 300 seconds and mathematical gates;
+no native optimizer, real model, checkpoint, dataset or GPU execution. Freeze
+before implementation, run differential/fault/relocation controls and retain
+failures. This does not grant full-capacity admission or close G1–G6.
+
+## Prior decision: actual direct join reconciled; no full execution admission
 
 The [implementation-bound cost audit](hz_direct_join_cost_20261015.md) binds
 `8b22bcd9bd`. Online replay means three source semantic passes and two complete
