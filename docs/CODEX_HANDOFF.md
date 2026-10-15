@@ -1,5 +1,20 @@
 # MoE project handoff — current entry point
 
+Candidate exit and native mapping boundary assessed: 2026-10-16.
+See [the finite decision](hz_candidate_native_boundary_20261016.md) and
+[static evidence](hz_candidate_native_boundary_20261016.json).
+Finite binary64 best duals can map losslessly to the existing profile0 frame,
+including canonical +0 and all two-role rows; no new implementation exists.
+Removing whole-tile strings does not change the 22,868,160-byte candidate-stream
+upper or its independent capacity-guarantee gap. Installed libtorch_cpu's
+executable LOAD alone requires 274,377,021 virtual bytes, exceeding the proposed
+256 MiB before heap.
+This is an ELF mapping bound, not RSS or a native execution. GEMM scratch and
+complete capture/lifetimes remain unbounded by current evidence. Stop standalone
+exit/small-AS repairs; the next implementation decision must jointly bind the
+source adapter, auditable native workspace, ownership and full two-arm policy.
+No quota, runtime, real-model/GPU execution or scientific claim changes.
+
 Source-row local decomposition and native-count substitution assessed: 2026-10-16.
 See [the algebra/lifetime decision](hz_native_source_blocks_20261016.md) and
 [recomputable static record](hz_native_source_blocks_20261016.json).
@@ -146,9 +161,12 @@ local decomposition and distinguishes once-transcoded banks from repeated source
 parsing. Existing block support/scale/DAG algorithms are not renamed as new work.
 The old CPU Operator's conditional counted-work substitution is now explicit;
 it does not include new adapter operations or the proposed block implementation.
-Next static accounting must include bounded candidate output before binary framing,
-new GEMM scratch, and source/native/exact-checker lifetime overlap. The source adapter,
-native lifecycle and complete resource policy must still be considered together.
+The [candidate/native follow-up](hz_candidate_native_boundary_20261016.md) now closes
+the lossless exit design and named copy counts, not implementation or full memory.
+It adds an installed-library mapping refusal independent of model arrays. New GEMM
+scratch and full lifetimes still have no bound; do not repeat a standalone exit or
+stub-AS control batch. The source adapter, auditable native implementation and
+complete resource policy must be selected together before an implementation request.
 Capture, full heap/RSS and end-to-end costs remain open; two source checks alone
 still exceed 8M. No full-shape admission,
 new absolute quota, runtime implementation, real-model or GPU execution is approved.
