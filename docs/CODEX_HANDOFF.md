@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Direct lifecycle and hard-supervisor stub controls passed 133 tests: 2026-10-15.
 Direct lifecycle and hard-supervisor stub controls authorized and frozen: 2026-10-15.
 Actual direct join costs reconciled; full-topology admission still refused: 2026-10-15.
 Optional direct source/checker/portable join passed 108 controls and regressions: 2026-10-15.
@@ -61,7 +62,28 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: implement the approved lifecycle and hard supervisor
+## Current decision: lifecycle and hard-supervisor stub controls complete
+
+The [V2 results](hz_direct_lifecycle_controls_20261015.md) pass 133 tests:
+16 same-candidate source/profile/consumer configurations and 328 exact bound
+comparisons; full dense and pair-scoped production plus portable replay now
+exist. Roots are checked, read-only and revoked after proposal. Setup/close,
+method/profile binding, relocation, hard deadlines, late success, exceptions,
+partial evidence and failure costs are controlled. Complete normal supervised
+requests retain all obligations; missing evidence remains UNKNOWN.
+
+The parent accounts startup/source generation through cleanup, structural
+reception, hashes and terminal publication. Offline audit cannot rescue online
+failure. Sampled RSS and trusted no-escape process groups are not a full memory
+or arbitrary-native containment proof. All limits and defaults remain unchanged;
+no native optimizer, numerical backend, real model or GPU ran. G1–G6 remain open.
+
+Next statically reconcile the actual V2 lifetime and full source/consumer/replay/
+reception ledger. Do not transplant the V1 cost numbers to V2, add repeated small
+controls instead of that ledger, or infer native/real/GPU admission. The native
+proposer itself and native matched execution remain separately gated.
+
+## Prior decision: implement the approved lifecycle and hard supervisor
 
 The user approved the [separate lifecycle protocol](hz_direct_lifecycle_protocol_20261015.md):
 default-off setup/propose/close, read-only checked roots, matched production and
