@@ -14,8 +14,8 @@ import time
 import uuid
 
 from scoped_source.hz_request_store import POLICY, Work, compact, decode, digest, identity, require
-from scoped_source.direct_method import method, validate, PROTOCOL, SHARED_PROTOCOL
-from scoped_source.direct_lifecycle_package import CODE_FILES, SHARED_CODE, BUNDLE
+from scoped_source.direct_method import method, validate, PROTOCOL, SHARED_PROTOCOL, PAGED_PROTOCOL, is_shared, paged
+from scoped_source.direct_lifecycle_package import CODE_FILES, SHARED_CODE, PAGED_CODE, bundle_schema, manifest_schema
 from scoped_source.direct_lifecycle_execution import EXEC_FAULTS
 from scoped_source.wire_package import inventory
 from scoped_proof.io import ROOT, PYTHON
@@ -23,6 +23,7 @@ from scoped_proof.owned_bounded import execute as run_owned
 
 PROTOCOL_FILE = 'docs/hz_direct_lifecycle_protocol_20261015.md'
 SHARED_PROTOCOL_FILE = 'docs/hz_shared_source_protocol_20261015.md'
+PAGED_PROTOCOL_FILE = 'docs/hz_paged_result_protocol_20261015.md'
 REPORT_CAP = 2**20
 # Candidate and receipt <= 1 MiB each; RLIMIT_FSIZE caps even an abnormal
 # worker log at 1 MiB. Progress <= 64 KiB, plus conservative metadata reserve.
@@ -31,8 +32,8 @@ LOG_CAP = 65536
 RSS_LIMIT = 2 * 2**30
 COUNTERS = ('row_visits', 'coefficient_visits', 'arithmetic')
 FAULTS = EXEC_FAULTS + ('startup_error', 'output_partial', 'wrong_invocation', 'wrong_method',
-                       'output_block', 'late_exit', 'receive_expired', 'terminal_expired')
-FILES = tuple(sorted(set(CODE_FILES + SHARED_CODE + (
+                       'output_block', 'late_exit', 'receive_expired', 'terminal_expired', 'result_receive_expired')
+FILES = tuple(sorted(set(CODE_FILES + SHARED_CODE + PAGED_CODE + (PAGED_PROTOCOL_FILE,
     'scoped_source/shared_build.py','scoped_source/shared_archive.py',SHARED_PROTOCOL_FILE,
     'scoped_source/direct_supervised.py', 'scoped_source/direct_lifecycle_worker.py',
     'scoped_source/direct_lifecycle.py', 'scoped_source/direct_lifecycle_execution.py',
@@ -51,19 +52,22 @@ def bindings():
         result[name] = digest(p.read_bytes())
     require(result[PROTOCOL_FILE] == PROTOCOL, 'frozen lifecycle protocol')
     require(result[SHARED_PROTOCOL_FILE] == SHARED_PROTOCOL, 'frozen shared-source protocol')
+    require(result[PAGED_PROTOCOL_FILE] == PAGED_PROTOCOL, 'frozen paged-result protocol')
     return result
 
 
-def spec(case, arm, profile=0, fault='', *, shared=False):
+def spec(case, arm, profile=0, fault='', *, shared=False, paged_results=False):
     require(case in ('half', 'guarded') and fault in FAULTS, 'frozen synthetic case/fault')
-    return dict(schema='DIRECT_SUPERVISED_STUB_V1', case=case, method=method(arm, profile,shared=shared), fault=fault)
+    require(fault != 'result_receive_expired' or paged_results, 'paged reception fault only')
+    return dict(schema='PAGED_SUPERVISED_STUB_V1' if paged_results else 'DIRECT_SUPERVISED_STUB_V1', case=case,
+                method=method(arm, profile,shared=shared,paged_results=paged_results), fault=fault)
 
 
 def validate_spec(value):
     require(type(value) is dict and set(value) == {'schema', 'case', 'method', 'fault'}, 'closed execution spec')
     m = validate(value['method'])
     expected = spec(value['case'], m['production']['kind'], m['producer']['profile'], value['fault'],
-                    shared=m['schema']=='SHARED_LIFECYCLE_METHOD_V1')
+                    shared=is_shared(m),paged_results=paged(m))
     require(identity(value) == identity(expected), 'registered execution spec')
     return expected
 
@@ -151,6 +155,9 @@ def receive(root, inv, report_hash, work):
     require(bindings() == inv['implementations'], 'unchanged execution/checker implementation')
     p, _ = read_json(root / 'candidate.json', REPORT_CAP, report_hash)
     m = inv['spec']['method']
+    if paged(m):
+        require(p['schema']=='PAGED_LIFECYCLE_REPORT_V1' and inv['schema']=='PAGED_SUPERVISED_INVOCATION_V1',
+                'paged invocation/report schema')
     require(p['invocation'] == inv['id'] and p['method'] == m and p['deadline'] == inv['run_deadline']
             and p['status'] == 'COMPLETE' and p['initial_work'] == inv['initial_work'], 'complete pending worker binding')
     require(p['isolated'] is True and p['site_disabled'] is True and p['numerical_imports'] == [], 'stdlib worker isolation')
@@ -164,20 +171,30 @@ def receive(root, inv, report_hash, work):
     require(life['setup_calls'] == life['close_calls'] == 1
             and p['snapshots']['owner']['live_bytes'] == 0, 'proposer and checker cleanup')
     artifact = root / 'artifacts'
-    refs, total = inventory(artifact / 'package', p['package']['sha256'], work, schema=BUNDLE)
+    refs, total = inventory(artifact / 'package', p['package']['sha256'], work, schema=bundle_schema(m))
     manifest, _ = read_json(artifact / 'package/manifest.json', 2**20, refs['manifest.json']['sha256'])
-    require(manifest['method'] == m and manifest['invocation'] == inv['id'] and
+    require(manifest['schema']==manifest_schema(m) and manifest['method'] == m and manifest['invocation'] == inv['id'] and
             manifest['source']['sha256'] == p['source'], 'package execution binding')
     for ref in manifest['code']:
         require(ref['sha256'] == inv['implementations'][ref['file'].removeprefix('code/')], 'trusted checker code')
-    shared=m['schema']=='SHARED_LIFECYCLE_METHOD_V1'
+    shared=is_shared(m)
     if shared:
         require(not (root/'source').exists() and p['snapshots']['source_transfer']['copies']==1,
                 'single owned source after transfer')
     source_path=artifact/'package/source/manifest.json' if shared else root/'source/manifest.json'
     source, source_hash = read_json(source_path, POLICY['header_bytes'])
     require(source_hash == p['source'], 'fixture source identity')
-    result, _ = read_json(artifact / 'result.json', REPORT_CAP, p['result_ref']['sha256'])
+    if paged(m):
+        from scoped_source.check_result_stream import aggregate
+        binding = dict(p['replay']['result_context'])
+        require(binding['source'] == p['source'] and binding['forest'] == binding['forest_index'] == manifest['forest']['sha256']
+                and binding['contract'] == manifest['contract']['sha256'] and binding['method'] == identity(m)
+                and binding['invocation'] == inv['id'] and manifest['result'] == p['result_ref'] == p['replay']['result_ref'],
+                'parent source/method/result bindings')
+        result = aggregate(artifact/'package', p['result_ref'], manifest['tiles'], source['declaration']['request'],
+                           binding, work, expire_after_page=inv['spec']['fault']=='result_receive_expired')
+    else:
+        result, _ = read_json(artifact / 'result.json', REPORT_CAP, p['result_ref']['sha256'])
     terminal, _ = read_json(artifact / 'terminal.json', 8192, p['terminal_ref']['sha256'])
     require(result == p['result'] == p['replay']['result'] and terminal['status'] == 'PENDING_RECEPTION'
             and terminal['method'] == m and terminal['invocation'] == inv['id']
@@ -186,12 +203,15 @@ def receive(root, inv, report_hash, work):
     request = source['declaration']['request']
     expected = [(list(pair), c) for pair in combinations(range(request['experts']), 2)
                 for c in range(request['classes']) if c != request['label']]
-    require([(r['pair'], r['other']) for r in result['results']] == expected
+    if not paged(m):
+        require([(r['pair'], r['other']) for r in result['results']] == expected
             and result['required'] == len(expected), 'all pair/property obligations')
-    from scoped_source.forest_endpoints import THRESHOLD
-    positive = sum(r['lower'] is not None and F(r['lower']) > THRESHOLD for r in result['results'])
-    require(all(r['positive'] is (r['lower'] is not None and F(r['lower']) > THRESHOLD)
+        from scoped_source.forest_endpoints import THRESHOLD
+        positive = sum(r['lower'] is not None and F(r['lower']) > THRESHOLD for r in result['results'])
+        require(all(r['positive'] is (r['lower'] is not None and F(r['lower']) > THRESHOLD)
             for r in result['results']) and result['positive'] == positive, 'exact aggregation sign')
+    else:
+        positive = result['positive']
     status = ('CHECKED_POSITIVE_CAPTURED_REAL_SOURCE' if positive == len(expected) else
               'UNKNOWN_MISSING_EVIDENCE' if result['missing_endpoints'] else 'UNKNOWN_NONPOSITIVE')
     require(result['status'] == status and result['checked_endpoints'] + result['missing_endpoints'] == result['required_endpoints']
@@ -201,10 +221,12 @@ def receive(root, inv, report_hash, work):
     require(p['archive']['logical_bytes'] == sum(v for k,v in census(root, work.deadline)['files'].items()
                                                if k.startswith('artifacts/')), 'artifact byte accounting')
     work.tick()
-    return dict(result=result, package_sha256=p['package']['sha256'], source=p['source'],
+    accepted = dict(result=result, package_sha256=p['package']['sha256'], source=p['source'],
                 method=m, invocation=inv['id'], package_bytes=total, worker_work=p['work'],
                 snapshots=p['snapshots'], phases=p['phases'], worker_seconds=p['seconds'],
                 fixture_seconds=p['fixture_seconds'])
+    if paged(m): accepted['result_ref']=dict(p['result_ref'])
+    return accepted
 
 
 def supervise(root, specification, *, enabled=False, seconds=300., initial_work=None):
@@ -224,7 +246,7 @@ def supervise(root, specification, *, enabled=False, seconds=300., initial_work=
             and root != Path('/data1/Kane/MOE'), 'new project-local request directory')
     require(all(not p.is_symlink() for p in (root, *root.parents)), 'request ancestor symlink')
     root.mkdir(parents=False, exist_ok=False)
-    inv = dict(schema='DIRECT_SUPERVISED_INVOCATION_V1', id=identity(dict(nonce=uuid.uuid4().hex)),
+    inv = dict(schema='PAGED_SUPERVISED_INVOCATION_V1' if paged(specification['method']) else 'DIRECT_SUPERVISED_INVOCATION_V1', id=identity(dict(nonce=uuid.uuid4().hex)),
                spec=specification, start=start, deadline=deadline, run_deadline=run_deadline,
                cleanup_deadline=cleanup_deadline, initial_work=counts, implementations=bindings())
     inv_hash = write_json(root / 'invocation.json', inv, LOG_CAP)
@@ -236,9 +258,11 @@ def supervise(root, specification, *, enabled=False, seconds=300., initial_work=
         command = [PYTHON, '-I', '-S', '-B', '-c',
                    "import sys;sys.path.insert(0," + repr(str(ROOT)) + ");from scoped_source.direct_lifecycle_worker import main;main()",
                    str(root), inv_hash]
+        if paged(specification['method']): command.append('--paged-errors')
         env = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', OMP_NUM_THREADS='1', OPENBLAS_NUM_THREADS='1', CUDA_VISIBLE_DEVICES='')
         child = run_owned(command, root / 'worker.log', run_deadline=run_deadline,
-                          cleanup_deadline=cleanup_deadline, env=env, rss_limit=RSS_LIMIT)
+                          cleanup_deadline=cleanup_deadline, env=env, rss_limit=RSS_LIMIT,
+                          bounded_errors=paged(specification['method']))
         if (root / 'worker.log').exists():
             require((root / 'worker.log').stat().st_size <= LOG_CAP, 'bounded worker log')
         else:
@@ -267,22 +291,41 @@ def supervise(root, specification, *, enabled=False, seconds=300., initial_work=
         accepted = None
         status = ('CLEANUP_INCOMPLETE' if child is not None and child['cleanup_status'] not in
                   ('LEADER_REAPED_NO_LIVE_GROUP', 'NO_PROCESS') else 'TIMEOUT' if isinstance(exc, TimeoutError) else 'ERROR')
-        error = type(exc).__name__ + ': ' + str(exc)[:500]
+        if paged(specification['method']):
+            from scoped_source.result_stream import error_code
+            error = error_code(exc)
+        else: error = type(exc).__name__ + ': ' + str(exc)[:500]
     # Postmortem cost is retained but can never rescue deadline failure.
     if specification['fault'] == 'terminal_expired':
         while time.monotonic() < deadline:
             time.sleep(min(.01, max(0., deadline - time.monotonic())))
     if time.monotonic() >= deadline:
         status, accepted = ('CLEANUP_INCOMPLETE' if status == 'CLEANUP_INCOMPLETE' else 'TIMEOUT'), None
-    receipt = dict(schema='DIRECT_SUPERVISED_RECEIPT_V1', status=status, invocation=inv['id'],
+    receipt = dict(schema='PAGED_SUPERVISED_RECEIPT_V1' if paged(specification['method']) else 'DIRECT_SUPERVISED_RECEIPT_V1', status=status, invocation=inv['id'],
                    invocation_sha256=inv_hash, method=specification['method'], candidate_sha256=report_hash,
                    accepted=accepted, error=error, child=child, work=counters,
                    work_complete=counters is not None and status == 'COMPLETE',
                    seconds_before_publication=time.monotonic() - start, budget=seconds)
-    receipt_hash = write_json(root / 'receipt.json', receipt, REPORT_CAP)
-    receipt_read, _ = read_json(root / 'receipt.json', REPORT_CAP, receipt_hash)
-    require(receipt_read == receipt, 'final receipt equality')
-    storage = census(root)
+    try:
+        receipt_hash = write_json(root / 'receipt.json', receipt, REPORT_CAP)
+        receipt_read, _ = read_json(root / 'receipt.json', REPORT_CAP, receipt_hash)
+        require(receipt_read == receipt, 'final receipt equality')
+        storage = census(root)
+    except BaseException as exc:
+        if not paged(specification['method']): raise
+        from scoped_source.result_stream import error_code
+        # No fabricated durable receipt/hash. Even an already-written success
+        # file is unusable without this actual timely return anchor.
+        accepted = None
+        status = 'CLEANUP_INCOMPLETE' if status=='CLEANUP_INCOMPLETE' else 'ERROR'
+        try: storage = census(root)
+        except BaseException: storage = None
+        end = time.monotonic()
+        if end >= deadline and status != 'CLEANUP_INCOMPLETE': status='TIMEOUT'
+        return dict(status=status,accepted=None,receipt_sha256=None,terminal_publication='FAILED',
+                    error=error_code(exc),invocation=inv['id'],invocation_sha256=inv_hash,
+                    seconds=end-start,budget=seconds,storage=storage,child=child,work=counters,
+                    cleanup_after_deadline=max(0.,end-deadline),root=str(root))
     end = time.monotonic()
     if end >= deadline:
         status, accepted = ('CLEANUP_INCOMPLETE' if status == 'CLEANUP_INCOMPLETE' else 'TIMEOUT'), None
@@ -296,9 +339,25 @@ def audit(root, call):
     """Requires the actual returned call, not a success-looking file alone."""
     root = Path(root)
     require(type(call) is dict and call['root'] == str(root), 'completed call anchor')
+    if call.get('receipt_sha256') is None:
+        # Explicitly incomplete, never audited as a successful terminal.
+        require(call.get('terminal_publication') == 'FAILED' and call.get('accepted') is None and
+                call.get('status') in ('ERROR','TIMEOUT','CLEANUP_INCOMPLETE'), 'unpublished terminal cannot accept')
+        inv,_=read_json(root/'invocation.json',LOG_CAP,call['invocation_sha256'])
+        validate_spec(inv['spec'])
+        require(paged(inv['spec']['method']) and inv['schema']=='PAGED_SUPERVISED_INVOCATION_V1'
+                and inv['id']==call['invocation'], 'unpublished invocation binding')
+        storage=census(root)
+        if call['storage'] is not None: require(storage==call['storage'],'failed publication byte accounting')
+        return dict(status='INCOMPLETE_TERMINAL',execution_status=call['status'],mathematical_recheck=False,
+                    bytes=storage['bytes'],storage_complete=call['storage'] is not None,cost_complete=False)
     r, _ = read_json(root / 'receipt.json', REPORT_CAP, call['receipt_sha256'])
     inv, _ = read_json(root / 'invocation.json', LOG_CAP, r['invocation_sha256'])
     validate_spec(inv['spec'])
+    require(inv['schema']==('PAGED_SUPERVISED_INVOCATION_V1' if paged(inv['spec']['method']) else 'DIRECT_SUPERVISED_INVOCATION_V1'),
+            'archived invocation schema')
+    require(r['schema'] == ('PAGED_SUPERVISED_RECEIPT_V1' if paged(inv['spec']['method']) else 'DIRECT_SUPERVISED_RECEIPT_V1'),
+            'terminal schema')
     require(r['invocation'] == inv['id'] == call['invocation'] and r['method'] == inv['spec']['method']
             and r['budget'] == call['budget'] and r['seconds_before_publication'] <= call['seconds'], 'terminal identity/cost')
     storage = census(root)

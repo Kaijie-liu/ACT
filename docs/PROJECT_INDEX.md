@@ -10,8 +10,8 @@
 | 接手工程、决定下一步 | [当前交接](CODEX_HANDOFF.md) | 已压缩；封存边界优先于旧 NEXT |
 | 看算法改进目标与下一门 | [研究目标合同](ALGORITHM_RESEARCH_GOAL.md) | HybridZ 算法、GPU 全成本、同源证据和外部确认分别验收；2026-10-14 同步执行状态，六门仍开放 |
 | 看无损证据与内存的下一决策 | [紧凑编码／有界读取草案](hz_lossless_evidence_design_20261014.md)、[预算核算](hz_lossless_evidence_design_20261014.json) | 单规范包110.6MB是待实现设计；双副本与完整RSS未闭合。保留全部候选、义务和检查，不改限额、不执行实模 |
-| 看最新直接来源与搬迁接线 | [共享来源／完整遍历／单份归档](hz_shared_source_controls_20261015.md)、[冻结协议](hz_shared_source_protocol_20261015.md) | 默认关闭；156控制＋4静态测试通过，旧新完整结果一致；不删检查，无实模／GPU |
-| 看完整模型资源准入 | [下一接口决策](hz_next_runtime_decision_20261015.md)、[分页结果上界](hz_paged_result_contract_20261015.md)、[归档／生命周期合同](hz_shared_archive_contract_20261015.md) | 分页成功格式可容纳完整结果，尚未实施；仅移交所有权仍超dense额度。Work、membership、来源和内存限制不变，实施与实模分别需授权 |
+| 看最新直接来源与搬迁接线 | [分页结果／完整重算控制](hz_paged_result_controls_20261015.md)、[冻结协议](hz_paged_result_protocol_20261015.md)、[共享来源](hz_shared_source_controls_20261015.md) | 默认关闭；171项控制／回归通过，引用式报告不省数学重算；首轮失败保留，无实模／GPU |
+| 看完整模型资源准入 | [下一接口决策](hz_next_runtime_decision_20261015.md)、[分页静态提案](hz_paged_result_contract_20261015.md)、[实际成功布局](../scripts/assess_paged_result_implementation.py)、[归档／生命周期合同](hz_shared_archive_contract_20261015.md) | 分页已实施，但不解除Work、membership、来源和内存限制；只转移dense所有权仍超额度，实模未准入 |
 | 看按模型规模设限的新提案 | [资源政策与静态评估](hz_model_scaled_resources_20261013.md)、[绑定账本](hz_model_scaled_resources_20261013.json) | 原拟案原样保留；后续完整账本在上一行。资源、算法、GPU分别归因，不改旧限额或历史结果 |
 | 看实际 HybridZ 多目标支持 | [CPU 控制与保证](hz_batch_support_controls_20261001.md)、[先行冻结合同](hz_batch_support_design_20261001.md)、[硬预算监督控制](hz_batch_supervision_20261001.md) | 显式启用支持接口；CPU 16 项、监督 14 项控制通过，GPU／生产收益仍未完成 |
 | 看支持界如何进入实际 HybridZ 传播 | [先行冻结](hz_checked_propagation_design_20261001.md)、[接线控制与保证](hz_checked_propagation_20261001.md)、[完整 CPU 监督](hz_propagation_supervision_20261001.md) | 真实 analyzer/ReLU 接线及有限监督通过；native 比较、真实请求与 GPU 收益未完成 |

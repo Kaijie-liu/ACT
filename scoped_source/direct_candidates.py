@@ -213,11 +213,13 @@ class Driver:
         self.receipts.extend(issued); self.owner._tile=None; self.pending=None; self.ordinal+=1
         return issued
 
-    def finish(self):
+    def finish(self,*,sink=None):
         start=time.monotonic()
         try:
             require(not self.closed and self.pending is None,'complete invocation terminal')
-            result=self.session.finish(self.receipts); self.work.tick()
+            result=(self.session.finish(self.receipts) if sink is None else
+                    self.session.finish(self.receipts,sink=sink))
+            self.work.tick()
             self.workspace.close(); self.work.tick()  # cleanup belongs to the same budget
             self.closed=True; return result
         except BaseException: self.abort(); raise

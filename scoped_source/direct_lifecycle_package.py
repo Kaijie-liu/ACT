@@ -9,16 +9,21 @@ from scoped_source.scaled_endpoints import contract
 from scoped_source.direct_candidates import Driver, MAX_TILE, PREFIX
 from scoped_source.wire_package import inventory
 from scoped_source.direct_package import CODE_FILES as V1_CODE
-from scoped_source.direct_method import validate
+from scoped_source.direct_method import validate, is_shared, paged
 
 MANIFEST = 'DIRECT_LIFECYCLE_MANIFEST_V1'
 BUNDLE = 'DIRECT_LIFECYCLE_BUNDLE_V1'
 CODE_FILES = V1_CODE + ('scoped_source/direct_method.py', 'scoped_source/direct_lifecycle_package.py')
 SHARED_CODE = ('scoped_source/shared_source.py','scoped_source/shared_format.py','scoped_source/check_shared_source.py')
+PAGED_CODE = ('scoped_source/result_stream.py', 'scoped_source/check_result_stream.py')
+
+
+def manifest_schema(method): return 'PAGED_LIFECYCLE_MANIFEST_V1' if paged(method) else MANIFEST
+def bundle_schema(method): return 'PAGED_LIFECYCLE_BUNDLE_V1' if paged(method) else BUNDLE
 
 
 def code_files(method):
-    return CODE_FILES + SHARED_CODE if method['schema']=='SHARED_LIFECYCLE_METHOD_V1' else CODE_FILES
+    return CODE_FILES + (SHARED_CODE if is_shared(method) else ()) + (PAGED_CODE if paged(method) else ())
 
 
 def check_manifest(root, raw, *, expected, expected_method, invocation, work, enabled=False):
@@ -28,9 +33,10 @@ def check_manifest(root, raw, *, expected, expected_method, invocation, work, en
     work.tick()
     require(type(raw) is bytes and len(raw) <= 2**20 and digest(raw) == sha(expected), 'manifest identity')
     m = decode(raw)
-    require(type(m) is dict and compact(m) == raw and set(m) == {
-        'schema', 'source', 'forest', 'contract', 'method', 'invocation', 'tiles', 'code'}
-        and m['schema'] == MANIFEST and m['invocation'] == invocation
+    fields = {'schema', 'source', 'forest', 'contract', 'method', 'invocation', 'tiles', 'code'}
+    if paged(method): fields.add('result')
+    require(type(m) is dict and compact(m) == raw and set(m) == fields
+        and m['schema'] == manifest_schema(method) and m['invocation'] == invocation
         and identity(m['method']) == identity(method), 'frozen manifest method/invocation')
 
     def member(ref, cap):
@@ -48,7 +54,7 @@ def check_manifest(root, raw, *, expected, expected_method, invocation, work, en
         member(ref, 64 * 2**10)
     require(type(m['source']) is dict and set(m['source']) == {'directory', 'sha256'}
             and m['source']['directory'] == 'source', 'local source')
-    shared=method['schema']=='SHARED_LIFECYCLE_METHOD_V1'
+    shared=is_shared(method)
     require(m['forest']['file'] == ('forest/index.json' if shared else 'forest.bin')
             and m['contract']['file'] == 'contract.json', 'fixed source members')
     if shared:
@@ -74,9 +80,17 @@ def check_manifest(root, raw, *, expected, expected_method, invocation, work, en
             require(len(raw) >= PREFIX.size and PREFIX.unpack_from(raw)[-2] == method['producer']['profile'],
                     'actual candidate scalar profile')
             d.receive(token, raw, lambda i, b: (digest(b), len(b)))
-        result = d.finish()
-        return dict(result=result, owner=dict(d.owner.stats), driver_cost=dict(d.costs), candidate_bytes=d.total_bytes,
+        sink = None
+        if paged(method):
+            from scoped_source.check_result_stream import Comparator
+            sink = Comparator(root, m['result'], method, invocation, m['forest']['sha256'], m['tiles'], work)
+        result = d.finish(sink=sink)
+        report = dict(result=result, owner=dict(d.owner.stats), driver_cost=dict(d.costs), candidate_bytes=d.total_bytes,
                     consumer=method['replay'])
+        if sink is not None:
+            report.update(result_ref=dict(m['result']), result_context=dict(sink.reader.context),
+                          result_pages_read=sink.reader.pages_read)
+        return report
     finally:
         if not d.closed:
             d.abort()
@@ -85,12 +99,13 @@ def check_manifest(root, raw, *, expected, expected_method, invocation, work, en
 def check_package(root, *, expected, expected_method, invocation, work, enabled=False):
     require(enabled is True, 'lifecycle package is opt-in')
     start = time.monotonic()
-    refs, total = inventory(root, expected, work, schema=BUNDLE)
+    method = validate(expected_method)
+    refs, total = inventory(root, expected, work, schema=bundle_schema(method))
     ref = refs['manifest.json']
     raw = read(root, 'manifest.json', 2**20, ref['sha256'])
     result = check_manifest(root, raw, expected=ref['sha256'], expected_method=expected_method,
                             invocation=invocation, work=work, enabled=True)
-    inventory(root, expected, work, schema=BUNDLE)
+    inventory(root, expected, work, schema=bundle_schema(method))
     work.tick()
     return dict(**result, package_sha256=expected, package_bytes=total, method=validate(expected_method),
                 invocation=invocation, work=dict(work.counts), seconds=time.monotonic() - start)
@@ -105,11 +120,12 @@ def main():
     p.add_argument('--profile', type=int, choices=(0, 1), required=True)
     p.add_argument('--enable-lifecycle', action='store_true')
     p.add_argument('--shared-source', action='store_true')
+    p.add_argument('--paged-results', action='store_true')
     p.add_argument('--seconds', type=float, default=300)
     a = p.parse_args()
     require(0 < a.seconds <= 300, 'unchanged deadline')
     print(compact(check_package(a.root, expected=a.expected, invocation=a.invocation,
-                  expected_method=method(a.arm, a.profile, shared=a.shared_source), work=Work(time.monotonic() + a.seconds),
+                  expected_method=method(a.arm, a.profile, shared=a.shared_source, paged_results=a.paged_results), work=Work(time.monotonic() + a.seconds),
                   enabled=a.enable_lifecycle)).decode())
 
 

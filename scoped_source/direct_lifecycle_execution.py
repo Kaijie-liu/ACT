@@ -13,12 +13,13 @@ from scoped_source.direct_source_build import build
 from scoped_source.check_direct_source import CheckedDirectForest
 from scoped_source.direct_candidates import Driver
 from scoped_source.direct_lifecycle import Lifecycle, FAULTS, inject
-from scoped_source.direct_method import validate
+from scoped_source.direct_method import validate, is_shared, paged
 from scoped_source.scaled_endpoints import contract
 from scoped_source.wire_archive import Archive, receive_file
-from scoped_source.direct_lifecycle_package import MANIFEST, BUNDLE, CODE_FILES, code_files, check_package
+from scoped_source.direct_lifecycle_package import code_files, check_package, manifest_schema, bundle_schema
 
-EXEC_FAULTS = FAULTS + ('replay_block', 'after_tile_error', 'before_transfer', 'after_transfer')
+RESULT_FAULTS = ('after_result_page_error', 'after_result_page_block', 'index_publication_expired')
+EXEC_FAULTS = FAULTS + ('replay_block', 'after_tile_error', 'before_transfer', 'after_transfer') + RESULT_FAULTS
 
 
 def execute(root, source_root, source, config, invocation, code_root, *, work,
@@ -26,7 +27,14 @@ def execute(root, source_root, source, config, invocation, code_root, *, work,
             member_limit=POLICY['members'], progress=None, owned_source=None):
     require(enabled is True, 'lifecycle execution is opt-in')
     method = validate(config)
-    shared=method['schema']=='SHARED_LIFECYCLE_METHOD_V1'
+    shared=is_shared(method)
+    streaming=paged(method)
+    require(fault not in RESULT_FAULTS or streaming, 'result faults require paged method')
+    def error(exc):
+        if streaming:
+            from scoped_source.result_stream import error_code
+            return error_code(exc)
+        return type(exc).__name__ + ': ' + str(exc)[:500]
     if shared:
         from scoped_source.shared_archive import OwnedSource
         require(type(owned_source) is OwnedSource and owned_source.root==Path(source_root)
@@ -66,7 +74,7 @@ def execute(root, source_root, source, config, invocation, code_root, *, work,
 
     def production():
         # Local source objects die before the fresh online checker is started.
-        f = raw = records = d = None
+        f = raw = records = d = sink = None
         life = Lifecycle(method, fault if fault in FAULTS else '')
         primary = None
         try:
@@ -110,11 +118,23 @@ def execute(root, source_root, source, config, invocation, code_root, *, work,
                 phase(f'candidate_accept/{i}', lambda:d.submit(token, records, publish, profile=method['producer']['profile']))
                 records = None
             phase('close', life.close, cleanup=True)
-            result = phase('production_finish', d.finish)
+            def finish():
+                nonlocal sink
+                if streaming:
+                    from scoped_source.result_stream import Writer
+                    sink = Writer(put,method,invocation,fr['sha256'],refs,work,
+                                  fault=fault if fault in RESULT_FAULTS else '')
+                return d.finish(sink=sink)
+            result = phase('production_finish', finish)
             snapshots['consumer'] = method['production']
-            return dict(result=result, construction=construction, forest=fr, contract=cr, tiles=refs)
+            output = dict(result=result, construction=construction, forest=fr, contract=cr, tiles=refs)
+            if streaming:
+                output['result_ref'] = dict(sink.ref)
+                snapshots['result_stream'] = dict(pages=len(sink.pages),rows=sink.count,
+                    page_bytes=[r['bytes'] for r in sink.pages],index_bytes=sink.ref['bytes'])
+            return output
         except BaseException as exc:
-            primary = type(exc).__name__ + ': ' + str(exc)[:500]
+            primary = error(exc)
             snapshots['primary_error'] = primary
             raise
         finally:
@@ -133,7 +153,7 @@ def execute(root, source_root, source, config, invocation, code_root, *, work,
                                 d.abort()
                         finally:
                             snapshots.update(owner=dict(d.owner.stats), driver_cost=dict(d.costs))
-                    records = raw = f = d = life = None
+                    records = raw = f = d = life = sink = None
                     gc.collect()
                     clean = True
                 finally:
@@ -157,13 +177,14 @@ def execute(root, source_root, source, config, invocation, code_root, *, work,
                         'bounded checker implementation')
                 ref = archive.copy(path, 'package/code/' + name)
                 code.append(dict(ref, file='code/' + name))
-            m = dict(schema=MANIFEST, source=dict(directory='source', sha256=source),
+            m = dict(schema=manifest_schema(method), source=dict(directory='source', sha256=source),
                      forest=produced['forest'], contract=produced['contract'], tiles=produced['tiles'],
                      method=method, invocation=invocation, code=code)
+            if streaming: m['result'] = produced['result_ref']
             put('manifest.json', compact(m))
             members = [dict(r, file=n.removeprefix('package/')) for n,r in sorted(archive.entries.items())
                        if n.startswith('package/')]
-            b = compact(dict(schema=BUNDLE, manifest='manifest.json', members=members))
+            b = compact(dict(schema=bundle_schema(method), manifest='manifest.json', members=members))
             require(len(b) <= 2**20, 'bounded inventory')
             return put('bundle.json', b)
         br = phase('package_publish', package)
@@ -171,7 +192,11 @@ def execute(root, source_root, source, config, invocation, code_root, *, work,
         replay = phase('portable_recheck', lambda:check_package(archive.root / 'package', expected=br['sha256'],
                          expected_method=method, invocation=invocation, work=work, enabled=True))
         require(replay['result'] == produced['result'], 'complete production/replay equality')
-        rr = phase('result_publish', lambda:archive.put('result.json', compact(produced['result'])))
+        if streaming:
+            require(replay['result_ref'] == produced['result_ref'], 'same replay result reference')
+            rr = phase('result_publish', lambda:dict(produced['result_ref']))
+        else:
+            rr = phase('result_publish', lambda:archive.put('result.json', compact(produced['result'])))
         phase('archive_check', archive.audit)
         tr = phase('terminal_publish', lambda:archive.put('terminal.json', compact(dict(
             status='PENDING_RECEPTION', method=method, invocation=invocation, source=source,
@@ -181,9 +206,10 @@ def execute(root, source_root, source, config, invocation, code_root, *, work,
                        package=br, replay=replay, construction=produced['construction'])
     except BaseException as exc:
         outcome = dict(status='TIMEOUT' if isinstance(exc, TimeoutError) else 'ERROR',
-                       error=type(exc).__name__ + ': ' + str(exc)[:500])
+                       error=error(exc))
     if outcome['status'] == 'COMPLETE' and time.monotonic() >= work.deadline:
         outcome = dict(status='TIMEOUT', error='lifecycle/replay cleanup deadline')
+    if streaming: outcome['schema']='PAGED_LIFECYCLE_REPORT_V1'
     return dict(**outcome, method=method, invocation=invocation, source=source, phases=phases,
                 snapshots=snapshots, work=dict(work.counts), initial_work=initial,
                 deadline=work.deadline, seconds=time.monotonic() - start,

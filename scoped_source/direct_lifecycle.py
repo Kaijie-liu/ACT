@@ -137,7 +137,8 @@ class FixedProposer:
         from scoped_source.check_scaled_references import checked
         checked(forest, work)
         from scoped_source.bounded_runtime import shared_source
-        require(shared_source(forest) == (self.method['schema'] == 'SHARED_LIFECYCLE_METHOD_V1'),
+        from scoped_source.direct_method import is_shared
+        require(shared_source(forest) == is_shared(self.method),
                 'method and actual source representation binding')
         inject(self.fault, 'setup', work)
         self.state = 'READY'

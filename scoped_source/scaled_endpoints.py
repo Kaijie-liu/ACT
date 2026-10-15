@@ -278,25 +278,36 @@ class Session:
         self.__closed=True; self.__live=None; self.__issued.clear(); self.__values.clear(); self.__raw.clear()
         if self.__workspace is not None: self.__workspace.close()
 
-    def finish(self,receipts):
+    def finish(self,receipts,*,sink=None):
         self._check(); work=self.__work
+        if sink is not None:
+            from scoped_source.result_stream import Writer
+            from scoped_source.check_result_stream import Comparator
+            require(type(sink) in (Writer,Comparator),'closed result sink')
+            sink.bind(self.__forest,self.__plan,work)
         require(self.__live is None and self.__next==len(self.__tiles),'all tiles completed before terminal')
         require(type(receipts) in (list,tuple) and len(receipts)==len(self.__plan.tasks),'all endpoint receipts')
         for task,receipt in zip(self.__plan.tasks,receipts,strict=True):
             work.visit('row_visits')
             if self.__values[task.slot] is None: require(receipt is None,'missing receipt cannot be invented')
             else: require(type(receipt) is Receipt and self.__issued.get(task.slot) is receipt,'checker-owned receipt identity/session')
-        rows=[]
+        rows=[] if sink is None else None
+        positive=0
         for pair,other,slots in self.__plan.duties:
             work.visit('row_visits'); bounds=[self.__values[s] for s in slots]
             lo=None if None in bounds else min(bounds)
-            rows.append(dict(pair=list(pair),other=other,lower=None if lo is None else str(lo),positive=lo is not None and lo>THRESHOLD))
-        positive=sum(r['positive'] for r in rows); missing=sum(v is None for v in self.__values.values())
-        result=dict(status=('CHECKED_POSITIVE_CAPTURED_REAL_SOURCE' if positive==len(rows) else
+            row=dict(pair=list(pair),other=other,lower=None if lo is None else str(lo),positive=lo is not None and lo>THRESHOLD)
+            positive+=row['positive']
+            if sink is None: rows.append(row)
+            else: sink.emit(row)
+        missing=sum(v is None for v in self.__values.values())
+        required=len(self.__plan.duties)
+        result=dict(status=('CHECKED_POSITIVE_CAPTURED_REAL_SOURCE' if positive==required else
                             'UNKNOWN_MISSING_EVIDENCE' if missing else 'UNKNOWN_NONPOSITIVE'),
-            required=len(rows),positive=positive,required_endpoints=len(self.__plan.tasks),
-            checked_endpoints=len(self.__values)-missing,missing_endpoints=missing,results=rows,
+            required=required,positive=positive,required_endpoints=len(self.__plan.tasks),
+            checked_endpoints=len(self.__values)-missing,missing_endpoints=missing,
             native_float_proof=False,checkpoint_correspondence_checked=False)
+        if sink is None: result['results']=rows
         from scoped_source.wire_forest import CheckedWireForest
         if type(self.__forest) is CheckedWireForest: self.__forest.source_access.seal()
         if type(self.__forest).__module__=='scoped_source.check_direct_source':
@@ -307,7 +318,9 @@ class Session:
             from scoped_source.check_shared_source import CheckedSharedForest
             require(type(self.__forest) is CheckedSharedForest,'closed shared type')
             self.__forest.seal()
-        work.visit('row_visits',len(result)); work.tick(); self.__closed=True; return result
+        work.visit('row_visits',9)  # unchanged logical result cost, including omitted rows field
+        if sink is not None: result=sink.finish(result)
+        work.tick(); self.__closed=True; return result
 
     def proof(self):
         self.__work.tick(); require(self.__closed,'terminal before final proof serialization')

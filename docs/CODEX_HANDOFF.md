@@ -1,7 +1,8 @@
 # MoE project handoff — current entry point
 
-Paged results now authorized; implementation/control protocol frozen: 2026-10-15.
-See [new implementation protocol](hz_paged_result_protocol_20261015.md).
+Paged results, reference reports and complete replay/reception passed 171 controls: 2026-10-15.
+See [implemented control results](hz_paged_result_controls_20261015.md) and
+[frozen protocol](hz_paged_result_protocol_20261015.md), pushed before implementation at `2ea468ed6`.
 This supersedes the older pending-approval state below, not the capacity refusals.
 
 Next runtime decision: ownership-only repair rejected; paged results proposed: 2026-10-15.
@@ -73,7 +74,31 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: bounded result proposal; no ownership-only implementation
+## Current decision: paged-result interfaces complete; no real-workload admission
+
+The default-off shared-source paged method is implemented and
+[control-checked](hz_paged_result_controls_20261015.md): 15 new plus 156 existing
+tests pass. Both arms independently reconstruct source and every endpoint after
+relocation; fully rehashed false lower bounds are rejected at row recomputation.
+Production/replay/parent carry summary plus reference, not full result copies.
+Incomplete prefixes, deadline failures and incomplete final receipts cannot accept.
+
+The first full run's two legacy mock-call compatibility errors are retained; only
+the default Driver call shape was repaired, not tests or acceptance thresholds.
+The second run passed tests but retained a 30-second success-test default, contrary
+to this protocol; it is kept as a protocol-deviating control attempt. After binding
+new successful controls and relocation to 300 seconds, the third run passes 171/171.
+No real model, native optimizer or GPU ran.
+Current forest identity equals its index hash by format definition; roles remain
+separately bound. Actual conditional successful metadata upper is 1,702,743 bytes,
+not the old proposal's 1,701,401. Ten online page reads and all existing checks remain.
+
+Next safe task is implemented-version resource accounting, not another automatic
+execution. No quota, check width, acceptance gate or 300-second limit changed.
+Whole-model Work/membership/heap/native-memory admission and G1–G6 remain open.
+Do not infer real/GPU execution authority from these fixed-candidate controls.
+
+## Prior decision: bounded result proposal; no ownership-only implementation
 
 The [next runtime decision](hz_next_runtime_decision_20261015.md) binds `447b301c0`.
 Even moving dense buffers without copying leaves at least 212,116,800 bytes of

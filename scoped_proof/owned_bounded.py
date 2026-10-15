@@ -55,7 +55,7 @@ def bounded_reap(process, deadline):
         return False
 
 
-def execute(command, log, *, run_deadline, cleanup_deadline, env, rss_limit):
+def execute(command, log, *, run_deadline, cleanup_deadline, env, rss_limit, bounded_errors=False):
     start = time.monotonic()
     if run_deadline > cleanup_deadline:
         raise ValueError('cleanup must fit inside the phase deadline')
@@ -91,9 +91,9 @@ def execute(command, log, *, run_deadline, cleanup_deadline, env, rss_limit):
                     break
                 time.sleep(min(.01, max(0., run_deadline-time.monotonic())))
     except TimeoutError as exc:
-        status, error = 'TIMEOUT', repr(exc)
+        status, error = 'TIMEOUT', 'DEADLINE' if bounded_errors else repr(exc)
     except Exception as exc:
-        status, error = 'ERROR', repr(exc)
+        status, error = 'ERROR', 'EXECUTION_ERROR' if bounded_errors else repr(exc)
     finally:
         before_cleanup = time.monotonic()
         if p is not None:
@@ -110,7 +110,7 @@ def execute(command, log, *, run_deadline, cleanup_deadline, env, rss_limit):
                         break
                     time.sleep(min(.005, max(0., cleanup_deadline-time.monotonic())))
             except Exception as exc:
-                error = repr(exc)
+                error = 'CLEANUP_ERROR' if bounded_errors else repr(exc)
             if cleanup != 'LEADER_REAPED_NO_LIVE_GROUP':
                 status = 'CLEANUP_INCOMPLETE'
     end = time.monotonic()

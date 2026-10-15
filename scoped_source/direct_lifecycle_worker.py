@@ -7,6 +7,21 @@ import time
 
 
 def main():
+    # The process has no external intake: these are supervisor-owned invocations.
+    # Catch new-mode failures without arbitrary exception formatting/tracebacks.
+    # Mode comes from the trusted supervisor argv, before any invocation read.
+    if sys.argv[-1:] != ['--paged-errors']:
+        return run()
+    try:
+        if len(sys.argv) != 4:
+            raise ValueError('worker arguments')
+        return run(expected_paged=True)
+    except BaseException:
+        sys.stderr.write('PAGED_WORKER_REJECTED\n')
+        raise SystemExit(2) from None
+
+
+def run(*, expected_paged=False):
     from scoped_source.direct_supervised import (ROOT, POLICY, LOG_CAP, REPORT_CAP, META_RESERVE,
         bindings, validate_spec, fixed_source, read_json, write_json, census)
     from scoped_source.hz_request_store import Work, compact, require
@@ -15,6 +30,10 @@ def main():
     inv, _ = read_json(root / 'invocation.json', LOG_CAP, expected)
     require(bindings() == inv['implementations'], 'frozen worker code')
     s = validate_spec(inv['spec'])
+    from scoped_source.direct_method import paged
+    require(paged(s['method']) is expected_paged, 'trusted supervisor mode binding')
+    require(inv['schema'] == ('PAGED_SUPERVISED_INVOCATION_V1' if expected_paged else 'DIRECT_SUPERVISED_INVOCATION_V1'),
+            'invocation schema')
     resource.setrlimit(resource.RLIMIT_FSIZE, (REPORT_CAP, REPORT_CAP))
     # Frozen tiny fixtures and code members fit this stricter file bound.
     require(sys.flags.isolated == 1 and sys.flags.no_site == 1, 'isolated no-site worker')
@@ -32,7 +51,8 @@ def main():
             stream.write(raw); stream.flush()
     fixture_start = time.monotonic()
     owned=None
-    if s['method']['schema']=='SHARED_LIFECYCLE_METHOD_V1':
+    from scoped_source.direct_method import is_shared
+    if is_shared(s['method']):
         from scoped_source.shared_archive import capture_owned
         owned=capture_owned(root,s['case'],w); source=owned.source
     else:
