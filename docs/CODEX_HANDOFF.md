@@ -1,5 +1,9 @@
 # MoE project handoff — current entry point
 
+Paged results now authorized; implementation/control protocol frozen: 2026-10-15.
+See [new implementation protocol](hz_paged_result_protocol_20261015.md).
+This supersedes the older pending-approval state below, not the capacity refusals.
+
 Next runtime decision: ownership-only repair rejected; paged results proposed: 2026-10-15.
 Paged result success metadata bounds assessed; runtime approval still required: 2026-10-15.
 Conditional complete archive demand closed; parent-reception/RSS boundary identified: 2026-10-15.
