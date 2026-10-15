@@ -1,0 +1,100 @@
+{
+  "anchors": {
+    "docs/hz_next_runtime_decision_20261015.md": "b86a8533701b396722731a57000b8802cf168855a8a0d0008acede3b22a7c0e9",
+    "docs/hz_shared_archive_contract_20261015.json": "2e1d473b03b0b6208dcf44a1ef4a2bec1c511a04a570d80ef324fffb53eca8c7",
+    "scripts/assess_paged_result_contract.py": "e17faaa850b390844c677fc692e87e71257a0f3176b950092eb4f10b735bf570",
+    "scripts/test_paged_result_contract.py": "0f2d0a44e010a85de27389e8b7b32bc5a858cc61f60c85cf5e3885680436ce6f"
+  },
+  "based_on": "3aad7f87f61497cc61905483d9b2c953de6f279b",
+  "candidate_builds": 0,
+  "capacity": {
+    "all_success_reports_fit": true,
+    "index_fits": true,
+    "page_bytes": 65536,
+    "page_fits": true,
+    "report_bytes": 1048576
+  },
+  "conditions": [
+    "proposed schema, not emitted runtime; all rows and both candidate roles retained",
+    "old captured-source profile and no-fault fixed-stub scope",
+    "at most 28 packaged checker files, each obeying existing 64 KiB cap; actual new code size unknown",
+    "at most 47 implementation bindings: old 44, two packaged modules, one new protocol; no other new execution files",
+    "old upper bounds on phase count, names, progress and nonnegative counters preserved",
+    "fixed JSON-safe relative paths using A-Z/a-z/0-9/_/./- and length <=200",
+    "twelve Work-counter digits are representation, not a raised quota"
+  ],
+  "decision": "PROPOSED_SUCCESS_METADATA_FITS_PER_FILE_CAPS_NOT_FULL_EXECUTION_ADMISSION",
+  "files": {
+    "artifact_files": 353,
+    "bundle_members": 351,
+    "code_files": 28,
+    "implementation_files": 47,
+    "pages": 32,
+    "whole_request_files": 358
+  },
+  "full_capacity_admitted": false,
+  "gpu_runs": 0,
+  "mathematical_checks_removed": 0,
+  "members_upper": {
+    "bundle": 111352,
+    "candidate_report": 164297,
+    "contract": 4550,
+    "inner_terminal": 1102,
+    "invocation": 13510,
+    "manifest": 36907,
+    "parent_receipt": 37984,
+    "progress": 64400,
+    "result_index": 5431,
+    "result_pages": 1261868,
+    "worker_log": 0
+  },
+  "metadata_upper": 1701401,
+  "model_runs": 0,
+  "new_quota": null,
+  "open_contract": {
+    "completion_seconds_upper": null,
+    "failure_generation_upper": null,
+    "full_heap_upper": null,
+    "full_rss_upper": null,
+    "native_capture_upper": null,
+    "new_implementation_work_upper": null
+  },
+  "result_reads": {
+    "complete_online_page_passes": 10,
+    "logical_page_bytes": 12618680,
+    "mathematical_replays": 1
+  },
+  "runtime_changed": false,
+  "schema": "PAGED_RESULT_STATIC_CONTRACT_V1",
+  "schema_sizes": {
+    "context_upper": 581,
+    "fraction_text_chars": 4936,
+    "full_page_upper": 40057,
+    "row_upper": 4988,
+    "summary_upper": 222
+  },
+  "solver_calls": 0,
+  "source_builds": 0,
+  "success_archive": {
+    "binary64": {
+      "checker_code_upper": 1835008,
+      "metadata_upper": 1701401,
+      "request_upper": 89164506
+    },
+    "general_rational": {
+      "checker_code_upper": 1835008,
+      "metadata_upper": 1701401,
+      "request_upper": 2897855706
+    }
+  },
+  "unchanged": {
+    "acceptance": "strict > 1/10000000",
+    "arena": 134217728,
+    "memberships": 65536,
+    "report_bytes": 1048576,
+    "seconds": 300,
+    "stored_bits": 4096,
+    "work": 8000000,
+    "work_bits": 8192
+  }
+}

@@ -1,6 +1,7 @@
 # MoE project handoff — current entry point
 
 Next runtime decision: ownership-only repair rejected; paged results proposed: 2026-10-15.
+Paged result success metadata bounds assessed; runtime approval still required: 2026-10-15.
 Conditional complete archive demand closed; parent-reception/RSS boundary identified: 2026-10-15.
 Shared post-capture Work uppers closed; dense ownership/report gaps identified: 2026-10-15.
 Shared-source static decision: packing-only fusion cannot close 8M admission: 2026-10-15.
@@ -78,10 +79,18 @@ or silently reduce dense check width. Current UID has no identified delegated
 writable cgroup; AS and aggregate RSS are different contracts, not interchangeable
 names for the old 2 GiB sampling threshold.
 
+The [paged metadata proposal](hz_paged_result_contract_20261015.md) now bounds all
+successful generated fields: page 40,057 bytes, index 5,431, worker report 164,297,
+parent receipt 37,984. Seven static controls pass; no runtime code changed. Context
+separately binds forest identity and index-file hash. Result pages require ten
+online read passes, not one; independent replay and complete aggregation remain.
+Failure-message generation, actual implementation Work, heap/RSS and native
+intake remain open. Do not turn this format calculation into a capacity retry.
+
 Proposed next scope is only default-off paged results and reference-based reports,
 with complete fresh source/endpoint replay and parent roster/sign checks retained.
-First freeze full metadata bounds and fixed-candidate/std-library controls after
-explicit approval. No runtime changes or new execution in this static decision.
+Freeze runtime/finite-fault details and fixed-candidate/std-library controls after
+explicit approval. No runtime changes or new execution in these static decisions.
 Work/membership/full-source/memory restrictions remain; no full-shape retry,
 quota change or model/GPU run. G1–G6 are not closed by report deduplication.
 
