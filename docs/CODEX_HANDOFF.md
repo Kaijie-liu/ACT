@@ -1,5 +1,10 @@
 # MoE project handoff — current entry point
 
+Two-pass source-validation floor checked: 2026-10-15.
+See the [follow-up decision](hz_domain_guard_decision_20261015.md#后续核查-两遍来源合法性本身仍超原额度).
+Even source-defined affine operators retain a 13,922,736 Work floor if both fresh
+checks retain one charged legality visit per parameter. No typed-source-only retry.
+
 Domain-only guard design assessed; no standalone implementation decision: 2026-10-15.
 See [semantic design and stop/continue decision](hz_domain_guard_decision_20261015.md).
 Pair value aliases are unused by endpoint consumers; removing that interface
@@ -125,6 +130,15 @@ do not disappear. Do not implement it as a standalone 8M admission repair or rep
 packing controls. Next runtime work needs an explicit joint source/support-checking
 research contract or versioned resource-policy choice. Neither is implied authority
 to change counting/limits, run real sources/models/GPU, or claim G1–G6 achieved.
+
+Follow-up narrows that choice: keeping two complete source checks and the current
+per-parameter charging already needs at least 13,922,736 Work, before affine
+comparisons or any output obligation. A typed-source representation does not
+remove this floor. The established block/batched pullbacks and residual-template
+ideas are not new capacity repairs. Under those unchanged conditions, full-shape
+admission requires a separately approved resource policy, not another local
+implementation. Full cost/memory conditions must precede quota selection; this
+analysis does not choose a new quota or authorize any runtime change.
 
 ## Prior decision: bounded result proposal; no ownership-only implementation
 
