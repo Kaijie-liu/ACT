@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Next runtime decision: ownership-only repair rejected; paged results proposed: 2026-10-15.
 Conditional complete archive demand closed; parent-reception/RSS boundary identified: 2026-10-15.
 Shared post-capture Work uppers closed; dense ownership/report gaps identified: 2026-10-15.
 Shared-source static decision: packing-only fusion cannot close 8M admission: 2026-10-15.
@@ -67,7 +68,24 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: conditional archive closed, runtime/resource decision remains
+## Current decision: bounded result proposal; no ownership-only implementation
+
+The [next runtime decision](hz_next_runtime_decision_20261015.md) binds `447b301c0`.
+Even moving dense buffers without copying leaves at least 212,116,800 bytes of
+required vectors in complete all-present eight-column consumption, above the
+unchanged 128 MiB arena. Do not implement that patch
+or silently reduce dense check width. Current UID has no identified delegated
+writable cgroup; AS and aggregate RSS are different contracts, not interchangeable
+names for the old 2 GiB sampling threshold.
+
+Proposed next scope is only default-off paged results and reference-based reports,
+with complete fresh source/endpoint replay and parent roster/sign checks retained.
+First freeze full metadata bounds and fixed-candidate/std-library controls after
+explicit approval. No runtime changes or new execution in this static decision.
+Work/membership/full-source/memory restrictions remain; no full-shape retry,
+quota change or model/GPU run. G1–G6 are not closed by report deduplication.
+
+## Prior decision: conditional archive closed, runtime/resource decision remains
 
 The [archive/lifetime contract](hz_shared_archive_contract_20261015.md) binds
 `a3681b44f`; eight new static tests plus sixteen prior ledger tests pass. It closes
