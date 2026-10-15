@@ -1,5 +1,17 @@
 # MoE project handoff — current entry point
 
+Full source/native admission reviewed; research priority corrected: 2026-10-16.
+See [the cross-contract decision](hz_full_path_decision_20261016.md) and
+[bound static record](hz_full_path_decision_20261016.json).
+The direct supervisor still accepts only fixed sources/stub candidates. Existing
+CPU candidate algebra can use the shared forest, but full integration is absent.
+Under the allowed all-nonzero first-layer case, its current COO preparation alone
+needs at least 321,011,712 bytes; existing dense8 consumption needs at least
+322,734,720 bytes. Neither can inherit the proposed small-control 256 MiB limit
+as a full-shape capacity guarantee. Actual checkpoint sparsity was not measured.
+Stop treating another stub-supervisor control batch as the default next step.
+No new quota, runtime code, model, native candidate or GPU execution; G1–G6 remain open.
+
 Concrete staged-memory approval package prepared: 2026-10-15.
 See [the 256 MiB proposal and fixed control table](hz_staged_memory_approval_20261015.md)
 and [bound approval record](hz_staged_memory_approval_20261015.json).
@@ -105,7 +117,26 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: approve a concrete limit and finite implementation scope
+## Current decision: close the full source/native contract before more infrastructure controls
+
+The [latest static review](hz_full_path_decision_20261016.md) supersedes the
+priority of the pending small-control memory proposal, not its frozen contents.
+Do not request or execute that batch as if it established progress on full models.
+Retain existing native CPU algebra as a meaningful reference, not a fixed proposer.
+The concrete representation issue is its `SourceLocal` to global COO materialization:
+new shared-source traversal and global native workspace are not covered by the
+scoped checker's smaller arena or old native costs. Static investigation of a
+source-row-block operator must preserve all checking and distinguish existing
+DAG/scale/adjoint capabilities from a genuine new increment.
+
+The source-to-supervisor adapter, native lifecycle and complete resource policy
+must be considered together. Capture/native Work and whole heap/RSS upper bounds
+remain open; two source checks alone still exceed 8M. No full-shape admission,
+new absolute quota, runtime implementation, real-model or GPU execution is approved.
+Any subsequent implementation/control scope requires its own decision. Research
+claims and the historical source gap are unchanged; control counts do not close goals.
+
+## Prior pending proposal: concrete limit and finite implementation scope
 
 The [approval proposal](hz_staged_memory_approval_20261015.md) now specifies one
 256 MiB per-process AS refusal, no fallback, exact fixture/control IDs and a
@@ -115,9 +146,9 @@ Use actual method ID `dense`, explicitly mapping the earlier descriptive
 `dense_reference` label. The original design JSON stays unchanged.
 
 User approval of this numerical limit and implementation/control execution is
-still required. No new worker or allocation probe has run. Do not prepare another
-generic design or silently start controls: the next decision is this concrete
-approval package. Keep real models/native/GPU excluded and the old Work refusal.
+still required. No new worker or allocation probe has run. This package is retained
+but is no longer the default next step; use the current full-path decision above.
+Keep real models/native/GPU excluded and the old Work refusal.
 
 ## Prior decision: freeze staged memory supervision; implementation awaits approval
 
