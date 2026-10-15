@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Shared post-capture Work uppers closed; dense ownership/report gaps identified: 2026-10-15.
 Shared-source static decision: packing-only fusion cannot close 8M admission: 2026-10-15.
 Shared source, complete traversal and single-owner archive controls completed: 2026-10-15.
 V2 full-path costs reconciled; roots access factor and whole-source copies identified: 2026-10-15.
@@ -65,7 +66,31 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: stop representation-only capacity repair
+## Current decision: counted-loop envelopes closed, not full resource admission
+
+The [execution envelope](hz_shared_execution_envelope_20261015.md) binds `82411e0b4`
+and closes conditional counted Work for source construction, two independent
+checks, both complete consumers, fixed proposal and production/replay frames.
+Seven new static tests plus nine prior ledger tests pass. The first field-name
+failure is recorded. No source/candidate/worker/model/GPU run or runtime edit.
+
+Source subpath upper is 216,424,736 Work; including consumers gives loose
+post-capture uppers 89,433,531,656 (dense) and 165,108,619,256 (scoped). These are
+not timing comparisons or proposed quotas. Current Work/membership refusals stand.
+Shared sparse objective roots do not remove dense dual-copy lifetime: a complete
+width-eight vector lower of 322,734,720 bytes still exceeds its 128 MiB arena.
+The child report also embeds two full result arrays; its existing 1 MiB cap is
+not a guarantee that every bit-admitted result fits. No actual overflow observed.
+
+Next static contract work is bounded source/chunk/header and whole metadata/
+archive demand, plus live-object/RSS and comparable consumer ownership. Do not
+repeat source-only bounds or tiny controls, choose quotas from these loose uppers,
+or connect a native proposer to the fixed-case supervisor. Capture/native proposal
+and successful time/RSS contracts remain open. New runtime/resource changes need
+separate scope; 300s, all checks and mathematical gates remain unchanged. G1–G6
+are not completed by this engineering sub-ledger.
+
+## Prior decision: stop representation-only capacity repair
 
 The [static decision](hz_shared_source_decision_20261015.md) binds `a210f8224`;
 five new arithmetic/binding tests and four prior ledger tests pass without source,

@@ -1,0 +1,389 @@
+{
+  "anchors": {
+    "docs/hz_direct_lifecycle_protocol_20261015.md": "6f53abbaf465f78fe586eb66c7e08ea0a8623dc1a2809e9793148898e0a2826f",
+    "docs/hz_full_resource_ledger_20261014.json": "04c51e4765ada9445dcdd80f63f745459366154037443a68dd565c093acbe9d2",
+    "docs/hz_pair_scoped_capacity_20261015.json": "401820ca62f29977119746010034791ffad83bc4833efb54cd0c159cc4a3e099",
+    "docs/hz_shared_source_controls_20261015.json": "1f2abe8849ea214589f5e565c918517eb25964083f8f041ef6798034bbc53100",
+    "docs/hz_shared_source_cost_20261015.json": "7f2b19ebb10ea0605d477d4d9694cf1a527c4363cad12e8fafd9b01cb7b4ca34",
+    "docs/hz_shared_source_decision_20261015.json": "ddf10e0d95885fda9071e529771f36730e027942ca7ed9b1594fd430e2e371c2",
+    "docs/hz_shared_source_protocol_20261015.md": "5adaa408bab129089a31935706b4ce518ad5f88b6f949af4dcddd14c74c294dc",
+    "scoped_proof/io.py": "ee080902b729bcc0ce50ead5696538b687302358f143b039a6f9bdee2256569d",
+    "scoped_proof/owned_bounded.py": "482f9c1d783cd5e3291b4056c7c57a90e42d3305cb92b240b536061042f8ff40",
+    "scoped_source/affine_references.py": "0f0d10033640210e6ce79642fa340a61c6e4293cb76779e4851a1f0f5cf582d8",
+    "scoped_source/bounded_runtime.py": "17846fe861f00d67c95046c5250ba09a6203bee784c9edb3129eca0e180ce133",
+    "scoped_source/check_affine_references.py": "a0d688ee82bf88c42945edfd3abc9591a46998c01cf236cbf752ad5b549e9c62",
+    "scoped_source/check_direct_source.py": "5c54c26662c370ecf8a434c1a237d3e99f5fced2e35638e09fd0d9656c843fe0",
+    "scoped_source/check_scaled_references.py": "ba2701eff6611276251f9debf803c9138a57a70807a67d262ad9e876e831a261",
+    "scoped_source/check_shared_source.py": "18621a4865854ebcb162937fcca53ceee1207ba045804383676c35c377eeabe3",
+    "scoped_source/check_source_dag.py": "58e5e2158843631c9e6ed324cfeeb2eb38e51df1205d2e14d1ed8ac8ce634458",
+    "scoped_source/direct_candidates.py": "cb9b791b9a1b828c9d4fd6b351361c6fe59072b40caf0c91e55beefeaf2665a4",
+    "scoped_source/direct_lifecycle.py": "20579f800633c928e5f43f1cc06f5f2640e4ee3d4df40dfa13bd33d1d77b23a0",
+    "scoped_source/direct_lifecycle_execution.py": "d9c826e23346dcca09ed40997a7e0dbd62b087d139d33df619590c6162c62600",
+    "scoped_source/direct_lifecycle_package.py": "1423291a8313358525d9019844d5a75cd3c5ec6738c88d95f5ca6a91943f729a",
+    "scoped_source/direct_lifecycle_worker.py": "44c309e1d44d9f9917f12be9c7a74438ec5175ec963033cd250b16087d8fc0af",
+    "scoped_source/direct_method.py": "5b5cf4155e1ad83345edd8e5de675cec62fafe54f7b05bc2a07a51e6b16e8ca7",
+    "scoped_source/direct_package.py": "1a19845d53fbceb698fd683088598a1263a443ac0107e0efbcaec7475b13f74d",
+    "scoped_source/direct_source_build.py": "cb6a4ac91d2d4af51a5df2d8d343c26371287b22d8209a2427fb3ba875440d9a",
+    "scoped_source/direct_source_format.py": "fa2b39f4a682083974610acee69f4a9b0c14cb8f5b7342d001cafe8c759c583d",
+    "scoped_source/direct_supervised.py": "8e8aaf97ea54c81b44937660978a721d9c5932560b873a64705b29486c037135",
+    "scoped_source/factored_io.py": "d51bcd7eae6734fe6cd676f584a9e9f2220eeea4400d497ccb1dc6950dce120d",
+    "scoped_source/factored_source.py": "f7f04c64989a179c36759876edc425ffd3efad4eeb9fbf8118ea2934f4a385cc",
+    "scoped_source/forest_endpoint_controls.py": "efb558461e013fd3b5836043285eaea27acbc7126c9716bee2efcca5cb8b7278",
+    "scoped_source/forest_endpoints.py": "86396e9c662ba8c91f6ac3921dc7f410d9b977937df38a9fb782f82991c50a4c",
+    "scoped_source/hz_request_store.py": "7cb2be7647039f59d3c896b7856f634f43be9c532d9d2fd43632be09ab3230e0",
+    "scoped_source/hz_store_source.py": "fec79e9cc1a67b524320b37328d24179a5c09dd21b9943f36cc11c5f40b56268",
+    "scoped_source/hz_store_sparse.py": "e1682d697dd56993cda3e64a171f0356e0ed3cc8349b81345b91f8c3ba3a23c3",
+    "scoped_source/hz_store_write.py": "2c26fa3ee2f0b50d2bdafea511bc59e80ccd5d025de48b32ca78513b9e40cd1e",
+    "scoped_source/pair_workspace.py": "39258a61112e86700957f1b89e35a008164a928652744f0f500d8051ad56fdc3",
+    "scoped_source/scaled_endpoints.py": "f3b95e71a4d4b1a1d2104ae3b97e39d6b9e997af1a76c2af94433017a560b1d5",
+    "scoped_source/scaled_references.py": "534761cad44cbdf62ed31ee4d999fce0a5bd51aed4461b98d8f986b75d50d75d",
+    "scoped_source/shared_archive.py": "bb153d06dc13213422d1f76d8bf3887da7f7872bf3a9b72a14d55fada843cab6",
+    "scoped_source/shared_build.py": "0eb6edd40bd98f2826d0f3688688fb28fad463515d69ac1db5fa76eb155b090e",
+    "scoped_source/shared_format.py": "1af4f02b09677d3af41059ebb73200557df3a3409394dbe2cce09247dbdf9b6f",
+    "scoped_source/shared_source.py": "c2db29b77829cb68b910b067047db44ce8291cf29befa3df87229ccb6dfe4482",
+    "scoped_source/source_dag.py": "6de99ca02cdc14aec8b9478093aa0c778a81874e5e5820cbfa7d0b18ee6e2e41",
+    "scoped_source/tensor_rows.py": "5c3ad6d642868e257ac9dd2edbc5e066b4cd793d4c7567a4ea800fc8e8f97f82",
+    "scoped_source/wire_archive.py": "fdf0b0e97522527831a6f03f1c7188403bc8b7b844c3a9df092823e703295abd",
+    "scoped_source/wire_forest.py": "981385019f93f97d41c02eab245cc21e8c430ccdfc8e0f853d5ffacb6981a3b3",
+    "scoped_source/wire_package.py": "7634cb030fefc5fdd672b0f6a61080740c1618c650a2250ab28819236b3ffd87",
+    "scoped_source/wire_proof.py": "1bd8d3bbc88b7d28fb022963c482ee77b909c50afb476bb9ec035cc67ac6d58a",
+    "scripts/assess_shared_execution_envelope.py": "d40d92d50a48edf7858fed9f9cc83a3acf0a4d3820ad5a2bc5f80d28e5f1d62f",
+    "scripts/assess_shared_source_cost.py": "49122de543bd680c6aba3629276a813697a34baefed532cba032107af8cc29cd",
+    "scripts/assess_shared_source_decision.py": "803ad8160fe1609ce945fd3ef3331823dbedfee9863f4cb963e28bef8155e0b1",
+    "scripts/run_shared_source_controls.py": "734e0004cb12775601cd91b483a33ed5fb025354425d6e71f9c831cbbda6f10b",
+    "scripts/test_shared_execution_envelope.py": "e262c63b01ad720d44af4c907c60e84fd94aac36c03c2d663e19d8d133fcb753",
+    "scripts/test_shared_source.py": "c50e965f4e4b0610d59a97d28b4632bf69018bd8f1ef83cbb6c88ceeb9c95f08",
+    "scripts/test_shared_source_cost.py": "81a33c4306f1d23ba7a67baa18c2049d9e79a3c457073268ec189c33e7ba33e7",
+    "scripts/test_shared_source_decision.py": "1b6ae6de8ecc2c6e1af469f5a64ab9b67a9f723c3c2ea0c1c21610dee1b8f409",
+    "source_enclosure/format.py": "ba79d394824abc84aac1509518bf9416be3510a4eecef5b107ba60e63418f7ef",
+    "upstream_source/checker.py": "d14f75fd660d7ecab44994c24371d055407f5ca911e64867d94094b212a8c47c"
+  },
+  "based_on": "82411e0b4045a7015b732bd549321ccffab3544d",
+  "candidate_builds": 0,
+  "consumers": {
+    "dense_reference": {
+      "actual_work": null,
+      "assumptions": [
+        "complete candidate pairs present",
+        "all global closures used as upper",
+        "full merge and both norms retained",
+        "fresh independent replay",
+        "fixed standard-library proposer only; no native/GPU proposal"
+      ],
+      "check_blocks_upper": 84,
+      "consumer_core_upper": 44604460980,
+      "fixed_proposer_upper": 2738232,
+      "native_proposer_upper": null,
+      "phases": {
+        "consume_without_dual_pullback": 350780976,
+        "dual_pullback": 18876147024,
+        "finish": 4861,
+        "objectives": 24596825904,
+        "plan": 780157040,
+        "roots": 545175,
+        "scopes": 0
+      },
+      "postcapture_counted_work_upper": 89433531656,
+      "production_and_replay_upper": 89217106920,
+      "production_frame_upper": 5445972,
+      "production_upper": 44612645184,
+      "replay_frame_upper": 756,
+      "replay_upper": 44604461736,
+      "source_chunks_upper": 4096
+    },
+    "pair_scoped": {
+      "actual_work": null,
+      "assumptions": [
+        "complete candidate pairs present",
+        "all global closures used as upper",
+        "full merge and both norms retained",
+        "fresh independent replay",
+        "fixed standard-library proposer only; no native/GPU proposal"
+      ],
+      "check_blocks_upper": 252,
+      "consumer_core_upper": 82442004780,
+      "fixed_proposer_upper": 2738232,
+      "native_proposer_upper": null,
+      "phases": {
+        "consume_without_dual_pullback": 536619888,
+        "dual_pullback": 38825674776,
+        "finish": 4861,
+        "objectives": 42281683920,
+        "plan": 780157040,
+        "roots": 545175,
+        "scopes": 17319120
+      },
+      "postcapture_counted_work_upper": 165108619256,
+      "production_and_replay_upper": 164892194520,
+      "production_frame_upper": 5445972,
+      "production_upper": 82450188984,
+      "replay_frame_upper": 756,
+      "replay_upper": 82442005536,
+      "source_chunks_upper": 4096
+    }
+  },
+  "current_refusal": {
+    "candidate_stream": {
+      "binary64": {
+        "actual_bytes": null,
+        "largest_tile_upper": 362944,
+        "one_endpoint_upper": 45480,
+        "per_pair_tile_upper": [
+          362944,
+          362944,
+          90832
+        ],
+        "stream_assessment": "UPPER_EXCEEDS_CAP_ACTUAL_UNKNOWN",
+        "stream_upper": 22868160,
+        "tile_assessment": "UPPER_FITS_THIS_COMPONENT_ONLY",
+        "tiles": 84,
+        "upper_excess_proves_actual_overflow": false
+      },
+      "general_rational": {
+        "actual_bytes": null,
+        "largest_tile_upper": 44945344,
+        "one_endpoint_upper": 5618280,
+        "per_pair_tile_upper": [
+          44945344,
+          44945344,
+          11236432
+        ],
+        "stream_assessment": "UPPER_EXCEEDS_CAP_ACTUAL_UNKNOWN",
+        "stream_upper": 2831559360,
+        "tile_assessment": "UPPER_EXCEEDS_CAP_ACTUAL_UNKNOWN",
+        "tiles": 84,
+        "upper_excess_proves_actual_overflow": false
+      }
+    },
+    "dense_arena": "CURRENT_CONTRACT_REFUSAL",
+    "memberships": "CURRENT_CONTRACT_REFUSAL",
+    "work": "CURRENT_CONTRACT_REFUSAL"
+  },
+  "decision": "STATIC_SUBCONTRACTS_CLOSED_FULL_RESOURCE_CONTRACT_NOT_ADMITTED",
+  "dense_owned_arena": {
+    "actual_peak": null,
+    "complete_width8_vector_lower": 322734720,
+    "conditional_on": "complete all-present width-8 dense consumption",
+    "excludes": [
+      "upstream graph/bank",
+      "caller candidate buffers",
+      "Python overhead",
+      "Fraction temporaries",
+      "allocator retained memory"
+    ],
+    "full_rss_upper": null,
+    "lower_assessment": "CURRENT_CONTRACT_REFUSAL",
+    "one_descriptor_upper": 8272,
+    "owned_payload_upper": 1704299744,
+    "phases": {
+      "descriptor_seal": 464185152,
+      "frame_seal": 531081888,
+      "full_consume": 1704299744,
+      "objective_pullback": 570615240
+    },
+    "root_upper": 856864,
+    "slot_bytes": 2065
+  },
+  "file_read_core": {
+    "definitions": {
+      "C": "candidate stream",
+      "G": "forest page index",
+      "S": "forest payload",
+      "T": "source tensor bytes including center",
+      "X": "center bytes"
+    },
+    "excludes": [
+      "metadata/code/imports",
+      "in-memory hash passes",
+      "offline audit",
+      "future checkpoint/live-source capture input IO"
+    ],
+    "kind": "logical file bytes, not physical device IO",
+    "online": "17T+2X+9(S+G)+9C",
+    "parent": "4T+4(S+G)+4C"
+  },
+  "full_capacity_admitted": false,
+  "gpu_runs": 0,
+  "inventory": {
+    "affine_outputs": 3288,
+    "candidates_upper": 1008,
+    "classes": 10,
+    "dual_scalar_entries_upper": 2721600,
+    "endpoints_min": 252,
+    "endpoints_upper": 504,
+    "expert_widths": [
+      3072,
+      256,
+      128,
+      10
+    ],
+    "experts": 8,
+    "factors_upper": 32048,
+    "first_weight_positions": 6684672,
+    "guards": 336,
+    "inputs": 3072,
+    "largest_weight_tensor": 786432,
+    "later_weight_positions": 273408,
+    "local_entries_upper": 6732720,
+    "mandatory_roots": 126632,
+    "nodes_upper": 19496,
+    "pair_dual_rows_upper": 2700,
+    "pair_local_tiles_upper": 84,
+    "pair_output_roots": 86016,
+    "pairs": 28,
+    "parameter_values": 6961368,
+    "property_duties": 252,
+    "raw_binary64_tensor_bytes": 55715520,
+    "references_upper": 277280,
+    "relu_units": 3200,
+    "roots_upper": 136232,
+    "router_widths": [
+      3072,
+      128,
+      8
+    ],
+    "source_values_with_center": 6964440,
+    "views": 82,
+    "width": 8
+  },
+  "metadata_under_conditional_loop_upper": {
+    "actual_result_bytes": null,
+    "candidate_report_full_result_copies": 2,
+    "candidate_result_fields_upper": 2514920,
+    "counter_digits": 12,
+    "fraction_text_upper": 4936,
+    "implication": "actual result above half report cap implies report overflow; no such size observed",
+    "integer_digits": 2467,
+    "one_result_bytes_over": 524288,
+    "pending": [
+      "archive event list",
+      "manifest and source header exact layout",
+      "source/candidate/member hash maps",
+      "all retained snapshots and reports"
+    ],
+    "phase_list_upper": 33667,
+    "phase_rows": 186,
+    "progress_bytes_upper": 64400,
+    "progress_rows": 368,
+    "result_assessment": "UPPER_EXCEEDS_CAP_ACTUAL_UNKNOWN",
+    "result_upper": 1257460,
+    "total_report_upper": null,
+    "upper_excess_proves_actual_overflow": false
+  },
+  "metadata_under_current_counter_cap": {
+    "actual_result_bytes": null,
+    "candidate_report_full_result_copies": 2,
+    "candidate_result_fields_upper": 2514920,
+    "counter_digits": 7,
+    "fraction_text_upper": 4936,
+    "implication": "actual result above half report cap implies report overflow; no such size observed",
+    "integer_digits": 2467,
+    "one_result_bytes_over": 524288,
+    "pending": [
+      "archive event list",
+      "manifest and source header exact layout",
+      "source/candidate/member hash maps",
+      "all retained snapshots and reports"
+    ],
+    "phase_list_upper": 30877,
+    "phase_rows": 186,
+    "progress_bytes_upper": 58880,
+    "progress_rows": 368,
+    "result_assessment": "UPPER_EXCEEDS_CAP_ACTUAL_UNKNOWN",
+    "result_upper": 1257460,
+    "total_report_upper": null,
+    "upper_excess_proves_actual_overflow": false
+  },
+  "model_runs": 0,
+  "new_quota": null,
+  "no_upper_used_as_quota": true,
+  "open_contract": {
+    "capture_work_upper": null,
+    "completion_seconds_upper": null,
+    "full_archive_demand_upper": null,
+    "full_rss_upper": null,
+    "native_candidate_work_upper": null,
+    "reasons": [
+      "native source capture/proposal not part of current fixed-case supervisor",
+      "generated whole metadata/file layout not yet bounded",
+      "owned payload is not CPython/OS RSS; object/transient lifetimes remain",
+      "Work excludes much rational/string/hash/IO/cleanup time"
+    ]
+  },
+  "runtime_changed": false,
+  "schema": "SHARED_EXECUTION_ENVELOPE_STATIC_V1",
+  "solver_calls": 0,
+  "source_builds": 0,
+  "source_counted_work": {
+    "assumptions": [
+      "all first-affine positions visited, including zero",
+      "stored memberships <= expanded membership upper",
+      "every local may have a different scale group",
+      "complete finite/bit/encoding checks retained; violations refuse"
+    ],
+    "build_and_two_checks_upper": 216424736,
+    "encode": {
+      "arithmetic": 0,
+      "coefficient_visits": 357376,
+      "row_visits": 311456
+    },
+    "encode_upper": 668832,
+    "one_checker": {
+      "equations": {
+        "arithmetic": 7544264,
+        "coefficient_visits": 6958080,
+        "row_visits": 35330
+      },
+      "initialize": {
+        "arithmetic": 20198160,
+        "coefficient_visits": 20379344,
+        "row_visits": 19578
+      },
+      "intake": {
+        "arithmetic": 0,
+        "coefficient_visits": 357376,
+        "row_visits": 333128
+      },
+      "replay": {
+        "arithmetic": 0,
+        "coefficient_visits": 6958080,
+        "row_visits": 3288
+      },
+      "snapshot": {
+        "arithmetic": 0,
+        "coefficient_visits": 13922736,
+        "row_visits": 3288
+      }
+    },
+    "one_checker_upper": 76712652,
+    "producer": {
+      "equations": {
+        "arithmetic": 27745712,
+        "coefficient_visits": 13642752,
+        "row_visits": 54744
+      },
+      "replay": {
+        "arithmetic": 0,
+        "coefficient_visits": 6958080,
+        "row_visits": 3288
+      },
+      "snapshot": {
+        "arithmetic": 0,
+        "coefficient_visits": 13922736,
+        "row_visits": 3288
+      }
+    },
+    "producer_upper": 62330600,
+    "source_seal_counted_in_consumer_finish": true
+  },
+  "unchanged": {
+    "acceptance": "strict > 1/10000000",
+    "arena": 134217728,
+    "memberships": 65536,
+    "report_bytes": 1048576,
+    "seconds": 300,
+    "stored_bits": 4096,
+    "work": 8000000,
+    "work_bits": 8192
+  }
+}

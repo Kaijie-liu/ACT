@@ -213,6 +213,14 @@ stub控制。[协议](hz_direct_join_protocol_20261015.md)先提交推送，
 支持全尺寸容量合同。下一步只能先完整静态资源／重证政策设计，不将计量对象偷偷
 改成unique roots、不自动缩窄候选域、不从下界选新额度，也不循环小控制或真实重跑。
 
+随后[完整计数循环包络](hz_shared_execution_envelope_20261015.md)仅通过静态源码／整数核算
+闭合来源构造、两遍来源核验、两遍消费者、固定候选及typed frame的Work上界；7项新测试
+和9项旧账本测试通过。它不覆盖未来native capture／proposal，也不将宽松上界作为新额度。
+新增确认dense共享root后仍有原dual与pullback副本重叠：完整宽度向量下界322,734,720字节，
+超128MiB。child report内嵌两份完整结果，现有文件cap仍非全尺寸生成保证。完整metadata／
+归档需求与live-object／RSS合同继续开放。下一步静态补这些具体缺口，不重复已闭合的
+来源计数、不提额、不更改数学检查，也不把固定stub接线误称native／GPU入口。G1–G6保持开放。
+
 G6 的[逐对象比较合同](baseline_semantic_admission_20261013.md)现已补齐函数、域、概率
 量词和准入缺口，并通过九组标准库控制；这不是六篇完整复现、真实比较或 G6 关闭。
 MetaMoE 的类别分离零填充对象不能承载跨域路由变化正 margin，G4 在其上检验完整
