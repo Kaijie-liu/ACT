@@ -1,5 +1,10 @@
 # MoE project handoff — current entry point
 
+Domain-only guard design assessed; no standalone implementation decision: 2026-10-15.
+See [semantic design and stop/continue decision](hz_domain_guard_decision_20261015.md).
+Pair value aliases are unused by endpoint consumers; removing that interface
+would fix only the membership component, not the independent Work refusals.
+
 Implemented paged-result resource accounting completed: 2026-10-15.
 See [post-implementation resource decision](hz_paged_execution_resources_20261015.md).
 The interface stage is complete; no further paging micro-controls or full-shape retry.
@@ -110,6 +115,16 @@ Stop this paging/serialization interface stage. A next runtime mechanism needs
 a scoped algorithm/representation or complete resource-policy decision that
 addresses the established lower-bound refusal, not another same-shape attempt.
 No quota, check width, acceptance gate or 300-second limit changed. G1–G6 remain open.
+
+The subsequent [domain-only guard analysis](hz_domain_guard_decision_20261015.md)
+identifies a genuine IR simplification: retain all pair constraints, shared factors
+and objective roots, but omit its unused input-value output interface. Registered
+expanded membership bounds would fall from 126,632–136,232 to 40,616–50,216.
+This is not implemented; unique roots/coefficients and source/consumer Work floors
+do not disappear. Do not implement it as a standalone 8M admission repair or repeat
+packing controls. Next runtime work needs an explicit joint source/support-checking
+research contract or versioned resource-policy choice. Neither is implied authority
+to change counting/limits, run real sources/models/GPU, or claim G1–G6 achieved.
 
 ## Prior decision: bounded result proposal; no ownership-only implementation
 

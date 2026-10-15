@@ -12,6 +12,7 @@
 | 看无损证据与内存的下一决策 | [紧凑编码／有界读取草案](hz_lossless_evidence_design_20261014.md)、[预算核算](hz_lossless_evidence_design_20261014.json) | 单规范包110.6MB是待实现设计；双副本与完整RSS未闭合。保留全部候选、义务和检查，不改限额、不执行实模 |
 | 看最新直接来源与搬迁接线 | [分页结果／完整重算控制](hz_paged_result_controls_20261015.md)、[冻结协议](hz_paged_result_protocol_20261015.md)、[共享来源](hz_shared_source_controls_20261015.md) | 默认关闭；171项控制／回归通过，引用式报告不省数学重算；首轮失败保留，无实模／GPU |
 | 看完整模型资源准入 | [分页实施后资源账本](hz_paged_execution_resources_20261015.md)、[实际成功布局](../scripts/assess_paged_result_implementation.py)、[归档／生命周期合同](hz_shared_archive_contract_20261015.md) | 接口阶段完成；Work、membership仍拒绝，完整heap/RSS未闭合；不重复分页微控制或实模准入 |
+| 看下一算法表示决策 | [仅域 guard 视图静态合同](hz_domain_guard_decision_20261015.md) | 可删除未使用的pair值输出接口，保留全部约束／性质；只解除成员数矛盾，来源及消费者Work仍拒绝，未实施 |
 | 看按模型规模设限的新提案 | [资源政策与静态评估](hz_model_scaled_resources_20261013.md)、[绑定账本](hz_model_scaled_resources_20261013.json) | 原拟案原样保留；后续完整账本在上一行。资源、算法、GPU分别归因，不改旧限额或历史结果 |
 | 看实际 HybridZ 多目标支持 | [CPU 控制与保证](hz_batch_support_controls_20261001.md)、[先行冻结合同](hz_batch_support_design_20261001.md)、[硬预算监督控制](hz_batch_supervision_20261001.md) | 显式启用支持接口；CPU 16 项、监督 14 项控制通过，GPU／生产收益仍未完成 |
 | 看支持界如何进入实际 HybridZ 传播 | [先行冻结](hz_checked_propagation_design_20261001.md)、[接线控制与保证](hz_checked_propagation_20261001.md)、[完整 CPU 监督](hz_propagation_supervision_20261001.md) | 真实 analyzer/ReLU 接线及有限监督通过；native 比较、真实请求与 GPU 收益未完成 |
