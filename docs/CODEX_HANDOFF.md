@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+V2 full-path costs reconciled; roots access factor and whole-source copies identified: 2026-10-15.
 Direct lifecycle and hard-supervisor stub controls passed 133 tests: 2026-10-15.
 Direct lifecycle and hard-supervisor stub controls authorized and frozen: 2026-10-15.
 Actual direct join costs reconciled; full-topology admission still refused: 2026-10-15.
@@ -62,7 +63,32 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: lifecycle and hard-supervisor stub controls complete
+## Current decision: V2 cost reconciliation complete, full execution refused
+
+The [V2 ledger](hz_direct_lifecycle_cost_20261015.md) binds `9d30c76f8` and
+passes 13 static tests without new source/proposal/worker/model/GPU execution.
+Production objects now release before replay; do not repeat V1's full-graph
+overlap claim. Source construction plus two source checks and two full consumers
+remain: conditional Work floors are 37,085,184 (dense) and 54,116,352 (scoped),
+above 8M. Required memberships remain 126,632 above 65,536.
+
+The fixed proposer adds different roots-access costs: dense scans all node slots
+for tuple length/iteration, scoped enumerates at most four roots. Saved counters
+confirm the delta without rerunning controls. Future timing must not attribute
+this representation/access factor entirely to the check-two residual algorithm.
+The successful online file-read core is `18T+3X+9S+9C`, not V1's formula. Original
+and packaged source both count: the first-layer-dense subcase needs at least
+191,647,104 bytes before metadata/candidates, above 128 MiB. Actual sparsity is
+unknown. The supervisor still accepts only fixed tiny cases, with a 1 MiB
+per-file worker limit; it is not a full-model interface.
+
+Complete Work/RSS success upper bounds remain open. Next needs a joint source
+representation, checked traversal/resource policy and whole-storage/file-layout
+decision, with comparable roots access. Do not continue isolated microcontrols,
+infer quotas from lower/source-only bounds, or connect native/GPU/real execution.
+No runtime, acceptance gate or historical scientific claim changed. G1–G6 open.
+
+## Prior decision: lifecycle and hard-supervisor stub controls complete
 
 The [V2 results](hz_direct_lifecycle_controls_20261015.md) pass 133 tests:
 16 same-candidate source/profile/consumer configurations and 328 exact bound
