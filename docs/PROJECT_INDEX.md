@@ -11,7 +11,7 @@
 | 看算法改进目标与下一门 | [研究目标合同](ALGORITHM_RESEARCH_GOAL.md) | HybridZ 算法、GPU 全成本、同源证据和外部确认分别验收；2026-10-14 同步执行状态，六门仍开放 |
 | 看无损证据与内存的下一决策 | [紧凑编码／有界读取草案](hz_lossless_evidence_design_20261014.md)、[预算核算](hz_lossless_evidence_design_20261014.json) | 单规范包110.6MB是待实现设计；双副本与完整RSS未闭合。保留全部候选、义务和检查，不改限额、不执行实模 |
 | 看最新直接来源与搬迁接线 | [共享来源／完整遍历／单份归档](hz_shared_source_controls_20261015.md)、[冻结协议](hz_shared_source_protocol_20261015.md) | 默认关闭；156控制＋4静态测试通过，旧新完整结果一致；不删检查，无实模／GPU |
-| 看完整模型资源准入 | [最新执行包络](hz_shared_execution_envelope_20261015.md)、[先前静态停止裁决](hz_shared_source_decision_20261015.md) | 来源＋两遍消费者的计数循环上界已闭合；dense完整宽度工作区仍超128MiB，完整报告／归档与RSS合同未闭合。无提额、实模或GPU准入 |
+| 看完整模型资源准入 | [最新归档／生命周期合同](hz_shared_archive_contract_20261015.md)、[执行包络](hz_shared_execution_envelope_20261015.md)、[静态停止裁决](hz_shared_source_decision_20261015.md) | 条件化完整成功归档已核算；Work／membership／dense工作区仍拒绝，单报告容量、通用来源和完整RSS合同仍有缺口。无提额、实模或GPU准入 |
 | 看按模型规模设限的新提案 | [资源政策与静态评估](hz_model_scaled_resources_20261013.md)、[绑定账本](hz_model_scaled_resources_20261013.json) | 原拟案原样保留；后续完整账本在上一行。资源、算法、GPU分别归因，不改旧限额或历史结果 |
 | 看实际 HybridZ 多目标支持 | [CPU 控制与保证](hz_batch_support_controls_20261001.md)、[先行冻结合同](hz_batch_support_design_20261001.md)、[硬预算监督控制](hz_batch_supervision_20261001.md) | 显式启用支持接口；CPU 16 项、监督 14 项控制通过，GPU／生产收益仍未完成 |
 | 看支持界如何进入实际 HybridZ 传播 | [先行冻结](hz_checked_propagation_design_20261001.md)、[接线控制与保证](hz_checked_propagation_20261001.md)、[完整 CPU 监督](hz_propagation_supervision_20261001.md) | 真实 analyzer/ReLU 接线及有限监督通过；native 比较、真实请求与 GPU 收益未完成 |

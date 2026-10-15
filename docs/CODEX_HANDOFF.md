@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Conditional complete archive demand closed; parent-reception/RSS boundary identified: 2026-10-15.
 Shared post-capture Work uppers closed; dense ownership/report gaps identified: 2026-10-15.
 Shared-source static decision: packing-only fusion cannot close 8M admission: 2026-10-15.
 Shared source, complete traversal and single-owner archive controls completed: 2026-10-15.
@@ -66,7 +67,31 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: counted-loop envelopes closed, not full resource admission
+## Current decision: conditional archive closed, runtime/resource decision remains
+
+The [archive/lifetime contract](hz_shared_archive_contract_20261015.md) binds
+`a3681b44f`; eight new static tests plus sixteen prior ledger tests pass. It closes
+generated source/header, forest pages, complete success metadata and all 324 files
+under an explicit fixed captured-source layout. Whole-request uppers are
+91,311,216 bytes (binary64 candidates) and 2,900,002,416 (general rational).
+These are conditional demand estimates, not executions or new allowances.
+Current Work/membership/dense-arena refusals and individual report-cap gaps stand.
+
+The fixed-case supervisor is not a full-source adapter. Production retains Packet
+through consumption, replay releases it before consumption; row/frame/planner
+temporaries and all report copies are now listed. Logical object counts are not
+allocator capacity or RSS. The 2 GiB sampled RSS rule can miss peaks and does not
+cover parent reception after child exit. Full RSS, generic source/provenance,
+arbitrary failure-message generation, capture/native and completion-time bounds
+remain explicitly open. No runtime edits or source/candidate/model/GPU execution.
+
+Do not repeat the completed source-only or metadata ledgers, or retry full shape.
+Next requires an explicit bounded source/report/ownership and whole-process memory
+contract; any runtime/resource-policy change needs separate scope. Merely packing
+more tightly cannot remove the two independent-check Work lower bound. Keep all
+mathematical checks, ceilings and 300s unchanged; no scientific claim upgrade.
+
+## Prior decision: counted-loop envelopes closed, not full resource admission
 
 The [execution envelope](hz_shared_execution_envelope_20261015.md) binds `82411e0b4`
 and closes conditional counted Work for source construction, two independent

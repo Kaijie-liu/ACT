@@ -1,0 +1,441 @@
+{
+  "anchors": {
+    "docs/hz_direct_lifecycle_protocol_20261015.md": "6f53abbaf465f78fe586eb66c7e08ea0a8623dc1a2809e9793148898e0a2826f",
+    "docs/hz_full_resource_ledger_20261014.json": "04c51e4765ada9445dcdd80f63f745459366154037443a68dd565c093acbe9d2",
+    "docs/hz_pair_scoped_capacity_20261015.json": "401820ca62f29977119746010034791ffad83bc4833efb54cd0c159cc4a3e099",
+    "docs/hz_shared_execution_envelope_20261015.json": "1074c6f5fb8f92e833e1fed7e6ecc4a02232c20d867395772248b08ef3b34401",
+    "docs/hz_shared_source_controls_20261015.json": "1f2abe8849ea214589f5e565c918517eb25964083f8f041ef6798034bbc53100",
+    "docs/hz_shared_source_cost_20261015.json": "7f2b19ebb10ea0605d477d4d9694cf1a527c4363cad12e8fafd9b01cb7b4ca34",
+    "docs/hz_shared_source_decision_20261015.json": "ddf10e0d95885fda9071e529771f36730e027942ca7ed9b1594fd430e2e371c2",
+    "docs/hz_shared_source_protocol_20261015.md": "5adaa408bab129089a31935706b4ce518ad5f88b6f949af4dcddd14c74c294dc",
+    "scoped_proof/io.py": "ee080902b729bcc0ce50ead5696538b687302358f143b039a6f9bdee2256569d",
+    "scoped_proof/owned_bounded.py": "482f9c1d783cd5e3291b4056c7c57a90e42d3305cb92b240b536061042f8ff40",
+    "scoped_source/affine_references.py": "0f0d10033640210e6ce79642fa340a61c6e4293cb76779e4851a1f0f5cf582d8",
+    "scoped_source/bounded_runtime.py": "17846fe861f00d67c95046c5250ba09a6203bee784c9edb3129eca0e180ce133",
+    "scoped_source/capture.py": "d3ca9b562c9840ace096d790d0fd6eb12d7105560a3c38767c85244c65f651e2",
+    "scoped_source/check_affine_references.py": "a0d688ee82bf88c42945edfd3abc9591a46998c01cf236cbf752ad5b549e9c62",
+    "scoped_source/check_direct_source.py": "5c54c26662c370ecf8a434c1a237d3e99f5fced2e35638e09fd0d9656c843fe0",
+    "scoped_source/check_scaled_references.py": "ba2701eff6611276251f9debf803c9138a57a70807a67d262ad9e876e831a261",
+    "scoped_source/check_shared_source.py": "18621a4865854ebcb162937fcca53ceee1207ba045804383676c35c377eeabe3",
+    "scoped_source/check_source_dag.py": "58e5e2158843631c9e6ed324cfeeb2eb38e51df1205d2e14d1ed8ac8ce634458",
+    "scoped_source/direct_candidates.py": "cb9b791b9a1b828c9d4fd6b351361c6fe59072b40caf0c91e55beefeaf2665a4",
+    "scoped_source/direct_lifecycle.py": "20579f800633c928e5f43f1cc06f5f2640e4ee3d4df40dfa13bd33d1d77b23a0",
+    "scoped_source/direct_lifecycle_execution.py": "d9c826e23346dcca09ed40997a7e0dbd62b087d139d33df619590c6162c62600",
+    "scoped_source/direct_lifecycle_package.py": "1423291a8313358525d9019844d5a75cd3c5ec6738c88d95f5ca6a91943f729a",
+    "scoped_source/direct_lifecycle_worker.py": "44c309e1d44d9f9917f12be9c7a74438ec5175ec963033cd250b16087d8fc0af",
+    "scoped_source/direct_method.py": "5b5cf4155e1ad83345edd8e5de675cec62fafe54f7b05bc2a07a51e6b16e8ca7",
+    "scoped_source/direct_package.py": "1a19845d53fbceb698fd683088598a1263a443ac0107e0efbcaec7475b13f74d",
+    "scoped_source/direct_source_build.py": "cb6a4ac91d2d4af51a5df2d8d343c26371287b22d8209a2427fb3ba875440d9a",
+    "scoped_source/direct_source_format.py": "fa2b39f4a682083974610acee69f4a9b0c14cb8f5b7342d001cafe8c759c583d",
+    "scoped_source/direct_supervised.py": "8e8aaf97ea54c81b44937660978a721d9c5932560b873a64705b29486c037135",
+    "scoped_source/factored_io.py": "d51bcd7eae6734fe6cd676f584a9e9f2220eeea4400d497ccb1dc6950dce120d",
+    "scoped_source/factored_source.py": "f7f04c64989a179c36759876edc425ffd3efad4eeb9fbf8118ea2934f4a385cc",
+    "scoped_source/forest_endpoint_controls.py": "efb558461e013fd3b5836043285eaea27acbc7126c9716bee2efcca5cb8b7278",
+    "scoped_source/forest_endpoints.py": "86396e9c662ba8c91f6ac3921dc7f410d9b977937df38a9fb782f82991c50a4c",
+    "scoped_source/hz_request_store.py": "7cb2be7647039f59d3c896b7856f634f43be9c532d9d2fd43632be09ab3230e0",
+    "scoped_source/hz_store_source.py": "fec79e9cc1a67b524320b37328d24179a5c09dd21b9943f36cc11c5f40b56268",
+    "scoped_source/hz_store_sparse.py": "e1682d697dd56993cda3e64a171f0356e0ed3cc8349b81345b91f8c3ba3a23c3",
+    "scoped_source/hz_store_write.py": "2c26fa3ee2f0b50d2bdafea511bc59e80ccd5d025de48b32ca78513b9e40cd1e",
+    "scoped_source/pair_workspace.py": "39258a61112e86700957f1b89e35a008164a928652744f0f500d8051ad56fdc3",
+    "scoped_source/scaled_endpoints.py": "f3b95e71a4d4b1a1d2104ae3b97e39d6b9e997af1a76c2af94433017a560b1d5",
+    "scoped_source/scaled_references.py": "534761cad44cbdf62ed31ee4d999fce0a5bd51aed4461b98d8f986b75d50d75d",
+    "scoped_source/shared_archive.py": "bb153d06dc13213422d1f76d8bf3887da7f7872bf3a9b72a14d55fada843cab6",
+    "scoped_source/shared_build.py": "0eb6edd40bd98f2826d0f3688688fb28fad463515d69ac1db5fa76eb155b090e",
+    "scoped_source/shared_format.py": "1af4f02b09677d3af41059ebb73200557df3a3409394dbe2cce09247dbdf9b6f",
+    "scoped_source/shared_source.py": "c2db29b77829cb68b910b067047db44ce8291cf29befa3df87229ccb6dfe4482",
+    "scoped_source/source_dag.py": "6de99ca02cdc14aec8b9478093aa0c778a81874e5e5820cbfa7d0b18ee6e2e41",
+    "scoped_source/tensor_rows.py": "5c3ad6d642868e257ac9dd2edbc5e066b4cd793d4c7567a4ea800fc8e8f97f82",
+    "scoped_source/wire_archive.py": "fdf0b0e97522527831a6f03f1c7188403bc8b7b844c3a9df092823e703295abd",
+    "scoped_source/wire_forest.py": "981385019f93f97d41c02eab245cc21e8c430ccdfc8e0f853d5ffacb6981a3b3",
+    "scoped_source/wire_package.py": "7634cb030fefc5fdd672b0f6a61080740c1618c650a2250ab28819236b3ffd87",
+    "scoped_source/wire_proof.py": "1bd8d3bbc88b7d28fb022963c482ee77b909c50afb476bb9ec035cc67ac6d58a",
+    "scripts/assess_shared_archive_contract.py": "fd32cd74b82e6ff4d666a951049b49a1eef0f2c89695a2aeae38b21161528ccb",
+    "scripts/assess_shared_execution_envelope.py": "d40d92d50a48edf7858fed9f9cc83a3acf0a4d3820ad5a2bc5f80d28e5f1d62f",
+    "scripts/assess_shared_source_cost.py": "49122de543bd680c6aba3629276a813697a34baefed532cba032107af8cc29cd",
+    "scripts/assess_shared_source_decision.py": "803ad8160fe1609ce945fd3ef3331823dbedfee9863f4cb963e28bef8155e0b1",
+    "scripts/run_shared_source_controls.py": "734e0004cb12775601cd91b483a33ed5fb025354425d6e71f9c831cbbda6f10b",
+    "scripts/test_shared_archive_contract.py": "908ea10f5ce1e9c2d33e8e770e4a292e8332084a9dffac986a1596868f8c86de",
+    "scripts/test_shared_execution_envelope.py": "e262c63b01ad720d44af4c907c60e84fd94aac36c03c2d663e19d8d133fcb753",
+    "scripts/test_shared_source.py": "c50e965f4e4b0610d59a97d28b4632bf69018bd8f1ef83cbb6c88ceeb9c95f08",
+    "scripts/test_shared_source_cost.py": "81a33c4306f1d23ba7a67baa18c2049d9e79a3c457073268ec189c33e7ba33e7",
+    "scripts/test_shared_source_decision.py": "1b6ae6de8ecc2c6e1af469f5a64ab9b67a9f723c3c2ea0c1c21610dee1b8f409",
+    "source_enclosure/format.py": "ba79d394824abc84aac1509518bf9416be3510a4eecef5b107ba60e63418f7ef",
+    "upstream_source/checker.py": "d14f75fd660d7ecab44994c24371d055407f5ca911e64867d94094b212a8c47c"
+  },
+  "based_on": "a3681b44f3bad58e52cb64e4f6b881c4e93afecc",
+  "candidate_builds": 0,
+  "code_inventory": {
+    "bindings": [
+      "docs/hz_direct_lifecycle_protocol_20261015.md",
+      "docs/hz_shared_source_protocol_20261015.md",
+      "scoped_proof/io.py",
+      "scoped_proof/owned_bounded.py",
+      "scoped_source/affine_references.py",
+      "scoped_source/bounded_runtime.py",
+      "scoped_source/check_affine_references.py",
+      "scoped_source/check_direct_source.py",
+      "scoped_source/check_scaled_references.py",
+      "scoped_source/check_shared_source.py",
+      "scoped_source/check_source_dag.py",
+      "scoped_source/direct_candidates.py",
+      "scoped_source/direct_lifecycle.py",
+      "scoped_source/direct_lifecycle_execution.py",
+      "scoped_source/direct_lifecycle_package.py",
+      "scoped_source/direct_lifecycle_worker.py",
+      "scoped_source/direct_method.py",
+      "scoped_source/direct_package.py",
+      "scoped_source/direct_source_build.py",
+      "scoped_source/direct_source_format.py",
+      "scoped_source/direct_supervised.py",
+      "scoped_source/factored_io.py",
+      "scoped_source/factored_source.py",
+      "scoped_source/forest_endpoint_controls.py",
+      "scoped_source/forest_endpoints.py",
+      "scoped_source/hz_request_store.py",
+      "scoped_source/hz_store_source.py",
+      "scoped_source/hz_store_sparse.py",
+      "scoped_source/hz_store_write.py",
+      "scoped_source/pair_workspace.py",
+      "scoped_source/scaled_endpoints.py",
+      "scoped_source/scaled_references.py",
+      "scoped_source/shared_archive.py",
+      "scoped_source/shared_build.py",
+      "scoped_source/shared_format.py",
+      "scoped_source/shared_source.py",
+      "scoped_source/source_dag.py",
+      "scoped_source/tensor_rows.py",
+      "scoped_source/wire_archive.py",
+      "scoped_source/wire_forest.py",
+      "scoped_source/wire_package.py",
+      "scoped_source/wire_proof.py",
+      "source_enclosure/format.py",
+      "upstream_source/checker.py"
+    ],
+    "bytes": 244614,
+    "count": 26,
+    "files": {
+      "scoped_source/bounded_runtime.py": 13024,
+      "scoped_source/check_affine_references.py": 3595,
+      "scoped_source/check_direct_source.py": 4979,
+      "scoped_source/check_scaled_references.py": 5908,
+      "scoped_source/check_shared_source.py": 4315,
+      "scoped_source/check_source_dag.py": 17952,
+      "scoped_source/direct_candidates.py": 12596,
+      "scoped_source/direct_lifecycle_package.py": 6129,
+      "scoped_source/direct_method.py": 1430,
+      "scoped_source/direct_package.py": 4912,
+      "scoped_source/direct_source_format.py": 8321,
+      "scoped_source/factored_io.py": 2857,
+      "scoped_source/factored_source.py": 11770,
+      "scoped_source/forest_endpoints.py": 12499,
+      "scoped_source/hz_request_store.py": 19558,
+      "scoped_source/pair_workspace.py": 10520,
+      "scoped_source/scaled_endpoints.py": 18778,
+      "scoped_source/shared_format.py": 12211,
+      "scoped_source/shared_source.py": 6159,
+      "scoped_source/tensor_rows.py": 16310,
+      "scoped_source/wire_archive.py": 10618,
+      "scoped_source/wire_forest.py": 14764,
+      "scoped_source/wire_package.py": 4846,
+      "scoped_source/wire_proof.py": 9174,
+      "source_enclosure/format.py": 1968,
+      "upstream_source/checker.py": 9421
+    }
+  },
+  "conditional_success_archive": {
+    "binary64": {
+      "actual_bytes": null,
+      "candidate_stream": 22868160,
+      "code": 244614,
+      "full_capacity_admitted": false,
+      "request_upper": 91311216,
+      "source_and_forest": 62759937,
+      "success_metadata": 5438505,
+      "total_storage_assessment": "UPPER_FITS_THIS_COMPONENT_ONLY"
+    },
+    "general_rational": {
+      "actual_bytes": null,
+      "candidate_stream": 2831559360,
+      "code": 244614,
+      "full_capacity_admitted": false,
+      "request_upper": 2900002416,
+      "source_and_forest": 62759937,
+      "success_metadata": 5438505,
+      "total_storage_assessment": "UPPER_EXCEEDS_CAP_ACTUAL_UNKNOWN"
+    }
+  },
+  "counter_representation": {
+    "allocated_bytes_upper": 1778691433960,
+    "allocation_count_upper": 16711,
+    "copied_bytes_upper": 7420863689825944064,
+    "digits": 20,
+    "not_a_new_quota": true,
+    "one_allocation_payload_upper": 106438360,
+    "one_copy_payload_upper": 44945344,
+    "work_upper": 165108619256
+  },
+  "current_refusal": {
+    "candidate_stream": {
+      "binary64": {
+        "actual_bytes": null,
+        "largest_tile_upper": 362944,
+        "one_endpoint_upper": 45480,
+        "per_pair_tile_upper": [
+          362944,
+          362944,
+          90832
+        ],
+        "stream_assessment": "UPPER_EXCEEDS_CAP_ACTUAL_UNKNOWN",
+        "stream_upper": 22868160,
+        "tile_assessment": "UPPER_FITS_THIS_COMPONENT_ONLY",
+        "tiles": 84,
+        "upper_excess_proves_actual_overflow": false
+      },
+      "general_rational": {
+        "actual_bytes": null,
+        "largest_tile_upper": 44945344,
+        "one_endpoint_upper": 5618280,
+        "per_pair_tile_upper": [
+          44945344,
+          44945344,
+          11236432
+        ],
+        "stream_assessment": "UPPER_EXCEEDS_CAP_ACTUAL_UNKNOWN",
+        "stream_upper": 2831559360,
+        "tile_assessment": "UPPER_EXCEEDS_CAP_ACTUAL_UNKNOWN",
+        "tiles": 84,
+        "upper_excess_proves_actual_overflow": false
+      }
+    },
+    "dense_arena": "CURRENT_CONTRACT_REFUSAL",
+    "memberships": "CURRENT_CONTRACT_REFUSAL",
+    "work": "CURRENT_CONTRACT_REFUSAL"
+  },
+  "decision": "CONDITIONAL_ARCHIVE_DEMAND_CLOSED_RESOURCE_ADMISSION_STILL_REFUSED",
+  "forest_layout": {
+    "binary_upper": 5329156,
+    "components": {
+      "aliases": 63105,
+      "factors": 1570353,
+      "roles": 348,
+      "sequences": 3691,
+      "source_receipt": 5131,
+      "views": 9595
+    },
+    "files": 108,
+    "header_upper": 1652770,
+    "index_upper": 11835,
+    "memberships_remain_expanded": true,
+    "pages": 107,
+    "payload_upper": 6981926,
+    "stored_upper": 6993761
+  },
+  "full_capacity_admitted": false,
+  "gpu_runs": 0,
+  "lifetime": {
+    "actual_peak": null,
+    "builder_and_checker_graphs_coexist": false,
+    "full_live_heap_upper": null,
+    "full_rss_upper": null,
+    "later_packed_rows_release_after_check": true,
+    "missing": [
+      "fixed Python/allocator object-size contract and temporaries",
+      "memory enforcement across worker, descendants and parent reception",
+      "charged source capture/native proposal interfaces"
+    ],
+    "outside_owned_arena": [
+      "graph/source Python containers and numeric objects",
+      "ordinary dict plan pullback",
+      "checker visibility sets and norm lists",
+      "caller frame/candidate lists",
+      "result/receipt/hash inventories and JSON encoding temporaries",
+      "allocator retained memory"
+    ],
+    "packed_all_payload": 55690944,
+    "packed_first_payload": 53494784,
+    "production": {
+      "packet_payload_retained": 6981926,
+      "packet_released_before_consumer": false
+    },
+    "replay": {
+      "frame_copies_at_seal": 3,
+      "packet_released_before_consumer": true,
+      "previous_and_new_caller_frames_can_overlap": true
+    },
+    "scratch": {
+      "checker_norm_logical_entries_upper": 38992,
+      "chunk_buffers_upper": 2097152,
+      "counts_are_not_allocated_container_capacities": true,
+      "plan_fraction_entries_upper": 83592,
+      "row_fill_payload_upper": 49168,
+      "row_fraction_values_upper": 6146,
+      "row_logical_reference_entries_upper": 9216,
+      "visible_memberships_upper": 2627936
+    },
+    "supervisor": {
+      "nominal_poll_seconds": 0.01,
+      "parent_receiving_sampled": false,
+      "sampled_rss_not_os_limit": true,
+      "worker_file_size_limit_not_heap_limit": true
+    }
+  },
+  "metadata": {
+    "conditional_complete_loops": {
+      "actual_generated_bytes": null,
+      "artifact_files": 319,
+      "bundle_members": 316,
+      "components": {
+        "archive_ledger": 113146,
+        "child": 578,
+        "method": 292,
+        "phases": 33667,
+        "replay": 1258910,
+        "snapshots": 1621,
+        "work": 87
+      },
+      "conditions": [
+        "complete no-fault fixed-stub successful metadata shape",
+        "ASCII relative archive paths <=200 characters; fixed trust and topology",
+        "nonnegative counters fit uint64; counts derived separately, not quotas",
+        "no descendants; successful cleanup leaves empty live/zombie lists"
+      ],
+      "counter_digits": 12,
+      "excludes": [
+        "caller separately saving returned call/census",
+        "later offline relocation or audit artifacts",
+        "arbitrary provenance, OS error strings or native proposal reports"
+      ],
+      "failure_generation_upper": null,
+      "finite_float_chars": 24,
+      "members_upper": {
+        "bundle": 100250,
+        "candidate_report": 2666907,
+        "contract": 4550,
+        "inner_terminal": 1236,
+        "invocation": 12648,
+        "manifest": 36074,
+        "parent_receipt": 1294980,
+        "progress": 64400,
+        "result": 1257460,
+        "worker_log": 0
+      },
+      "nonnegative_count_digits": 20,
+      "over_cap": {
+        "candidate_report": "UPPER_EXCEEDS_CAP_ACTUAL_UNKNOWN",
+        "parent_receipt": "UPPER_EXCEEDS_CAP_ACTUAL_UNKNOWN",
+        "result": "UPPER_EXCEEDS_CAP_ACTUAL_UNKNOWN"
+      },
+      "report_result_copies": {
+        "candidate": 2,
+        "parent_receipt": 1,
+        "standalone_result": 1
+      },
+      "total_upper": 5438505,
+      "whole_request_files": 324
+    },
+    "current_counters": {
+      "actual_generated_bytes": null,
+      "artifact_files": 319,
+      "bundle_members": 316,
+      "components": {
+        "archive_ledger": 113146,
+        "child": 578,
+        "method": 292,
+        "phases": 30877,
+        "replay": 1258895,
+        "snapshots": 1621,
+        "work": 72
+      },
+      "conditions": [
+        "complete no-fault fixed-stub successful metadata shape",
+        "ASCII relative archive paths <=200 characters; fixed trust and topology",
+        "nonnegative counters fit uint64; counts derived separately, not quotas",
+        "no descendants; successful cleanup leaves empty live/zombie lists"
+      ],
+      "counter_digits": 7,
+      "excludes": [
+        "caller separately saving returned call/census",
+        "later offline relocation or audit artifacts",
+        "arbitrary provenance, OS error strings or native proposal reports"
+      ],
+      "failure_generation_upper": null,
+      "finite_float_chars": 24,
+      "members_upper": {
+        "bundle": 100250,
+        "candidate_report": 2664072,
+        "contract": 4550,
+        "inner_terminal": 1221,
+        "invocation": 12633,
+        "manifest": 36074,
+        "parent_receipt": 1292160,
+        "progress": 58880,
+        "result": 1257460,
+        "worker_log": 0
+      },
+      "nonnegative_count_digits": 20,
+      "over_cap": {
+        "candidate_report": "UPPER_EXCEEDS_CAP_ACTUAL_UNKNOWN",
+        "parent_receipt": "UPPER_EXCEEDS_CAP_ACTUAL_UNKNOWN",
+        "result": "UPPER_EXCEEDS_CAP_ACTUAL_UNKNOWN"
+      },
+      "report_result_copies": {
+        "candidate": 2,
+        "parent_receipt": 1,
+        "standalone_result": 1
+      },
+      "total_upper": 5427300,
+      "whole_request_files": 324
+    }
+  },
+  "model_runs": 0,
+  "new_quota": null,
+  "next_decision": "explicit representation/ownership and whole-process enforcement contract; no repeated full-shape retries",
+  "open_contract": {
+    "all_failure_metadata_generation_upper": null,
+    "capture_native_work_upper": null,
+    "completion_seconds_upper": null,
+    "full_rss_upper": null,
+    "generic_source_layout_upper": null
+  },
+  "runtime_changed": false,
+  "schema": "SHARED_ARCHIVE_LIFETIME_STATIC_V1",
+  "solver_calls": 0,
+  "source_builds": 0,
+  "source_layout": {
+    "chunks": 95,
+    "components": {
+      "chunk_record": 137,
+      "empty_tensor": 107,
+      "linear_record": 196,
+      "networks": 6990,
+      "state_inventory": 7801,
+      "state_record": 149,
+      "tensor_inventory": 18782
+    },
+    "conditions": [
+      "registered 3072/8/10 topology; center shape [1,3,32,32]",
+      "capture.py fixed ASCII trust text and no additional provenance",
+      "pack() default 1 MiB full chunks per tensor, final remainder",
+      "four domain literals each <=4096 ASCII numeric characters"
+    ],
+    "current_supervisor_full_source_intake": false,
+    "files": 96,
+    "generic_parser_layout_upper": null,
+    "manifest_domain_upper": 50656,
+    "manifest_fixed_upper": 34280,
+    "parameter_tensors": 52,
+    "stored_source_upper": 55766176,
+    "tensor_bytes": 55715520,
+    "tensors": 53
+  },
+  "unchanged": {
+    "acceptance": "strict > 1/10000000",
+    "arena": 134217728,
+    "memberships": 65536,
+    "report_bytes": 1048576,
+    "seconds": 300,
+    "stored_bits": 4096,
+    "work": 8000000,
+    "work_bits": 8192
+  }
+}
