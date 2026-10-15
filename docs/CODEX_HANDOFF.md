@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Shared-source static decision: packing-only fusion cannot close 8M admission: 2026-10-15.
 Shared source, complete traversal and single-owner archive controls completed: 2026-10-15.
 V2 full-path costs reconciled; roots access factor and whole-source copies identified: 2026-10-15.
 Direct lifecycle and hard-supervisor stub controls passed 133 tests: 2026-10-15.
@@ -64,7 +65,30 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: shared-source controls complete, full shape still refused
+## Current decision: stop representation-only capacity repair
+
+The [static decision](hz_shared_source_decision_20261015.md) binds `a210f8224`;
+five new arithmetic/binding tests and four prior ledger tests pass without source,
+candidate, worker, model or GPU construction. Even granting all representation
+overhead free, two independent complete affine equation checks require at least
+**13,916,160 Work > 8M**. Mandatory expanded memberships still exceed their cap.
+Packing/pass fusion alone therefore cannot admit this shape under current rules.
+
+The new forest's conditional payload upper is 13,717,764 bytes, not whole archive
+or RSS. Actual typed candidates retain both full role vectors: binary64 stream
+upper 22,868,160 bytes and general-rational upper 2,831,559,360 bytes exceed the
+old stream cap. These are missing worst-case guarantees, not observed overflow.
+Full Work, metadata generation demand and RSS uppers remain open. No quota set.
+
+Keep the completed default-off implementation. Next requires a complete
+versioned resource/rechecking design and explicit scope before runtime changes;
+changing expanded-membership counting is a policy change even with the same
+numeric cap. Static model-scaled drafting remains permitted, not implementation
+or execution. No new microbenchmark, revived residual-template search, real/native/
+GPU run or scientific claim upgrade is justified by this result. 300s and all
+mathematical gates are unchanged; G1–G6 remain open.
+
+## Prior decision: shared-source controls complete, full shape still refused
 
 The [shared-source implementation and results](hz_shared_source_controls_20261015.md)
 complete the user-approved standard-library scope: 156 controls/regressions and
