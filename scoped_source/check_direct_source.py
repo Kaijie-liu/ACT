@@ -12,9 +12,16 @@ from scoped_source.forest_endpoints import frozen
 class Checker(Equations):
     def __init__(self,raw,root,source,expected,work):
         self.work=work; d,nodes,views,scales,counts=intake(raw,expected,work)
+        self.initialize_direct(d,nodes,views,scales,counts,root,source,work,len(raw))
+
+    def initialize_direct(self,d,nodes,views,scales,counts,root,source,work,forest_bytes,reader=None):
+        self.work=work
         require(d['source']==sha(source) and type(d['frame']) is int and d['frame']==1
                 and d['cut'] is None and d['policy']==dict(POLICY),'direct source/frame/full/policy')
-        self.reader=TensorRows(root,source,deadline=work.deadline)
+        if reader is not None:
+            from scoped_source.shared_source import Snapshot
+            require(type(reader) is Snapshot and reader.work is work, 'closed shared source replay')
+        self.reader=TensorRows(root,source,deadline=work.deadline) if reader is None else reader
         require(self.reader.request['experts']<=8 and d['request']==identity(self.reader.request),'direct request binding')
         require(type(d['factors']) is list and 0<len(d['factors'])<=POLICY['factors']
                 and all(type(f) is list for f in d['factors']),'direct factors')
@@ -43,7 +50,7 @@ class Checker(Equations):
             depth=1+max((depths[j] for j,_ in parents),default=0); require(depth<=POLICY['depth'],'node depth'); depths.append(depth)
             self.local_norms.append(self.local_norm_finish(norm)); self.norms.append(None)
         self.fid=self.vid=self.nid=0; self.receipt=d['source_receipt']; self.roles=d['roles']; self.cut=None
-        self.stats=dict(nodes=len(nodes),local_nnz=nnz,references=refs,factors=len(self.factors),views=len(views),forest_bytes=len(raw),**counts)
+        self.stats=dict(nodes=len(nodes),local_nnz=nnz,references=refs,factors=len(self.factors),views=len(views),forest_bytes=forest_bytes,**counts)
         self.visible=[]; self.depths=[]
 
 

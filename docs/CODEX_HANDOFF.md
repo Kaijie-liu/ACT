@@ -1,5 +1,6 @@
 # MoE project handoff — current entry point
 
+Shared source, complete traversal and single-owner archive controls completed: 2026-10-15.
 V2 full-path costs reconciled; roots access factor and whole-source copies identified: 2026-10-15.
 Direct lifecycle and hard-supervisor stub controls passed 133 tests: 2026-10-15.
 Direct lifecycle and hard-supervisor stub controls authorized and frozen: 2026-10-15.
@@ -63,7 +64,30 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: V2 cost reconciliation complete, full execution refused
+## Current decision: shared-source controls complete, full shape still refused
+
+The [shared-source implementation and results](hz_shared_source_controls_20261015.md)
+complete the user-approved standard-library scope: 156 controls/regressions and
+four static ledger tests pass. The [protocol](hz_shared_source_protocol_20261015.md)
+was pushed at `93a230630` first. Source-row aliases, immutable packed values,
+complete shared root sequences, paged intake, matched roots access, one owned
+source and production/portable/hard-supervisor binding are default-off.
+All mathematical checks, logical membership accounting and old ceilings remain.
+The first failed test report is preserved; no real/native/GPU execution occurred.
+
+The [new actual ledger](hz_shared_source_cost_20261015.json) does NOT grant
+capacity: one complete bank on the registered dimensions requires at least
+**13,926,024 Work > 8M**, before replay, equations or consumers. Memberships
+remain **126,632 > 65,536**. Single-copy storage and reduced objective scans
+are not complete Work/RSS bounds. Tiny controls do not close G1–G6, establish
+speedup or repair historical scientific source gaps.
+
+Next is a separately scoped complete traversal/membership contract, not another
+full-shape retry, quota change or native/GPU connection. Preserve all checks and
+300 seconds. Do not transplant the old V2 cost formulas to the new representation.
+The current stage is finished within its fixed-control authority.
+
+## Prior decision: V2 cost reconciliation complete, full execution refused
 
 The [V2 ledger](hz_direct_lifecycle_cost_20261015.md) binds `9d30c76f8` and
 passes 13 static tests without new source/proposal/worker/model/GPU execution.

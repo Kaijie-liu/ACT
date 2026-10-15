@@ -31,14 +31,21 @@ def main():
         with (root / 'progress.jsonl').open('ab') as stream:
             stream.write(raw); stream.flush()
     fixture_start = time.monotonic()
-    source = fixed_source(root / 'source', s['case'])
+    owned=None
+    if s['method']['schema']=='SHARED_LIFECYCLE_METHOD_V1':
+        from scoped_source.shared_archive import capture_owned
+        owned=capture_owned(root,s['case'],w); source=owned.source
+    else:
+        source = fixed_source(root / 'source', s['case'])
     w.tick()
     fixture_seconds = time.monotonic() - fixture_start
     before = census(root, w.deadline)
+    outside_bytes=before['bytes']-(owned.inventory['bytes'] if owned is not None else 0)
+    outside_members=len(before['files'])-(len(owned.inventory['files']) if owned is not None else 0)
     result = execute(root / 'artifacts', root / 'source', source, s['method'], inv['id'], ROOT,
                      work=w, enabled=True, fault=s['fault'] if s['fault'] in EXEC_FAULTS else '',
-                     archive_limit=POLICY['total_bytes'] - META_RESERVE - before['bytes'],
-                     member_limit=POLICY['members'] - len(before['files']) - 3, progress=progress)
+                     archive_limit=POLICY['total_bytes'] - META_RESERVE - outside_bytes,
+                     member_limit=POLICY['members'] - outside_members - 3, progress=progress,owned_source=owned)
     result.update(isolated=True, site_disabled=True, fixture_seconds=fixture_seconds,
                   numerical_imports=sorted(n for n in sys.modules if n.split('.')[0] in ('torch', 'numpy', 'scipy')))
     require(not result['numerical_imports'], 'no numerical/native imports')

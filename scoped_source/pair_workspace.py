@@ -186,6 +186,9 @@ class PairWorkspace:
 
     def objective(self,task):
         self.scope.bind(self.owner,task.pair)
+        from scoped_source.bounded_runtime import shared_source, shared_objective
+        if shared_source(self.owner.forest):
+            d,roots=shared_objective(self,task); self._descriptors.append(roots); return d,roots
         w=self.owner.work; f=self.owner.forest; d=rational(task.offset); alpha={}
         for expert,weights in zip(task.pair,(task.left,task.right),strict=True):
             vi=f.roles['experts'][expert]

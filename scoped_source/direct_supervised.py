@@ -14,14 +14,15 @@ import time
 import uuid
 
 from scoped_source.hz_request_store import POLICY, Work, compact, decode, digest, identity, require
-from scoped_source.direct_method import method, validate, PROTOCOL
-from scoped_source.direct_lifecycle_package import CODE_FILES, BUNDLE
+from scoped_source.direct_method import method, validate, PROTOCOL, SHARED_PROTOCOL
+from scoped_source.direct_lifecycle_package import CODE_FILES, SHARED_CODE, BUNDLE
 from scoped_source.direct_lifecycle_execution import EXEC_FAULTS
 from scoped_source.wire_package import inventory
 from scoped_proof.io import ROOT, PYTHON
 from scoped_proof.owned_bounded import execute as run_owned
 
 PROTOCOL_FILE = 'docs/hz_direct_lifecycle_protocol_20261015.md'
+SHARED_PROTOCOL_FILE = 'docs/hz_shared_source_protocol_20261015.md'
 REPORT_CAP = 2**20
 # Candidate and receipt <= 1 MiB each; RLIMIT_FSIZE caps even an abnormal
 # worker log at 1 MiB. Progress <= 64 KiB, plus conservative metadata reserve.
@@ -31,7 +32,8 @@ RSS_LIMIT = 2 * 2**30
 COUNTERS = ('row_visits', 'coefficient_visits', 'arithmetic')
 FAULTS = EXEC_FAULTS + ('startup_error', 'output_partial', 'wrong_invocation', 'wrong_method',
                        'output_block', 'late_exit', 'receive_expired', 'terminal_expired')
-FILES = tuple(sorted(set(CODE_FILES + (
+FILES = tuple(sorted(set(CODE_FILES + SHARED_CODE + (
+    'scoped_source/shared_build.py','scoped_source/shared_archive.py',SHARED_PROTOCOL_FILE,
     'scoped_source/direct_supervised.py', 'scoped_source/direct_lifecycle_worker.py',
     'scoped_source/direct_lifecycle.py', 'scoped_source/direct_lifecycle_execution.py',
     'scoped_source/direct_source_build.py', 'scoped_source/scaled_references.py',
@@ -48,18 +50,20 @@ def bindings():
         require(not p.is_symlink() and p.is_file() and p.stat().st_size <= 128 * 2**10, 'bounded implementation')
         result[name] = digest(p.read_bytes())
     require(result[PROTOCOL_FILE] == PROTOCOL, 'frozen lifecycle protocol')
+    require(result[SHARED_PROTOCOL_FILE] == SHARED_PROTOCOL, 'frozen shared-source protocol')
     return result
 
 
-def spec(case, arm, profile=0, fault=''):
+def spec(case, arm, profile=0, fault='', *, shared=False):
     require(case in ('half', 'guarded') and fault in FAULTS, 'frozen synthetic case/fault')
-    return dict(schema='DIRECT_SUPERVISED_STUB_V1', case=case, method=method(arm, profile), fault=fault)
+    return dict(schema='DIRECT_SUPERVISED_STUB_V1', case=case, method=method(arm, profile,shared=shared), fault=fault)
 
 
 def validate_spec(value):
     require(type(value) is dict and set(value) == {'schema', 'case', 'method', 'fault'}, 'closed execution spec')
     m = validate(value['method'])
-    expected = spec(value['case'], m['production']['kind'], m['producer']['profile'], value['fault'])
+    expected = spec(value['case'], m['production']['kind'], m['producer']['profile'], value['fault'],
+                    shared=m['schema']=='SHARED_LIFECYCLE_METHOD_V1')
     require(identity(value) == identity(expected), 'registered execution spec')
     return expected
 
@@ -166,7 +170,12 @@ def receive(root, inv, report_hash, work):
             manifest['source']['sha256'] == p['source'], 'package execution binding')
     for ref in manifest['code']:
         require(ref['sha256'] == inv['implementations'][ref['file'].removeprefix('code/')], 'trusted checker code')
-    source, source_hash = read_json(root / 'source/manifest.json', POLICY['header_bytes'])
+    shared=m['schema']=='SHARED_LIFECYCLE_METHOD_V1'
+    if shared:
+        require(not (root/'source').exists() and p['snapshots']['source_transfer']['copies']==1,
+                'single owned source after transfer')
+    source_path=artifact/'package/source/manifest.json' if shared else root/'source/manifest.json'
+    source, source_hash = read_json(source_path, POLICY['header_bytes'])
     require(source_hash == p['source'], 'fixture source identity')
     result, _ = read_json(artifact / 'result.json', REPORT_CAP, p['result_ref']['sha256'])
     terminal, _ = read_json(artifact / 'terminal.json', 8192, p['terminal_ref']['sha256'])

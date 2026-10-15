@@ -22,6 +22,28 @@ def node_owner(forest, n):
             else forest.nodes[n][0])
 
 
+def shared_source(forest):
+    if type(forest).__module__ != 'scoped_source.check_shared_source': return False
+    from scoped_source.check_shared_source import CheckedSharedForest
+    return type(forest) is CheckedSharedForest
+
+
+def shared_objective(workspace, task):
+    """Identical <=4-root access on the new dense and scoped paths."""
+    from scoped_source.pair_workspace import SparseRoots
+    w=workspace.owner.work; f=workspace.owner.forest; d=rational(task.offset); alpha={}
+    require(shared_source(f), 'shared objective requires complete shared source')
+    for expert,weights in zip(task.pair,(task.left,task.right),strict=True):
+        vi=f.roles['experts'][expert]
+        require(len(weights)==len(f.views[vi]['output']), 'complete shared properties')
+        for k,weight in enumerate(weights):
+            w.visit('row_visits'); q=rational(weight)
+            if q:
+                c,n=workspace.roots.row((vi,'output',k))
+                d=w.exact(d+w.exact(c*q)); alpha[n]=w.exact(alpha.get(n,F(0))+q)
+    return d,SparseRoots(workspace.owner,alpha)
+
+
 def scalar_size(bits, dyadic=False):
     require(type(bits) is int and 1 <= bits <= POLICY['work_bits'], 'fixed scalar bit ceiling')
     return HEADER.size + ((bits+7)//8)*(1 if dyadic else 2)
@@ -183,16 +205,22 @@ class RootTable:
     def __init__(self,owner):
         owner.check(); self.owner=owner; f=owner.forest
         self.roots=owner.allocate(len(f.nodes)*ROOT.size); self.members={}
+        shared={}
         for vi,view in enumerate(f.views):
             for kind in ('output','eq','ine'):
-                block=owner.allocate(4*len(view[kind])); self.members[vi,kind]=block
+                key=id(view[kind]); reuse=shared_source(f) and key in shared
+                block=shared[key] if reuse else owner.allocate(4*len(view[kind]))
+                self.members[vi,kind]=block
+                if shared_source(f): shared[key]=block
                 for k,(c,n) in enumerate(view[kind]):
                     owner.work.visit('row_visits'); owner_id=node_owner(f,n)
                     raw=ROOT.pack(float(c),owner_id,1)
                     require(F(float(c))==c,'root exact binary64 center')
                     old=self.roots.get(n*ROOT.size,ROOT.size)
                     require(old==bytes(ROOT.size) or old==raw,'root center/owner alias')
-                    self.roots.put(n*ROOT.size,raw); block.put(k*4,struct.pack('<I',n))
+                    self.roots.put(n*ROOT.size,raw)
+                    if reuse: require(block.get(k*4,4)==struct.pack('<I',n), 'same complete membership sequence')
+                    else: block.put(k*4,struct.pack('<I',n))
 
     def row(self,row_id):
         self.owner.check(); vi,kind,k=row_id
@@ -222,6 +250,8 @@ class Workspace:
         return m
 
     def objective(self,task):
+        if shared_source(self.owner.forest):
+            d,roots=shared_objective(self,task); self._maps.append(roots); return d,roots
         w=self.owner.work; f=self.owner.forest; d=rational(task.offset); alpha=self.mapping('nodes')
         for expert,weights in zip(task.pair,(task.left,task.right),strict=True):
             vi=f.roles['experts'][expert]

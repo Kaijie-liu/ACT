@@ -136,6 +136,9 @@ class FixedProposer:
         self.stats['setup_calls'] += 1
         from scoped_source.check_scaled_references import checked
         checked(forest, work)
+        from scoped_source.bounded_runtime import shared_source
+        require(shared_source(forest) == (self.method['schema'] == 'SHARED_LIFECYCLE_METHOD_V1'),
+                'method and actual source representation binding')
         inject(self.fault, 'setup', work)
         self.state = 'READY'
 

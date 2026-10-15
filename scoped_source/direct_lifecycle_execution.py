@@ -16,16 +16,22 @@ from scoped_source.direct_lifecycle import Lifecycle, FAULTS, inject
 from scoped_source.direct_method import validate
 from scoped_source.scaled_endpoints import contract
 from scoped_source.wire_archive import Archive, receive_file
-from scoped_source.direct_lifecycle_package import MANIFEST, BUNDLE, CODE_FILES, check_package
+from scoped_source.direct_lifecycle_package import MANIFEST, BUNDLE, CODE_FILES, code_files, check_package
 
-EXEC_FAULTS = FAULTS + ('replay_block', 'after_tile_error')
+EXEC_FAULTS = FAULTS + ('replay_block', 'after_tile_error', 'before_transfer', 'after_transfer')
 
 
 def execute(root, source_root, source, config, invocation, code_root, *, work,
             enabled=False, fault='', archive_limit=POLICY['total_bytes'],
-            member_limit=POLICY['members'], progress=None):
+            member_limit=POLICY['members'], progress=None, owned_source=None):
     require(enabled is True, 'lifecycle execution is opt-in')
     method = validate(config)
+    shared=method['schema']=='SHARED_LIFECYCLE_METHOD_V1'
+    if shared:
+        from scoped_source.shared_archive import OwnedSource
+        require(type(owned_source) is OwnedSource and owned_source.root==Path(source_root)
+                and owned_source.source==source, 'new shared path requires owned source')
+    else: require(owned_source is None, 'legacy copy ownership unchanged')
     sha(invocation)
     require(fault in EXEC_FAULTS, 'registered lifecycle execution fault')
     require(type(member_limit) is int and 0 < member_limit <= POLICY['members'], 'remaining member ceiling')
@@ -69,11 +75,24 @@ def execute(root, source_root, source, config, invocation, code_root, *, work,
                 for name in sorted(reader._files):
                     work.tick()
                     archive.copy(Path(source_root) / name, 'package/source/' + name)
-            phase('source_copy', copy_source)
-            raw, construction = phase('source_construct', lambda:build(archive.root / 'package/source', source, work=work, enabled=True))
-            fr = phase('source_publish', lambda:put('forest.bin', raw))
-            f = phase('source_check', lambda:CheckedDirectForest(raw, archive.root / 'package/source', source,
-                                                               expected=fr['sha256'], work=work, enabled=True))
+            if shared:
+                from scoped_source.shared_archive import transfer
+                from scoped_source.shared_build import build as shared_build
+                from scoped_source.check_shared_source import CheckedSharedForest
+                snapshots['source_transfer']=phase('source_transfer',lambda:transfer(owned_source,archive,
+                    fault=fault if fault in ('before_transfer','after_transfer') else '',member_limit=member_limit))
+                require(len(archive.attempted)<=member_limit, 'transfer remaining member budget')
+                raw,construction=phase('source_construct',lambda:shared_build(archive.root/'package/source',source,work=work,enabled=True))
+                fr=phase('source_publish',lambda:raw.publish(put))
+                f=phase('source_check',lambda:CheckedSharedForest(raw,archive.root/'package/source',source,
+                    expected=fr['sha256'],work=work,enabled=True))
+            else:
+                phase('source_copy', copy_source)
+                raw, construction = phase('source_construct', lambda:build(archive.root / 'package/source', source, work=work, enabled=True))
+                fr = phase('source_publish', lambda:put('forest.bin', raw))
+                f = phase('source_check', lambda:CheckedDirectForest(raw, archive.root / 'package/source', source,
+                                                                   expected=fr['sha256'], work=work, enabled=True))
+            snapshots['source_stats']=dict(f.receipt['stats'])
             c = phase('property_plan', lambda:contract(f))
             cr = phase('contract_publish', lambda:put('contract.json', compact(c)))
             d = phase('driver_start', lambda:Driver(f, c, expected=identity(c), work=work,
@@ -131,7 +150,7 @@ def execute(root, source_root, source, config, invocation, code_root, *, work,
         work.tick()
         def package():
             code = []
-            for name in CODE_FILES:
+            for name in code_files(method):
                 work.tick()
                 path = Path(code_root) / name
                 require(path.is_file() and not path.is_symlink() and 0 < path.stat().st_size <= 64 * 2**10,

@@ -14,6 +14,11 @@ from scoped_source.direct_method import validate
 MANIFEST = 'DIRECT_LIFECYCLE_MANIFEST_V1'
 BUNDLE = 'DIRECT_LIFECYCLE_BUNDLE_V1'
 CODE_FILES = V1_CODE + ('scoped_source/direct_method.py', 'scoped_source/direct_lifecycle_package.py')
+SHARED_CODE = ('scoped_source/shared_source.py','scoped_source/shared_format.py','scoped_source/check_shared_source.py')
+
+
+def code_files(method):
+    return CODE_FILES + SHARED_CODE if method['schema']=='SHARED_LIFECYCLE_METHOD_V1' else CODE_FILES
 
 
 def check_manifest(root, raw, *, expected, expected_method, invocation, work, enabled=False):
@@ -37,15 +42,24 @@ def check_manifest(root, raw, *, expected, expected_method, invocation, work, en
         require(len(value) == ref['bytes'], 'member length')
         return value
 
-    require(type(m['code']) is list and [r['file'] for r in m['code']] == ['code/' + n for n in CODE_FILES],
+    require(type(m['code']) is list and [r['file'] for r in m['code']] == ['code/' + n for n in code_files(method)],
             'complete checker code inventory')
     for ref in m['code']:
         member(ref, 64 * 2**10)
     require(type(m['source']) is dict and set(m['source']) == {'directory', 'sha256'}
             and m['source']['directory'] == 'source', 'local source')
-    require(m['forest']['file'] == 'forest.bin' and m['contract']['file'] == 'contract.json', 'fixed source members')
-    f = CheckedDirectForest(member(m['forest'], POLICY['total_bytes']), Path(root) / 'source', m['source']['sha256'],
-                            expected=m['forest']['sha256'], work=work, enabled=True)
+    shared=method['schema']=='SHARED_LIFECYCLE_METHOD_V1'
+    require(m['forest']['file'] == ('forest/index.json' if shared else 'forest.bin')
+            and m['contract']['file'] == 'contract.json', 'fixed source members')
+    if shared:
+        from scoped_source.shared_format import load
+        from scoped_source.check_shared_source import CheckedSharedForest
+        packet=load(Path(root)/'forest',member(m['forest'],POLICY['member_bytes']),m['forest']['sha256'],work)
+        f=CheckedSharedForest(packet,Path(root)/'source',m['source']['sha256'],expected=packet.identity,work=work,enabled=True)
+        packet=None
+    else:
+        f = CheckedDirectForest(member(m['forest'], POLICY['total_bytes']), Path(root) / 'source', m['source']['sha256'],
+                                expected=m['forest']['sha256'], work=work, enabled=True)
     cr = member(m['contract'], 8192)
     c = decode(cr)
     require(compact(c) == cr and c == contract(f), 'complete property contract')
@@ -90,11 +104,12 @@ def main():
     p.add_argument('--arm', required=True, choices=('dense', 'pair_scoped'))
     p.add_argument('--profile', type=int, choices=(0, 1), required=True)
     p.add_argument('--enable-lifecycle', action='store_true')
+    p.add_argument('--shared-source', action='store_true')
     p.add_argument('--seconds', type=float, default=300)
     a = p.parse_args()
     require(0 < a.seconds <= 300, 'unchanged deadline')
     print(compact(check_package(a.root, expected=a.expected, invocation=a.invocation,
-                  expected_method=method(a.arm, a.profile), work=Work(time.monotonic() + a.seconds),
+                  expected_method=method(a.arm, a.profile, shared=a.shared_source), work=Work(time.monotonic() + a.seconds),
                   enabled=a.enable_lifecycle)).decode())
 
 

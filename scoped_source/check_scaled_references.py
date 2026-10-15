@@ -104,6 +104,9 @@ def checked(forest,work):
     if not admitted and type(forest).__module__=='scoped_source.check_direct_source':
         from scoped_source.check_direct_source import CheckedDirectForest
         admitted=type(forest) is CheckedDirectForest
+    if not admitted and type(forest).__module__=='scoped_source.check_shared_source':
+        from scoped_source.check_shared_source import CheckedSharedForest
+        admitted=type(forest) is CheckedSharedForest
     require(admitted and getattr(forest,'_sealed',False) is True
             and forest.complete and forest.session is work,'complete checked V3 / cumulative Work binding')
     work.tick()

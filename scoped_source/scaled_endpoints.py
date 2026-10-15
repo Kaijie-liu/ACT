@@ -303,6 +303,10 @@ class Session:
             from scoped_source.check_direct_source import CheckedDirectForest
             require(type(self.__forest) is CheckedDirectForest,'closed direct type')
             self.__forest.seal()
+        if type(self.__forest).__module__=='scoped_source.check_shared_source':
+            from scoped_source.check_shared_source import CheckedSharedForest
+            require(type(self.__forest) is CheckedSharedForest,'closed shared type')
+            self.__forest.seal()
         work.visit('row_visits',len(result)); work.tick(); self.__closed=True; return result
 
     def proof(self):
