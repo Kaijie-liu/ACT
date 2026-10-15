@@ -1,5 +1,17 @@
 # MoE project handoff — current entry point
 
+Source-row local decomposition and native-count substitution assessed: 2026-10-16.
+See [the algebra/lifetime decision](hz_native_source_blocks_20261016.md) and
+[recomputable static record](hz_native_source_blocks_20261016.json).
+Keep all auxiliary/error terms and shared input factors: `L = E_aux + S W P`.
+Nine once-transcoded natural first-layer blocks are a concrete static candidate;
+per-call source retranscoding would scan up to 1.154 TB of logical payload.
+Neither is implemented. Existing CPU Operator plus current root leases now has a
+conditional post-capture counted upper: dense 89,446,425,692 / scoped 165,121,513,292.
+This replaces the fixed producer's count, not an added free producer or a runtime
+forecast. Native string candidates, GEMM scratch and full source/checker lifetimes
+remain explicit gaps; no full admission or new execution is authorized.
+
 Full source/native admission reviewed; research priority corrected: 2026-10-16.
 See [the cross-contract decision](hz_full_path_decision_20261016.md) and
 [bound static record](hz_full_path_decision_20261016.json).
@@ -129,9 +141,16 @@ scoped checker's smaller arena or old native costs. Static investigation of a
 source-row-block operator must preserve all checking and distinguish existing
 DAG/scale/adjoint capabilities from a genuine new increment.
 
-The source-to-supervisor adapter, native lifecycle and complete resource policy
-must be considered together. Capture/native Work and whole heap/RSS upper bounds
-remain open; two source checks alone still exceed 8M. No full-shape admission,
+The [source-block follow-up](hz_native_source_blocks_20261016.md) gives an exact
+local decomposition and distinguishes once-transcoded banks from repeated source
+parsing. Existing block support/scale/DAG algorithms are not renamed as new work.
+The old CPU Operator's conditional counted-work substitution is now explicit;
+it does not include new adapter operations or the proposed block implementation.
+Next static accounting must include bounded candidate output before binary framing,
+new GEMM scratch, and source/native/exact-checker lifetime overlap. The source adapter,
+native lifecycle and complete resource policy must still be considered together.
+Capture, full heap/RSS and end-to-end costs remain open; two source checks alone
+still exceed 8M. No full-shape admission,
 new absolute quota, runtime implementation, real-model or GPU execution is approved.
 Any subsequent implementation/control scope requires its own decision. Research
 claims and the historical source gap are unchanged; control counts do not close goals.
