@@ -1,0 +1,201 @@
+{
+  "anchors": {
+    "docs/hz_paged_result_controls_20261015.json": "0e4fc12f5672a100f1533fce46a8dc486c577d908d0408414b0a9f39ab2f0d84",
+    "docs/hz_shared_archive_contract_20261015.json": "2e1d473b03b0b6208dcf44a1ef4a2bec1c511a04a570d80ef324fffb53eca8c7",
+    "docs/hz_shared_execution_envelope_20261015.json": "1074c6f5fb8f92e833e1fed7e6ecc4a02232c20d867395772248b08ef3b34401",
+    "docs/hz_shared_source_decision_20261015.json": "ddf10e0d95885fda9071e529771f36730e027942ca7ed9b1594fd430e2e371c2",
+    "scripts/assess_paged_execution_resources.py": "c2c7044e11b61ec0b9911b64feb94358fc993d30d656a95460e32bbe1b5f9fa5",
+    "scripts/test_paged_execution_resources.py": "3fc6dceb60733517d4eed9e152797e59fc7e871215ffb228de4e6e22b892aa24"
+  },
+  "based_on": "f87e4c7ef958035a89cd87aecb50fc8885e82206",
+  "bounded_failures": {
+    "arbitrary_failure_heap_bound": null,
+    "error_str_or_repr_called": false,
+    "incomplete_terminal_cost_complete": false
+  },
+  "candidate_builds": 0,
+  "code": {
+    "actual_current_bytes": 261773,
+    "files": {
+      "scoped_source/bounded_runtime.py": 13024,
+      "scoped_source/check_affine_references.py": 3595,
+      "scoped_source/check_direct_source.py": 4979,
+      "scoped_source/check_result_stream.py": 6546,
+      "scoped_source/check_scaled_references.py": 5908,
+      "scoped_source/check_shared_source.py": 4315,
+      "scoped_source/check_source_dag.py": 17952,
+      "scoped_source/direct_candidates.py": 12707,
+      "scoped_source/direct_lifecycle_package.py": 7082,
+      "scoped_source/direct_method.py": 2195,
+      "scoped_source/direct_package.py": 4912,
+      "scoped_source/direct_source_format.py": 8321,
+      "scoped_source/factored_io.py": 2857,
+      "scoped_source/factored_source.py": 11770,
+      "scoped_source/forest_endpoints.py": 12499,
+      "scoped_source/hz_request_store.py": 19558,
+      "scoped_source/pair_workspace.py": 10520,
+      "scoped_source/result_stream.py": 8185,
+      "scoped_source/scaled_endpoints.py": 19377,
+      "scoped_source/shared_format.py": 12211,
+      "scoped_source/shared_source.py": 6159,
+      "scoped_source/tensor_rows.py": 16310,
+      "scoped_source/wire_archive.py": 10618,
+      "scoped_source/wire_forest.py": 14764,
+      "scoped_source/wire_package.py": 4846,
+      "scoped_source/wire_proof.py": 9174,
+      "source_enclosure/format.py": 1968,
+      "upstream_source/checker.py": 9421
+    },
+    "payload_upper": 1835008
+  },
+  "conditional_success_archive": {
+    "binary64": {
+      "actual_bytes": null,
+      "archive_cap": 134217728,
+      "candidate_stream_cap": 16769024,
+      "candidate_stream_upper": 22868160,
+      "candidate_upper_fits_stream_cap": false,
+      "checker_code_upper": 1835008,
+      "request_upper": 89165848,
+      "source_and_forest_upper": 62759937,
+      "success_metadata_upper": 1702743,
+      "upper_excess_proves_actual_overflow": false,
+      "whole_upper_fits_archive_cap": true
+    },
+    "general_rational": {
+      "actual_bytes": null,
+      "archive_cap": 134217728,
+      "candidate_stream_cap": 16769024,
+      "candidate_stream_upper": 2831559360,
+      "candidate_upper_fits_stream_cap": false,
+      "checker_code_upper": 1835008,
+      "request_upper": 2897857048,
+      "source_and_forest_upper": 62759937,
+      "success_metadata_upper": 1702743,
+      "upper_excess_proves_actual_overflow": false,
+      "whole_upper_fits_archive_cap": false
+    }
+  },
+  "counted_work": {
+    "actual_full_work": null,
+    "added_row_parse_and_sign_checks_upper": 756,
+    "new_result_modules_increment": 0,
+    "postcapture_upper": {
+      "dense_reference": 89433531656,
+      "pair_scoped": 165108619256
+    },
+    "prior_formulas_reviewed_not_machine_proved": true,
+    "source_subpath_upper": 216424736,
+    "total_machine_cost_increment_is_zero": false
+  },
+  "decision": "PAGED_RESULT_COMPONENT_CLOSED_FULL_ADMISSION_STILL_REFUSED",
+  "frozen_implementation_bindings_verified": 50,
+  "full_capacity_admitted": false,
+  "gpu_runs": 0,
+  "inherited_conditions": [
+    "registered 3072/8/10 topology; center shape [1,3,32,32]",
+    "capture.py fixed ASCII trust text and no additional provenance",
+    "pack() default 1 MiB full chunks per tensor, final remainder",
+    "four domain literals each <=4096 ASCII numeric characters",
+    "existing symbolic uint64 counters and 24-character clock encoding",
+    "generated safe ASCII paths at most 200 characters",
+    "successful complete layout only; bounded failures are separate",
+    "Work retains its old metric, not all arithmetic or I/O operations"
+  ],
+  "inherited_layout_and_account_bindings": {
+    "docs/hz_shared_execution_envelope_20261015.json": "1074c6f5fb8f92e833e1fed7e6ecc4a02232c20d867395772248b08ef3b34401",
+    "docs/hz_shared_source_decision_20261015.json": "ddf10e0d95885fda9071e529771f36730e027942ca7ed9b1594fd430e2e371c2",
+    "scoped_source/capture.py": "d3ca9b562c9840ace096d790d0fd6eb12d7105560a3c38767c85244c65f651e2"
+  },
+  "lifetime": {
+    "endpoint_values_and_receipts_still_retained": true,
+    "full_heap_upper": null,
+    "full_rss_upper": null,
+    "page_reference_limit": 32,
+    "parent_reception_in_worker_rss_sample": false,
+    "parsed_and_encoded_storage_is_not_total_heap": true,
+    "private_roster_duties_limit": 252,
+    "private_roster_slots_limit": 504,
+    "production_packet_released_before_consumer": false,
+    "reader_json_and_canonical_encoding_temporaries": true,
+    "reader_old_and_new_decoded_pages_can_overlap": true,
+    "replay_last_candidate_frame_survives_into_comparison": true,
+    "writer_persistent_row_limit": 8
+  },
+  "mathematical_checks_removed": 0,
+  "model_runs": 0,
+  "new_quota": null,
+  "refusals": {
+    "mandatory_expanded_memberships": 126632,
+    "membership_lower_exceeds_cap": true,
+    "memberships_cap": 65536,
+    "source_lower_exceeds_cap": true,
+    "source_two_check_lower": 13916160,
+    "source_work_cap": 8000000
+  },
+  "result_file_reads": {
+    "child_passes": 5,
+    "includes_code_other_metadata_imports_or_native_capture": false,
+    "offline_audit_passes_separate": 4,
+    "online_logical_bytes_upper": 12672990,
+    "online_passes": 10,
+    "pages_and_index_bytes_per_pass_upper": 1267299,
+    "parent_passes": 5,
+    "physical_device_io": false
+  },
+  "runtime_changed": false,
+  "schema": "PAGED_IMPLEMENTED_RESOURCE_RECONCILIATION_V1",
+  "solver_calls": 0,
+  "source_builds": 0,
+  "success_layout": {
+    "artifact_files": 353,
+    "bundle_members": 351,
+    "code_files": 28,
+    "heap_bound_closed": false,
+    "hypotheses": [
+      "existing symbolic uint64 counters and 24-character clock encoding",
+      "generated safe ASCII paths at most 200 characters",
+      "successful complete layout only; bounded failures are separate",
+      "Work retains its old metric, not all arithmetic or I/O operations"
+    ],
+    "implementation_files": 47,
+    "index_upper": 5431,
+    "members_upper": {
+      "bundle": 111344,
+      "candidate_report": 165242,
+      "contract": 4550,
+      "inner_terminal": 1132,
+      "invocation": 13535,
+      "manifest": 36929,
+      "parent_receipt": 38312,
+      "progress": 64400,
+      "result_index": 5431,
+      "result_pages": 1261868,
+      "worker_log": 0
+    },
+    "metadata_upper": 1702743,
+    "page_read_passes_online": 10,
+    "page_upper": 40057,
+    "real_model_admitted": false,
+    "schema": "PAGED_IMPLEMENTED_SUCCESS_LAYOUT_V1",
+    "whole_request_files": 358
+  },
+  "supervision": {
+    "late_return_cannot_accept": true,
+    "offline_audit_can_rescue_timeout": false,
+    "parent_finalization_hard_preemption": false,
+    "timely_acceptance_seconds": 300,
+    "whole_process_return_upper_seconds": null
+  },
+  "unchanged": {
+    "acceptance": "strict > 1/10000000",
+    "arena": 134217728,
+    "memberships": 65536,
+    "report_bytes": 1048576,
+    "seconds": 300,
+    "stored_bits": 4096,
+    "work": 8000000,
+    "work_bits": 8192
+  },
+  "worker_runs": 0
+}

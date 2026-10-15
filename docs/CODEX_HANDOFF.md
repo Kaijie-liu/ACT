@@ -1,5 +1,9 @@
 # MoE project handoff — current entry point
 
+Implemented paged-result resource accounting completed: 2026-10-15.
+See [post-implementation resource decision](hz_paged_execution_resources_20261015.md).
+The interface stage is complete; no further paging micro-controls or full-shape retry.
+
 Paged results, reference reports and complete replay/reception passed 171 controls: 2026-10-15.
 See [implemented control results](hz_paged_result_controls_20261015.md) and
 [frozen protocol](hz_paged_result_protocol_20261015.md), pushed before implementation at `2ea468ed6`.
@@ -93,10 +97,19 @@ Current forest identity equals its index hash by format definition; roles remain
 separately bound. Actual conditional successful metadata upper is 1,702,743 bytes,
 not the old proposal's 1,701,401. Ten online page reads and all existing checks remain.
 
-Next safe task is implemented-version resource accounting, not another automatic
-execution. No quota, check width, acceptance gate or 300-second limit changed.
-Whole-model Work/membership/heap/native-memory admission and G1–G6 remain open.
-Do not infer real/GPU execution authority from these fixed-candidate controls.
+The [implemented-version resource account](hz_paged_execution_resources_20261015.md)
+now verifies all 50 frozen implementation bindings plus the capture/layout chain. Nine static tests pass;
+no further worker/model/GPU request ran. Conditional binary64 whole storage upper
+is 89,165,848 bytes, but candidate stream still lacks a uniform capacity guarantee.
+Work/membership lower-bound refusals survive; paging does not remove endpoint
+receipts, roster temporaries or Python heap/RSS gaps. Parent finalization can return
+late and refuse; 300 seconds is the timely acceptance gate, not a proven total
+process-return upper. Do not infer real/GPU authority or complete memory admission.
+
+Stop this paging/serialization interface stage. A next runtime mechanism needs
+a scoped algorithm/representation or complete resource-policy decision that
+addresses the established lower-bound refusal, not another same-shape attempt.
+No quota, check width, acceptance gate or 300-second limit changed. G1–G6 remain open.
 
 ## Prior decision: bounded result proposal; no ownership-only implementation
 
