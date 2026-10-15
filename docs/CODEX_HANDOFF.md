@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+Staged memory-supervision design frozen: 2026-10-15.
+See [the new protocol](hz_staged_memory_protocol_20261015.md) and its
+[machine-readable design record](hz_staged_memory_protocol_20261015.json).
+User approved this direction's protocol, not AS values, implementation or execution.
+Use a dedicated watchdog/controller and fresh production, portable and receiving
+actors; all inherit one later-approved AS limit. Pre-limit bootstrap remains trusted.
+No new limit chosen, no runtime modified and no control/model/GPU request launched.
+Static validation passes 12 frozen anchors/15 policy fields; nine navigation
+regressions pass. Read-only reviews added suffix accounting and final caller gates.
+
 Two-pass source-validation floor checked: 2026-10-15.
 See the [follow-up decision](hz_domain_guard_decision_20261015.md#后续核查-两遍来源合法性本身仍超原额度).
 Even source-defined affine operators retain a 13,922,736 Work floor if both fresh
@@ -88,7 +98,23 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: paged-result interfaces complete; no real-workload admission
+## Current decision: freeze staged memory supervision; implementation awaits approval
+
+The [new design](hz_staged_memory_protocol_20261015.md) moves full reception to
+a supervised helper and separates production from fresh portable recomputation.
+Keep source construction and its first check together; no checked Python object
+crosses the process boundary. Both complete mathematical passes and all existing
+gates remain. The watchdog must establish controller-group cleanup before final
+acceptance, including after controller failure. Actors share that group rather
+than opening untracked sessions.
+
+`as_bytes` is null. Setting a later per-process address-space refusal is not an
+RSS bound, successful capacity proof, quota increase or Work repair. All costs
+remain cumulative under the same 300 seconds. The next approval must select the
+explicit limit and implementation/control scope; real/native/GPU work remains
+excluded. No repeated paging controls, full-shape retries or G1–G6 completion claims.
+
+## Prior decision: paged-result interfaces complete; no real-workload admission
 
 The default-off shared-source paged method is implemented and
 [control-checked](hz_paged_result_controls_20261015.md): 15 new plus 156 existing

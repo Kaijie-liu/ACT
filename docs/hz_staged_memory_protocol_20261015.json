@@ -1,0 +1,73 @@
+{
+  "schema": "STAGED_MEMORY_DESIGN_V1",
+  "status": "DESIGN_FROZEN_PENDING_LIMITS_AND_IMPLEMENTATION_APPROVAL",
+  "base_commit": "0e0f250153ea4c98dbdf478e791e9da3115e82b8",
+  "branch": "feat/moe-route-verification",
+  "protocol": "docs/hz_staged_memory_protocol_20261015.md",
+  "default_enabled": false,
+  "implementation_authorized": false,
+  "runtime_controls_authorized": false,
+  "real_native_gpu_authorized": false,
+  "full_capacity_admitted": false,
+  "new_existing_quota": null,
+  "as_bytes": null,
+  "address_space_contract": {
+    "same_soft_hard_for_all_roles": true,
+    "roles": ["watchdog", "controller", "actor"],
+    "max_concurrent_actors": 1,
+    "conditional_post_arm_virtual_envelope_multiple": 3,
+    "bootstrap_before_limit_trusted": true,
+    "controller_group_includes_actor": true,
+    "rss_bound_proved": false,
+    "full_call_memory_bound": null,
+    "success_capacity_bound": null
+  },
+  "stages": ["PRODUCTION", "PORTABLE", "RECEIVE"],
+  "pending_states": ["PENDING_REPLAY", "PENDING_RECEPTION", "PENDING_COMMIT", "PENDING_OUTER_COMMIT"],
+  "independent_mathematical_passes": 2,
+  "success_seconds": 300,
+  "candidate_width": 8,
+  "scoped_check_width": 2,
+  "dense_check_width": 8,
+  "result_page_rows": 8,
+  "result_page_bytes": 65536,
+  "controller_handoff_bytes": 65536,
+  "tail_file_bytes": 65536,
+  "tail_files": [
+    "control/receive_tail.json", "control/controller_tail.json",
+    "control/terminal.json", "logs/receive.log",
+    "logs/controller.log", "logs/watchdog.log"
+  ],
+  "tail_reserve_bytes_within_existing_limit": 393216,
+  "owned_arena_bytes": 134217728,
+  "sampled_rss_refusal_bytes": 2147483648,
+  "unchanged_policy": {
+    "factors": 32768, "active": 16384, "views": 128, "depth": 64,
+    "view_rows": 16384, "rows": 65536, "nnz": 1048576, "members": 4096,
+    "page_rows": 64, "header_bytes": 8388608, "member_bytes": 1048576,
+    "total_bytes": 134217728, "stored_bits": 4096, "work_bits": 8192,
+    "visits": 8000000
+  },
+  "two_pass_source_legality_work_floor": 13922736,
+  "future_control_scope": {
+    "cases": ["half", "guarded"],
+    "arms": ["dense_reference", "pair_scoped"],
+    "profiles": [0, 1],
+    "allocation_control_approval": null,
+    "execution_started": false
+  },
+  "anchors": {
+    "docs/hz_domain_guard_decision_20261015.md": "95fde9c934fa66f762dd7d0c6b478e9acebccca862c3d2b5c88af33f4bb829d7",
+    "docs/hz_paged_result_protocol_20261015.md": "80d7de69285e7f8044bc777ac4c0d495a8cabb97b0682bbfca35eb80e2b2d535",
+    "docs/hz_source_lifetime_protocol_20261014.md": "8d73d3c2bf029cc5cca4b070504e372018febcd181f5f7409c3e2f8372e45fcb",
+    "scoped_proof/owned_bounded.py": "62b7260025508e212321b7ea0df01c194b8df59fc7f7e7005bc51b6f692bad78",
+    "scoped_source/check_shared_source.py": "18621a4865854ebcb162937fcca53ceee1207ba045804383676c35c377eeabe3",
+    "scoped_source/direct_lifecycle_execution.py": "1f6d7ec03a70d5881cf5b9fcabc739267a3d44d00f25b0c7baa61a44145b51db",
+    "scoped_source/direct_lifecycle_package.py": "740b4022df94c74fc30d120fd1ebbaff08ad427132e097faca5a2ab258de9ddb",
+    "scoped_source/direct_lifecycle_worker.py": "3c0beb456d54ec2d8e676bd08dfc710feeec173588e78f681c1b6f1429091915",
+    "scoped_source/direct_method.py": "76b3dc62cb5e0158861354c04c4e1daa2ecca13029b4fc771ddba4323b261932",
+    "scoped_source/direct_supervised.py": "ab7a69edd0bacb7c3ff7c52cb1f44b236200dd54761c27999f0ed5853660e4e5",
+    "scoped_source/hz_request_store.py": "7cb2be7647039f59d3c896b7856f634f43be9c532d9d2fd43632be09ab3230e0",
+    "scoped_source/result_stream.py": "38256ff10ad3d693a86c714bc9afc7364af7e8932b64f84a6986629693ea5bb5"
+  }
+}
