@@ -1,5 +1,12 @@
 # MoE project handoff — current entry point
 
+Concrete staged-memory approval package prepared: 2026-10-15.
+See [the 256 MiB proposal and fixed control table](hz_staged_memory_approval_20261015.md)
+and [bound approval record](hz_staged_memory_approval_20261015.json).
+Proposed only: 20 full-chain controls, one 33-variant component batch and one
+non-touching OS allocation probe. Eight existing result references are hash-bound;
+new controls have not run. No active AS limit or quota changed.
+
 Staged memory-supervision design frozen: 2026-10-15.
 See [the new protocol](hz_staged_memory_protocol_20261015.md) and its
 [machine-readable design record](hz_staged_memory_protocol_20261015.json).
@@ -98,7 +105,21 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: freeze staged memory supervision; implementation awaits approval
+## Current decision: approve a concrete limit and finite implementation scope
+
+The [approval proposal](hz_staged_memory_approval_20261015.md) now specifies one
+256 MiB per-process AS refusal, no fallback, exact fixture/control IDs and a
+4,202-byte fixed control-record layout. Existing eight archived logical results
+are bound for differential checking; they are not free inputs to new proofs.
+Use actual method ID `dense`, explicitly mapping the earlier descriptive
+`dense_reference` label. The original design JSON stays unchanged.
+
+User approval of this numerical limit and implementation/control execution is
+still required. No new worker or allocation probe has run. Do not prepare another
+generic design or silently start controls: the next decision is this concrete
+approval package. Keep real models/native/GPU excluded and the old Work refusal.
+
+## Prior decision: freeze staged memory supervision; implementation awaits approval
 
 The [new design](hz_staged_memory_protocol_20261015.md) moves full reception to
 a supervised helper and separates production from fresh portable recomputation.
