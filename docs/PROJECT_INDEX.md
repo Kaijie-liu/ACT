@@ -8,6 +8,7 @@
 | 你要做什么 | 第一入口 | 注意 |
 |---|---|---|
 | 接手工程、决定下一步 | [当前交接](CODEX_HANDOFF.md) | 已压缩；封存边界优先于旧 NEXT |
+| 审阅替代资源保证 | [合同草案](hz_resource_contract_draft_20261016.md)、[惰性声明](hz_resource_contract_draft_20261016.json) | 仅起草获批，尚未采纳；静态账本保留，拟议原生硬限额可失败执行，不提额／实施／运行 |
 | 核对是否偏离算法目标 | [完整来源／原生路径裁决](hz_full_path_decision_20261016.md)、[可重算记录](hz_full_path_decision_20261016.json) | 停止小源监督控制驱动推进；已定位全局COO物化与完整资源合同断点，未运行实模／GPU，未提额 |
 | 看来源行块能否替换全局COO | [算子与成本静态合同](hz_native_source_blocks_20261016.md)、[计数记录](hz_native_source_blocks_20261016.json) | 代数分解及现原生计数已明确；一次转码与重复扫描分开；不是新实现或全内存准入 |
 | 看候选出口与原生内存边界 | [无损出口和停止裁决](hz_candidate_native_boundary_20261016.md)、[静态绑定](hz_candidate_native_boundary_20261016.json) | 去掉字符串不改变候选流额度；安装库映射本身超拟议256MiB，GEMM及完整内存仍未闭合；不单独实施修补 |

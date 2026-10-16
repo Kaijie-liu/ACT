@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+Alternative resource guarantee drafted with user authorization: 2026-10-16.
+See [the draft contract](hz_resource_contract_draft_20261016.md) and
+[inert declaration](hz_resource_contract_draft_20261016.json).
+Only drafting is approved; the replacement is not adopted or active. It proposes
+retaining static ledgers while allowing native work to fail under separately
+approved, verifiable hard limits, without claiming full-shape completion capacity.
+No new limit, implementation, control, native/model/GPU run or scientific upgrade.
+Existing Work, membership and candidate-stream restrictions remain in force.
+Next: user review of the guarantee change, before any resource/implementation freeze.
+
 Candidate exit and native mapping boundary assessed: 2026-10-16.
 See [the finite decision](hz_candidate_native_boundary_20261016.md) and
 [static evidence](hz_candidate_native_boundary_20261016.json).
@@ -144,7 +154,24 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: close the full source/native contract before more infrastructure controls
+## Current decision: review the alternative guarantee before implementation
+
+The user approved drafting, not adopting, the
+[alternative resource contract](hz_resource_contract_draft_20261016.md).
+The proposed change concerns the static native success-capacity precondition;
+it does not waive mathematical checks, the shared 300 seconds, existing caps,
+source obligations or G1–G6. The present milestone remains effective pending
+explicit review. Limit mechanisms/values, containment, implementation identity,
+and real sources are unset; the JSON is not a runnable method configuration.
+
+Do not repeat the old stub batch or implement a native bridge under this approval.
+Review must distinguish per-process AS, sampled aggregate RSS, bootstrap and native
+descendant coverage. Missing enforcement cannot silently fall back to sampling.
+Even adoption would not remove known static refusals or authorize higher quotas.
+Numerical limits, implementation/controls and real/GPU execution each need separate
+scope decisions. Old protocols and their failures remain unchanged.
+
+## Prior static decision: close the full source/native contract before more infrastructure controls
 
 The [latest static review](hz_full_path_decision_20261016.md) supersedes the
 priority of the pending small-control memory proposal, not its frozen contents.
