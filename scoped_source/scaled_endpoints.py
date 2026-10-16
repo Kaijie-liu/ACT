@@ -283,7 +283,11 @@ class Session:
         if sink is not None:
             from scoped_source.result_stream import Writer
             from scoped_source.check_result_stream import Comparator
-            require(type(sink) in (Writer,Comparator),'closed result sink')
+            allowed = (Writer, Comparator)
+            if type(sink).__module__ == 'scoped_source.native_result':
+                from scoped_source.native_result import Writer as NativeWriter, Comparator as NativeComparator
+                allowed += (NativeWriter, NativeComparator)
+            require(type(sink) in allowed,'closed result sink')
             sink.bind(self.__forest,self.__plan,work)
         require(self.__live is None and self.__next==len(self.__tiles),'all tiles completed before terminal')
         require(type(receipts) in (list,tuple) and len(receipts)==len(self.__plan.tasks),'all endpoint receipts')

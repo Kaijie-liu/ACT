@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+Native integration implementation approved and written, runtime untested: 2026-10-17.
+See [implementation and trust boundaries](hz_native_integration_implementation_20261017.md)
+and [static stage record](hz_native_integration_implementation_20261017.json).
+The user's approval covers the default-off native bridge, real V3 COO/source-row
+arms, independent checker/portable path and fresh unified supervision. It does
+not approve numerical limits, native controls, models or GPU. The execution
+approval registry is empty. Syntax/static review is not runtime correctness.
+All previous caps/checks and full-topology refusals remain; no scientific result
+changed. Next: separately bind and approve one finite native CPU control freeze.
+
 Single native integration scope proposed: 2026-10-17.
 See [the bounded scope](hz_native_integration_scope_20261017.md) and
 [non-executable source bindings](hz_native_integration_scope_20261017.json).
@@ -7,10 +17,11 @@ The proposed comparison holds source, optimizer, scoped2 checking and fresh
 supervision fixed: actual V3 native COO versus once-transcoded source-row blocks.
 It jointly addresses general declared-source intake, native lifecycle, bounded
 dual frames and fresh stdlib replay/reception; old stub gates are not removed.
-No implementation or control is approved. Hard-limit mechanism/value and final
+At proposal time no implementation or control was approved; the implementation
+approval above now supersedes that part only. Hard-limit value and final
 control identities remain unset; existing Work/member refusals still exclude
-the registered full topology. Next decision is this implementation scope and,
-separately, a concrete native CPU control freeze, not adoption again.
+the registered full topology. The implementation decision is superseded above;
+a concrete native CPU control freeze remains a separate decision, not adoption again.
 
 Alternative resource guarantee adopted by the user: 2026-10-17.
 See [the adoption decision](hz_resource_contract_adoption_20261017.md) and
@@ -168,11 +179,23 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   disk growth at completed-stage handoff. Never age-delete scientific evidence,
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
-## Current decision: adopted guarantee, no executable configuration
+## Current decision: default-off native implementation, no executable configuration
 
-The [single integration proposal](hz_native_integration_scope_20261017.md) is now
+The user's subsequent approval covers the single implementation scope. Its code
+is now written and statically reviewed; see the [implementation record](hz_native_integration_implementation_20261017.md).
+Do not ask for implementation adoption again. No new native/control/model/GPU
+run has occurred. The empty trusted approval table admits no execution profile.
+Before running controls, separately freeze the numerical hard limits, environment,
+current implementation identities and finite case/fault roster. Static review
+does not prove runtime correctness, deadline enforcement, relocation or speedup.
+Known Work/member/candidate capacity boundaries and G1–G6 remain open.
+
+## Prior decision: resource guarantee adopted, integration scope not yet approved
+
+The [single integration proposal](hz_native_integration_scope_20261017.md) was
 the concrete next scope: a real native bridge and one source-row representation
-factor, not further stub controls. It is proposed only, with no runtime changes.
+factor, not further stub controls. The following paragraphs record that prior
+permission state, superseded by the implementation approval above.
 
 The user's explicit 2026-10-17 adoption replaces only the native static
 success-capacity precondition; the [adoption record](hz_resource_contract_adoption_20261017.md)
