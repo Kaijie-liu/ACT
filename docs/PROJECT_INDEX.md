@@ -8,6 +8,7 @@
 | 你要做什么 | 第一入口 | 注意 |
 |---|---|---|
 | 接手工程、决定下一步 | [当前交接](CODEX_HANDOFF.md) | 已压缩；封存边界优先于旧 NEXT |
+| 审阅真实原生接入的实施范围 | [单一范围提案](hz_native_integration_scope_20261017.md)、[源码绑定](hz_native_integration_scope_20261017.json) | V3 COO与来源行块共用来源、scoped检查及监督；不是stub对照。尚未批准实施／控制，具体硬限额未定，不准入完整形状或实模／GPU |
 | 核对已采纳的资源保证 | [采纳决定](hz_resource_contract_adoption_20261017.md)、[非执行记录](hz_resource_contract_adoption_20261017.json)、[历史草案](hz_resource_contract_draft_20261016.md) | 2026-10-17已采纳；仅替换原生静态成功容量前置，全部账本／额度／检查和300秒不变；没有具体限额或实施／运行授权 |
 | 核对是否偏离算法目标 | [完整来源／原生路径裁决](hz_full_path_decision_20261016.md)、[可重算记录](hz_full_path_decision_20261016.json) | 停止小源监督控制驱动推进；已定位全局COO物化与完整资源合同断点，未运行实模／GPU，未提额 |
 | 看来源行块能否替换全局COO | [算子与成本静态合同](hz_native_source_blocks_20261016.md)、[计数记录](hz_native_source_blocks_20261016.json) | 代数分解及现原生计数已明确；一次转码与重复扫描分开；不是新实现或全内存准入 |

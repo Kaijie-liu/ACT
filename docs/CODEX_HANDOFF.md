@@ -1,5 +1,17 @@
 # MoE project handoff — current entry point
 
+Single native integration scope proposed: 2026-10-17.
+See [the bounded scope](hz_native_integration_scope_20261017.md) and
+[non-executable source bindings](hz_native_integration_scope_20261017.json).
+The proposed comparison holds source, optimizer, scoped2 checking and fresh
+supervision fixed: actual V3 native COO versus once-transcoded source-row blocks.
+It jointly addresses general declared-source intake, native lifecycle, bounded
+dual frames and fresh stdlib replay/reception; old stub gates are not removed.
+No implementation or control is approved. Hard-limit mechanism/value and final
+control identities remain unset; existing Work/member refusals still exclude
+the registered full topology. Next decision is this implementation scope and,
+separately, a concrete native CPU control freeze, not adoption again.
+
 Alternative resource guarantee adopted by the user: 2026-10-17.
 See [the adoption decision](hz_resource_contract_adoption_20261017.md) and
 [non-executable adoption record](hz_resource_contract_adoption_20261017.json).
@@ -9,8 +21,8 @@ execution, without a full-shape completion guarantee. Static ledgers and existin
 Work, membership, byte, bit and acceptance restrictions remain in force.
 No specific limit, implementation, control, native/model/GPU run or scientific
 upgrade is approved. Known static refusals still prevent full-shape admission.
-Next: one explicit full source/native integration scope and resource decision,
-not another adoption request or fixed-stub batch. The original draft stays frozen.
+The scope proposal above now identifies that integration; its permissions and
+resource decisions are still pending. The original draft stays frozen.
 
 Candidate exit and native mapping boundary assessed: 2026-10-16.
 See [the finite decision](hz_candidate_native_boundary_20261016.md) and
@@ -157,6 +169,10 @@ the audited 2026-09-25 decision. No new real experiment has been launched.
   quarantine failures, checkpoints or environments. No automatic purge daemon.
 
 ## Current decision: adopted guarantee, no executable configuration
+
+The [single integration proposal](hz_native_integration_scope_20261017.md) is now
+the concrete next scope: a real native bridge and one source-row representation
+factor, not further stub controls. It is proposed only, with no runtime changes.
 
 The user's explicit 2026-10-17 adoption replaces only the native static
 success-capacity precondition; the [adoption record](hz_resource_contract_adoption_20261017.md)
