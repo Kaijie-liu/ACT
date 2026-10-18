@@ -3,7 +3,7 @@ from pathlib import Path
 import os
 import time
 
-from scoped_source.hz_request_store import POLICY, require, identity, compact
+from scoped_source.hz_request_store import POLICY, require, identity, compact, digest
 from scoped_source.native_method import validate
 from scoped_source.native_lifecycle import Lifecycle
 from scoped_source.direct_candidates import Driver
@@ -111,6 +111,11 @@ def produce(root, source_spec, config, invocation, code_root, expected_code, wor
         refs = []
         def publish(i, raw):
             if control == 'partial_candidate' and i == 0:
+                print(compact(dict(control='partial_candidate',invocation=invocation,
+                    method=identity(method),source=owned.source,request=f.request,
+                    ordinal=i,expected_bytes=len(raw),expected_sha256=digest(raw),
+                    actual_bytes=len(raw)-1,actual_sha256=digest(raw[:-1]),
+                    work=dict(work.counts))).decode(),flush=True)
                 put(f'tiles/{i:04d}.bin',raw[:-1])
                 raise OSError('CONTROL_INJECTED_partial_candidate_publication')
             ref = put(f'tiles/{i:04d}.bin',raw); refs.append(ref)

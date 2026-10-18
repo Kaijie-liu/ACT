@@ -1,5 +1,23 @@
 # MoE project handoff — current entry point
 
+Endpoint seven-position supervision prepared, STATIC ONLY: 2026-10-19.
+See [implemented interfaces and remaining caller boundary](hz_endpoint_batch_supervision_preparation_20261019.md).
+New batch authority is EMPTY; old native approval registries unchanged. No sources,
+controls, candidate/native/model/GPU execution. Normal/fault/component positions
+share outer start: run298/cleanup298.5/native receive299/full receipt300 seconds.
+Bounded component controller/pipe reuses owned group; portable child stays in it.
+Seven fixed ordered positions, fail-stop/unexecuted suffix, complete source/profile
+binding and partial Work UNKNOWN are implemented. Metadata fits OLD8MiB/16 reserve:
+native7,798,784bytes/14files; component6,619,136bytes/10files. No quota increase.
+Critical remaining gate: script timer misses interpreter startup and final batch
+record cannot attest its own timely fsync. Auditor explicitly returns at most
+CONSISTENT_PENDING_CALLER_OBSERVATION, never batch PASS from those files alone.
+Next implement/bind one bounded trusted launch/return observation, including final
+receipt reception within SAME total budget; do not add another pre-write timestamp.
+Then separately freeze and seek execution approval; no new runnable freeze now.
+No full heap/RSS completion promise: AS hard/sampleRSS refusal contract remains.
+G1-G6/full-source admission remain OPEN; this is preparation, not algorithm efficacy.
+
 Endpoint component/fault drivers prepared, NOT EXECUTED: 2026-10-19.
 See [control preparation and open cost boundaries](hz_endpoint_dual_control_preparation_20261019.md).
 Default-off V1 fault seam is after evaluation127/best/forward; fixed synthetic

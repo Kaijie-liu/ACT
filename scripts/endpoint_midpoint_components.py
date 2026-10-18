@@ -252,7 +252,13 @@ def run(root, profile, binding, expected_binding, work):
     # Self-contained mixed fixed-candidate package. This does not run Proposer.
     outside=census(root,work.deadline)
     remaining=POLICY['total_bytes']-outside['bytes']-8*2**20
-    archive=Archive(root/'evidence',work,limit=remaining)
+    remaining_members=POLICY['members']-len(outside['files'])-16
+    require(remaining_members>0,'component source and metadata member reserve')
+    class ComponentArchive(Archive):
+        def put(self,*args,**kwargs):
+            require(len(self.attempted)<remaining_members,'whole component member cap')
+            return super().put(*args,**kwargs)
+    archive=ComponentArchive(root/'evidence',work,limit=remaining)
     def put(name,raw): return dict(archive.put('package/'+name,raw),file=name)
     source,h,packet,f=sources['mixed']
     inv=identity(dict(component=expected_binding,fixture='fixed_candidates_not_search_execution'))
@@ -346,10 +352,13 @@ def run(root, profile, binding, expected_binding, work):
     stdout=root/'portable.stdout'; stderr=root/'portable.stderr'
     bootstrap='import resource,runpy,sys; resource.setrlimit(resource.RLIMIT_FSIZE,(1048576,1048576)); p=sys.argv[1]; sys.argv=sys.argv[1:]; runpy.run_path(p,run_name="__main__")'
     with stdout.open('xb') as out, stderr.open('xb') as err:
-        proc=subprocess.run([sys.executable,'-I','-S','-B','-c',bootstrap,
+        # No new session and no unbounded subprocess.run timeout cleanup. The
+        # existing owned group retains and reaps every descendant on failure.
+        proc=subprocess.Popen([sys.executable,'-I','-S','-B','-c',bootstrap,
             str(relocated/'code/scoped_source/native_portable.py'),'--enabled',str(relocated),
             str(archive.root/extref['file'])],cwd=relocated,env=clean_env(),stdin=subprocess.DEVNULL,
-            stdout=out,stderr=err,timeout=max(.001,work.deadline-time.monotonic()))
+            stdout=out,stderr=err,start_new_session=False)
+        proc.wait(timeout=max(.001,work.deadline-time.monotonic()))
     work.tick(); require(stdout.stat().st_size<=2**20 and stderr.stat().st_size<=2**20,'bounded child logs')
     from scoped_source.hz_request_store import decode
     rr=decode(stdout.read_bytes())

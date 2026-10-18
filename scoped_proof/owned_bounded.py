@@ -117,6 +117,7 @@ def execute(command, log, *, run_deadline, cleanup_deadline, env, rss_limit, bou
     if end >= cleanup_deadline and status == 'COMPLETED':
         status = 'TIMEOUT'
     return {'schema': 'OWNED_BOUNDED_CPU_V1', 'status': status, 'error': error,
+            'started_at': start, 'finished_at': end,
             'pid': None if p is None else p.pid, 'returncode': rc,
             'seconds': end-start, 'execution_seconds': before_cleanup-start,
             'cleanup_seconds': end-before_cleanup, 'cleanup_status': cleanup,

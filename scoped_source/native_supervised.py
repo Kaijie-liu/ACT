@@ -7,6 +7,7 @@ Per-process AS is hard-enforced; aggregate RSS remains sampled, not an AS proof.
 Actors are trusted not to daemonize or escape this group, as in the old supervisor.
 """
 import hashlib
+import math
 import os
 from pathlib import Path
 import selectors
@@ -66,14 +67,17 @@ actor_main(role,sys.argv[5],sys.argv[6],started)
 
 def invocation(root, expected):
     value, h = read_json(Path(root)/'invocation.json',expected=expected)
-    require(type(value) is dict and set(value) == {'schema','root','code_root','profile','approval','nonce','started',
-        'run_deadline','cleanup_deadline','deadline'} and value['schema'] == 'NATIVE_INVOCATION_V1'
+    base = {'schema','root','code_root','profile','approval','nonce','started',
+        'run_deadline','cleanup_deadline','deadline'}
+    require(type(value) is dict and set(value) in (base, base | {'outer_deadline'}) and value['schema'] == 'NATIVE_INVOCATION_V1'
         and value['root'] == str(root) and value['code_root'] == str(ROOT), 'bound native invocation')
     profile = validate_profile(value['profile'])
     require(value['approval'] == approval_registry()[1], 'unchanged externally approved execution registry')
-    require(value['run_deadline'] == value['started']+299
-            and value['cleanup_deadline'] == value['started']+299.5
-            and value['deadline'] == value['started']+300 and time.monotonic() < value['run_deadline'],
+    reserve = 1 if 'outer_deadline' in value else 0
+    require(not reserve or value['outer_deadline'] == value['started']+300, 'closed outer receipt reserve')
+    require(value['run_deadline'] == value['started']+(299-reserve)
+            and value['cleanup_deadline'] == value['started']+(299.5-reserve)
+            and value['deadline'] == value['started']+(300-reserve) and time.monotonic() < value['run_deadline'],
             'unchanged cumulative deadline schedule')
     return value, profile
 
@@ -189,12 +193,13 @@ def actor_main(role, root, invhash, boot_started):
     if status != 'COMPLETE': raise RuntimeError('native actor incomplete; preserved evidence is not acceptance')
 
 
-def run_actor(root, role, invhash, profile, deadline):
+def run_actor(root, role, invhash, profile, deadline, *, launch_command=None):
     begin = time.monotonic(); p = None; log_bytes = 0; eof = False
     selector = selectors.DefaultSelector()
     try:
         require(begin < deadline, 'actor launch deadline')
-        p = subprocess.Popen(command(role,root,invhash,profile),cwd=ROOT,stdin=subprocess.DEVNULL,
+        argv = command(role,root,invhash,profile) if launch_command is None else launch_command
+        p = subprocess.Popen(argv,cwd=ROOT,stdin=subprocess.DEVNULL,
             stdout=subprocess.PIPE,stderr=subprocess.STDOUT,env=clean_env(),start_new_session=False)
         os.set_blocking(p.stdout.fileno(),False); selector.register(p.stdout,selectors.EVENT_READ)
         with (root/(role+'.log')).open('xb',buffering=0) as log:
@@ -251,15 +256,22 @@ def clean_env():
         'MKL_NUM_THREADS':'1','OPENBLAS_NUM_THREADS':'1','CUDA_VISIBLE_DEVICES':''}
 
 
-def execute(root, profile, *, enabled=False):
-    started = time.monotonic()
+def execute(root, profile, *, enabled=False, outer_started=None):
+    now = time.monotonic()
+    require(outer_started is None or type(outer_started) in (int,float)
+            and math.isfinite(outer_started) and 0 <= outer_started <= now < outer_started+298,
+            'original outer start, no new time allowance')
+    started = now if outer_started is None else outer_started
+    reserve = 0 if outer_started is None else 1
     require(enabled is True, 'native supervision opt-in')
     profile = validate_profile(profile)  # Empty registry: refuses before side effects.
     root = Path(root)
     require(root.is_absolute() and root.resolve() == root and root.is_relative_to('/data1/Kane/MOE')
             and root != Path('/data1/Kane/MOE') and not root.exists() and not root.is_symlink(), 'new native run directory')
     inv = dict(schema='NATIVE_INVOCATION_V1',root=str(root),code_root=str(ROOT),profile=profile,approval=approval_registry()[1],
-        nonce=uuid.uuid4().hex,started=started,run_deadline=started+299,cleanup_deadline=started+299.5,deadline=started+300)
+        nonce=uuid.uuid4().hex,started=started,run_deadline=started+(299-reserve),
+        cleanup_deadline=started+(299.5-reserve),deadline=started+(300-reserve))
+    if reserve: inv['outer_deadline'] = started+300
     # Full dependency traversal is performed in the hard-limited controller and
     # actors, not in this caller. This small bootstrap remains trusted.
     root.mkdir(parents=False,exist_ok=False)
