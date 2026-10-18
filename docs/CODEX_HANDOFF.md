@@ -1,5 +1,29 @@
 # MoE project handoff — current entry point
 
+V2 phase contract concluded; stop further wrapper/control expansion: 2026-10-18.
+See [the ownership/terminal contract and bounded stop decision](hz_native_phase_contract_20261018.md)
+and [static schema arithmetic](hz_native_phase_contract_20261018.json).
+Success/failure terminal sizes now have explicit formulas; caller acquisition
+counts are finite because observer leases surround, not repeat inside, loops.
+No concrete envelope/slot/full-heap bound or durable return acceptance is frozen.
+Decoded read trees and final observations need explicit transfer to active phase
+and then outer return ownership; logical lease release is not object destruction.
+Count planner old/new residual maps, retained view visibility and failure stacks.
+Legal small-frame formulas do not cover malformed 4-MiB intake/seal copies.
+The finite static review is finished. Do not turn it into another wrapper or
+repeated old synthetic controls. V2 reliability remains a separate engineering
+line, not a prerequisite that can cure full-shape Work/membership refusal.
+Next research work is a source-only, explicit relation/support algorithm delta
+against already implemented capabilities; retain all independent checks. If the
+2P parameterwise floor remains, real-shape admission needs a separate resource
+policy decision. No new quota/control/native/model/GPU execution is approved by
+this record. Existing implementation approval is not revoked. G1-G6 remain OPEN.
+One static candidate, not a new novelty claim: V3 pair pullback still scans all
+global nodes; assess a root/refs-bound dependency plan against its construction
+and checking cost. H1 closure and multi-column coefficient sharing already exist.
+Keep full source/dual/sign/residual/norm checks and arithmetic order/bit gates;
+zero-weight coefficient work is already skipped, and the 2P floor remains.
+
 V2 freeze readiness audited, no new execution: 2026-10-18.
 See [the concrete archive/ownership gates and stop decision](hz_native_resource_freeze_readiness_20261018.md)
 and [source-bound arithmetic](hz_native_resource_freeze_readiness_20261018.json).
