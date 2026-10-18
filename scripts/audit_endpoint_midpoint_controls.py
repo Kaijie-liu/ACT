@@ -9,7 +9,8 @@ from scoped_source.hz_request_store import POLICY, digest, identity, require
 from scoped_source.native_protocol import (read_json, counts, COUNTERS, STAGES,
     validate_receipt, REPORT_CAP, LOG_CAP, META_CAPS)
 from scoped_source.endpoint_batch import (validate, ORDER, FREEZE_CAP, RECEIPT_CAP,
-    COMPONENT_META, BATCH_META_CAP)
+    COMPONENT_META, BATCH_META_CAP, LIMITS)
+from scoped_source.endpoint_batch_observer import launch_check, batch_check, receive
 
 
 def tick(deadline):
@@ -44,10 +45,13 @@ def inspect(root, spec, freeze, observed, started, *, deadline=None):
     group(run)
     require(run['run_deadline']==started+298 and run['cleanup_deadline']==started+298.5,
             'same whole-position execution/cleanup schedule')
+    require(type(run.get('owner_session')) is int and run['owner_session']>0,
+            'request group retained inside enclosing session')
     if spec['id']=='components':
         inv,ih=read_json(root/'component-invocation.json',expected=observed['invocation'],cap=FREEZE_CAP,deadline=deadline)
         require(inv['freeze']==freeze and inv['freeze_sha256']==identity(freeze)
-                and inv['started']==started and inv['outer_deadline']==started+300,'component invocation')
+                and inv['started']==started and inv['outer_deadline']==started+300
+                and inv['owner_session']==run['owner_session'],'component invocation')
         require(run['status']=='COMPLETED','component process complete')
         r,rh=read_json(root/'component.json',deadline=deadline)
         c,_=read_json(root/'controller.json',deadline=deadline)
@@ -70,7 +74,8 @@ def inspect(root, spec, freeze, observed, started, *, deadline=None):
     inv,ih=read_json(root/'invocation.json',expected=observed['invocation'],deadline=deadline)
     require(inv['profile']==profile and inv['started']==started and inv['run_deadline']==started+298
             and inv['cleanup_deadline']==started+298.5 and inv['deadline']==started+299
-            and inv['outer_deadline']==started+300 and inv['approval']==freeze['native_registry'],
+            and inv['outer_deadline']==started+300 and inv['approval']==freeze['native_registry']
+            and inv['owner_session']==run['owner_session'],
             'native invocation with charged outer reserve')
     terminal,th=read_json(root/'terminal.json',deadline=deadline)
     require(terminal['invocation']==ih and terminal['owned_execution']==run
@@ -164,24 +169,35 @@ def storage_caps(storage, component, *, reserve_receipt=False):
         if n in storage['files']: require(storage['files'][n]<=cap,'metadata member bound: '+n)
 
 
-def audit(directory, freeze, expected):
+def audit(directory, freeze, expected, *, caller_return=None, caller_sha256=None):
     validate(freeze,expected,authorize=False,verify=False)
-    root=Path(directory); b,_=read_json(root/'batch.json')
+    require((caller_return is None)==(caller_sha256 is None),'caller value and hash together')
+    root=Path(directory)
     saved,_=read_json(root/'freeze.json',expected=expected,cap=FREEZE_CAP)
     require(saved==freeze,'archived freeze identity')
+    a,ah=read_json(root/'admission.json'); launch_check(a,freeze,expected,root)
+    members=list(root.iterdir()); names={p.name for p in members}
+    require({'runs','freeze.json','admission.json'}<=names
+            <={'runs','freeze.json','admission.json','batch.json','batch-received.json'}
+            and all(not p.is_symlink() for p in members) and (root/'runs').is_dir(),
+            'bounded batch root inventory, no extra members')
+    metadata={p.name:p.stat().st_size for p in members if p.is_file()}
+    require(sum(metadata.values())<=BATCH_META_CAP and len(metadata)<=4,'old batch metadata cap')
+    if not {'batch.json','batch-received.json'}<=names:
+        require(caller_return is None,'no positive caller binding to missing durable batch')
+        return dict(schema='ENDPOINT_FINITE_AUDIT_V2',status='INCOMPLETE_OR_FAILED',
+            online_batch_acceptance=False,post_return_observation_bound=False,
+            work_complete=False,work=None,seconds=None,unexecuted=None,
+            batch_metadata_bytes=sum(metadata.values()),missing_cost_is_not_zero=True,
+            reason='Missing final record: cannot reconstruct completed prefix or deadline from files')
+    terminal,th=read_json(root/'batch-received.json',cap=RECEIPT_CAP)
+    execution=terminal['owned_execution']; sid=execution['session']
+    b,bh,summary_complete=batch_check(root,freeze,expected,a,ah,sid)
     require(set(b)=={'schema','freeze','started','admission_sha256','positions','stop','unexecuted',
-                    'before_publish','models','gpu','retries','quota_increases'}
-            and b['schema']=='ENDPOINT_FINITE_BATCH_V1' and b['freeze']==expected
+                    'before_publish','models','gpu','retries','quota_increases','owner_session','worker_deadline'}
+            and b['schema']=='ENDPOINT_FINITE_BATCH_V2' and b['freeze']==expected
             and all(type(b[k]) is int and b[k]==0 for k in ('models','gpu','retries','quota_increases')),
             'bound finite batch receipt')
-    members=list(root.iterdir())
-    require({p.name for p in members}=={'runs','freeze.json','admission.json','batch.json','batch-received.json'}
-            and all(not p.is_symlink() for p in members) and (root/'runs').is_dir(),
-            'exact batch root inventory')
-    a,ah=read_json(root/'admission.json')
-    require(ah==b['admission_sha256'] and a['freeze']==expected and a['attempts']==1
-            and a['seconds']<=60 and a['available_bytes']>=freeze['admission']['available_bytes']
-            and a['disk_free_bytes']>=freeze['admission']['disk_free_bytes'],'one recorded admission')
     require([x['id'] for x in b['positions']]==list(ORDER[:len(b['positions'])])
             and len(b['positions'])<=7 and b['unexecuted']==list(ORDER[len(b['positions']):]),
             'one ordered prefix, all missing positions retained')
@@ -208,6 +224,7 @@ def audit(directory, freeze, expected):
                 and row['overrun_seconds']==0 and r['storage_complete'] is True
                 and r['before_publish']<=row['observed_end']<row['started']+300
                 and row['seconds']==row['observed_end']-row['started'],'durable whole-position reception')
+        require(r['observed']['owned_execution']['owner_session']==sid,'all groups belong to batch session')
         result=inspect(run,spec,freeze,r['observed'],r['started'])
         require(result==r['audit'],'independent terminal recomputation')
         actual=census(run); storage_caps(actual,row['id']=='components')
@@ -218,29 +235,53 @@ def audit(directory, freeze, expected):
         checks.append(dict(id=row['id'],seconds=row['seconds'],bytes=actual['bytes'],audit=result,
                            sampled_managed_phase_rss=r['observed']['owned_execution']['sampled_peak_rss']))
     # Cumulative init, every position and final metadata reception are all charged.
-    terminal,th=read_json(root/'batch-received.json',cap=RECEIPT_CAP)
-    require(terminal['batch_sha256']==identity(b) and terminal['freeze']==expected
-            and b['before_publish']<=terminal['observed_at'] and b['started']<=previous,
-            'batch durable reception binding')
-    from os import scandir
-    metadata={e.name:e.stat(follow_symlinks=False).st_size for e in scandir(root) if e.is_file(follow_symlinks=False)}
-    require(set(metadata)=={'admission.json','freeze.json','batch.json','batch-received.json'}
-            and sum(metadata.values())<=BATCH_META_CAP,'bounded separate batch metadata')
-    consistent=(not problems and len(checks)==7 and not b['unexecuted'] and b['stop'] is None
-              and terminal['observed_at']<b['started']+2100 and terminal['timely'] is True)
-    # A pre-write timestamp cannot attest its own write/fsync. No authenticated
-    # post-return observer is bound yet: even seven consistent slots stay pending.
-    # Future execution freeze must wire that finite caller, not remove this gate.
-    return dict(schema='ENDPOINT_FINITE_AUDIT_V1',
-        status='CONSISTENT_PENDING_CALLER_OBSERVATION' if consistent else 'INCOMPLETE_OR_FAILED',
+    require(terminal['schema']=='ENDPOINT_BATCH_OBSERVER_V1' and terminal['launch_sha256']==ah
+            and terminal['freeze']==expected and terminal['online_batch_acceptance'] is False
+            and (terminal['batch_sha256'] is None or terminal['batch_sha256']==bh)
+            and execution['schema']=='OWNED_ENDPOINT_SESSION_V1'
+            and execution['run_deadline']==a['run_deadline']
+            and execution['cleanup_deadline']==a['cleanup_deadline']
+            and a['started']<=execution['started_at']<=execution['finished_at']<=terminal['before_publish'],
+            'outer session and pre-publication observation binding')
+    import base64
+    raw=base64.b64decode(execution['log_base64'],validate=True)
+    require(len(raw)<=LIMITS['batch_log_bytes'] and execution['log_bytes']>=len(raw)
+            and (execution['log_complete'] is False or execution['log_bytes']==len(raw)),
+            'bounded complete-or-explicitly-incomplete observer log')
+    session_ok=(execution['status']=='COMPLETED' and execution['returncode']==0
+        and execution['cleanup_status']=='LEADER_REAPED_NO_LIVE_SESSION'
+        and not execution['remaining_session']['live']
+        and execution['sampled_session_plus_caller_rss']<=LIMITS['rss_bytes']
+        and execution['log_complete'] is True and execution['exit_observed_at'] is not None
+        and b['before_publish']<=execution['exit_observed_at']<=execution['finished_at']<a['cleanup_deadline'])
+    consistent=(summary_complete and not problems and len(checks)==7 and session_ok
+        and terminal['candidate_complete'] is True and terminal['error'] is None
+        and terminal['worker_summary_received'] is True and terminal['before_publish']<a['deadline'])
+    bound=False
+    if caller_return is not None:
+        receive(caller_return,caller_sha256,terminal,th,a,ah,bh); bound=True
+    accepted=consistent and bound and caller_return['online_batch_acceptance'] is True
+    # Directory-only data cannot authenticate their own final fsync or delivery.
+    # The extra value is supplied by the separately trusted live receiver.
+    return dict(schema='ENDPOINT_FINITE_AUDIT_V2',
+        status='PASS_TRUSTED_CALLER_OBSERVATION' if accepted else
+            'CONSISTENT_PENDING_CALLER_OBSERVATION' if consistent and not bound else 'INCOMPLETE_OR_FAILED',
         checks=checks,problems=problems,unexecuted=b['unexecuted'],
-        seconds=terminal['observed_at']-b['started'],batch_metadata_bytes=sum(metadata.values()),
-        online_batch_acceptance=False,post_return_observation_bound=False,
+        seconds=caller_return['seconds'] if bound else None,
+        observed_prefix_seconds=terminal['before_publish']-a['started'],batch_metadata_bytes=sum(metadata.values()),
+        online_batch_acceptance=accepted,post_return_observation_bound=bound,
         models=0,gpu=0,retries=0,scope='saved terminal audit, not a scientific efficacy gate or independent human review')
 
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(); p.add_argument('directory'); p.add_argument('freeze'); p.add_argument('--sha256',required=True)
+    p.add_argument('--caller-return'); p.add_argument('--caller-sha256')
     args=p.parse_args(); freeze,_=read_json(args.freeze,expected=args.sha256,cap=FREEZE_CAP)
+    require(bool(args.caller_return)==bool(args.caller_sha256),'external caller value and hash together')
+    caller=None
+    if args.caller_return:
+        cp=Path(args.caller_return).resolve()
+        require(not cp.is_relative_to(Path(args.directory).resolve()),'caller anchor cannot be a worker directory file')
+        caller,_=read_json(cp,expected=args.caller_sha256,cap=RECEIPT_CAP)
     from scoped_source.hz_request_store import compact
-    print(compact(audit(args.directory,freeze,args.sha256)).decode())
+    print(compact(audit(args.directory,freeze,args.sha256,caller_return=caller,caller_sha256=args.caller_sha256)).decode())

@@ -1,5 +1,22 @@
 # MoE project handoff — current entry point
 
+Endpoint trusted outer observation prepared, STATIC ONLY: 2026-10-19.
+See [launch, reception and unchanged cost contract](hz_endpoint_observer_preparation_20261019.md).
+Default-off V2 freeze adds session owner and trusted caller-return binding. Existing
+service entry starts cumulative2100s before launch: worker2098/cleanup2098.5/receive2100.
+Request groups remain independent inside one SID; pidfd cleanup avoids bare PID races.
+Four existing metadata files have upper2,293,760bytes<4MiB; no new allowance.
+Worker returns only summary; observer returns only PROPOSAL. Trusted caller invokes
+observe_return AFTER actual return and supplies the external anchor/hash. Files alone
+stay CONSISTENT_PENDING_CALLER_OBSERVATION, never self-attest timely final fsync.
+Negative anchors and failed worker prefixes remain failures with observed costs;
+expected fault Work remainder remains UNKNOWN. Clock/OS/caller stay trusted.
+Static10files/4bootstraps/73dependencies pass; no runtime controls/source/native/model/GPU.
+Batch authority remains EMPTY, old approvals and mathematical/method checks unchanged.
+Next: separately freeze the SAME seven-position finite CPU roster and caller binding,
+then seek execution approval. No more wrapper/control expansion or automatic run.
+Full-source admission, actual algorithm efficacy and G1-G6 remain OPEN.
+
 Endpoint seven-position supervision prepared, STATIC ONLY: 2026-10-19.
 See [implemented interfaces and remaining caller boundary](hz_endpoint_batch_supervision_preparation_20261019.md).
 New batch authority is EMPTY; old native approval registries unchanged. No sources,

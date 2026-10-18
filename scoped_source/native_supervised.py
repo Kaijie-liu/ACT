@@ -69,11 +69,15 @@ def invocation(root, expected):
     value, h = read_json(Path(root)/'invocation.json',expected=expected)
     base = {'schema','root','code_root','profile','approval','nonce','started',
         'run_deadline','cleanup_deadline','deadline'}
-    require(type(value) is dict and set(value) in (base, base | {'outer_deadline'}) and value['schema'] == 'NATIVE_INVOCATION_V1'
+    require(type(value) is dict and set(value) in (base, base | {'outer_deadline'},
+            base | {'outer_deadline','owner_session'}) and value['schema'] == 'NATIVE_INVOCATION_V1'
         and value['root'] == str(root) and value['code_root'] == str(ROOT), 'bound native invocation')
     profile = validate_profile(value['profile'])
     require(value['approval'] == approval_registry()[1], 'unchanged externally approved execution registry')
     reserve = 1 if 'outer_deadline' in value else 0
+    if 'owner_session' in value:
+        require(type(value['owner_session']) is int and value['owner_session']>0
+                and os.getsid(0)==value['owner_session'],'bound enclosing session')
     require(not reserve or value['outer_deadline'] == value['started']+300, 'closed outer receipt reserve')
     require(value['run_deadline'] == value['started']+(299-reserve)
             and value['cleanup_deadline'] == value['started']+(299.5-reserve)
@@ -256,13 +260,15 @@ def clean_env():
         'MKL_NUM_THREADS':'1','OPENBLAS_NUM_THREADS':'1','CUDA_VISIBLE_DEVICES':''}
 
 
-def execute(root, profile, *, enabled=False, outer_started=None):
+def execute(root, profile, *, enabled=False, outer_started=None, owner_session=None):
     now = time.monotonic()
     require(outer_started is None or type(outer_started) in (int,float)
             and math.isfinite(outer_started) and 0 <= outer_started <= now < outer_started+298,
             'original outer start, no new time allowance')
     started = now if outer_started is None else outer_started
     reserve = 0 if outer_started is None else 1
+    require(owner_session is None or reserve==1 and type(owner_session) is int
+            and owner_session>0 and os.getsid(0)==owner_session,'explicit enclosing batch session')
     require(enabled is True, 'native supervision opt-in')
     profile = validate_profile(profile)  # Empty registry: refuses before side effects.
     root = Path(root)
@@ -272,12 +278,14 @@ def execute(root, profile, *, enabled=False, outer_started=None):
         nonce=uuid.uuid4().hex,started=started,run_deadline=started+(299-reserve),
         cleanup_deadline=started+(299.5-reserve),deadline=started+(300-reserve))
     if reserve: inv['outer_deadline'] = started+300
+    if owner_session is not None: inv['owner_session']=owner_session
     # Full dependency traversal is performed in the hard-limited controller and
     # actors, not in this caller. This small bootstrap remains trusted.
     root.mkdir(parents=False,exist_ok=False)
     ref = write_json(root/'invocation.json',inv,deadline=inv['run_deadline']); ih = ref['sha256']
     run = run_owned(command('controller',root,ih,profile),root/'controller.log',run_deadline=inv['run_deadline'],
-        cleanup_deadline=inv['cleanup_deadline'],env=clean_env(),rss_limit=profile['rss_bytes'],bounded_errors=True)
+        cleanup_deadline=inv['cleanup_deadline'],env=clean_env(),rss_limit=profile['rss_bytes'],bounded_errors=True,
+        owner_session=owner_session)
     if profile.get('control') == 'cleanup_unconfirmed':
         # Real cleanup still ran. This tests fail-closed reception, never leaks a process.
         run = dict(run, actual_cleanup_status=run['cleanup_status'],

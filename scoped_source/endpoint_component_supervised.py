@@ -1,5 +1,6 @@
 """Finite component wiring using existing owned-group and bounded-pipe supervision."""
 from pathlib import Path
+import os
 import time
 
 from scoped_source.hz_request_store import POLICY, identity, require
@@ -44,10 +45,12 @@ actor(role,root,sys.argv[3],started)
 def actor(role, root, expected, boot_started):
     root=Path(root); inv,_=read_json(root/'component-invocation.json',expected=expected,cap=FREEZE_CAP)
     require(set(inv)=={'schema','root','freeze','freeze_sha256','started','run_deadline',
-        'cleanup_deadline','deadline','outer_deadline'} and inv['schema']=='ENDPOINT_COMPONENT_INVOCATION_V1'
+        'cleanup_deadline','deadline','outer_deadline','owner_session'} and inv['schema']=='ENDPOINT_COMPONENT_INVOCATION_V1'
         and inv['root']==str(root) and inv['run_deadline']==inv['started']+298
         and inv['cleanup_deadline']==inv['started']+298.5 and inv['deadline']==inv['started']+299
-        and inv['outer_deadline']==inv['started']+300,'component cumulative schedule')
+        and inv['outer_deadline']==inv['started']+300
+        and type(inv['owner_session']) is int and inv['owner_session']>0
+        and os.getsid(0)==inv['owner_session'],'component cumulative schedule and enclosing session')
     freeze=validate(inv['freeze'],inv['freeze_sha256'],deadline=inv['run_deadline'])
     profile=freeze['records'][0]['profile']
     limits=hard_limits(profile,'controller' if role=='controller' else 'production')
@@ -85,7 +88,9 @@ def actor(role, root, expected, boot_started):
     if not complete: raise RuntimeError('component incomplete; stop batch')
 
 
-def execute(root, freeze, expected, started):
+def execute(root, freeze, expected, started, *, owner_session):
+    require(type(owner_session) is int and owner_session>0 and os.getsid(0)==owner_session,
+            'explicit enclosing component session')
     require(time.monotonic()<started+298,'component preparation inside original position')
     validate(freeze,expected,deadline=started+298)
     root=Path(root)
@@ -94,10 +99,10 @@ def execute(root, freeze, expected, started):
     root.mkdir()
     inv=dict(schema='ENDPOINT_COMPONENT_INVOCATION_V1',root=str(root),freeze=freeze,freeze_sha256=expected,
         started=started,run_deadline=started+298,cleanup_deadline=started+298.5,
-        deadline=started+299,outer_deadline=started+300)
+        deadline=started+299,outer_deadline=started+300,owner_session=owner_session)
     ref=write_json(root/'component-invocation.json',inv,deadline=started+298,cap=FREEZE_CAP)
     run=owned(command('controller',root,ref['sha256']),root/'controller.log',
         run_deadline=started+298,cleanup_deadline=started+298.5,env=clean_env(),
-        rss_limit=freeze['limits']['rss_bytes'],bounded_errors=True)
+        rss_limit=freeze['limits']['rss_bytes'],bounded_errors=True,owner_session=owner_session)
     return dict(invocation=ref['sha256'],owned_execution=run,started=started,
                 online_acceptance=False,control_only=True)

@@ -55,10 +55,14 @@ def bounded_reap(process, deadline):
         return False
 
 
-def execute(command, log, *, run_deadline, cleanup_deadline, env, rss_limit, bounded_errors=False):
+def execute(command, log, *, run_deadline, cleanup_deadline, env, rss_limit, bounded_errors=False,
+            owner_session=None):
     start = time.monotonic()
     if run_deadline > cleanup_deadline:
         raise ValueError('cleanup must fit inside the phase deadline')
+    if owner_session is not None and (type(owner_session) is not int or owner_session<=0
+                                      or os.getsid(0)!=owner_session):
+        raise ValueError('explicit live outer session required')
     p, peak, rc, error = None, 0, None, None
     status, cleanup = 'TIMEOUT', 'NO_PROCESS'
     before_cleanup = start
@@ -68,8 +72,10 @@ def execute(command, log, *, run_deadline, cleanup_deadline, env, rss_limit, bou
         if start >= run_deadline:
             raise TimeoutError('no launch budget')
         with Path(log).open('xb') as stream:
+            grouping=({'start_new_session':True} if owner_session is None else
+                      {'start_new_session':False,'process_group':0})
             p = subprocess.Popen(command, cwd=ROOT, env=env, stdin=subprocess.DEVNULL,
-                                 stdout=stream, stderr=subprocess.STDOUT, start_new_session=True)
+                                 stdout=stream, stderr=subprocess.STDOUT, **grouping)
             while True:
                 now = time.monotonic()
                 if now >= run_deadline:
@@ -125,4 +131,5 @@ def execute(command, log, *, run_deadline, cleanup_deadline, env, rss_limit, bou
             'exit_observed_at': exit_observed,
             'sampled_peak_rss': peak, 'run_deadline': run_deadline,
             'cleanup_deadline': cleanup_deadline,
+            **({} if owner_session is None else {'owner_session':owner_session}),
             'escaped_descendants_or_driver_cleanup': False}
