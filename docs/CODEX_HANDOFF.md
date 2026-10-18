@@ -1,5 +1,20 @@
 # MoE project handoff — current entry point
 
+Current native full-shape applicability reviewed: 2026-10-18.
+See [the static decision](hz_native_full_shape_decision_20261018.md) and
+[current code/shape bindings](hz_native_full_shape_decision_20261018.json).
+The actual path constructs three Snapshots and runs two independent lowerings;
+reception aggregates without a fourth lowering. Mandatory complete-path loops
+alone require at least 83,536,416 Work (not an executed count or a full upper).
+The first Snapshot already exceeds 8M. Even retaining only two parameterwise
+source legality passes needs 13,922,736. Distinguish these definite refusals
+from nnz/refs/active/candidate worst-case gaps, whose actual values are unknown.
+Known domain-only/zero-role designs and same-actor parsing reuse cannot alone
+close admission. Stop isolated small controls and full-shape retries under old
+caps. Model-scaled static drafting is already authorized; new numerical policy,
+implementation and execution are not. Do not ask to re-adopt native hard limits.
+No runtime, quota, real/GPU execution or scientific-claim upgrade in this stage.
+
 Finite native CPU controls completed and independently record-audited: 2026-10-18.
 See [results, costs and stop/continue decision](hz_native_controls_results_20261018.md)
 and [bound per-request/file archive](hz_native_controls_results_20261018.json).
