@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+Finite native CPU controls approved; preparing one immutable freeze: 2026-10-18.
+The user explicitly approved 8 GiB per-process AS with the existing 2 GiB sampled
+RSS stop, 8M Work, 128 MiB artifacts and 300-second request budget unchanged.
+See [the consolidated control protocol](hz_native_controls_protocol_20261018.md).
+Only the three fixed sources, two CPU representations and bounded faults are in
+scope. No real model, GPU or full-topology admission. Later stage records will
+state actual attempted/complete counts; approval and preparation are not results.
+This supersedes the pending numerical-limit/control approval below, not any
+historical result or full-topology refusal. The interrupted turn had no runs.
+
 Native integration implementation approved and written, runtime untested: 2026-10-17.
 See [implementation and trust boundaries](hz_native_integration_implementation_20261017.md)
 and [static stage record](hz_native_integration_implementation_20261017.json).

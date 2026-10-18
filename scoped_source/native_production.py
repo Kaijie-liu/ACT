@@ -49,26 +49,37 @@ def acquire(root, spec, work):
     return token
 
 
-def produce(root, source_spec, config, invocation, code_root, expected_code, work, *, enabled=False, progress=None):
+def produce(root, source_spec, config, invocation, code_root, expected_code, work, *, enabled=False, progress=None, control=None):
     require(enabled is True, 'native production opt-in')
     method = validate(config); root = Path(root)
     started = time.monotonic(); initial = dict(work.counts)
     phases = []; archive = None; driver = None
     life = Lifecycle(method,code_root=code_root,expected_code=expected_code,enabled=True)
     snapshots = {}
+    from scoped_source.native_protocol import CONTROL_FAULTS
+    require(control is None or control in CONTROL_FAULTS, 'closed test-only production fault')
+    require(control is None or source_spec['kind'] == 'fixed_control', 'fixed control source only')
 
     def phase(name, fn):
         begin = time.monotonic(); before = dict(work.counts); done = False
         try:
             work.tick()
             if progress: progress(name,work)
+            if control == 'setup_error' and name == 'native_setup':
+                raise RuntimeError('CONTROL_INJECTED_native_setup')
+            if control == 'proposal_block' and name == 'propose_check/0':
+                while True: time.sleep(.05)  # deliberately non-cooperative; real shared deadline
+            if control == 'close_error' and name == 'native_close':
+                raise RuntimeError('CONTROL_INJECTED_native_close')
             value = fn(); work.tick(); done = True; return value
         finally:
             phases.append(dict(name=name,complete=done,seconds=time.monotonic()-begin,
                 work={k:work.counts[k]-v for k,v in before.items()}))
 
     try:
-        owned = phase('source_acquire',lambda:acquire(root,source_spec,work))
+        spec = dict(source_spec)
+        if control == 'source_binding': spec['source'] = '0'*64
+        owned = phase('source_acquire',lambda:acquire(root,spec,work))
         outside = phase('initial_storage',lambda:census(root,work.deadline))
         bytes_out = outside['bytes']-owned.inventory['bytes']
         members_out = len(outside['files'])-len(owned.inventory['files'])
@@ -98,6 +109,9 @@ def produce(root, source_spec, config, invocation, code_root, expected_code, wor
         phase('native_setup',lambda:life.setup(f,work))
         refs = []
         def publish(i, raw):
+            if control == 'partial_candidate' and i == 0:
+                put(f'tiles/{i:04d}.bin',raw[:-1])
+                raise OSError('CONTROL_INJECTED_partial_candidate_publication')
             ref = put(f'tiles/{i:04d}.bin',raw); refs.append(ref)
             return ref['sha256'],ref['bytes']
         for i in range(driver.session.tile_count):

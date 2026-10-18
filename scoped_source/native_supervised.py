@@ -42,6 +42,8 @@ if request.is_symlink() or request.stat().st_size>1048576: raise ValueError("boo
 raw=request.read_bytes()
 if len(raw)>1048576 or hashlib.sha256(raw).hexdigest()!=sys.argv[6]: raise ValueError("bootstrap identity")
 inv=json.loads(raw); roster=inv["profile"]["implementation"]; deadline=inv["run_deadline"]
+if role=="production" and inv["profile"].get("control")=="limit_mismatch":
+    resource.setrlimit(resource.RLIMIT_AS,(a-4096,a))  # control lowers soft limit; never raises a cap
 if type(roster) is not dict or not 1<=len(roster)<=256: raise ValueError("bootstrap roster")
 for name,h in roster.items():
     if time.monotonic()>=deadline: raise TimeoutError("bootstrap deadline")
@@ -155,12 +157,20 @@ def actor_main(role, root, invhash, boot_started):
             setup = environment(profile,work)
             from scoped_source.native_production import produce
             output = produce(root,profile['source'],profile['method'],invhash,ROOT,profile['implementation'],
-                             work,enabled=True,progress=progress)
+                             work,enabled=True,progress=progress,control=profile.get('control'))
         elif role == 'replay':
+            if profile.get('control') == 'replay_tamper':
+                progress('CONTROL_INJECTED_replay_integrity_tamper',work)
+                tile = root/'artifacts/package/tiles/0000.bin'
+                with tile.open('r+b',buffering=0) as stream:
+                    first = stream.read(1); stream.seek(0); stream.write(bytes([first[0]^1]))
             output = check_package(root/'artifacts/package',expected=prior[0]['output']['package']['sha256'],
                 expected_method=profile['method'],invocation=invhash,expected_source=profile['source']['source'],
                 expected_code={n:profile['implementation'][n] for n in CODE_FILES},work=work,enabled=True)
         else:
+            if profile.get('control') == 'reception_block':
+                progress('CONTROL_INJECTED_reception_block',work)
+                while True: time.sleep(.05)
             output = receive(root,profile,invhash,prior,work)
         if role != 'production':
             require(not any(n.split('.')[0] in ('torch','numpy','scipy','act') for n in sys.modules),
@@ -227,6 +237,10 @@ def controller(root, inv, invhash, profile, limits, started):
         last_receipt=previous,result=r['output']['result'],work=initial,phases=stages,limits=limits,
         storage_before_two_terminals=storage,started=started,end=time.monotonic(),
         deadline=inv['run_deadline'],received_all_obligations=True)
+    if profile.get('control') == 'late_receipt':
+        # Tests receiver rejection of an explicitly late timestamp, not an OS delay.
+        final['end'] = inv['deadline']+1
+        final['injected_fault'] = 'late_receipt_timestamp_not_wallclock_delay'
     write_json(root/'controller.json',final,deadline=inv['run_deadline'])
 
 
@@ -252,6 +266,10 @@ def execute(root, profile, *, enabled=False):
     ref = write_json(root/'invocation.json',inv,deadline=inv['run_deadline']); ih = ref['sha256']
     run = run_owned(command('controller',root,ih,profile),root/'controller.log',run_deadline=inv['run_deadline'],
         cleanup_deadline=inv['cleanup_deadline'],env=clean_env(),rss_limit=profile['rss_bytes'],bounded_errors=True)
+    if profile.get('control') == 'cleanup_unconfirmed':
+        # Real cleanup still ran. This tests fail-closed reception, never leaks a process.
+        run = dict(run, actual_cleanup_status=run['cleanup_status'],
+                   cleanup_status='CONTROL_INJECTED_UNCONFIRMED', cleanup_fault_simulated=True)
     accepted = False; receipt = None; error = None
     try:
         require(run['status'] == 'COMPLETED' and run['cleanup_status'] == 'LEADER_REAPED_NO_LIVE_GROUP',

@@ -1,7 +1,7 @@
-"""Default-off native execution contract. No native execution is registered.
+"""Default-off native execution contract with externally frozen permissions.
 
 An implementation approval is not a numerical resource limit or run approval.
-The empty registry is intentional; a later separately approved freeze must bind
+The registry starts empty; a separately approved freeze must bind
 source, implementation, native environment and all limits before any launch.
 """
 import ast
@@ -23,6 +23,9 @@ META_RESERVE = 8*2**20  # Inside existing 128 MiB; not a new resource allowance.
 META_MEMBERS = 16
 COUNTERS = ('row_visits', 'coefficient_visits', 'arithmetic')
 STAGES = ('production', 'replay', 'reception')
+CONTROL_FAULTS = ('source_binding', 'setup_error', 'proposal_block', 'close_error',
+    'partial_candidate', 'replay_tamper', 'reception_block', 'late_receipt',
+    'limit_mismatch', 'cleanup_unconfirmed')
 META_CAPS = {'invocation.json':REPORT_CAP, 'controller.json':REPORT_CAP,
              'terminal.json':REPORT_CAP, 'controller.log':REPORT_CAP}
 for _stage in STAGES:
@@ -87,10 +90,15 @@ def validate_profile(value):
     # actor launches are permitted by a caller's self-authored profile.
     approved, _ = approval_registry()
     require(identity(value) in approved, 'no approved native execution profile')
-    require(type(value) is dict and set(value) == {'schema','method','source','policy','seconds',
+    base = {'schema','method','source','policy','seconds',
         'as_bytes','file_bytes','rss_bytes','implementation','environment'}
+    require(type(value) is dict and set(value) in (base, base | {'control'})
         and value['schema'] == 'NATIVE_SHARED_EXECUTION_V1', 'closed execution profile')
     validate(value['method']); source_spec(value['source'])
+    require(value.get('control') is None or value['control'] in CONTROL_FAULTS,
+            'closed separately registered control fault')
+    require(value.get('control') is None or value['source']['kind'] == 'fixed_control',
+            'fault injection forbidden for declared real artifacts')
     require(value['policy'] == dict(POLICY) and type(value['seconds']) is int and value['seconds'] == 300,
             'unchanged policy and total deadline')
     for name in ('as_bytes','file_bytes','rss_bytes'):
@@ -119,7 +127,7 @@ def validate_profile(value):
 def approval_registry():
     # An external trusted, committed permission record avoids a self-referential
     # profile-hash -> implementation-hash -> allowed-profile-hash cycle.
-    # It is empty until the user separately approves a concrete control freeze.
+    # Only separately approved concrete control freezes may populate it.
     require(not APPROVAL_FILE.is_symlink() and APPROVAL_FILE.stat().st_size <= 65536,
             'bounded trusted approval registry')
     raw = APPROVAL_FILE.read_bytes()

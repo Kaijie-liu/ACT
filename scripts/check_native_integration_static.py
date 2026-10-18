@@ -29,7 +29,9 @@ def check():
             compile(bootstraps[0],'<native bootstrap>','exec')
         hashes[name] = hashlib.sha256(raw).hexdigest()
     registry = json.loads((ROOT/'docs/hz_native_execution_approvals.json').read_bytes())
-    assert registry == {'profiles':[],'schema':'NATIVE_EXECUTION_APPROVAL_REGISTRY_V1'}
+    assert set(registry) == {'profiles','schema'} and registry['schema']=='NATIVE_EXECUTION_APPROVAL_REGISTRY_V1'
+    assert registry['profiles']==sorted(set(registry['profiles'])) and len(registry['profiles'])<=128
+    assert all(len(h)==64 and all(c in '0123456789abcdef' for c in h) for h in registry['profiles'])
     native = parsed[FILES[0]]
     assert not any(isinstance(n,ast.ImportFrom) and (n.module or '').startswith('act.') for n in ast.walk(native))
     for path in ('scoped_source/native_package.py','scoped_source/native_portable.py',
@@ -58,7 +60,7 @@ def check():
     assert 6+1+6 == 13 < 16
     return dict(status='PASS',scope='SYNTAX_AND_STATIC_DEPENDENCY_ONLY',
         syntax_files=len(FILES),local_dependency_files=len(found),metadata_upper_bytes=7733248,
-        metadata_members=13,active_profiles=0,runtime_controls_executed=0,
+        metadata_members=13,active_profiles=len(registry['profiles']),runtime_controls_executed=0,
         native_imports_executed=0,models_executed=0,gpu_executions=0,sha256=hashes)
 
 
