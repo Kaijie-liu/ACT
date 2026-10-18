@@ -1,5 +1,18 @@
 # MoE project handoff — current entry point
 
+Finite native CPU controls completed and independently record-audited: 2026-10-18.
+See [results, costs and stop/continue decision](hz_native_controls_results_20261018.md)
+and [bound per-request/file archive](hz_native_controls_results_20261018.json).
+Frozen execution `f72acda241` completed all 26 request positions: 6 normal complete,
+16 expected errors and 4 real deadline timeouts, plus 32/32 component controls.
+Audit PASS 26/26; no retries, quota changes, real models or GPU. Both representations
+returned identical complete positives on all three synthetic declarations, no new
+positive result; row-block Work increased and cost advantage is not established.
+Full eight-expert Work/membership refusals remain. Stop repeated small controls;
+the next stage needs an explicit full-topology representation/resource decision,
+not automatic real/GPU admission. G1–G6 and historical source gaps remain open.
+The contaminated relocated component directory is fault evidence, not a clean package.
+
 Finite native CPU controls approved; preparing one immutable freeze: 2026-10-18.
 The user explicitly approved 8 GiB per-process AS with the existing 2 GiB sampled
 RSS stop, 8M Work, 128 MiB artifacts and 300-second request budget unchanged.
