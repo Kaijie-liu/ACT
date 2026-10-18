@@ -12,6 +12,13 @@ SHA-256 为 1ebd4fb3df90a74c3fc2023cc16cecf26df63da1492c93a416fffb346f1e95d5；
 
 ## 总目标
 
+2026-10-18 已起草[统一自有资源接口](hz_native_resource_interface_proposal_20261018.md)，
+仅设计与源码审查，不是实施／执行冻结。封套、来源布局、构造前预留、完整观察、部分终态
+及caller成本合并为一个默认关闭范围；补录registry/bootstrap的stat后全量读取缺口，
+区分完整UNKNOWN报告与正证据。126,632–136,232指展开membership，不是唯一root数。
+完整自有heap与原8M准入拒绝仍未消除；下一步需要该联合实施范围的明确批准，控制与额度／
+实模／GPU另批，不重复旧小控制或反复改写同一提案。G1–G6保持OPEN。
+
 2026-10-18 [联合对象与接口决策](hz_native_joint_contract_20261018.md)补计输入端点复制、
 第二reader、Fraction哈希缓存和caller/controller/actor重叠；整数容量仅限固定来源与调用链，
 不是任意Python整数定理。项目目录前缀已有界，首次元数据/异常构造与部分cleanup观察仍有

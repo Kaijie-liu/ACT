@@ -1,5 +1,21 @@
 # MoE project handoff — current entry point
 
+Joint resource-interface proposal drafted, not implemented: 2026-10-18.
+See [the common default-off interface and authority boundary](hz_native_resource_interface_proposal_20261018.md)
+and [source-audited non-executable design](hz_native_resource_interface_proposal_20261018.json).
+This joins immutable envelope/layout, early representation reservation, complete
+bounded observation, partial terminal and caller cost. New source audit found
+stat-then-unbounded-read windows in registry/bootstrap/code checks; retain all
+identity checks but bound actual reads. COMPLETE report may contain UNKNOWN;
+positive evidence still needs every original positive aggregation gate.
+The 126,632–136,232 quantity is expanded membership, not unique roots.
+No runtime/approval/cap changes or new controls. Full own heap and full-shape
+admission remain open; this interface cannot cure the 8M Work refusal.
+Next requires explicit approval of this single default-off implementation scope;
+control freeze, numerical policy and native/real/GPU execution are separate.
+Do not generate more small-control runs or rewrite this same proposal in lieu of
+that decision. G1–G6 remain open; no new scientific result.
+
 Native joint ownership/binding decision: 2026-10-18.
 See [phase joins, integer provenance and minimal interface decision](hz_native_joint_contract_20261018.md)
 and [recomputable static record](hz_native_joint_contract_20261018.json).

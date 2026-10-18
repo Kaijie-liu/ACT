@@ -1,0 +1,375 @@
+{
+  "acceptance": {
+    "cleanup": {
+      "complete_observation_alone_sufficient": false,
+      "original_gate": "LEADER_REAPED_NO_LIVE_GROUP",
+      "zombies": "fully recorded; orphan zombies are not claimed reaped"
+    },
+    "complete_report_requires": [
+      "frozen_authority_and_identity",
+      "all_original_source_and_exact_checks",
+      "complete_result_record_roster",
+      "fresh_replay_and_reception",
+      "cumulative_resources",
+      "run_status_COMPLETED",
+      "leader_reaped",
+      "complete_timely_cleanup_observation",
+      "observed_live_group_empty",
+      "durable_terminal_and_caller_receipt",
+      "timely_final_observation"
+    ],
+    "complete_unknown_allowed": true,
+    "failure_latched": true,
+    "late_upgrade_allowed": false,
+    "missing_transport_record_allowed": false,
+    "positive_additionally_requires": "original complete positive-bound aggregation and declared guarantee scope",
+    "retry_allowed": false
+  },
+  "anchors": {
+    "act/back_end/moe/scaled_forest_endpoints.py": "118e88e3484ff4f4977f3b2535fa3aba8bdf7b1b1b7598da8232c0fe0ea57af1",
+    "act/back_end/moe/source_row_endpoints.py": "fbf291fd2655a0a1c5863ba8ad05c3544a08864cfc1c4863c1d7a50a7376aa97",
+    "docs/hz_native_counted_envelope_20261018.json": "7b1ff80d17fc100513b00a1ad9e404464fc158b48baa593859ebd027ad21abc0",
+    "docs/hz_native_full_shape_decision_20261018.json": "5e6ff3ba621d56c50c1ef059503bd6309329ab60775d9b38a4dabf2b3b0566f3",
+    "docs/hz_native_generation_contract_20261018.json": "4efccd62e0e5cf121ef7fa26becc06e0f105df31bb5eec8a05aa17f72dc0f3c9",
+    "docs/hz_native_joint_contract_20261018.json": "2758ecd63a4a8942455a1746edd093a9669058bb1d6b41bcde1a7b137b272c3b",
+    "docs/hz_native_resource_interface_proposal_20261018.md": "0f8aa0b897360993671ef49d5aa1f4a035ccf18cba6a7a2779bdbc7ca76a0238",
+    "docs/hz_native_storage_lifetimes_20261018.json": "bbc90f5f19a9af40cb4807e6cc53102c5c9489364fc00b9094231b9e1b8429a4",
+    "docs/hz_paged_execution_resources_20261015.json": "f3c1afe929caa549a370f9b9c545f451ccde6cfaa136d498e585153f5776f7d3",
+    "docs/hz_pair_scoped_capacity_20261015.json": "401820ca62f29977119746010034791ffad83bc4833efb54cd0c159cc4a3e099",
+    "scoped_proof/owned_bounded.py": "62b7260025508e212321b7ea0df01c194b8df59fc7f7e7005bc51b6f692bad78",
+    "scoped_source/affine_references.py": "0f0d10033640210e6ce79642fa340a61c6e4293cb76779e4851a1f0f5cf582d8",
+    "scoped_source/bounded_runtime.py": "17846fe861f00d67c95046c5250ba09a6203bee784c9edb3129eca0e180ce133",
+    "scoped_source/check_direct_source.py": "5c54c26662c370ecf8a434c1a237d3e99f5fced2e35638e09fd0d9656c843fe0",
+    "scoped_source/check_result_stream.py": "81ac0fc4b1439526f20132417fb476a4e609d1682ee58c40361b3cc187ba39ad",
+    "scoped_source/check_shared_source.py": "18621a4865854ebcb162937fcca53ceee1207ba045804383676c35c377eeabe3",
+    "scoped_source/check_source_dag.py": "58e5e2158843631c9e6ed324cfeeb2eb38e51df1205d2e14d1ed8ac8ce634458",
+    "scoped_source/direct_candidates.py": "88776b7e45265b1a991f993c93a17536435c0a8a3248cb18104459f428dfbe3e",
+    "scoped_source/direct_lifecycle_package.py": "740b4022df94c74fc30d120fd1ebbaff08ad427132e097faca5a2ab258de9ddb",
+    "scoped_source/direct_package.py": "1a19845d53fbceb698fd683088598a1263a443ac0107e0efbcaec7475b13f74d",
+    "scoped_source/direct_supervised.py": "ab7a69edd0bacb7c3ff7c52cb1f44b236200dd54761c27999f0ed5853660e4e5",
+    "scoped_source/factored_io.py": "d51bcd7eae6734fe6cd676f584a9e9f2220eeea4400d497ccb1dc6950dce120d",
+    "scoped_source/factored_source.py": "f7f04c64989a179c36759876edc425ffd3efad4eeb9fbf8118ea2934f4a385cc",
+    "scoped_source/forest_endpoints.py": "86396e9c662ba8c91f6ac3921dc7f410d9b977937df38a9fb782f82991c50a4c",
+    "scoped_source/hz_request_store.py": "7cb2be7647039f59d3c896b7856f634f43be9c532d9d2fd43632be09ab3230e0",
+    "scoped_source/native_lifecycle.py": "d83af9eef45e3c3332450a11856ddbd4a0e80afe90d909c916e5f617fbd2fd57",
+    "scoped_source/native_method.py": "f2a8bd610c5d34aa9a8e3bd45f5f2dbcb784ac925af75bd2e36c00fbfed4b9fc",
+    "scoped_source/native_package.py": "fef92b95a786053da8ee647b3bd2666c009ba129b73e8fde690187b231e4f5be",
+    "scoped_source/native_production.py": "08fc7c974d93f23bf79585ae5fca932f887e8685cda6910b1be9fb7b8999ffe6",
+    "scoped_source/native_protocol.py": "0c4db96e22d207ab43b81f7bccfc5204f04864659c78e847bfd9a6a0cfc595c8",
+    "scoped_source/native_result.py": "67f1fd998721b4ce7e524a982c617bce35a6a9220c958624f3319707aeab9d98",
+    "scoped_source/native_source.py": "36a690c2ef1d4b9e1eea3461847aa7e3893ceeaf051635fd054c5e6f6c904449",
+    "scoped_source/native_supervised.py": "c8d68119fedf3fb2c86941d213b55fdb7e969140c3ffa0396e19068d0ba1cfbb",
+    "scoped_source/pair_workspace.py": "39258a61112e86700957f1b89e35a008164a928652744f0f500d8051ad56fdc3",
+    "scoped_source/result_stream.py": "38256ff10ad3d693a86c714bc9afc7364af7e8932b64f84a6986629693ea5bb5",
+    "scoped_source/scaled_endpoints.py": "1ea0bf1aa8cc8a6f184df200f2124754bb272a9c89a3ae4dfef1ac353a3b0fe2",
+    "scoped_source/scaled_references.py": "534761cad44cbdf62ed31ee4d999fce0a5bd51aed4461b98d8f986b75d50d75d",
+    "scoped_source/shared_archive.py": "bb153d06dc13213422d1f76d8bf3887da7f7872bf3a9b72a14d55fada843cab6",
+    "scoped_source/shared_build.py": "0eb6edd40bd98f2826d0f3688688fb28fad463515d69ac1db5fa76eb155b090e",
+    "scoped_source/shared_format.py": "1af4f02b09677d3af41059ebb73200557df3a3409394dbe2cce09247dbdf9b6f",
+    "scoped_source/shared_source.py": "c2db29b77829cb68b910b067047db44ce8291cf29befa3df87229ccb6dfe4482",
+    "scoped_source/source_dag.py": "6de99ca02cdc14aec8b9478093aa0c778a81874e5e5820cbfa7d0b18ee6e2e41",
+    "scoped_source/tensor_rows.py": "5c3ad6d642868e257ac9dd2edbc5e066b4cd793d4c7567a4ea800fc8e8f97f82",
+    "scoped_source/wire_archive.py": "fdf0b0e97522527831a6f03f1c7188403bc8b7b844c3a9df092823e703295abd",
+    "scripts/assess_native_generation_contract.py": "45856fb69ae47cdf742881d3c3f696c33c208e551728579bd0f1c186010e13f2",
+    "scripts/assess_native_joint_contract.py": "d4cadf5ed4fc527c09ba601582940444766a919168b6eb5d80e3fd47a88058a3",
+    "scripts/assess_native_storage_lifetimes.py": "de7b2113c5f9f79e17a997a303801d11364ff155f07fccf0d68380c0fd7b77ae",
+    "scripts/audit_native_controls.py": "daa7fda2d86d599f5be6874adba6cc942bf9a58f7c819177e389f3c788556929",
+    "scripts/check_native_resource_interface_proposal.py": "bcb0532a8dd5c2adcf90287336a12bd966eb8584b547a4234c056ea0000048f6",
+    "scripts/run_native_controls.py": "b1c5d500357bb6b23b7f43ffb0cfc8329bf95708b920c645987eb9801ce474ba"
+  },
+  "arms": [
+    {
+      "common_contract": "SAME_RESOLVED_HASH_REQUIRED",
+      "representation": "native_coo_reference",
+      "separately_computed_and_charged": true
+    },
+    {
+      "common_contract": "SAME_RESOLVED_HASH_REQUIRED",
+      "representation": "native_source_row_blocks",
+      "separately_computed_and_charged": true
+    }
+  ],
+  "based_on": "61c6782131ef7380eeea606f1b0ef5b517312c6f",
+  "blocking_requirements": [
+    "complete_self_owned_phase_sums",
+    "complete_success_and_failure_archive_binding",
+    "first_construction/parse_reservation_implementation",
+    "bounded_process_observation_implementation",
+    "versioned_common_policy_absolute_values_if_later_changed",
+    "separate_implementation_and_control_approval",
+    "separate_full_capacity/real/GPU_approval"
+  ],
+  "common_algorithm": {
+    "candidate_profile": 0,
+    "device": "cpu",
+    "dtype": "float64",
+    "evaluations": 129,
+    "production": "pair_scoped",
+    "replay": "pair_scoped",
+    "roles": [
+      "proposed",
+      "zero"
+    ],
+    "threads": 1,
+    "updates": 128
+  },
+  "common_fixed_reference": {
+    "active_factors": 16384,
+    "artifact_bytes": 134217728,
+    "candidate_stream_bytes": 16769024,
+    "candidate_width": 8,
+    "checker_width": 2,
+    "expanded_memberships": 65536,
+    "local_nnz": 1048576,
+    "references": 65536,
+    "seconds": 300,
+    "stored_bits": 4096,
+    "tile_bytes": 4194304,
+    "work": 8000000,
+    "work_bits": 8192
+  },
+  "common_original_policy": {
+    "active": 16384,
+    "depth": 64,
+    "factors": 32768,
+    "header_bytes": 8388608,
+    "member_bytes": 1048576,
+    "members": 4096,
+    "nnz": 1048576,
+    "page_rows": 64,
+    "rows": 65536,
+    "stored_bits": 4096,
+    "total_bytes": 134217728,
+    "view_rows": 16384,
+    "views": 128,
+    "visits": 8000000,
+    "work_bits": 8192
+  },
+  "control_attempts_authorized": 0,
+  "control_roster": null,
+  "cost": {
+    "admission_wait": "bounded and separate",
+    "artifact_cap_is_not_heap_cap": true,
+    "finish": "after caller receipt and final deadline observation",
+    "library_unknowns_not_zero": true,
+    "project_objects_not_native_scratch": true,
+    "request_specific_precomputation_free": false,
+    "setup_and_all_failed_paths_charged": true,
+    "start": "before bounded envelope intake"
+  },
+  "current_read_findings": {
+    "scoped_proof/owned_bounded.py:observe": {
+      "claim": "no byte-count argument at this read; pre-stat or later check does not bind read extent under change",
+      "existing_pre_stat_or_related_cap": null,
+      "sites": [
+        {
+          "expression": "(path / 'stat').read_text()",
+          "line": 23
+        },
+        {
+          "expression": "(path / 'status').read_text()",
+          "line": 27
+        }
+      ]
+    },
+    "scoped_proof/owned_bounded.py:parent_rss": {
+      "claim": "no byte-count argument at this read; pre-stat or later check does not bind read extent under change",
+      "existing_pre_stat_or_related_cap": null,
+      "sites": [
+        {
+          "expression": "Path('/proc/self/status').read_text()",
+          "line": 36
+        }
+      ]
+    },
+    "scoped_source/native_protocol.py:approval_registry": {
+      "claim": "no byte-count argument at this read; pre-stat or later check does not bind read extent under change",
+      "existing_pre_stat_or_related_cap": 65536,
+      "sites": [
+        {
+          "expression": "APPROVAL_FILE.read_bytes()",
+          "line": 133
+        }
+      ]
+    },
+    "scoped_source/native_protocol.py:closure": {
+      "claim": "no byte-count argument at this read; pre-stat or later check does not bind read extent under change",
+      "existing_pre_stat_or_related_cap": 131072,
+      "sites": [
+        {
+          "expression": "path.read_bytes()",
+          "line": 158
+        }
+      ]
+    },
+    "scoped_source/native_protocol.py:verify_code": {
+      "claim": "no byte-count argument at this read; pre-stat or later check does not bind read extent under change",
+      "existing_pre_stat_or_related_cap": 131072,
+      "sites": [
+        {
+          "expression": "path.read_bytes()",
+          "line": 173
+        }
+      ]
+    },
+    "scoped_source/native_supervised.py:command.bootstrap": {
+      "claim": "AS covers actor, not a bounded read extent; preserve hash and stable-file checks",
+      "existing_caps": {
+        "code": 131072,
+        "invocation": 1048576
+      },
+      "line_scope": "embedded bootstrap string",
+      "sites": [
+        {
+          "expression": "request.read_bytes()",
+          "line": 10
+        },
+        {
+          "expression": "p.read_bytes()",
+          "line": 22
+        }
+      ]
+    }
+  },
+  "current_status_semantics": "complete execution/report may contain checked UNKNOWN; never equate with positive proof",
+  "decision": "ONE_JOINT_INTERFACE_SCOPE_REQUIRES_APPROVAL_NO_FULL_SHAPE_OR_SCIENTIFIC_UPGRADE",
+  "dependency_graph": {
+    "authority_registry": [
+      "frozen_envelope"
+    ],
+    "common_contract": [],
+    "frozen_envelope": [
+      "common_contract",
+      "source_layout"
+    ],
+    "invocation": [
+      "common_contract",
+      "frozen_envelope",
+      "authority_registry"
+    ],
+    "observation": [
+      "invocation"
+    ],
+    "ownership_ledger": [
+      "invocation"
+    ],
+    "source_layout": [
+      "common_contract"
+    ],
+    "terminal": [
+      "invocation",
+      "ownership_ledger",
+      "observation"
+    ]
+  },
+  "execution_approval": null,
+  "full_self_owned_heap_upper": null,
+  "full_shape": {
+    "candidate_stream_upper": 22868160,
+    "expanded_membership_lower": 126632,
+    "expanded_membership_upper": 136232,
+    "first_snapshot_work_floor": 13926024,
+    "full_mandatory_loop_floor": 83536416,
+    "full_shape_admitted": false,
+    "two_parameter_pass_floor": 13922736,
+    "unique_roots_not_equal_to_expanded_memberships": true
+  },
+  "future_control_categories": [
+    "identity/alias/envelope",
+    "changing_files/bootstrap/registry",
+    "encoding_and_partial_write",
+    "incomplete_process_observation",
+    "actor_deadline/exception/partial_evidence",
+    "terminal/caller_cost"
+  ],
+  "gpu_runs": 0,
+  "interface_objects": {
+    "authority_registry": [
+      "approved_envelope_hashes",
+      "separately_approved_scope",
+      "revision/hash"
+    ],
+    "common_contract": [
+      "schema/version",
+      "original_policy_and_counter_semantics",
+      "mathematical_gate_and_obligation_contract",
+      "source/ownership_formula_refs",
+      "unchanged_300_second_schedule",
+      "fixed_algorithm_and_two_arm_difference"
+    ],
+    "frozen_envelope": [
+      "common_contract_hash",
+      "source_layout_hash",
+      "method_hash",
+      "profile/root/run_id/version/property_bytes_and_hashes",
+      "implementation/environment/ABI",
+      "no_registry_back_reference"
+    ],
+    "invocation": [
+      "envelope_hash",
+      "registry_hash",
+      "common_contract_hash",
+      "nonce/root",
+      "one_t0_and_absolute_deadlines",
+      "per_request_identity"
+    ],
+    "observation": [
+      "invocation/pgid/phase",
+      "complete/reason",
+      "live/zombies/rss",
+      "entries_and_bytes_seen",
+      "timestamp",
+      "incomplete_values_are_not_empty_defaults"
+    ],
+    "ownership_ledger": [
+      "invocation/source/layout/method",
+      "actor/stage",
+      "typed_backing_owner/generation",
+      "wrapper_and_lease_counts",
+      "formula_and_requested_bytes",
+      "live/peak/release_state",
+      "not_RSS_or_a_mathematical_proof"
+    ],
+    "source_layout": [
+      "manifest_raw_length/hash",
+      "canonical_source_identity/length",
+      "request_identity/encoding",
+      "tensor_and_chunk_roster_ref",
+      "actual_chunk_count/rank",
+      "JSON_lexical_census_with_optional_trust",
+      "online_verification_and_cost_scope"
+    ],
+    "terminal": [
+      "execution_status",
+      "original_evidence_status",
+      "online_report_received",
+      "online_positive",
+      "timely_partial_or_absent_artifact_state",
+      "cleanup_completeness",
+      "cumulative_work_and_cost",
+      "outside_caller_receipt"
+    ]
+  },
+  "model_runs": 0,
+  "native_calls": 0,
+  "permissions": {
+    "GPU": false,
+    "controls": false,
+    "implementation": false,
+    "models": false,
+    "native_execution": false,
+    "quota_change": false
+  },
+  "resolved_bindings": {
+    "OS_limit_authority": null,
+    "implementation": null,
+    "own_heap_limit": null,
+    "profile": null,
+    "resource_policy": null,
+    "run_identity": null,
+    "source_layout": null
+  },
+  "schema": "NATIVE_RESOURCE_INTERFACE_PROPOSAL_V1",
+  "source_builds": 0,
+  "status": "DRAFT_NOT_EXECUTABLE"
+}
