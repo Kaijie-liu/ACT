@@ -1,5 +1,21 @@
 # MoE project handoff — current entry point
 
+Scoped traversal R2 finite controls completed: 2026-10-18.
+See [results and stop decision](hz_support_traversal_controls_results_20261018_r2.md)
+and [source-bound compact archive](hz_support_traversal_controls_results_20261018_r2.json).
+One batch at 36ade910fb6818cae6434b82038f6662161e0398: ten tests PASS, sixteen paired
+executions and eight oracle references; 364 reference role bounds checked.
+Same candidates give identical exact receipts/results, no new positive endpoint.
+eight_private saves 35,196 Work per profile AFTER setup/selection (11.99%/11.11%);
+deep/half/guarded cost 1,173/401/297 MORE. Default stays off. Observed batch 6.834s,
+582,374 artifact bytes, no late terminal; record/AI review is not full reproof.
+No model/GPU/native/optimizer/cap/acceptance changes; R1 failure remains separate.
+End this finite batch, do not repeat small controls or promote synthetic timings.
+Possible next static question is whole-tile setup amortization before preparing
+traversal maps, retaining all checks; no implementation/retest approved here.
+This cannot remove source 2P>8M or membership refusal. G1-G6 and real/GPU gates
+remain OPEN. Approval-only and unexecuted statements below are historical.
+
 Scoped traversal R2 approved for one unchanged finite batch: 2026-10-18.
 See [directory repair and revised freeze](hz_support_traversal_controls_20261018_r2.md).
 Base b7d4187f03b7; preserve R1 failure and freeze. Only directory preparation and

@@ -1,0 +1,1112 @@
+{
+  "artifact_bytes_before_terminal": 561321,
+  "artifact_bytes_including_terminal": 582374,
+  "artifact_identities": {
+    "freeze.json": {
+      "bytes": 19379,
+      "sha256": "f730f3081dd55b7a21d9b8ec9b693c353a81173e2767048bb3d4ff3516d29946"
+    },
+    "process.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "terminal.json": {
+      "bytes": 21053,
+      "sha256": "82703d3536a6da6fa3b85da745a2ab61fbf3ad3af0f1b044c80b3420b002b510"
+    },
+    "worker.json": {
+      "bytes": 475094,
+      "sha256": "56456a61f660e92c4002cdc5f65dcc4c638a209842edfdc553e0d54363e1ea19"
+    }
+  },
+  "baseline_head": "b7d4187f03b7f564c6ed015ebc340871128dd826",
+  "claim_scope": "fixed-candidate stdlib component differential/fault controls; no end-to-end speed, new bound, real checkpoint, native resource or full-capacity claim",
+  "command": "/data1/Kane/miniconda3/envs/act-py312/bin/python -I -S -B scripts/run_support_traversal_controls.py --run /data1/Kane/MOE/results/support_traversal_20261018_r2",
+  "default_enabled": false,
+  "errors": 0,
+  "execution_head": "36ade910fb6818cae6434b82038f6662161e0398",
+  "failures": 0,
+  "gpu": 0,
+  "late_terminal": false,
+  "launch_attempts": 1,
+  "limits": {
+    "arena_bytes": 134217728,
+    "artifact_bytes": 134217728,
+    "batch_seconds": 300,
+    "request_seconds_max": 300,
+    "stored_bits": 4096,
+    "work_bits": 8192,
+    "work_per_request": 8000000
+  },
+  "mathematical_improvement_claim": false,
+  "native_calls": 0,
+  "new_complete_positive_results_relative_to_off": 0,
+  "optimizer_calls": 0,
+  "oracle_checks": [
+    {
+      "kind": "differential",
+      "measured_work_saving": -1173,
+      "oracle_candidate_checks": 12,
+      "oracle_work": {
+        "arithmetic": 4874,
+        "coefficient_visits": 2661,
+        "row_visits": 1072
+      },
+      "profile": 0,
+      "source": "deep"
+    },
+    {
+      "kind": "differential",
+      "measured_work_saving": -1173,
+      "oracle_candidate_checks": 12,
+      "oracle_work": {
+        "arithmetic": 4874,
+        "coefficient_visits": 2661,
+        "row_visits": 1072
+      },
+      "profile": 1,
+      "source": "deep"
+    },
+    {
+      "kind": "differential",
+      "measured_work_saving": -401,
+      "oracle_candidate_checks": 10,
+      "oracle_work": {
+        "arithmetic": 904,
+        "coefficient_visits": 345,
+        "row_visits": 272
+      },
+      "profile": 0,
+      "source": "half"
+    },
+    {
+      "kind": "differential",
+      "measured_work_saving": -401,
+      "oracle_candidate_checks": 10,
+      "oracle_work": {
+        "arithmetic": 904,
+        "coefficient_visits": 345,
+        "row_visits": 272
+      },
+      "profile": 1,
+      "source": "half"
+    },
+    {
+      "kind": "differential",
+      "measured_work_saving": -297,
+      "oracle_candidate_checks": 48,
+      "oracle_work": {
+        "arithmetic": 2143,
+        "coefficient_visits": 500,
+        "row_visits": 686
+      },
+      "profile": 0,
+      "source": "guarded"
+    },
+    {
+      "kind": "differential",
+      "measured_work_saving": -297,
+      "oracle_candidate_checks": 48,
+      "oracle_work": {
+        "arithmetic": 2143,
+        "coefficient_visits": 500,
+        "row_visits": 686
+      },
+      "profile": 1,
+      "source": "guarded"
+    },
+    {
+      "kind": "differential",
+      "measured_work_saving": 35196,
+      "oracle_candidate_checks": 112,
+      "oracle_work": {
+        "arithmetic": 28889,
+        "coefficient_visits": 11654,
+        "row_visits": 7686
+      },
+      "profile": 0,
+      "source": "eight_private"
+    },
+    {
+      "kind": "differential",
+      "measured_work_saving": 35196,
+      "oracle_candidate_checks": 112,
+      "oracle_work": {
+        "arithmetic": 28889,
+        "coefficient_visits": 11654,
+        "row_visits": 7686
+      },
+      "profile": 1,
+      "source": "eight_private"
+    }
+  ],
+  "oracle_references_completed": 8,
+  "paired": [
+    {
+      "costs": {
+        "acknowledged_bytes": 15504,
+        "check_seconds": 0.04929761774837971,
+        "encode_seconds": 0.0025417953729629517,
+        "init_seconds": 0.0023347903043031693,
+        "prepare_seconds": 0.0028865691274404526,
+        "publication_attempted_bytes": 15504,
+        "publish_seconds": 0.00003563612699508667,
+        "receive_seconds": 0,
+        "release_seconds": 0.000004781410098075867,
+        "terminal_seconds": 0.00402056984603405
+      },
+      "enabled": false,
+      "full_result_sha256": "9ad9faaafd90ab9e0d30228a978f73af5e51eafd5de4821b72083ec981333406",
+      "kind": "paired",
+      "owner": {
+        "allocated_bytes": 2538148,
+        "allocations": 87,
+        "cleanup_seconds": 0.000022254884243011475,
+        "copied_bytes": 3922776,
+        "live_bytes": 0,
+        "peak_bytes": 598226,
+        "released_bytes": 2538148
+      },
+      "profile": 0,
+      "receipts_sha256": "814e9fcd4c1e9e36c09c1ad3c03dcae8b328d2de4b6b59dd13a9b92c1651cc97",
+      "result": {
+        "checked_endpoints": 6,
+        "checkpoint_correspondence_checked": false,
+        "missing_endpoints": 0,
+        "native_float_proof": false,
+        "positive": 0,
+        "required": 3,
+        "required_endpoints": 6,
+        "status": "UNKNOWN_NONPOSITIVE"
+      },
+      "seconds": 0.07244545593857765,
+      "source": "deep",
+      "total_work": 22204,
+      "traversal": {
+        "global_calls": 0,
+        "planned_iteration_saving": 0,
+        "prepared_tiles": 0,
+        "scoped_calls": 0,
+        "selector_work": 0,
+        "setup_work": 0
+      },
+      "work": {
+        "arithmetic": 4011,
+        "coefficient_visits": 15647,
+        "row_visits": 2546
+      }
+    },
+    {
+      "costs": {
+        "acknowledged_bytes": 15504,
+        "check_seconds": 0.050875596702098846,
+        "encode_seconds": 0.0026646070182323456,
+        "init_seconds": 0.0018944274634122849,
+        "prepare_seconds": 0.004682999104261398,
+        "publication_attempted_bytes": 15504,
+        "publish_seconds": 0.00003419816493988037,
+        "receive_seconds": 0,
+        "release_seconds": 0.000004131346940994263,
+        "terminal_seconds": 0.0039884354919195175
+      },
+      "enabled": true,
+      "full_result_sha256": "9ad9faaafd90ab9e0d30228a978f73af5e51eafd5de4821b72083ec981333406",
+      "kind": "paired",
+      "owner": {
+        "allocated_bytes": 2540896,
+        "allocations": 99,
+        "cleanup_seconds": 0.000021580606698989868,
+        "copied_bytes": 3928272,
+        "live_bytes": 0,
+        "peak_bytes": 598226,
+        "released_bytes": 2540896
+      },
+      "profile": 0,
+      "receipts_sha256": "814e9fcd4c1e9e36c09c1ad3c03dcae8b328d2de4b6b59dd13a9b92c1651cc97",
+      "result": {
+        "checked_endpoints": 6,
+        "checkpoint_correspondence_checked": false,
+        "missing_endpoints": 0,
+        "native_float_proof": false,
+        "positive": 0,
+        "required": 3,
+        "required_endpoints": 6,
+        "status": "UNKNOWN_NONPOSITIVE"
+      },
+      "seconds": 0.07610376738011837,
+      "source": "deep",
+      "total_work": 23377,
+      "traversal": {
+        "global_calls": 9,
+        "planned_iteration_saving": 0,
+        "prepared_tiles": 3,
+        "scoped_calls": 0,
+        "selector_work": 9,
+        "setup_work": 1164
+      },
+      "work": {
+        "arithmetic": 4011,
+        "coefficient_visits": 16334,
+        "row_visits": 3032
+      }
+    },
+    {
+      "costs": {
+        "acknowledged_bytes": 300336,
+        "check_seconds": 0.05705785192549229,
+        "encode_seconds": 0.0022117961198091507,
+        "init_seconds": 0.0022172536700963974,
+        "prepare_seconds": 0.0026719477027654648,
+        "publication_attempted_bytes": 300336,
+        "publish_seconds": 0.0002607721835374832,
+        "receive_seconds": 0,
+        "release_seconds": 0.000004539266228675842,
+        "terminal_seconds": 0.0036082398146390915
+      },
+      "enabled": false,
+      "full_result_sha256": "9ad9faaafd90ab9e0d30228a978f73af5e51eafd5de4821b72083ec981333406",
+      "kind": "paired",
+      "owner": {
+        "allocated_bytes": 3107812,
+        "allocations": 87,
+        "cleanup_seconds": 0.000022370368242263794,
+        "copied_bytes": 5188968,
+        "live_bytes": 0,
+        "peak_bytes": 693170,
+        "released_bytes": 3107812
+      },
+      "profile": 1,
+      "receipts_sha256": "f4b3e761840082460101a1ef8b4f9cef11901162d601528b8857dc580c3cb80e",
+      "result": {
+        "checked_endpoints": 6,
+        "checkpoint_correspondence_checked": false,
+        "missing_endpoints": 0,
+        "native_float_proof": false,
+        "positive": 0,
+        "required": 3,
+        "required_endpoints": 6,
+        "status": "UNKNOWN_NONPOSITIVE"
+      },
+      "seconds": 0.07946973852813244,
+      "source": "deep",
+      "total_work": 23992,
+      "traversal": {
+        "global_calls": 0,
+        "planned_iteration_saving": 0,
+        "prepared_tiles": 0,
+        "scoped_calls": 0,
+        "selector_work": 0,
+        "setup_work": 0
+      },
+      "work": {
+        "arithmetic": 4563,
+        "coefficient_visits": 16883,
+        "row_visits": 2546
+      }
+    },
+    {
+      "costs": {
+        "acknowledged_bytes": 300336,
+        "check_seconds": 0.05710484832525253,
+        "encode_seconds": 0.0022700466215610504,
+        "init_seconds": 0.0018327515572309494,
+        "prepare_seconds": 0.004667608067393303,
+        "publication_attempted_bytes": 300336,
+        "publish_seconds": 0.0002605170011520386,
+        "receive_seconds": 0,
+        "release_seconds": 0.00000420399010181427,
+        "terminal_seconds": 0.003587959334254265
+      },
+      "enabled": true,
+      "full_result_sha256": "9ad9faaafd90ab9e0d30228a978f73af5e51eafd5de4821b72083ec981333406",
+      "kind": "paired",
+      "owner": {
+        "allocated_bytes": 3110560,
+        "allocations": 99,
+        "cleanup_seconds": 0.00001882016658782959,
+        "copied_bytes": 5194464,
+        "live_bytes": 0,
+        "peak_bytes": 693170,
+        "released_bytes": 3110560
+      },
+      "profile": 1,
+      "receipts_sha256": "f4b3e761840082460101a1ef8b4f9cef11901162d601528b8857dc580c3cb80e",
+      "result": {
+        "checked_endpoints": 6,
+        "checkpoint_correspondence_checked": false,
+        "missing_endpoints": 0,
+        "native_float_proof": false,
+        "positive": 0,
+        "required": 3,
+        "required_endpoints": 6,
+        "status": "UNKNOWN_NONPOSITIVE"
+      },
+      "seconds": 0.08057781308889389,
+      "source": "deep",
+      "total_work": 25165,
+      "traversal": {
+        "global_calls": 9,
+        "planned_iteration_saving": 0,
+        "prepared_tiles": 3,
+        "scoped_calls": 0,
+        "selector_work": 9,
+        "setup_work": 1164
+      },
+      "work": {
+        "arithmetic": 4563,
+        "coefficient_visits": 17570,
+        "row_visits": 3032
+      }
+    },
+    {
+      "costs": {
+        "acknowledged_bytes": 11784,
+        "check_seconds": 0.009485509246587753,
+        "encode_seconds": 0.0008318983018398285,
+        "init_seconds": 0.0008433312177658081,
+        "prepare_seconds": 0.001240679994225502,
+        "publication_attempted_bytes": 11784,
+        "publish_seconds": 0.00002359040081501007,
+        "receive_seconds": 0,
+        "release_seconds": 0.000004265457391738892,
+        "terminal_seconds": 0.0000633392482995987
+      },
+      "enabled": false,
+      "full_result_sha256": "a4364877e5b8608f63c04f71bdc98f39b86a98d78478f3e16ddc4b13abe9366b",
+      "kind": "paired",
+      "owner": {
+        "allocated_bytes": 648762,
+        "allocations": 106,
+        "cleanup_seconds": 0.000032393261790275574,
+        "copied_bytes": 809353,
+        "live_bytes": 0,
+        "peak_bytes": 158440,
+        "released_bytes": 648762
+      },
+      "profile": 0,
+      "receipts_sha256": "76e1cab1d11f280ea4ce46ea721769e0e90a505fceaed1372438a4e5c1b1d2c7",
+      "result": {
+        "checked_endpoints": 5,
+        "checkpoint_correspondence_checked": false,
+        "missing_endpoints": 0,
+        "native_float_proof": false,
+        "positive": 3,
+        "required": 3,
+        "required_endpoints": 5,
+        "status": "CHECKED_POSITIVE_CAPTURED_REAL_SOURCE"
+      },
+      "seconds": 0.01745607890188694,
+      "source": "half",
+      "total_work": 4974,
+      "traversal": {
+        "global_calls": 0,
+        "planned_iteration_saving": 0,
+        "prepared_tiles": 0,
+        "scoped_calls": 0,
+        "selector_work": 0,
+        "setup_work": 0
+      },
+      "work": {
+        "arithmetic": 785,
+        "coefficient_visits": 3196,
+        "row_visits": 993
+      }
+    },
+    {
+      "costs": {
+        "acknowledged_bytes": 11784,
+        "check_seconds": 0.010398387908935547,
+        "encode_seconds": 0.0008480418473482132,
+        "init_seconds": 0.000826200470328331,
+        "prepare_seconds": 0.0018487852066755295,
+        "publication_attempted_bytes": 11784,
+        "publish_seconds": 0.00002460181713104248,
+        "receive_seconds": 0,
+        "release_seconds": 0.000004187226295471191,
+        "terminal_seconds": 0.00006351061165332794
+      },
+      "enabled": true,
+      "full_result_sha256": "a4364877e5b8608f63c04f71bdc98f39b86a98d78478f3e16ddc4b13abe9366b",
+      "kind": "paired",
+      "owner": {
+        "allocated_bytes": 649578,
+        "allocations": 118,
+        "cleanup_seconds": 0.00003295391798019409,
+        "copied_bytes": 810985,
+        "live_bytes": 0,
+        "peak_bytes": 158440,
+        "released_bytes": 649578
+      },
+      "profile": 0,
+      "receipts_sha256": "76e1cab1d11f280ea4ce46ea721769e0e90a505fceaed1372438a4e5c1b1d2c7",
+      "result": {
+        "checked_endpoints": 5,
+        "checkpoint_correspondence_checked": false,
+        "missing_endpoints": 0,
+        "native_float_proof": false,
+        "positive": 3,
+        "required": 3,
+        "required_endpoints": 5,
+        "status": "CHECKED_POSITIVE_CAPTURED_REAL_SOURCE"
+      },
+      "seconds": 0.01893206313252449,
+      "source": "half",
+      "total_work": 5375,
+      "traversal": {
+        "global_calls": 8,
+        "planned_iteration_saving": 0,
+        "prepared_tiles": 3,
+        "scoped_calls": 0,
+        "selector_work": 8,
+        "setup_work": 393
+      },
+      "work": {
+        "arithmetic": 785,
+        "coefficient_visits": 3400,
+        "row_visits": 1190
+      }
+    },
+    {
+      "costs": {
+        "acknowledged_bytes": 94344,
+        "check_seconds": 0.011784598231315613,
+        "encode_seconds": 0.0008980948477983475,
+        "init_seconds": 0.0008198153227567673,
+        "prepare_seconds": 0.0012168586254119873,
+        "publication_attempted_bytes": 94344,
+        "publish_seconds": 0.00009121187031269073,
+        "receive_seconds": 0,
+        "release_seconds": 0.000004552304744720459,
+        "terminal_seconds": 0.0000630449503660202
+      },
+      "enabled": false,
+      "full_result_sha256": "a4364877e5b8608f63c04f71bdc98f39b86a98d78478f3e16ddc4b13abe9366b",
+      "kind": "paired",
+      "owner": {
+        "allocated_bytes": 813882,
+        "allocations": 106,
+        "cleanup_seconds": 0.00003098882734775543,
+        "copied_bytes": 1161043,
+        "live_bytes": 0,
+        "peak_bytes": 191464,
+        "released_bytes": 813882
+      },
+      "profile": 1,
+      "receipts_sha256": "c285738aa59715faf68641596c96cd8fa95a4c369d189b3ed003a9e812075824",
+      "result": {
+        "checked_endpoints": 5,
+        "checkpoint_correspondence_checked": false,
+        "missing_endpoints": 0,
+        "native_float_proof": false,
+        "positive": 3,
+        "required": 3,
+        "required_endpoints": 5,
+        "status": "CHECKED_POSITIVE_CAPTURED_REAL_SOURCE"
+      },
+      "seconds": 0.020399028435349464,
+      "source": "half",
+      "total_work": 5457,
+      "traversal": {
+        "global_calls": 0,
+        "planned_iteration_saving": 0,
+        "prepared_tiles": 0,
+        "scoped_calls": 0,
+        "selector_work": 0,
+        "setup_work": 0
+      },
+      "work": {
+        "arithmetic": 935,
+        "coefficient_visits": 3529,
+        "row_visits": 993
+      }
+    },
+    {
+      "costs": {
+        "acknowledged_bytes": 94344,
+        "check_seconds": 0.01146387867629528,
+        "encode_seconds": 0.0008524209260940552,
+        "init_seconds": 0.0008324049413204193,
+        "prepare_seconds": 0.0020322520285844803,
+        "publication_attempted_bytes": 94344,
+        "publish_seconds": 0.00009030662477016449,
+        "receive_seconds": 0,
+        "release_seconds": 0.00000441819429397583,
+        "terminal_seconds": 0.00006528757512569427
+      },
+      "enabled": true,
+      "full_result_sha256": "a4364877e5b8608f63c04f71bdc98f39b86a98d78478f3e16ddc4b13abe9366b",
+      "kind": "paired",
+      "owner": {
+        "allocated_bytes": 814698,
+        "allocations": 118,
+        "cleanup_seconds": 0.000033598393201828,
+        "copied_bytes": 1162675,
+        "live_bytes": 0,
+        "peak_bytes": 191464,
+        "released_bytes": 814698
+      },
+      "profile": 1,
+      "receipts_sha256": "c285738aa59715faf68641596c96cd8fa95a4c369d189b3ed003a9e812075824",
+      "result": {
+        "checked_endpoints": 5,
+        "checkpoint_correspondence_checked": false,
+        "missing_endpoints": 0,
+        "native_float_proof": false,
+        "positive": 3,
+        "required": 3,
+        "required_endpoints": 5,
+        "status": "CHECKED_POSITIVE_CAPTURED_REAL_SOURCE"
+      },
+      "seconds": 0.020390741527080536,
+      "source": "half",
+      "total_work": 5858,
+      "traversal": {
+        "global_calls": 8,
+        "planned_iteration_saving": 0,
+        "prepared_tiles": 3,
+        "scoped_calls": 0,
+        "selector_work": 8,
+        "setup_work": 393
+      },
+      "work": {
+        "arithmetic": 935,
+        "coefficient_visits": 3733,
+        "row_visits": 1190
+      }
+    },
+    {
+      "costs": {
+        "acknowledged_bytes": 52800,
+        "check_seconds": 0.018790697678923607,
+        "encode_seconds": 0.0015389267355203629,
+        "init_seconds": 0.0014157313853502274,
+        "prepare_seconds": 0.003160998225212097,
+        "publication_attempted_bytes": 52800,
+        "publish_seconds": 0.0000612940639257431,
+        "receive_seconds": 0,
+        "release_seconds": 0.000004092231392860413,
+        "terminal_seconds": 0.00008811429142951965
+      },
+      "enabled": false,
+      "full_result_sha256": "9b577e5b792e3d44f690c23819f58d8866d33e599fd7e9d6262248c5551a3914",
+      "kind": "paired",
+      "owner": {
+        "allocated_bytes": 1990216,
+        "allocations": 202,
+        "cleanup_seconds": 0.00001903623342514038,
+        "copied_bytes": 1327644,
+        "live_bytes": 0,
+        "peak_bytes": 125732,
+        "released_bytes": 1990216
+      },
+      "profile": 0,
+      "receipts_sha256": "295dfa271499c61e54290273838d2b5d6229dae05174184b91cdbd07da32ba8d",
+      "result": {
+        "checked_endpoints": 24,
+        "checkpoint_correspondence_checked": false,
+        "missing_endpoints": 0,
+        "native_float_proof": false,
+        "positive": 0,
+        "required": 12,
+        "required_endpoints": 24,
+        "status": "UNKNOWN_NONPOSITIVE"
+      },
+      "seconds": 0.028991011902689934,
+      "source": "guarded",
+      "total_work": 9172,
+      "traversal": {
+        "global_calls": 0,
+        "planned_iteration_saving": 0,
+        "prepared_tiles": 0,
+        "scoped_calls": 0,
+        "selector_work": 0,
+        "setup_work": 0
+      },
+      "work": {
+        "arithmetic": 1207,
+        "coefficient_visits": 5369,
+        "row_visits": 2596
+      }
+    },
+    {
+      "costs": {
+        "acknowledged_bytes": 52800,
+        "check_seconds": 0.020099105313420296,
+        "encode_seconds": 0.0013446379452943802,
+        "init_seconds": 0.0014109592884778976,
+        "prepare_seconds": 0.0031288694590330124,
+        "publication_attempted_bytes": 52800,
+        "publish_seconds": 0.00005875527858734131,
+        "receive_seconds": 0,
+        "release_seconds": 0.000003982335329055786,
+        "terminal_seconds": 0.00008456222712993622
+      },
+      "enabled": true,
+      "full_result_sha256": "9b577e5b792e3d44f690c23819f58d8866d33e599fd7e9d6262248c5551a3914",
+      "kind": "paired",
+      "owner": {
+        "allocated_bytes": 1990732,
+        "allocations": 214,
+        "cleanup_seconds": 0.000018633902072906494,
+        "copied_bytes": 1328676,
+        "live_bytes": 0,
+        "peak_bytes": 125732,
+        "released_bytes": 1990732
+      },
+      "profile": 0,
+      "receipts_sha256": "295dfa271499c61e54290273838d2b5d6229dae05174184b91cdbd07da32ba8d",
+      "result": {
+        "checked_endpoints": 24,
+        "checkpoint_correspondence_checked": false,
+        "missing_endpoints": 0,
+        "native_float_proof": false,
+        "positive": 0,
+        "required": 12,
+        "required_endpoints": 24,
+        "status": "UNKNOWN_NONPOSITIVE"
+      },
+      "seconds": 0.030430708080530167,
+      "source": "guarded",
+      "total_work": 9469,
+      "traversal": {
+        "global_calls": 36,
+        "planned_iteration_saving": 0,
+        "prepared_tiles": 3,
+        "scoped_calls": 0,
+        "selector_work": 36,
+        "setup_work": 261
+      },
+      "work": {
+        "arithmetic": 1207,
+        "coefficient_visits": 5498,
+        "row_visits": 2764
+      }
+    },
+    {
+      "costs": {
+        "acknowledged_bytes": 151872,
+        "check_seconds": 0.022329678758978844,
+        "encode_seconds": 0.0013757981359958649,
+        "init_seconds": 0.0014092810451984406,
+        "prepare_seconds": 0.0027618352323770523,
+        "publication_attempted_bytes": 151872,
+        "publish_seconds": 0.0001374557614326477,
+        "receive_seconds": 0,
+        "release_seconds": 0.000004597008228302002,
+        "terminal_seconds": 0.00009984895586967468
+      },
+      "enabled": false,
+      "full_result_sha256": "958a609b1ec3ec267e8717d14328b5fdd9c7d0654c10db4c4b70243e66294972",
+      "kind": "paired",
+      "owner": {
+        "allocated_bytes": 2188360,
+        "allocations": 202,
+        "cleanup_seconds": 0.000018434599041938782,
+        "copied_bytes": 1923804,
+        "live_bytes": 0,
+        "peak_bytes": 158756,
+        "released_bytes": 2188360
+      },
+      "profile": 1,
+      "receipts_sha256": "7c794a5887451e529113724e8983c95621234c22ae73258290db124173b31978",
+      "result": {
+        "checked_endpoints": 24,
+        "checkpoint_correspondence_checked": false,
+        "missing_endpoints": 0,
+        "native_float_proof": false,
+        "positive": 2,
+        "required": 12,
+        "required_endpoints": 24,
+        "status": "UNKNOWN_NONPOSITIVE"
+      },
+      "seconds": 0.03265098109841347,
+      "source": "guarded",
+      "total_work": 10192,
+      "traversal": {
+        "global_calls": 0,
+        "planned_iteration_saving": 0,
+        "prepared_tiles": 0,
+        "scoped_calls": 0,
+        "selector_work": 0,
+        "setup_work": 0
+      },
+      "work": {
+        "arithmetic": 1519,
+        "coefficient_visits": 6077,
+        "row_visits": 2596
+      }
+    },
+    {
+      "costs": {
+        "acknowledged_bytes": 151872,
+        "check_seconds": 0.0216539166867733,
+        "encode_seconds": 0.0013172440230846405,
+        "init_seconds": 0.001783238723874092,
+        "prepare_seconds": 0.003078129142522812,
+        "publication_attempted_bytes": 151872,
+        "publish_seconds": 0.00014284811913967133,
+        "receive_seconds": 0,
+        "release_seconds": 0.000004176050424575806,
+        "terminal_seconds": 0.00008487142622470856
+      },
+      "enabled": true,
+      "full_result_sha256": "958a609b1ec3ec267e8717d14328b5fdd9c7d0654c10db4c4b70243e66294972",
+      "kind": "paired",
+      "owner": {
+        "allocated_bytes": 2188876,
+        "allocations": 214,
+        "cleanup_seconds": 0.000017715618014335632,
+        "copied_bytes": 1924836,
+        "live_bytes": 0,
+        "peak_bytes": 158756,
+        "released_bytes": 2188876
+      },
+      "profile": 1,
+      "receipts_sha256": "7c794a5887451e529113724e8983c95621234c22ae73258290db124173b31978",
+      "result": {
+        "checked_endpoints": 24,
+        "checkpoint_correspondence_checked": false,
+        "missing_endpoints": 0,
+        "native_float_proof": false,
+        "positive": 2,
+        "required": 12,
+        "required_endpoints": 24,
+        "status": "UNKNOWN_NONPOSITIVE"
+      },
+      "seconds": 0.03193018212914467,
+      "source": "guarded",
+      "total_work": 10489,
+      "traversal": {
+        "global_calls": 36,
+        "planned_iteration_saving": 0,
+        "prepared_tiles": 3,
+        "scoped_calls": 0,
+        "selector_work": 36,
+        "setup_work": 261
+      },
+      "work": {
+        "arithmetic": 1519,
+        "coefficient_visits": 6206,
+        "row_visits": 2764
+      }
+    },
+    {
+      "costs": {
+        "acknowledged_bytes": 150976,
+        "check_seconds": 0.61717214807868,
+        "encode_seconds": 0.02450452744960785,
+        "init_seconds": 0.019349126145243645,
+        "prepare_seconds": 0.05423416942358017,
+        "publication_attempted_bytes": 150976,
+        "publish_seconds": 0.00031381286680698395,
+        "receive_seconds": 0,
+        "release_seconds": 0.000049656257033348083,
+        "terminal_seconds": 0.005633581429719925
+      },
+      "enabled": false,
+      "full_result_sha256": "0c7a02c5606a7de44ba05391fa94b5f098a8050ce6f1b8e937762c9ce9b04676",
+      "kind": "paired",
+      "owner": {
+        "allocated_bytes": 18423732,
+        "allocations": 608,
+        "cleanup_seconds": 0.00008439086377620697,
+        "copied_bytes": 24745144,
+        "live_bytes": 0,
+        "peak_bytes": 418378,
+        "released_bytes": 18423732
+      },
+      "profile": 0,
+      "receipts_sha256": "f2b29a9b5bb925af7a9dca37247045eaa356a20acf3872c7a5969e0c5b6a748b",
+      "result": {
+        "checked_endpoints": 56,
+        "checkpoint_correspondence_checked": false,
+        "missing_endpoints": 0,
+        "native_float_proof": false,
+        "positive": 28,
+        "required": 28,
+        "required_endpoints": 56,
+        "status": "CHECKED_POSITIVE_CAPTURED_REAL_SOURCE"
+      },
+      "seconds": 0.753072714433074,
+      "source": "eight_private",
+      "total_work": 293636,
+      "traversal": {
+        "global_calls": 0,
+        "planned_iteration_saving": 0,
+        "prepared_tiles": 0,
+        "scoped_calls": 0,
+        "selector_work": 0,
+        "setup_work": 0
+      },
+      "work": {
+        "arithmetic": 33490,
+        "coefficient_visits": 181763,
+        "row_visits": 78383
+      }
+    },
+    {
+      "costs": {
+        "acknowledged_bytes": 150976,
+        "check_seconds": 0.4406242873519659,
+        "encode_seconds": 0.024536142125725746,
+        "init_seconds": 0.01962551474571228,
+        "prepare_seconds": 0.11499260552227497,
+        "publication_attempted_bytes": 150976,
+        "publish_seconds": 0.00030772387981414795,
+        "receive_seconds": 0,
+        "release_seconds": 0.000051934272050857544,
+        "terminal_seconds": 0.0055269598960876465
+      },
+      "enabled": true,
+      "full_result_sha256": "0c7a02c5606a7de44ba05391fa94b5f098a8050ce6f1b8e937762c9ce9b04676",
+      "kind": "paired",
+      "owner": {
+        "allocated_bytes": 18495188,
+        "allocations": 720,
+        "cleanup_seconds": 0.00009490363299846649,
+        "copied_bytes": 24751976,
+        "live_bytes": 0,
+        "peak_bytes": 418378,
+        "released_bytes": 18495188
+      },
+      "profile": 0,
+      "receipts_sha256": "f2b29a9b5bb925af7a9dca37247045eaa356a20acf3872c7a5969e0c5b6a748b",
+      "result": {
+        "checked_endpoints": 56,
+        "checkpoint_correspondence_checked": false,
+        "missing_endpoints": 0,
+        "native_float_proof": false,
+        "positive": 28,
+        "required": 28,
+        "required_endpoints": 56,
+        "status": "CHECKED_POSITIVE_CAPTURED_REAL_SOURCE"
+      },
+      "seconds": 0.6368725374341011,
+      "source": "eight_private",
+      "total_work": 258440,
+      "traversal": {
+        "global_calls": 0,
+        "planned_iteration_saving": 70308,
+        "prepared_tiles": 28,
+        "scoped_calls": 84,
+        "selector_work": 84,
+        "setup_work": 35028
+      },
+      "work": {
+        "arithmetic": 33490,
+        "coefficient_visits": 165607,
+        "row_visits": 59343
+      }
+    },
+    {
+      "costs": {
+        "acknowledged_bytes": 3618496,
+        "check_seconds": 0.6852355115115643,
+        "encode_seconds": 0.026380006223917007,
+        "init_seconds": 0.020459461957216263,
+        "prepare_seconds": 0.053574612364172935,
+        "publication_attempted_bytes": 3618496,
+        "publish_seconds": 0.003143310546875,
+        "receive_seconds": 0,
+        "release_seconds": 0.000053415074944496155,
+        "terminal_seconds": 0.005808493122458458
+      },
+      "enabled": false,
+      "full_result_sha256": "0c7a02c5606a7de44ba05391fa94b5f098a8050ce6f1b8e937762c9ce9b04676",
+      "kind": "paired",
+      "owner": {
+        "allocated_bytes": 25358772,
+        "allocations": 608,
+        "cleanup_seconds": 0.0000859629362821579,
+        "copied_bytes": 40660420,
+        "live_bytes": 0,
+        "peak_bytes": 542218,
+        "released_bytes": 25358772
+      },
+      "profile": 1,
+      "receipts_sha256": "5d8025254dcb3ea7b770d61cbc9ccb8443de7ed6253963cba261d07f4e244c22",
+      "result": {
+        "checked_endpoints": 56,
+        "checkpoint_correspondence_checked": false,
+        "missing_endpoints": 0,
+        "native_float_proof": false,
+        "positive": 28,
+        "required": 28,
+        "required_endpoints": 56,
+        "status": "CHECKED_POSITIVE_CAPTURED_REAL_SOURCE"
+      },
+      "seconds": 0.8257447686046362,
+      "source": "eight_private",
+      "total_work": 316799,
+      "traversal": {
+        "global_calls": 0,
+        "planned_iteration_saving": 0,
+        "prepared_tiles": 0,
+        "scoped_calls": 0,
+        "selector_work": 0,
+        "setup_work": 0
+      },
+      "work": {
+        "arithmetic": 40660,
+        "coefficient_visits": 197756,
+        "row_visits": 78383
+      }
+    },
+    {
+      "costs": {
+        "acknowledged_bytes": 3618496,
+        "check_seconds": 0.5194206368178129,
+        "encode_seconds": 0.027412185445427895,
+        "init_seconds": 0.02009160816669464,
+        "prepare_seconds": 0.11517402157187462,
+        "publication_attempted_bytes": 3618496,
+        "publish_seconds": 0.003094976767897606,
+        "receive_seconds": 0,
+        "release_seconds": 0.000053083524107933044,
+        "terminal_seconds": 0.005745699629187584
+      },
+      "enabled": true,
+      "full_result_sha256": "0c7a02c5606a7de44ba05391fa94b5f098a8050ce6f1b8e937762c9ce9b04676",
+      "kind": "paired",
+      "owner": {
+        "allocated_bytes": 25430228,
+        "allocations": 720,
+        "cleanup_seconds": 0.00008141808211803436,
+        "copied_bytes": 40667252,
+        "live_bytes": 0,
+        "peak_bytes": 542218,
+        "released_bytes": 25430228
+      },
+      "profile": 1,
+      "receipts_sha256": "5d8025254dcb3ea7b770d61cbc9ccb8443de7ed6253963cba261d07f4e244c22",
+      "result": {
+        "checked_endpoints": 56,
+        "checkpoint_correspondence_checked": false,
+        "missing_endpoints": 0,
+        "native_float_proof": false,
+        "positive": 28,
+        "required": 28,
+        "required_endpoints": 56,
+        "status": "CHECKED_POSITIVE_CAPTURED_REAL_SOURCE"
+      },
+      "seconds": 0.73550128005445,
+      "source": "eight_private",
+      "total_work": 281603,
+      "traversal": {
+        "global_calls": 0,
+        "planned_iteration_saving": 70308,
+        "prepared_tiles": 28,
+        "scoped_calls": 84,
+        "selector_work": 84,
+        "setup_work": 35028
+      },
+      "work": {
+        "arithmetic": 40660,
+        "coefficient_visits": 181600,
+        "row_visits": 59343
+      }
+    }
+  ],
+  "paired_executions_completed": 16,
+  "paired_executions_planned": 16,
+  "parent_terminal_sample_seconds": 6.833114283159375,
+  "preservation": "R1 remains archived separately; no concatenation, retries or added cases",
+  "python": "3.12.12 | packaged by conda-forge | (main, Oct 22 2025, 23:25:55) [GCC 14.3.0]",
+  "real_models": 0,
+  "result_directory": "/data1/Kane/MOE/results/support_traversal_20261018_r2",
+  "schema": "SCOPED_TRAVERSAL_R2_COMPACT_ARCHIVE_V1",
+  "setup": [
+    {
+      "kind": "setup",
+      "note": "fixed fixture construction counted in batch wall, not paired execution time",
+      "seconds": 0.10790075361728668
+    }
+  ],
+  "status": "PASS_COMPONENT_CONTROLS",
+  "status_interpretation": "CAPTURED_REAL_SOURCE denotes declared real arithmetic; all five sources here are synthetic, not trained checkpoints",
+  "test_log": "test_01_default_and_opt_in (scripts.test_support_traversal.Controls.test_01_default_and_opt_in) ... ok\ntest_02_complete_fixed_candidate_differential (scripts.test_support_traversal.Controls.test_02_complete_fixed_candidate_differential) ... ok\ntest_03_residual_and_arithmetic_order (scripts.test_support_traversal.Controls.test_03_residual_and_arithmetic_order) ... ok\ntest_04_roster_faults (scripts.test_support_traversal.Controls.test_04_roster_faults) ... ok\ntest_05_binding_sealed_alias_and_closed (scripts.test_support_traversal.Controls.test_05_binding_sealed_alias_and_closed) ... ok\ntest_06_intermediate_bit_rejection (scripts.test_support_traversal.Controls.test_06_intermediate_bit_rejection) ... ok\ntest_07_guard_residual_not_pruned (scripts.test_support_traversal.Controls.test_07_guard_residual_not_pruned) ... ok\ntest_08_partial_and_later_invalid_candidates (scripts.test_support_traversal.Controls.test_08_partial_and_later_invalid_candidates) ... ok\ntest_09_deadline_exception_work_and_seal_limits (scripts.test_support_traversal.Controls.test_09_deadline_exception_work_and_seal_limits) ... ok\ntest_10_binding_after_prepare_and_failed_publication (scripts.test_support_traversal.Controls.test_10_binding_after_prepare_and_failed_publication) ... ok\n\n----------------------------------------------------------------------\nRan 10 tests in 6.472s\n\nOK\n",
+  "tests_completed": 10,
+  "tests_planned": 10,
+  "unchanged_checks": true,
+  "unexpected_modules": [],
+  "worker_elapsed_seconds": 6.678734142333269,
+  "worker_maximum_rss_kib": 36232,
+  "workers_started": 1,
+  "postpublication_console_seconds": 6.8337633814662695,
+  "postpublication_console_source": "execution tool stdout from the single batch; measured after terminal publication, before console print completion",
+  "record_audit": {
+    "differences": [
+      {
+        "global_calls": 9,
+        "profile": 0,
+        "scoped_calls": 0,
+        "seconds_difference": 0.003658311441540718,
+        "source": "deep",
+        "work_saving": -1173
+      },
+      {
+        "global_calls": 9,
+        "profile": 1,
+        "scoped_calls": 0,
+        "seconds_difference": 0.0011080745607614517,
+        "source": "deep",
+        "work_saving": -1173
+      },
+      {
+        "global_calls": 8,
+        "profile": 0,
+        "scoped_calls": 0,
+        "seconds_difference": 0.0014759842306375504,
+        "source": "half",
+        "work_saving": -401
+      },
+      {
+        "global_calls": 8,
+        "profile": 1,
+        "scoped_calls": 0,
+        "seconds_difference": -0.000008286908268928528,
+        "source": "half",
+        "work_saving": -401
+      },
+      {
+        "global_calls": 36,
+        "profile": 0,
+        "scoped_calls": 0,
+        "seconds_difference": 0.0014396961778402328,
+        "source": "guarded",
+        "work_saving": -297
+      },
+      {
+        "global_calls": 36,
+        "profile": 1,
+        "scoped_calls": 0,
+        "seconds_difference": -0.0007207989692687988,
+        "source": "guarded",
+        "work_saving": -297
+      },
+      {
+        "global_calls": 0,
+        "profile": 0,
+        "scoped_calls": 84,
+        "seconds_difference": -0.11620017699897289,
+        "source": "eight_private",
+        "work_saving": 35196
+      },
+      {
+        "global_calls": 0,
+        "profile": 1,
+        "scoped_calls": 84,
+        "seconds_difference": -0.09024348855018616,
+        "source": "eight_private",
+        "work_saving": 35196
+      }
+    ],
+    "execution_head": "36ade910fb6818cae6434b82038f6662161e0398",
+    "paired_executions": 16,
+    "scope": "record identity, complete pairing, aggregation and costs; no independent source/LP reproof",
+    "status": "PASS",
+    "terminal_sha256": "82703d3536a6da6fa3b85da745a2ab61fbf3ad3af0f1b044c80b3420b002b510",
+    "tests": 10,
+    "worker_sha256": "56456a61f660e92c4002cdc5f65dcc4c638a209842edfdc553e0d54363e1ea19"
+  }
+}
