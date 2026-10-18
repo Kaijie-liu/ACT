@@ -20,7 +20,8 @@ import unittest
 REPO=Path(__file__).resolve().parents[1]
 PYTHON='/data1/Kane/miniconda3/envs/act-py312/bin/python'
 PROTOCOL='docs/hz_support_traversal_controls_20261018.md'
-FREEZE='docs/hz_support_traversal_freeze_20261018.json'
+REVISION='docs/hz_support_traversal_controls_20261018_r2.md'
+FREEZE='docs/hz_support_traversal_freeze_20261018_r2.json'
 TEST='scripts/test_support_traversal.py'
 
 
@@ -29,14 +30,16 @@ def hashed(path): return hashlib.sha256(path.read_bytes()).hexdigest()
 
 def manifest():
     names={str(p.relative_to(REPO)) for p in (REPO/'scoped_source').glob('*.py')}
-    names.update((PROTOCOL,TEST,'scripts/run_support_traversal_controls.py',
+    names.update((PROTOCOL,REVISION,TEST,'scripts/run_support_traversal_controls.py',
         'scripts/audit_support_traversal_controls.py',
         'scripts/test_bounded_runtime.py','scripts/run_store_device_controls.py',
         'scripts/hz_store_supervised.py'))
     c=next(n for n in ast.parse((REPO/TEST).read_bytes()).body
            if isinstance(n,ast.ClassDef) and n.name=='Controls')
     tests=sorted(n.name for n in c.body if isinstance(n,ast.FunctionDef) and n.name.startswith('test_'))
-    return dict(schema='SCOPED_TRAVERSAL_FINITE_FREEZE_V1',base_head='896353fe9ca075b455c26b9fcdd7b4f17ea7a378',
+    return dict(schema='SCOPED_TRAVERSAL_FINITE_FREEZE_V1',base_head='b7d4187f03b7f564c6ed015ebc340871128dd826',
+        revision='R2_DIRECTORY_PREPARATION_ONLY',
+        parent_freeze_sha256='b20c6777193916ad78326d82abc9b9d10fa073ff47a916d48d2ddd3f05a901c5',
         files={n:hashed(REPO/n) for n in sorted(names)},tests=tests,
         sources=['deep','half','guarded','eight_private','negative_guard'],
         paired_sources=['deep','half','guarded','eight_private'],profiles=[0,1],

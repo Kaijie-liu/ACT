@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+Scoped traversal R2 approved for one unchanged finite batch: 2026-10-18.
+See [directory repair and revised freeze](hz_support_traversal_controls_20261018_r2.md).
+Base b7d4187f03b7; preserve R1 failure and freeze. Only directory preparation and
+version bindings change, with the same five stdlib sources, ten methods, sixteen
+paired executions and eight oracle references. Tests/math/caps/300s unchanged;
+no model/GPU/native/optimizer, no added cases or automatic retry. Commit/freeze
+before execution; new directory support_traversal_20261018_r2. This is approval,
+not a control result or a G1/full-capacity claim.
+
 Scoped traversal R1 startup failed before worker creation: 2026-10-18.
 See [implementation and retained failure](hz_support_traversal_controls_results_20261018.md)
 and [counts/identity record](hz_support_traversal_controls_results_20261018.json).
