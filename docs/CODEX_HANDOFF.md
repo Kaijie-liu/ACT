@@ -1,5 +1,20 @@
 # MoE project handoff — current entry point
 
+Endpoint dual search hypothesis reviewed, STATIC ONLY: 2026-10-19.
+See [algorithm delta and admission decision](hz_endpoint_dual_static_decision_20261019.md).
+Current native V3 batches targets but optimizes their dual columns independently.
+One unimplemented hypothesis replaces the LAST update with the fixed midpoint
+of same-pair/same-property endpoint best duals; 129 evaluations, full obligations
+and exact checks stay. No dominance, new relaxation or performance claim.
+Do not start another small control queue: implementation/freeze need separate approval.
+The factor-fault approval below is fully exercised; lifecycle controls stop.
+Shared's FIRST Snapshot alone needs at least 2P+A=13,926,024>8M; this does not
+depend on adding offline replay. Direct/Wire retain separate membership refusals.
+Expanded membership is not unique roots. Online actors retain cumulative Work;
+standalone portable replay is separate and cannot become online success.
+No runtime/source/model/GPU execution or cap changes in this static stage.
+Full-source admission and G1-G6 remain OPEN; this search change cannot cure them.
+
 Two previously uncompleted factor faults now pass, separate batch: 2026-10-19.
 See [results and stop boundary](hz_pair_factor_faults_results_20261019.md) and
 [hash-bound records](hz_pair_factor_faults_results_20261019.json).
