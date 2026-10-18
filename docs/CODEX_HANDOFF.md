@@ -1,5 +1,20 @@
 # MoE project handoff — current entry point
 
+Native joint ownership/binding decision: 2026-10-18.
+See [phase joins, integer provenance and minimal interface decision](hz_native_joint_contract_20261018.md)
+and [recomputable static record](hz_native_joint_contract_20261018.json).
+Account for duplicated input endpoints, the second reader, retained Fraction
+hash-cache integers, and caller/controller/actor overlap. Returned integer
+capacity is a fixed-provenance envelope, not a generic bit-length theorem.
+Own archive directory prefixes already have finite bounds; first profile/error
+encoding and partial cleanup observation still lack complete early bounds.
+Full self-owned heap and failure-archive totals remain explicitly unclosed.
+Next: one versioned self-owned resource/interface proposal (frozen envelope,
+pre-construction metadata reservation, bounded incomplete observation and
+partial terminal), not more isolated controls or library-scratch investigation.
+Its implementation, any numerical policy and execution need separate authority.
+No runtime/cap/300-second change, full-shape admission or scientific upgrade.
+
 Native generation contract parameterized: 2026-10-18.
 See [generated header, complete archive formulas and remaining heap boundary](hz_native_generation_contract_20261018.md)
 and [recomputable source/schema/ABI record](hz_native_generation_contract_20261018.json).

@@ -12,6 +12,13 @@ SHA-256 为 1ebd4fb3df90a74c3fc2023cc16cecf26df63da1492c93a416fffb346f1e95d5；
 
 ## 总目标
 
+2026-10-18 [联合对象与接口决策](hz_native_joint_contract_20261018.md)补计输入端点复制、
+第二reader、Fraction哈希缓存和caller/controller/actor重叠；整数容量仅限固定来源与调用链，
+不是任意Python整数定理。项目目录前缀已有界，首次元数据/异常构造与部分cleanup观察仍有
+明确缺口，完整自有heap及失败归档上界未闭合。下一步集中提出一个共同版本化自有资源接口，
+不再孤立小控制或无限追库scratch；实施、数值政策及执行仍另批，不重复请求已有8GiB批准。
+本轮仅静态账本，无运行时、额度、300秒改变或新证书，G1–G6仍OPEN。
+
 2026-10-18 已补齐[生成表示与完整归档的参数化合同](hz_native_generation_contract_20261018.md)：
 注册forest header上界1,652,449字节，完整packet 6,981,605字节／107页，不再仅用接受cap。
 来源chunk/rank与同值不同JSON类型、四份census、外置caller回执均显式核算；较大的Python
