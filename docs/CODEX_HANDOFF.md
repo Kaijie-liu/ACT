@@ -1,5 +1,19 @@
 # MoE project handoff — current entry point
 
+Implemented native counted-path envelope reconciled: 2026-10-18.
+See [the scope, formulas and remaining metadata gaps](hz_native_counted_envelope_20261018.md)
+and [recomputable bound record](hz_native_counted_envelope_20261018.json).
+Both native arms use pair-scoped checking, not dense-vs-scoped consumers.
+Replace old fixed/string/frame charges; include declared-source short-read copying.
+Conditional complete-traversal Work uppers are 165,180,064,388 (COO) and
+165,180,263,928 (row blocks), not observations, quotas or time forecasts.
+Source/consumer inheritance was checked by file and exact AST identity. Two
+seals are already included. Checkpoint capture is outside this declared-artifact
+entry. Full success metadata and self-owned peak/lifetimes remain open: new
+three-actor/census copies, profile field lengths, cleanup zombies and JSON
+temporaries cannot inherit old totals. Next static work addresses those specific
+gaps, not another small control or refusal re-derivation. No execution/cap changes.
+
 Current native full-shape applicability reviewed: 2026-10-18.
 See [the static decision](hz_native_full_shape_decision_20261018.md) and
 [current code/shape bindings](hz_native_full_shape_decision_20261018.json).

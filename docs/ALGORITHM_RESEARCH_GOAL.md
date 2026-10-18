@@ -12,6 +12,13 @@ SHA-256 为 1ebd4fb3df90a74c3fc2023cc16cecf26df63da1492c93a416fffb346f1e95d5；
 
 ## 总目标
 
+2026-10-18 已补齐[当前原生声明路径的计数接线](hz_native_counted_envelope_20261018.md)：
+两臂都使用pair-scoped精确检查；去掉旧字符串出口并替换frame，纳入允许短读的来源复制。
+条件完整遍历上界为COO 165,180,064,388／行块165,180,263,928 Work，不是观测、配额
+或时长预测。已有来源/consumer经文件与AST核对继承，未重复计seal。实时checkpoint捕获、
+新版外层元数据和自有峰值寿命仍未闭合；下一静态工作只处理这些具体缺项，不再重复下界或
+小控制。本轮不改运行时、额度或接受门，不运行原生/实模/GPU，G1–G6保持OPEN。
+
 2026-10-18 原生控制后已完成[当前完整拓扑准入复核](hz_native_full_shape_decision_20261018.md)：
 三份Snapshot／两次独立lowering的必需循环下界为83,536,416 Work，非已执行计数或总上界；
 首次Snapshot已超过8M。仅保留production与fresh replay逐参数合法性检查也有2P>8M。
