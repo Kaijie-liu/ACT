@@ -1,5 +1,22 @@
 # MoE project handoff — current entry point
 
+Endpoint seven-position freeze CANDIDATE archived, NOT READY: 2026-10-19.
+See [candidate identity and precise caller blocker](hz_endpoint_midpoint_freeze_candidate_20261019.md)
+and [read-only review](hz_endpoint_midpoint_freeze_review_20261019.json).
+Candidate bb7bdadda356 is 77,475 canonical bytes; seven positions/six profiles,
+22 component names, old three sources, CPU-only129evaluations/128forwards unchanged.
+Historical source members and six primary environment files rehashed without factories.
+Native60/component62/batch74 code identities include execute-then-observe caller order.
+Three active approval registries unchanged; native26, endpointEMPTY. Future32-profile
+registry is a byte-exact projection ONLY, not activation or execution authorization.
+Critical blocker: no actual pre-existing trusted caller host has been bound. Function
+entry excludes a fresh interpreter/import startup. Caller code is NOT a running host;
+do not launch new Python and call its startup free. Candidate explicitly NOT_READY.
+Next needs a concrete trusted-host/startup-accounting decision, retaining all caps;
+then a separately approved execution freeze. No more wrapper/control expansion.
+Static11entry/4bootstrap/74dependencies and candidate checks pass; zero runtime
+controls/source factories/native/model/GPU. No efficacy claim; G1-G6 remain OPEN.
+
 Endpoint trusted outer observation prepared, STATIC ONLY: 2026-10-19.
 See [launch, reception and unchanged cost contract](hz_endpoint_observer_preparation_20261019.md).
 Default-off V2 freeze adds session owner and trusted caller-return binding. Existing

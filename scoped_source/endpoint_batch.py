@@ -18,6 +18,7 @@ ORDER = ('components','guarded_baseline','guarded_midpoint','mixed_midpoint',
          'mixed_baseline','midpoint_block','partial_candidate')
 SEEDS = ('scoped_source/endpoint_batch.py','scoped_source/endpoint_component_supervised.py',
          'scoped_source/endpoint_batch_observer.py','scoped_proof/owned_session.py',
+         'scripts/endpoint_midpoint_caller.py',
          'scripts/run_endpoint_midpoint_controls.py','scripts/audit_endpoint_midpoint_controls.py',
          'scripts/endpoint_midpoint_components.py','scoped_source/scaled_endpoint_controls.py')
 LIMITS = dict(seconds=300,cumulative_seconds=2100,final_reserve_seconds=FINAL_RESERVE,

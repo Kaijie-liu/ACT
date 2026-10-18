@@ -7,6 +7,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 FILES=('scoped_source/endpoint_batch.py','scoped_source/endpoint_component_supervised.py',
     'scoped_source/endpoint_batch_observer.py','scoped_proof/owned_session.py',
+    'scripts/endpoint_midpoint_caller.py',
     'scripts/run_endpoint_midpoint_controls.py','scripts/audit_endpoint_midpoint_controls.py',
     'scripts/endpoint_midpoint_components.py','scoped_source/native_supervised.py',
     'scoped_source/native_production.py','scoped_proof/owned_bounded.py')
