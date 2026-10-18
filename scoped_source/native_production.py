@@ -54,11 +54,12 @@ def produce(root, source_spec, config, invocation, code_root, expected_code, wor
     method = validate(config); root = Path(root)
     started = time.monotonic(); initial = dict(work.counts)
     phases = []; archive = None; driver = None
-    life = Lifecycle(method,code_root=code_root,expected_code=expected_code,enabled=True)
-    snapshots = {}
-    from scoped_source.native_protocol import CONTROL_FAULTS
-    require(control is None or control in CONTROL_FAULTS, 'closed test-only production fault')
+    from scoped_source.native_protocol import CONTROL_FAULTS, MIDPOINT_FAULTS
+    require(control is None or control in CONTROL_FAULTS + MIDPOINT_FAULTS, 'closed test-only production fault')
     require(control is None or source_spec['kind'] == 'fixed_control', 'fixed control source only')
+    life = Lifecycle(method,code_root=code_root,expected_code=expected_code,enabled=True,
+                     midpoint_control=control if control in MIDPOINT_FAULTS else None)
+    snapshots = {}
 
     def phase(name, fn):
         begin = time.monotonic(); before = dict(work.counts); done = False

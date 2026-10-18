@@ -1,5 +1,19 @@
 # MoE project handoff — current entry point
 
+Endpoint component/fault drivers prepared, NOT EXECUTED: 2026-10-19.
+See [control preparation and open cost boundaries](hz_endpoint_dual_control_preparation_20261019.md).
+Default-off V1 fault seam is after evaluation127/best/forward; fixed synthetic
+sources and midpoint identity only. V2 and both approval registries stay unchanged.
+Prepared 22-name component body has no CLI; three successful single-tile searches
+and one expected-error search are only FUTURE scope. No source factory or Torch ran.
+The first-position relocation fixture builds its OWN fixed-dual mixed package,
+no extra optimizer or historic package. Numerical dual reorder is recomputed,
+not intrinsically rejected; early/midway fault doubles are not actual 8M exhaustion.
+Batch authority, whole-position/cumulative timing, partial receipt/cleanup audit
+and joint memory/outer metadata remain unfinished. No new runnable freeze exists.
+Next: finish those bounded batch interfaces, not another algorithm/control expansion;
+execution still needs a separately approved freeze. G1-G6 and full-source admission OPEN.
+
 Endpoint midpoint implementation authorized and completed, NOT EXECUTED: 2026-10-19.
 See [default-off implementation and finite control draft](hz_endpoint_dual_implementation_20261019.md).
 User authorized implementation plus drafting only; no runtime/control/source/model/GPU run.

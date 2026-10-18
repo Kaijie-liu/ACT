@@ -6,6 +6,7 @@ All exact acceptance is performed against the original CheckedSharedForest.
 """
 import math
 import struct
+import time
 from fractions import Fraction as F
 
 import torch
@@ -15,7 +16,7 @@ from scoped_source.check_shared_source import CheckedSharedForest
 from scoped_source.check_scaled_references import checked
 from scoped_source.shared_source import SourceLocal
 from scoped_source.direct_lifecycle import RootLease
-from scoped_source.hz_request_store import identity, require
+from scoped_source.hz_request_store import compact, identity, require
 from scoped_source.native_method import MIDPOINT_SCHEMA, validate
 
 Operator = reference_operator()
@@ -273,10 +274,13 @@ class DualTile:
 
 class Proposer:
     """Default V3 search, optional bound-identified last midpoint update."""
-    def __init__(self, config, *, enabled=False):
+    def __init__(self, config, *, enabled=False, midpoint_control=None):
         require(enabled is True, 'native proposer opt-in')
         self.method = validate(config)
         self._midpoint = self.method['schema'] == MIDPOINT_SCHEMA
+        require(midpoint_control in (None, 'midpoint_block', 'midpoint_error')
+                and (midpoint_control is None or self._midpoint), 'closed midpoint control')
+        self._midpoint_control = midpoint_control
         self._method_identity = identity(self.method)
         self.state = 'NEW'
         self.operator = self.forest = self.work = self.tile = None
@@ -350,6 +354,16 @@ class Proposer:
                     if step == 127 and mates:
                         roots._check()
                         require(identity(self.method) == self._method_identity, 'native search method unchanged')
+                        if self._midpoint_control is not None:
+                            # Finite test seam, not an arbitrary callable or a
+                            # production strategy. The outer profile must bind it.
+                            print(compact(dict(control=self._midpoint_control,step=step,
+                                method=self._method_identity,request=self.forest.request,
+                                pair=list(tasks[0].pair),search=dict(self.stats['search']),
+                                work=dict(work.counts))).decode(),flush=True)
+                            if self._midpoint_control == 'midpoint_error':
+                                raise RuntimeError('CONTROL_INJECTED_midpoint_error')
+                            while True: time.sleep(.05)
                         for g in groups:
                             g['z'] = midpoint_update(g['best'], g['kind'], mates, k, work)
                             payload = 8*g['best'].shape[0]*(k+3)

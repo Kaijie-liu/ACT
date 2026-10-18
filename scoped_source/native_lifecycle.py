@@ -49,9 +49,14 @@ def submit_owned_duals(driver, token, dual, publish, *, native):
 
 
 class Lifecycle:
-    def __init__(self, config, *, code_root, expected_code, enabled=False):
+    def __init__(self, config, *, code_root, expected_code, enabled=False, midpoint_control=None):
         require(enabled is True, 'native lifecycle opt-in')
         self.method = validate(config); self.proposer = None
+        from scoped_source.native_method import MIDPOINT_SCHEMA
+        require(midpoint_control in (None, 'midpoint_block', 'midpoint_error')
+                and (midpoint_control is None or self.method['schema'] == MIDPOINT_SCHEMA),
+                'closed opt-in midpoint lifecycle control')
+        self.midpoint_control = midpoint_control
         self.lease = None; self.closed = False
         self.code_root, self.expected_code, self.native = code_root, expected_code, None
 
@@ -59,7 +64,8 @@ class Lifecycle:
         require(not self.closed and self.proposer is None, 'one native lifecycle setup')
         from scoped_source.native_loader import load
         self.native = load(self.code_root, self.expected_code, work)
-        self.proposer = self.native.Proposer(self.method, enabled=True)
+        self.proposer = self.native.Proposer(self.method, enabled=True,
+                                             midpoint_control=self.midpoint_control)
         self.proposer.setup(forest, work)
 
     def submit(self, driver, publish):

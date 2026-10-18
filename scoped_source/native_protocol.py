@@ -26,6 +26,7 @@ STAGES = ('production', 'replay', 'reception')
 CONTROL_FAULTS = ('source_binding', 'setup_error', 'proposal_block', 'close_error',
     'partial_candidate', 'replay_tamper', 'reception_block', 'late_receipt',
     'limit_mismatch', 'cleanup_unconfirmed')
+MIDPOINT_FAULTS = ('midpoint_block', 'midpoint_error')
 META_CAPS = {'invocation.json':REPORT_CAP, 'controller.json':REPORT_CAP,
              'terminal.json':REPORT_CAP, 'controller.log':REPORT_CAP}
 for _stage in STAGES:
@@ -95,8 +96,11 @@ def validate_profile(value):
     require(type(value) is dict and set(value) in (base, base | {'control'})
         and value['schema'] == 'NATIVE_SHARED_EXECUTION_V1', 'closed execution profile')
     validate(value['method']); source_spec(value['source'])
-    require(value.get('control') is None or value['control'] in CONTROL_FAULTS,
+    require(value.get('control') is None or value['control'] in CONTROL_FAULTS + MIDPOINT_FAULTS,
             'closed separately registered control fault')
+    from scoped_source.native_method import MIDPOINT_SCHEMA
+    require(value.get('control') not in MIDPOINT_FAULTS or value['method']['schema'] == MIDPOINT_SCHEMA,
+            'midpoint fault requires midpoint method')
     require(value.get('control') is None or value['source']['kind'] == 'fixed_control',
             'fault injection forbidden for declared real artifacts')
     require(value['policy'] == dict(POLICY) and type(value['seconds']) is int and value['seconds'] == 300,
