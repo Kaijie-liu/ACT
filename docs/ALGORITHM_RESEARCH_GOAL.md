@@ -12,6 +12,13 @@ SHA-256 为 1ebd4fb3df90a74c3fc2023cc16cecf26df63da1492c93a416fffb346f1e95d5；
 
 ## 总目标
 
+2026-10-18 已进一步[对账归档拓扑与对象生命周期](hz_native_storage_lifetimes_20261018.md)：
+来源重算顺序与同时驻留分开；原生operator/best dual在exact消费时仍存活；行块补计node索引。
+清单重复与计数字段可用符号公式，外置caller回执字节单列（原计时已包含其写出）。
+这些命名payload不是全heap/RSS或实测收益。完整生成元数据和自有Python对象合同仍需联合
+闭合；不重复小控制、不据组成小计提额或准入。下一静态草案只绑定剩余profile/source、
+schema、清理目录及对象临时量，不改原检查、300秒与G1–G6的OPEN状态。
+
 2026-10-18 已补齐[当前原生声明路径的计数接线](hz_native_counted_envelope_20261018.md)：
 两臂都使用pair-scoped精确检查；去掉旧字符串出口并替换frame，纳入允许短读的来源复制。
 条件完整遍历上界为COO 165,180,064,388／行块165,180,263,928 Work，不是观测、配额

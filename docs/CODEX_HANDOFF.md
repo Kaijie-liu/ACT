@@ -1,5 +1,20 @@
 # MoE project handoff — current entry point
 
+Native storage/lifetimes reconciled: 2026-10-18.
+See [named payload, archive formulas and remaining joint contract](hz_native_storage_lifetimes_20261018.md)
+and [read-only recomputable record](hz_native_storage_lifetimes_20261018.json).
+Three sequential source traversals are not three simultaneously live banks.
+Current row-block resident tensor subtotal is 62,712,192 B including its missing
+node-index term; COO is 330,081,664 B. These omit Python/native overhead, not RSS.
+Operator and best dual survive into exact checking. Census relative names and
+duplication are now counted; final caller receipt is an additional archive file
+whose write time was already charged. Old arena module hashes differ: 13 unchanged
+AST components and reviewed interning/objective differences justify only the
+retained payload envelope. Complete metadata generation/self-owned heap remain
+open. Next static contract should jointly bind profile/source/schema lengths,
+cleanup directories and Python object/temporary representation, not repeat these
+counts or launch more small controls. No runtime, policy or execution changes.
+
 Implemented native counted-path envelope reconciled: 2026-10-18.
 See [the scope, formulas and remaining metadata gaps](hz_native_counted_envelope_20261018.md)
 and [recomputable bound record](hz_native_counted_envelope_20261018.json).
