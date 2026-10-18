@@ -1,5 +1,23 @@
 # MoE project handoff — current entry point
 
+R2 full-topology amortization rejected by static accounting: 2026-10-18.
+See [derivation and explicit branch boundary](hz_support_amortization_20261018.md)
+and [source-bound integer assessment](hz_support_amortization_20261018.json).
+For registered Shared/tuple-node topology, full present completion has net Work
+saving at most -1,134,330 per checker; even favorable completed missing patterns
+give at most -1,134,315. These are optimistic count uppers, NOT a model run or
+admission: compensation costs ignored and pair endpoint choices relaxed. ReLU
+rho=4u+v but mandatory factors=3u; 135 symmetric vertices cover the convex upper.
+Stop promoting eager R2 from its tiny synthetic gain. No new verifier/control
+execution, production edits, quota or acceptance changes. R2 records remain valid.
+A future setup gate is a DIFFERENT branch contract: original GLOBAL_ONLY math
+versus fully checked/sealed SCOPED_READY, with preparation failure always terminal.
+Skipping scope-only preparation does not preserve every R2 canonical-map fault
+rejection; do not call it unchanged checks without this explicit scope boundary.
+Such implementation/controls require a scoped decision; not authorized here.
+Wire has separate descriptor costs; old exact G/H formulas do not cover it.
+Real/GPU, complete source/resource admission and G1-G6 remain OPEN.
+
 Scoped traversal R2 finite controls completed: 2026-10-18.
 See [results and stop decision](hz_support_traversal_controls_results_20261018_r2.md)
 and [source-bound compact archive](hz_support_traversal_controls_results_20261018_r2.json).
