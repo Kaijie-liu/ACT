@@ -1,0 +1,88 @@
+{
+  "anchors": {
+    "act/back_end/moe/block_support.py": "3becfbb63ef099974662d1af51d2a5fd79dfeb8fabc73b461f6d5160ebfa33b9",
+    "act/back_end/moe/check_block_support.py": "fde876633c03c72fcb01a016562351f7a1c585c04008554e3f59d81e8d8979d6",
+    "docs/hz_native_full_shape_decision_20261018.json": "5e6ff3ba621d56c50c1ef059503bd6309329ab60775d9b38a4dabf2b3b0566f3",
+    "docs/hz_native_phase_contract_20261018.json": "8065ad0347065365e4ce79a16acc643e2ab99a317d900139f060c5a9ac24489e",
+    "docs/hz_support_traversal_review_20261018.md": "f8e4ff73804da6cd375e24636cb70c63a324a68f6baa2a50782fee016f26b897",
+    "scoped_source/bounded_runtime.py": "17846fe861f00d67c95046c5250ba09a6203bee784c9edb3129eca0e180ce133",
+    "scoped_source/check_affine_references.py": "a0d688ee82bf88c42945edfd3abc9591a46998c01cf236cbf752ad5b549e9c62",
+    "scoped_source/check_direct_source.py": "5c54c26662c370ecf8a434c1a237d3e99f5fced2e35638e09fd0d9656c843fe0",
+    "scoped_source/check_scaled_references.py": "ba2701eff6611276251f9debf803c9138a57a70807a67d262ad9e876e831a261",
+    "scoped_source/check_shared_source.py": "18621a4865854ebcb162937fcca53ceee1207ba045804383676c35c377eeabe3",
+    "scoped_source/check_source_dag.py": "58e5e2158843631c9e6ed324cfeeb2eb38e51df1205d2e14d1ed8ac8ce634458",
+    "scoped_source/forest_endpoints.py": "86396e9c662ba8c91f6ac3921dc7f410d9b977937df38a9fb782f82991c50a4c",
+    "scoped_source/hz_request_store.py": "7cb2be7647039f59d3c896b7856f634f43be9c532d9d2fd43632be09ab3230e0",
+    "scoped_source/pair_workspace.py": "39258a61112e86700957f1b89e35a008164a928652744f0f500d8051ad56fdc3",
+    "scoped_source/scaled_endpoints.py": "1ea0bf1aa8cc8a6f184df200f2124754bb272a9c89a3ae4dfef1ac353a3b0fe2",
+    "scoped_source/shared_source.py": "c2db29b77829cb68b910b067047db44ce8291cf29befa3df87229ccb6dfe4482",
+    "scoped_source/sparse_build.py": "441ecfee68ee82bfcf4f556be5f60c02573100610cb39c033c1c5bd061cee9c1",
+    "scoped_source/sparse_check.py": "bc3538f2b09852fac61aab231a96649c3babeb737bc7aa9586fefe1f5414b606",
+    "scripts/assess_support_traversal.py": "ceba3ad8bc76818483ad3baba1921e601200b01988cf241b04e1db6cd8ed0bd7"
+  },
+  "base_head": "2daaaf7d39a5cc285ac9d7094363f45c2d780cbc",
+  "correctness": {
+    "all_factor_checks_unchanged": true,
+    "counterexample": {
+      "correct": "-3/4",
+      "unsound": "1/4"
+    },
+    "gate_planning_unchanged": true,
+    "property_only_rejected": true,
+    "same_candidate_arithmetic_equivalence": "conditional on complete bindings, descending order and unchanged checks",
+    "seed_rule": "complete checked objective or nonzero proposed dual roots, closed under refs",
+    "zero_role_checks_unchanged": true
+  },
+  "counts": {
+    "allowed_count_range": [
+      -11019456,
+      9882432
+    ],
+    "complete_scans_max": {
+      "blocks_per_checker": 252,
+      "endpoints": 504,
+      "tiles_per_checker": 84,
+      "total_scans": 1568,
+      "two_endpoint_pairs": 28
+    },
+    "complete_scans_min": {
+      "blocks_per_checker": 140,
+      "endpoints": 252,
+      "tiles_per_checker": 56,
+      "total_scans": 840,
+      "two_endpoint_pairs": 0
+    },
+    "condition": "all endpoint candidates present and both checkers complete",
+    "conditional_all_unstable_saving": 7560000,
+    "counts_are_runtime_observations": false,
+    "double_endpoint_pair": "63*(N-S)-81*S",
+    "extra_validation_cost_included": false,
+    "full_two_checker_saving": "1512*Xe-4536*Ns+1088640",
+    "illustrative_complete_selector_cost": 1512,
+    "illustrative_selector_cost_per_call": 1,
+    "reverse_extra_coefficient_gets_per_selected_node": 3,
+    "same_call_saving": "(b+1)*(N-S)-3*S",
+    "scope_construction_N_loops_max": 336,
+    "selector_is_implemented": false,
+    "selector_threshold": "gain > C_select + C_extra; extra checks/storage/release are not free",
+    "single_endpoint_pair": "32*(N-S)-42*S",
+    "zero_role_extra_pullbacks": 0
+  },
+  "decision": {
+    "dynamic_cone": "STOP_NO_NET_ADVANTAGE_EVIDENCE",
+    "full_shape_admitted": false,
+    "goals": "G1-G6 OPEN",
+    "gpu": 0,
+    "models": 0,
+    "native_calls": 0,
+    "next_implementation": "separate approval required for default-off counted scope/global choice and bounded controls",
+    "production_controls": 0,
+    "property_only": "REJECT_UNSOUND",
+    "quotas_changed": false,
+    "runtime_changes": 0,
+    "scientific_upgrade": false,
+    "scope_reverse": "STRONG_REFERENCE_WITH_CONDITIONAL_COST_NOT_NEW_DOMAIN",
+    "source_parameter_floor": 13922736
+  },
+  "schema": "V3_SUPPORT_TRAVERSAL_STATIC_REVIEW"
+}

@@ -1,5 +1,22 @@
 # MoE project handoff — current entry point
 
+V3 support traversal reviewed, static algorithm decision: 2026-10-18.
+See [sound seeds, strong reference and coupled cost](hz_support_traversal_review_20261018.md)
+and [source-bound arithmetic](hz_support_traversal_review_20261018.json).
+Reject property-only pruning: nonzero guard duals can make it falsely positive.
+Keep all source/dual/sign/zero/residual/norm checks and arithmetic order. Existing
+Scope reverse is the minimum strong reference; per-call saving is
+(b+1)*(N-S)-3*S before additional checks/selection, so it can be negative.
+With all candidates present and both checkers complete, 504 endpoints mean 1,568
+pullbacks including 56 unchanged gate scans; zero role adds no extra pullback.
+All-missing blocks skip dual pullback; this is not arbitrary-terminal accounting.
+Stop new dynamic-cone implementation without advantage over this reference.
+Next implementation, if separately approved: default-off counted scope/global
+choice and finite same-candidate/failure controls, not another resource wrapper.
+H1 closure and multi-objective/block support already exist; this does not close
+G1 or full-model admission. Current authority remains static: no controls,
+native/model/GPU runs, quota changes or scientific upgrades in this stage.
+
 V2 phase contract concluded; stop further wrapper/control expansion: 2026-10-18.
 See [the ownership/terminal contract and bounded stop decision](hz_native_phase_contract_20261018.md)
 and [static schema arithmetic](hz_native_phase_contract_20261018.json).
