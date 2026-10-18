@@ -12,6 +12,13 @@ SHA-256 为 1ebd4fb3df90a74c3fc2023cc16cecf26df63da1492c93a416fffb346f1e95d5；
 
 ## 总目标
 
+2026-10-18 已补齐[生成表示与完整归档的参数化合同](hz_native_generation_contract_20261018.md)：
+注册forest header上界1,652,449字节，完整packet 6,981,605字节／107页，不再仅用接受cap。
+来源chunk/rank与同值不同JSON类型、四份census、外置caller回执均显式核算；较大的Python
+构造容器给出ABI绑定的组成界，仍不是完整heap/RSS。下一静态工作集中补齐自有对象阶段
+重叠、整数实际分配容量和不可变元数据／清理绑定，不重复header或小控制。
+没有新配额、运行时改动或实模／GPU执行；旧准入拒绝与G1–G6 OPEN保持。
+
 2026-10-18 已进一步[对账归档拓扑与对象生命周期](hz_native_storage_lifetimes_20261018.md)：
 来源重算顺序与同时驻留分开；原生operator/best dual在exact消费时仍存活；行块补计node索引。
 清单重复与计数字段可用符号公式，外置caller回执字节单列（原计时已包含其写出）。

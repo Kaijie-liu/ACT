@@ -1,5 +1,18 @@
 # MoE project handoff — current entry point
 
+Native generation contract parameterized: 2026-10-18.
+See [generated header, complete archive formulas and remaining heap boundary](hz_native_generation_contract_20261018.md)
+and [recomputable source/schema/ABI record](hz_native_generation_contract_20261018.json).
+Registered forest header is bounded by 1,652,449 B; packet 6,981,605 B / 107 pages.
+Archive formulas include actual source chunk/rank layout, all census copies and
+outside caller receipt. Equality-validated float/bool metadata is not assumed to
+have integer JSON spelling. Large constructor Python components are bounded,
+but are not full heap/RSS or a cost measurement. Full own-object phase joins,
+integer allocated capacities and immutable metadata/cleanup bindings remain.
+Next static work closes those specific gaps; do not repeat header counts or small
+native controls. No new quota, production/parser change, real/GPU execution or
+scientific claim. Approved finite CPU controls below are already completed.
+
 Native storage/lifetimes reconciled: 2026-10-18.
 See [named payload, archive formulas and remaining joint contract](hz_native_storage_lifetimes_20261018.md)
 and [read-only recomputable record](hz_native_storage_lifetimes_20261018.json).
