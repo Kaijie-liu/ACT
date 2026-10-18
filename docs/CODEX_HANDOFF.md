@@ -1,5 +1,23 @@
 # MoE project handoff — current entry point
 
+Joint resource-interface V2 implemented default-off, statically checked: 2026-10-18.
+User approved the single implementation scope after the proposal below; that
+implementation decision is no longer a blocker. See [scope and remaining gates](hz_native_resource_implementation_20261018.md)
+and [recomputable source-only record](hz_native_resource_implementation_20261018.json).
+New C/L/E/R/I binding, named reservations, bounded reads/encoding/observation,
+partial terminal and post-cleanup caller acceptance are wired; old mathematical
+modules, policies and 50 frozen anchors remain unchanged. New authority registry
+is EMPTY: no runtime controls, native calls, real models or GPU were run.
+V2 deliberately accepts only the three fixed synthetic declaration factories;
+external declared-artifact first-parser binding remains open. Private artifacts
+and relocated copies require no concurrent external writer. Canonical source
+support is distinct from raw/file limits; no numerical or artifact cap increased.
+Next is a separately authorized finite control freeze with reviewed concrete
+slot/joint/failure bounds, identical paired C/L, trusted launcher t0 and portable
+return archival. Do not reuse old 26-control approvals. Full own heap and full
+eight-expert Work/membership admission remain unclosed. Static implementation is
+not runtime validation or an algorithm/scientific gain; G1–G6 remain OPEN.
+
 Joint resource-interface proposal drafted, not implemented: 2026-10-18.
 See [the common default-off interface and authority boundary](hz_native_resource_interface_proposal_20261018.md)
 and [source-audited non-executable design](hz_native_resource_interface_proposal_20261018.json).

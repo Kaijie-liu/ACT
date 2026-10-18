@@ -1,0 +1,154 @@
+"""V2 production: original mathematics, explicit preflight and binding capsule.
+
+Default-off through the separate V2 registry. Not executed by implementation tests.
+"""
+from pathlib import Path
+import os
+import time
+
+from scoped_source.hz_request_store import POLICY, require, identity, compact
+from scoped_source.native_method import validate
+from scoped_source.native_lifecycle import Lifecycle
+from scoped_source.direct_candidates import Driver
+from scoped_source.native_result import Writer
+from scoped_source.native_package import CODE_FILES, MANIFEST, BUNDLE
+from scoped_source.native_resources import materialize
+from scoped_source.native_resource_portable import AUXILIARY_CODE
+from scoped_source.wire_archive import Archive
+from scoped_source.direct_supervised import census
+from scoped_source.native_protocol import META_RESERVE, META_MEMBERS
+
+
+
+def acquire(root, spec, work, session):
+    from scoped_source.native_production import acquire as original_acquire
+    from scoped_source.native_resource_protocol import layout_preflight
+    layout = session.envelope['layout']
+    # Fixed factories write bytes but do not instantiate TensorRows. General
+    # declared-artifact intake is deliberately refused until its FIRST parser
+    # can consume the same bound raw bytes; no preflight/reopen shortcut.
+    require(spec['kind'] == 'fixed_control', 'V2 no external mutable source intake')
+    owned = original_acquire(root,spec,work)
+    layout_preflight(owned.root,layout,spec['source'],session.resources,work)
+    return owned
+
+def produce(root, source_spec, config, invocation, code_root, expected_code, work, *, session, invocation_record, enabled=False, progress=None, control=None):
+    require(enabled is True and control is None, 'V2 production explicit opt-in; no inherited faults')
+    session.resources.active('phase')
+    method = validate(config); root = Path(root)
+    started = time.monotonic(); initial = dict(work.counts)
+    phases = []; archive = None; driver = None
+    life = Lifecycle(method,code_root=code_root,expected_code=expected_code,enabled=True)
+    snapshots = {}
+    from scoped_source.native_protocol import CONTROL_FAULTS
+    require(control is None or control in CONTROL_FAULTS, 'closed test-only production fault')
+    require(control is None or source_spec['kind'] == 'fixed_control', 'fixed control source only')
+
+    def phase(name, fn):
+        begin = time.monotonic(); before = dict(work.counts); done = False
+        try:
+            work.tick()
+            if progress: progress(name,work)
+            if control == 'setup_error' and name == 'native_setup':
+                raise RuntimeError('CONTROL_INJECTED_native_setup')
+            if control == 'proposal_block' and name == 'propose_check/0':
+                while True: time.sleep(.05)  # deliberately non-cooperative; real shared deadline
+            if control == 'close_error' and name == 'native_close':
+                raise RuntimeError('CONTROL_INJECTED_native_close')
+            value = fn(); work.tick(); done = True; return value
+        finally:
+            phases.append(dict(name=name,complete=done,seconds=time.monotonic()-begin,
+                work={k:work.counts[k]-v for k,v in before.items()}))
+
+    try:
+        spec = dict(source_spec)
+        if control == 'source_binding': spec['source'] = '0'*64
+        owned = phase('source_acquire',lambda:acquire(root,spec,work,session))
+        outside = phase('initial_storage',lambda:census(root,work.deadline))
+        bytes_out = outside['bytes']-owned.inventory['bytes']
+        members_out = len(outside['files'])-len(owned.inventory['files'])
+        remaining_members = POLICY['members']-members_out-META_MEMBERS
+        require(remaining_members > 0, 'native archive member reserve')
+        class RequestArchive(Archive):
+            def put(self,*args,**kw):
+                require(len(self.attempted) < remaining_members, 'whole native request members')
+                return super().put(*args,**kw)
+        archive = phase('archive_start',lambda:RequestArchive(root/'artifacts',work,
+            limit=POLICY['total_bytes']-bytes_out-META_RESERVE))
+        def put(name, raw):
+            return dict(archive.put('package/'+name,raw),file=name)
+        from scoped_source.shared_archive import transfer
+        phase('source_transfer',lambda:transfer(owned,archive,member_limit=remaining_members))
+        from scoped_source.shared_build import build
+        packet, construction = phase('source_construct',lambda:build(archive.root/'package/source',owned.source,work=work,enabled=True))
+        fr = phase('forest_publish',lambda:packet.publish(put))
+        from scoped_source.check_shared_source import CheckedSharedForest
+        f = phase('source_check',lambda:CheckedSharedForest(packet,archive.root/'package/source',owned.source,
+            expected=fr['sha256'],work=work,enabled=True))
+        packet = None
+        from scoped_source.scaled_endpoints import contract
+        c = phase('property_plan',lambda:contract(f))
+        cr = phase('contract_publish',lambda:put('contract.json',materialize(c,session.resources,'metadata',8192)))
+        driver = phase('driver_start',lambda:Driver(f,c,expected=identity(c),work=work,pair_scoped=True))
+        phase('native_setup',lambda:life.setup(f,work))
+        refs = []
+        def publish(i, raw):
+            if control == 'partial_candidate' and i == 0:
+                put(f'tiles/{i:04d}.bin',raw[:-1])
+                raise OSError('CONTROL_INJECTED_partial_candidate_publication')
+            ref = put(f'tiles/{i:04d}.bin',raw); refs.append(ref)
+            return ref['sha256'],ref['bytes']
+        for i in range(driver.session.tile_count):
+            phase(f'propose_check/{i}',lambda:life.submit(driver,publish))
+        phase('native_close',life.close)
+        snapshots['native'] = dict(life.proposer.stats)
+        sink = Writer(put,method,invocation,fr['sha256'],refs,work)
+        result = phase('production_finish',lambda:driver.finish(sink=sink))
+        snapshots.update(driver=dict(driver.costs),owner=dict(driver.owner.stats))
+        def seal():
+            code = []
+            for name in CODE_FILES:
+                work.tick(); path = Path(code_root)/name
+                require(not path.is_symlink() and path.is_file() and path.stat().st_size <= 64*2**10,
+                        'bounded native checker code')
+                ref = archive.copy(path,'package/code/'+name)
+                require(ref['sha256'] == expected_code[name], 'packaged checker matches frozen implementation')
+                code.append(dict(ref,file='code/'+name))
+            auxiliary = []
+            for name in AUXILIARY_CODE:
+                work.tick()
+                ref = (next(r for r in code if r['file'] == 'code/'+name) if name in CODE_FILES
+                       else archive.copy(Path(code_root)/name,'package/code/'+name))
+                require(ref['sha256'] == expected_code[name], 'V2 auxiliary implementation')
+                auxiliary.append(dict(ref,file='code/'+name))
+            capsule = dict(schema='NATIVE_RESOURCE_BINDING_V2',
+                envelope=session.envelope, invocation=invocation_record,
+                bindings=session.refs(), invocation_hash=invocation, auxiliary=auxiliary,
+                source_scope='DECLARED_SOURCE_NOT_CHECKPOINT_OR_NATIVE_FLOAT_PROOF')
+            capsule_ref = put('bindings.json',materialize(capsule,session.resources,'metadata',2**20))
+            snapshots['resource_binding'] = capsule_ref
+            m = dict(schema=MANIFEST,source=dict(directory='source',sha256=owned.source),forest=fr,
+                contract=cr,tiles=refs,code=code,method=method,invocation=invocation,result=dict(sink.ref))
+            put('manifest.json',materialize(m,session.resources,'metadata',2**20))
+            entries = [dict(r,file=n.removeprefix('package/')) for n,r in sorted(archive.entries.items())]
+            raw = materialize(dict(schema=BUNDLE,manifest='manifest.json',members=entries),session.resources,'metadata',2**20)
+            require(len(raw) <= 2**20, 'bounded native bundle')
+            br = put('bundle.json',raw); archive.audit(); return br
+        br = phase('package_publish',seal)
+        outcome = dict(result=result,result_ref=dict(sink.ref),package=br,source=owned.source,
+            request={k:f.declaration[k] for k in ('experts','classes','label')},
+            source_scope='DECLARED_BINARY64_ARTIFACT_NOT_CHECKPOINT_CORRESPONDENCE',
+            source_acquire_seconds=owned.seconds,construction=construction,snapshots=snapshots,
+            phases=phases,initial_work=initial)
+    finally:
+        begin = time.monotonic(); clean = False
+        try:
+            if not life.closed: life.close()
+            if driver is not None and not driver.closed: driver.abort()
+            clean = True
+        finally:
+            phases.append(dict(name='production_cleanup',complete=clean,seconds=time.monotonic()-begin,
+                               work={k:0 for k in work.counts}))
+    work.tick()
+    outcome.update(work=dict(work.counts),seconds=time.monotonic()-started)
+    return outcome
