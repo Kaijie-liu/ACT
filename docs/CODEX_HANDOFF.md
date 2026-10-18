@@ -1,5 +1,20 @@
 # MoE project handoff — current entry point
 
+Endpoint midpoint implementation authorized and completed, NOT EXECUTED: 2026-10-19.
+See [default-off implementation and finite control draft](hz_endpoint_dual_implementation_20261019.md).
+User authorized implementation plus drafting only; no runtime/control/source/model/GPU run.
+method(endpoint_midpoint=True) has a separate closed identity; old method defaults stay.
+Same-property mates bind live roots, pair/gate, objective/query/slot; step127 uses a
+fresh midpoint of both best columns. 129 evaluations and 128 forwards remain;
+paired targets use 127 gradient updates plus one midpoint, singleton stays old.
+Original exact checker, roles, policy and 300s unchanged. V2 old common contract
+explicitly rejects new search; both approval registries are unchanged.
+Seven future managed positions / 22 component checks are a DRAFT, not a freeze
+or runnable new batch. No repeated permission needed for this finished implementation;
+future control drivers, bounded costs, frozen identities and execution approval remain.
+Only static/AI source review supports this implementation; no efficacy or runtime claim.
+Old factor faults remain 2/2 and old R1 FAIL. Full-source admission and G1-G6 stay OPEN.
+
 Endpoint dual search hypothesis reviewed, STATIC ONLY: 2026-10-19.
 See [algorithm delta and admission decision](hz_endpoint_dual_static_decision_20261019.md).
 Current native V3 batches targets but optimizes their dual columns independently.

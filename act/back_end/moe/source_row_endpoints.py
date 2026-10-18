@@ -6,6 +6,7 @@ All exact acceptance is performed against the original CheckedSharedForest.
 """
 import math
 import struct
+from fractions import Fraction as F
 
 import torch
 
@@ -14,10 +15,117 @@ from scoped_source.check_shared_source import CheckedSharedForest
 from scoped_source.check_scaled_references import checked
 from scoped_source.shared_source import SourceLocal
 from scoped_source.direct_lifecycle import RootLease
-from scoped_source.hz_request_store import require
-from scoped_source.native_method import validate
+from scoped_source.hz_request_store import identity, require
+from scoped_source.native_method import MIDPOINT_SCHEMA, validate
 
 Operator = reference_operator()
+
+
+def endpoint_mates(tasks, roots):
+    """Validate a live private Plan tile, not arbitrary neighboring columns.
+
+    Only the opt-in search uses this additional check. Return complete disjoint
+    two-endpoint groups, or () for a truly singleton gate. Nothing is retained
+    across tiles; the independent exact consumer still checks every obligation.
+    """
+    from scoped_source.forest_endpoints import Task
+    require(type(roots) is RootLease, 'endpoint issued roots')
+    roots._check()
+    driver, work = roots._driver, roots._work
+    require(type(tasks) is tuple and tasks is roots._tasks and 0 < len(tasks) <= 8
+            and all(type(t) is Task for t in tasks), 'endpoint authoritative task tuple')
+    pair = tasks[0].pair
+    d = driver.forest.declaration
+    require(type(pair) is tuple and len(pair) == 2 and all(type(i) is int for i in pair)
+            and 0 <= pair[0] < pair[1] < d['experts'], 'endpoint legal pair identity')
+    gates = []
+    for planned_pair, gate in driver.session.gates:
+        work.visit('row_visits')
+        if planned_pair == pair: gates.append(gate)
+    require(len(gates) == 1, 'endpoint unique planned pair')
+    gate = gates[0]
+    require(type(gate) is tuple and len(gate) == 2 and all(type(q) is F for q in gate)
+            and F(0) <= gate[0] <= gate[1] <= F(1), 'endpoint planned gate bounds')
+    weights = tuple(sorted(set(gate)))
+    classes, label = d['classes'], d['label']
+    offset = str(work.exact(-F(d['margin'])))
+    by_property = {}; slots = set(); queries = set(); last_other = -1
+    for col, task in enumerate(tasks):
+        work.visit('row_visits')
+        require(task.pair == pair and type(task.other) is int and 0 <= task.other < classes
+                and task.other != label and task.other >= last_other and type(task.weight) is F
+                and task.weight in weights, 'endpoint pair/property/weight binding')
+        last_other = task.other
+        right_weight = work.exact(F(1)-task.weight)
+        left = []; right = []
+        for j in range(classes):
+            work.visit('coefficient_visits')
+            q = F(int(j == label)-int(j == task.other))
+            left.append(str(work.exact(task.weight*q)))
+            right.append(str(work.exact(right_weight*q)))
+        left, right = tuple(left), tuple(right)
+        query = identity(dict(forest=driver.forest.identity,request=driver.forest.request,
+                              pair=list(pair),left=left,right=right,offset=offset))
+        slot = identity(dict(contract=driver.contract,query=query,other=task.other,
+                             weight=str(task.weight)))
+        require(task.left == left and task.right == right and task.offset == offset
+                and task.query_id == query and task.slot == slot
+                and slot not in slots and query not in queries, 'endpoint objective/query/slot binding')
+        slots.add(slot); queries.add(query)
+        by_property.setdefault(task.other, []).append((col, task.weight))
+    mates = []
+    for entries in by_property.values():
+        work.visit('row_visits')
+        require(tuple(weight for _, weight in entries) == weights, 'complete ordered endpoint mates')
+        if len(weights) == 2: mates.append((entries[0][0], entries[1][0]))
+    roots._check()
+    return tuple(mates)
+
+
+def midpoint_update(best, kind, mates, width, work):
+    """Fresh current iterate from immutable best columns, with counted work.
+
+    Each pair reads BOTH best columns before either destination is written.
+    This is only a numerical candidate, never an accepting bound. No tensor
+    passed by the caller is modified, including when an exception interrupts us.
+    """
+    work.tick()
+    require(type(width) is int and 0 < width <= 8 and kind in ('ine', 'eq')
+            and type(mates) is tuple and 0 < len(mates) <= 4
+            and all(type(p) is tuple and len(p) == 2
+                    and all(type(i) is int for i in p) and 0 <= p[0] < p[1] < width for p in mates)
+            and sorted(i for p in mates for i in p) == list(range(width)),
+            'complete disjoint midpoint column roster')
+    require(type(best) is torch.Tensor and best.device.type == 'cpu' and best.dtype == torch.float64
+            and best.ndim == 2 and best.shape[1] == width and not best.requires_grad,
+            'midpoint owned CPU dual dimensions')
+    rows = best.shape[0]
+    work.visit('coefficient_visits', rows*width)
+    require(bool(torch.isfinite(best).all()), 'finite endpoint best duals')
+    if kind == 'ine':
+        work.visit('coefficient_visits', rows*width)
+        require(bool((best <= 0).all()), 'nonpositive endpoint best duals')
+    mixed = torch.empty_like(best)
+    for left, right in mates:
+        work.visit('row_visits')
+        # Count explicit scalar source/destination traversals. Native floating
+        # operations are NOT relabelled as independently checked exact arithmetic.
+        work.visit('coefficient_visits', 2*rows)
+        lo = best[:, left]*.5
+        work.visit('coefficient_visits', 2*rows)
+        hi = best[:, right]*.5
+        work.visit('coefficient_visits', 3*rows)
+        middle = lo+hi
+        work.visit('coefficient_visits', rows)
+        require(bool(torch.isfinite(middle).all()), 'finite midpoint candidate')
+        if kind == 'ine':
+            work.visit('coefficient_visits', rows)
+            require(bool((middle <= 0).all()), 'nonpositive midpoint candidate')
+        work.visit('coefficient_visits', 4*rows)
+        mixed[:, left].copy_(middle); mixed[:, right].copy_(middle)
+        del lo, hi, middle
+    work.tick()
+    return mixed
 
 
 class SourceRowOperator(Operator):
@@ -164,10 +272,12 @@ class DualTile:
 
 
 class Proposer:
-    """Same V3 optimization for both representations; setup/propose/close once."""
+    """Default V3 search, optional bound-identified last midpoint update."""
     def __init__(self, config, *, enabled=False):
         require(enabled is True, 'native proposer opt-in')
         self.method = validate(config)
+        self._midpoint = self.method['schema'] == MIDPOINT_SCHEMA
+        self._method_identity = identity(self.method)
         self.state = 'NEW'
         self.operator = self.forest = self.work = self.tile = None
         self.stats = dict(setup_calls=0, propose_calls=0, close_calls=0)
@@ -180,6 +290,14 @@ class Proposer:
         self.operator = op(forest, work)
         self.stats['operator'] = dict(self.operator.stats,
             representation=self.method['producer']['representation'])
+        if self._midpoint:
+            # The operator did not change. Its legacy 'algorithm' field must not
+            # mislabel the actual candidate search in production snapshots.
+            self.stats['operator']['legacy_algorithm_label'] = self.stats['operator'].pop('algorithm')
+            self.stats['search'] = dict(method=self._method_identity,
+                kind=self.method['producer']['kind'], evaluations=0, forward_calls=0,
+                gradient_updates=0, midpoint_updates=0, midpoint_pairs=0,
+                midpoint_helper_float64_payload_upper_bytes=0)
         self.state = 'READY'
 
     def propose(self, tasks, roots):
@@ -194,6 +312,11 @@ class Proposer:
                 'native one-pair bounded tile')
         self.state = 'PROPOSING'; self.stats['propose_calls'] += 1
         op, work = self.operator, self.work
+        if self._midpoint:
+            require(identity(self.method) == self._method_identity, 'native search method unchanged')
+            mates = endpoint_mates(tasks, roots)
+        else:
+            mates = ()
         alpha = torch.zeros((op.shape[0], k), dtype=torch.float64, device='cpu')
         offsets = []
         for col, (d, weights) in enumerate(roots):
@@ -217,14 +340,31 @@ class Proposer:
                     a.index_add_(0, g['ix'], -g['z']); value += (g['rhs']*g['z']).sum(0)
                 residual = op.adjoint(a); value -= residual.abs().sum(0)
                 require(bool(torch.isfinite(value).all()), 'finite candidate value')
+                if self._midpoint: self.stats['search']['evaluations'] += 1
                 good = value > best; best = torch.where(good, value, best)
                 for g in groups: g['best'][:, good] = g['z'][:, good]
                 if step == 128: break
                 points = op.forward(-torch.sign(residual)); rate = .125/math.sqrt(step+1)
+                if self._midpoint:
+                    self.stats['search']['forward_calls'] += 1
+                    if step == 127 and mates:
+                        roots._check()
+                        require(identity(self.method) == self._method_identity, 'native search method unchanged')
+                        for g in groups:
+                            g['z'] = midpoint_update(g['best'], g['kind'], mates, k, work)
+                            payload = 8*g['best'].shape[0]*(k+3)
+                            self.stats['search']['midpoint_helper_float64_payload_upper_bytes'] = max(
+                                self.stats['search']['midpoint_helper_float64_payload_upper_bytes'], payload)
+                        self.stats['search']['midpoint_updates'] += 1
+                        self.stats['search']['midpoint_pairs'] += len(mates)
+                        continue
                 for g in groups:
                     z = g['z'] + rate*(g['rhs'] - points.index_select(0, g['ix']))
                     g['z'] = torch.minimum(z, torch.zeros_like(z, device='cpu')) if g['kind'] == 'ine' else z
+                if self._midpoint: self.stats['search']['gradient_updates'] += 1
         roots._check(); work.tick()
+        if self._midpoint:
+            require(identity(self.method) == self._method_identity, 'native search method unchanged')
         # Explicitly map optimizer ine/eq order to the wire eq/ine order.
         self.tile = DualTile(driver, tasks, roots._token, groups[1]['best'], groups[0]['best'])
         self.state = 'TILE'

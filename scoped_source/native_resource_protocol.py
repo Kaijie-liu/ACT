@@ -62,7 +62,9 @@ def profile(value):
     require(type(value) is dict and set(value) == {'schema','method','source','policy','seconds',
         'as_bytes','file_bytes','rss_bytes','implementation','environment'}
         and value['schema'] == 'NATIVE_SHARED_EXECUTION_V2', 'V2 profile schema')
-    validate(value['method'])
+    method = validate(value['method'])
+    require(method['schema'] == 'NATIVE_SHARED_METHOD_V1',
+            'V2 common contract excludes endpoint midpoint search; separate freeze required')
     from scoped_source.native_protocol import source_spec
     source_spec(value['source'])
     # V2 is not a general external-source intake yet. A raw/layout preflight
