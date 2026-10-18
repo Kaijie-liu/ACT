@@ -1,5 +1,18 @@
 # MoE project handoff — current entry point
 
+Two previously uncompleted factor faults now pass, separate batch: 2026-10-19.
+See [results and stop boundary](hz_pair_factor_faults_results_20261019.md) and
+[hash-bound records](hz_pair_factor_faults_results_20261019.json).
+One frozen run at cbd845653766: two tests, unchanged multi-factor source/forest,
+19 selected factors; missing rejected by membership, self-consistent permutation
+by canonical rank. Nodes already sealed, factors unsealed, readiness false;
+all owned buffers released. Batch about 0.439s, 61,176 artifact bytes, no limits hit.
+Saved-record audit passes; it is NOT a repeat verifier/network proof.
+R1 remains 11/12 FAIL; new batch is 2/2, not a pooled R1 PASS. No production change,
+performance rerun, model/GPU, candidate call or new certificate. The narrow approval
+is now fully exercised. Stop this lifecycle control branch; no automatic repeats.
+Full source floor 13,922,736>8M, membership refusal and G1-G6 remain OPEN.
+
 Two factor fault cases explicitly approved, separately frozen: 2026-10-19.
 See [the narrow follow-up](hz_pair_factor_faults_20261019.md).
 Only missing/permuted factor maps on the EXISTING eight_private_six_outputs
