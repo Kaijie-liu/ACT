@@ -1,5 +1,23 @@
 # MoE project handoff — current entry point
 
+V2 freeze readiness audited, no new execution: 2026-10-18.
+See [the concrete archive/ownership gates and stop decision](hz_native_resource_freeze_readiness_20261018.md)
+and [source-bound arithmetic](hz_native_resource_freeze_readiness_20261018.json).
+The original 8-MiB metadata reserve cannot give both terminal and caller 1 MiB:
+with a 1-MiB controller log, t+c+envelope must fit 1,703,936 bytes. Smaller caps
+require actual success/failure schema bounds, not an arbitrary reduction.
+Include fixed-factory templates, V2 capsule/code/bundle, four persisted censuses,
+bootstrap copies and the not-yet-persisted return anchor. Logical lease release
+does not release the returned object. Complete self-owned heap/slots remain null.
+Next is one object/slot/phase and return-anchor contract on THIS interface, not
+another wrapper or repeated old controls. V2 control freeze is not yet ready.
+Even ideally removing one source Snapshot leaves a 69,610,392-Work loop floor;
+retaining only two parameterwise checks already needs 13,922,736 > 8M. Bank
+reuse alone cannot cure full-model admission or count as G1 innovation.
+Full-shape representation/policy and real/GPU execution remain separate gates.
+No runtime modules/caps/acceptance/registry changed; G1–G6 and scientific limits
+remain OPEN. Earlier implementation approval remains valid, not requested again.
+
 Joint resource-interface V2 implemented default-off, statically checked: 2026-10-18.
 User approved the single implementation scope after the proposal below; that
 implementation decision is no longer a blocker. See [scope and remaining gates](hz_native_resource_implementation_20261018.md)
