@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+Scoped traversal implementation/control scope approved: 2026-10-18.
+User explicitly approved the default-off scope/global choice and finite stdlib
+differential/fault controls. See [frozen scope and cost contract](hz_support_traversal_controls_20261018.md).
+This supersedes only the pending implementation/control permission below.
+Validate complete node AND factor rosters once per tile, seal four maps, retain
+per-use identity checks and arithmetic order. Charge all setup, selection and
+cleanup. Per-call choice after setup is not an end-to-end gain guarantee.
+No native bridge, real model, GPU, cap or acceptance changes are authorized.
+Control results will be appended separately; approval/implementation are not results.
+
 V3 support traversal reviewed, static algorithm decision: 2026-10-18.
 See [sound seeds, strong reference and coupled cost](hz_support_traversal_review_20261018.md)
 and [source-bound arithmetic](hz_support_traversal_review_20261018.json).

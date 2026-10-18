@@ -31,7 +31,7 @@ class Scope:
         owner.check(); f=owner.forest
         f.rows(pair,'eq')  # Closed, complete unordered-pair admission.
         common=f.roles['common']; guards={(a,b):v for a,b,v in f.roles['pairs']}
-        self.owner=owner; self.pair=pair; self.closed=False
+        self.owner=owner; self.pair=pair; self.closed=False; self.traversal_ready=False
         self.views=frozenset((*f.chain(common),guards[pair],
             *f.chain(f.roles['experts'][pair[0]],common),
             *f.chain(f.roles['experts'][pair[1]],common)))
@@ -78,6 +78,42 @@ class Scope:
         require(type(k) is int and 0<=k<selected,'local scoped coordinate')
         j=U32.unpack(reverse.get(4*k,4))[0]
         require(self.local(kind,j)==k,'scope forward binding'); return j
+
+    def prepare_traversal(self,owner,pair):
+        """Recheck the complete canonical maps, then seal before publication.
+
+        No candidate-provided roster or cached claim licenses omitted nodes.
+        This is an in-process ownership contract, not a hostile Python sandbox.
+        """
+        self.bind(owner,pair); w=owner.work; f=owner.forest
+        w.visit('row_visits')
+        require(not self.traversal_ready,'single traversal preparation')
+        expected=set(); common=f.roles['common']; guards=[]
+        for a,b,vi in f.roles['pairs']:
+            w.visit('row_visits')
+            if (a,b)==pair: guards.append(vi)
+        require(len(guards)==1,'unique traversal guard'); expected.add(guards[0])
+        for chain in (f.chain(common),f.chain(f.roles['experts'][pair[0]],common),
+                      f.chain(f.roles['experts'][pair[1]],common)):
+            for vi in chain:
+                w.visit('row_visits'); expected.add(vi)
+        require(self.views==expected,'traversal ancestry binding')
+        for kind,actual in (('nodes',len(f.nodes)),('factors',len(f.factors))):
+            w.visit('row_visits')
+            count,selected,forward,reverse=self.banks[kind]
+            require(type(count) is int and type(selected) is int and count==actual
+                    and 0<=selected<=count and forward.owner is owner and reverse.owner is owner
+                    and forward.size==4*count and reverse.size==4*selected,
+                    'complete traversal map binding/size')
+            seen=0
+            for j in range(count):
+                w.visit('row_visits'); k=self.local(kind,j)
+                if k is not None:
+                    require(k==seen,'canonical traversal rank/order'); seen+=1
+            require(seen==selected,'complete traversal roster')
+            forward.seal(); reverse.seal()  # Copies and overlap are arena-accounted.
+        object.__setattr__(self,'traversal_ready',True)
+        w.tick()
 
     def close(self):
         object.__setattr__(self,'closed',True)
@@ -162,9 +198,22 @@ class SparseRoots(Mapping):
 
 
 class PairWorkspace:
-    def __init__(self,forest,work,*,capacity=POLICY['total_bytes']):
+    def __setattr__(self,name,value):
+        if name=='scoped_traversal' and hasattr(self,name):
+            raise AttributeError('immutable traversal choice')
+        object.__setattr__(self,name,value)
+
+    def __delattr__(self,name):
+        if name=='scoped_traversal': raise AttributeError('immutable traversal choice')
+        object.__delattr__(self,name)
+
+    def __init__(self,forest,work,*,capacity=POLICY['total_bytes'],scoped_traversal=False):
+        require(type(scoped_traversal) is bool,'explicit scoped traversal opt-in')
+        self.scoped_traversal=scoped_traversal
         self.owner=Owner(forest,work,capacity=capacity)
-        self._maps=[]; self._descriptors=[]; self.scope=None
+        self._maps=[]; self._descriptors=[]; self.scope=None; self._pair=None
+        self.traversal_stats=dict(prepared_tiles=0,setup_work=0,selector_work=0,
+                                 scoped_calls=0,global_calls=0,planned_iteration_saving=0)
         self.blocks_checked=0; self.maximum_block=0
         try: self.roots=RootTable(self.owner)
         except BaseException: self.owner.close(); raise
@@ -175,7 +224,31 @@ class PairWorkspace:
 
     def select(self,pair):
         self.owner.check(); require(self.scope is None,'one scoped pair per live tile')
-        self.scope=Scope(self.owner,pair)
+        self.scope=Scope(self.owner,pair); self._pair=pair
+        if self.scoped_traversal:
+            before=sum(self.owner.work.counts.values())
+            try: self.scope.prepare_traversal(self.owner,pair)
+            finally: self.traversal_stats['setup_work']+=sum(self.owner.work.counts.values())-before
+            self.traversal_stats['prepared_tiles']+=1
+
+    def _node_ids(self,columns):
+        n=len(self.owner.forest.nodes)
+        if not self.scoped_traversal: return range(n-1,-1,-1)
+        before=sum(self.owner.work.counts.values())
+        try: self.owner.work.visit('row_visits')
+        finally: self.traversal_stats['selector_work']+=sum(self.owner.work.counts.values())-before
+        self.scope.bind(self.owner,self._pair)
+        require(self.scope.traversal_ready and all(b._data is None and b._sealed is not None
+                for b in self.scope._blocks),'sealed traversal maps')
+        s=self.scope.banks['nodes'][1]
+        saving=(columns+1)*(n-s)-3*s
+        # Setup has already been paid. This is not an end-to-end win guarantee.
+        if saving>1:
+            self.traversal_stats['scoped_calls']+=1
+            self.traversal_stats['planned_iteration_saving']+=saving
+            return (self.scope.global_id('nodes',k) for k in range(s-1,-1,-1))
+        self.traversal_stats['global_calls']+=1
+        return range(n-1,-1,-1)
 
     def mapping(self,kind,values=()):
         require(self.scope is not None,'select checked pair first')
@@ -210,7 +283,7 @@ class PairWorkspace:
                         'exclusive local node accumulators')
                 a=c.take(); alpha.append(a)
                 out.append(self.mapping('factors'))
-            for n in range(len(f.nodes)-1,-1,-1):
+            for n in self._node_ids(len(columns)):
                 w.visit('row_visits')
                 weights=[(k,a.get(n,F(0))) for k,a in enumerate(alpha)]
                 weights=[(k,v) for k,v in weights if v]
@@ -235,6 +308,7 @@ class PairWorkspace:
         for r in self._descriptors: r.close()
         self._descriptors.clear()
         if self.scope is not None: self.scope.close(); self.scope=None
+        self._pair=None
 
     def close(self):
         self.clear_tile(); self.owner.close()
