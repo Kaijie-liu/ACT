@@ -1,5 +1,22 @@
 # MoE project handoff — current entry point
 
+Same-pair checked Scope lifetime assessed, static only: 2026-10-18.
+See [lifetime contract and fair cost separation](hz_pair_scope_lifetime_20261018.md)
+and [source-bound arithmetic](hz_pair_scope_lifetime_20261018.json).
+Unlike skipping canonical checks, retaining the SAME fully checked/sealed Scope
+across consecutive tiles may amortize preparation. It is NOT implemented.
+With equal pair lifetimes, the traversal/preparation component has an optimistic
+upper +2,838,976 Work/checker over 135 count vertices; this is NOT a net cost
+theorem, feasible trained state, runtime or admission. New J_global/J_scoped
+costs remain separate and unclosed; old repeated construction K is not algorithm gain.
+Current clear_tile destroys Scope. Any future lease must preserve full first
+roster/canonical checks, original sealed-byte object identity, owner/Plan/pair,
+per-tile token/root/map invalidation and failure-stop semantics. Private Plan
+must retire the Scope at the last pair tile, before terminal source sealing.
+Lease-held bytes references must also be cleared; arena release alone is insufficient.
+No new implementation/control authorized. Do not rerun old R2 or promote it.
+Source 13,922,736>8M, membership refusal, real/GPU and G1-G6 remain OPEN.
+
 R2 full-topology amortization rejected by static accounting: 2026-10-18.
 See [derivation and explicit branch boundary](hz_support_amortization_20261018.md)
 and [source-bound integer assessment](hz_support_amortization_20261018.json).
