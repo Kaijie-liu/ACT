@@ -1,5 +1,23 @@
 # MoE project handoff — current entry point
 
+Same-pair lifetime R1 executed once, FAILED: 2026-10-18.
+See [failure, complete descriptive comparisons and stop decision](hz_pair_scope_lifetime_results_20261018.md)
+and [hash-bound archive](hz_pair_scope_lifetime_results_20261018.json).
+Frozen execution 7477c2d2be47: 11/12 methods pass; test07 assumes two factors in
+guarded, which has only one. Node faults ran; factor missing/permutation did NOT.
+This is a fixture/coverage failure, not evidence of an accepted corrupt factor.
+Keep batch FAIL and default off. No automatic repair/rerun; frozen auditor rejects.
+12 paired records, 656 oracle role comparisons and 2 relocation receives agree.
+Six-output synthetic source: retained scoped saves 71,904 Work vs old scoped;
+327,628 vs equally retained global includes the OLD traversal benefit. Guarded
+instead costs 285 more than retained global. No new positive outcome. All are
+synthetic component records, not trained-model, full-capacity or GPU performance.
+Only prospective minimal repair: use the already present six-output source for
+the two factor fault cases, preserve every assertion/check/cap, then separately
+freeze finite follow-up if authorized. Do not overwrite or pool this failed batch.
+Source 13,922,736>8M, membership refusal and G1-G6 remain OPEN. Prior approval
+below was exercised; it is not permission for repeated tests or real/GPU runs.
+
 Same-pair lifetime implementation/finite controls explicitly approved: 2026-10-18.
 See [frozen scope, two synthetic sources and four-arm accounting](hz_pair_scope_lifetime_controls_20261018.md).
 This supersedes the pending permission below only for default-off retain_pair_scope
