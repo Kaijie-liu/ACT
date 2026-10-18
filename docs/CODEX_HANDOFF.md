@@ -1,5 +1,20 @@
 # MoE project handoff — current entry point
 
+Implemented pair-lifetime Work difference closed, STATIC ONLY: 2026-10-18.
+See [conditional net accounting](hz_pair_lifetime_net_cost_20261018.md) and
+[source-bound integer check](hz_pair_lifetime_net_cost_20261018.json).
+For equal source/Plan/candidates/missing pattern and complete retained consumers:
+J_common=4R+18M+5C, J_global-J_scoped=4R. Gate planning has no workspace and
+does not count in C. The previous 2,838,976 component upper becomes 2,839,088
+net Work upper/checker; this is optimistic, NOT a measured gain or capacity bound.
+Stop extending this lifecycle ledger; no new runtime/control/model/GPU execution.
+R1 remains FAIL and factor fault coverage remains pending. A narrow authorization
+question is outstanding: repair and separately freeze ONLY the two factor cases
+using the existing multi-factor source, without repeating performance runs or
+pooling the failed batch into a pass. No reply is not approval.
+The source floor 13,922,736>8M and membership refusal still prohibit full registered
+execution. Resource admission and actual G1-G6 evidence remain separate open gates.
+
 Same-pair lifetime R1 executed once, FAILED: 2026-10-18.
 See [failure, complete descriptive comparisons and stop decision](hz_pair_scope_lifetime_results_20261018.md)
 and [hash-bound archive](hz_pair_scope_lifetime_results_20261018.json).

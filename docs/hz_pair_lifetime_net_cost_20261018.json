@@ -1,0 +1,120 @@
+{
+  "all_positive": {
+    "all_present_upper": -747012,
+    "completed_missing_upper": -746872,
+    "negative_experts": 0,
+    "router": "positive",
+    "unstable_experts": 0
+  },
+  "all_unstable": {
+    "all_present_upper": 1602608,
+    "completed_missing_upper": 1602608,
+    "negative_experts": 0,
+    "router": "unstable",
+    "unstable_experts": 8
+  },
+  "anchors": {
+    "docs/hz_native_full_shape_decision_20261018.json": "5e6ff3ba621d56c50c1ef059503bd6309329ab60775d9b38a4dabf2b3b0566f3",
+    "docs/hz_pair_lifetime_net_cost_20261018.md": "cfa26dbbc85ebcbcfcaf16f2628ca3f8a49246ca46406ae76a2f1944a64892b7",
+    "docs/hz_pair_scope_lifetime_20261018.json": "ca1f7d5df0d532a8b709166202b609af0c0e459db019e4327df188e0d2359d28",
+    "docs/hz_pair_scope_lifetime_freeze_20261018.json": "ac2c3e5117a25f1a35d483cec48181ece0e55b02bc9d434efb2de99ea6d7ae96",
+    "docs/hz_pair_scope_lifetime_results_20261018.json": "4418674684e474a270523937b7c28a88d0cf75e779f6aeb9e3dcd946aed5568d",
+    "docs/hz_support_amortization_20261018.json": "25d810e3e930109c7b116a461abbe072509511792ba678f6f9074bede4c49111",
+    "scoped_source/bounded_runtime.py": "17846fe861f00d67c95046c5250ba09a6203bee784c9edb3129eca0e180ce133",
+    "scoped_source/hz_request_store.py": "7cb2be7647039f59d3c896b7856f634f43be9c532d9d2fd43632be09ab3230e0",
+    "scoped_source/pair_workspace.py": "2b9f6b9f2b341cf6c079903260738db5ed203565d7cba376d29c7b16b63dede8",
+    "scoped_source/scaled_endpoints.py": "e37b0c5c1dd2f09a5413ad4c14c76cdd07a6d2bb6c60752cb45a023fa519073f",
+    "scripts/assess_pair_lifetime_net_cost.py": "f98b4e020d35583a04aa4fe403b8d8dbe6881709603a2a503797e160ff9866d3"
+  },
+  "base_head": "d181f6b37a0ff2ab3ead32d16de74df2460a9909",
+  "decision": {
+    "acceptance_changes": false,
+    "full_shape_admitted": false,
+    "goals": "G1-G6 OPEN",
+    "gpu": 0,
+    "models": 0,
+    "native_calls": 0,
+    "new_candidates": 0,
+    "new_controls": 0,
+    "new_sources": 0,
+    "next": "Only separately authorized factor-fault repair; no performance rerun or wrapper expansion",
+    "quota_changes": false,
+    "r1": "FAIL_UNCHANGED",
+    "runtime_edits": 0,
+    "source_floor": 13922736,
+    "work_cap": 8000000
+  },
+  "formula": {
+    "common": "4R+18M+5C",
+    "delta": "sum_call_gamma-H+4 per pair",
+    "difference": "J_global-J_scoped=4R",
+    "full_completion_only": true,
+    "global_extra": "4R",
+    "source": "same checked Shared/tuple forest and candidate/missing plan"
+  },
+  "full_plan_examples": [
+    {
+      "dual_pulls": 5,
+      "endpoints": 9,
+      "j_global": 114,
+      "j_scoped": 110,
+      "objective_pulls": 9,
+      "tiles": 2
+    },
+    {
+      "dual_pulls": 9,
+      "endpoints": 18,
+      "j_global": 197,
+      "j_scoped": 193,
+      "objective_pulls": 18,
+      "tiles": 3
+    }
+  ],
+  "limits": {
+    "elapsed_and_heap": "not represented by Work difference",
+    "gate_pulls": "no workspace, unchanged and excluded from C",
+    "interpretation": "optimistic net Work upper, NOT measured gain or absolute resource bound",
+    "wire": "different counting, excluded"
+  },
+  "maxima": {
+    "all_present_upper": {
+      "all_present_upper": 2839088,
+      "completed_missing_upper": 2839088,
+      "negative_experts": 0,
+      "router": "positive",
+      "unstable_experts": 8
+    },
+    "completed_missing_upper": {
+      "all_present_upper": 2839088,
+      "completed_missing_upper": 2839088,
+      "negative_experts": 0,
+      "router": "positive",
+      "unstable_experts": 8
+    }
+  },
+  "observed_synthetic_record_checks": [
+    {
+      "difference": 12,
+      "j_global": 258,
+      "j_scoped": 246,
+      "profile": 0,
+      "source": "guarded"
+    },
+    {
+      "difference": 12,
+      "j_global": 258,
+      "j_scoped": 246,
+      "profile": 1,
+      "source": "guarded"
+    },
+    {
+      "difference": 112,
+      "j_global": 3332,
+      "j_scoped": 3220,
+      "profile": 0,
+      "source": "eight_private_six_outputs"
+    }
+  ],
+  "schema": "PAIR_LIFETIME_IMPLEMENTED_NET_WORK_STATIC_V1",
+  "vertices_checked": 135
+}

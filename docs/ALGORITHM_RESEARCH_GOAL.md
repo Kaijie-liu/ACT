@@ -12,6 +12,13 @@ SHA-256 为 1ebd4fb3df90a74c3fc2023cc16cecf26df63da1492c93a416fffb346f1e95d5；
 
 ## 总目标
 
+2026-10-18 [同 pair 生命周期 R1](hz_pair_scope_lifetime_results_20261018.md)已实现并执行一次，
+11/12 方法通过、整批 FAIL：固定夹具仅一个 factor，两个 factor 污染子用例未完成。
+12 条四臂记录同候选结果一致，无新增证书。随后[实现后静态计数](hz_pair_lifetime_net_cost_20261018.md)
+闭合 J_global−J_scoped=每pair四次封存；同生命周期比较的乐观净节省上界为2,839,088 Work／
+检查器，不是实模收益或准入。停止重复该账本／性能控制；只待另批两个factor用例的有限修复。
+源码、失败和现行额度不变，完整来源13,922,736>8M及membership拒绝仍在；G1–G6保持OPEN。
+
 2026-10-18 [完整拓扑摊销静态裁决](hz_support_amortization_20261018.md)否决当前R2推广：
 在注册Shared/tuple节点结构上，即使忽略补偿开销并任意选择更有利的端点模式，全present
 完成净节省至多−1,134,330 Work/检查器；允许完成的missing模式也至多−1,134,315。
