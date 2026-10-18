@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+Same-pair lifetime implementation/finite controls explicitly approved: 2026-10-18.
+See [frozen scope, two synthetic sources and four-arm accounting](hz_pair_scope_lifetime_controls_20261018.md).
+This supersedes the pending permission below only for default-off retain_pair_scope
+and one frozen stdlib batch. Preserve full first scoped roster checks, sealed object
+identity, per-tile revocation and last-pair-tile retirement. Global reference gets
+the same lifetime, only its necessary sealing. New six-output synthetic source is
+not the old two-output declaration. Freeze before running; no extra cases/retries.
+Original caps/checks/300s unchanged; no native/model/GPU execution. Implementation
+or control completion must not be counted as full topology admission or G1-G6 success.
+
 Same-pair checked Scope lifetime assessed, static only: 2026-10-18.
 See [lifetime contract and fair cost separation](hz_pair_scope_lifetime_20261018.md)
 and [source-bound arithmetic](hz_pair_scope_lifetime_20261018.json).

@@ -197,21 +197,79 @@ class SparseRoots(Mapping):
     def close(self): self.block.release()
 
 
+class PairLease:
+    """One sealed Scope, never a reusable candidate or cross-session receipt.
+
+    Strong byte references prevent identity reuse; revoke drops all of them.
+    This retains the existing in-process API boundary, not a Python sandbox.
+    """
+    __slots__=('scope','owner','forest','work','session','plan','pair','records','closed')
+
+    def __setattr__(self,name,value): raise AttributeError('immutable pair lease')
+    def __delattr__(self,name): raise AttributeError('immutable pair lease')
+
+    def __init__(self,workspace):
+        s=workspace.scope; o=workspace.owner; o.check()
+        records=[]
+        for b in s._blocks:
+            o.work.visit('row_visits')
+            require(b.owner is o and b._data is None and type(b._sealed) is bytes
+                    and len(b._sealed)==b.size,'complete sealed pair lease')
+            records.append((b,b.size,b._sealed))
+        for name,value in dict(scope=s,owner=o,forest=o.forest,work=o.work,
+                session=workspace._session,plan=workspace._tiles,pair=s.pair,
+                records=tuple(records),closed=False).items():
+            object.__setattr__(self,name,value)
+
+    def check(self,workspace):
+        o=workspace.owner; o.work.visit('row_visits'); o.check()
+        require(not self.closed and o is self.owner and o.forest is self.forest
+                and o.work is self.work and workspace.scope is self.scope
+                and workspace._session is self.session and workspace._tiles is self.plan
+                and workspace._pair==self.pair,'pair lease invocation identity')
+        self.scope.bind(o,self.pair)
+        require(len(self.records)==len(self.scope._blocks)==4,'four pair lease maps')
+        for (b,size,raw),actual in zip(self.records,self.scope._blocks,strict=True):
+            o.work.visit('row_visits')
+            require(actual is b and b.owner is o and b.size==size and b._data is None
+                    and b._sealed is raw and len(raw)==size,'original sealed map identity')
+
+    def revoke(self):
+        if self.closed: return
+        object.__setattr__(self,'closed',True)
+        records=self.records; scope=self.scope; owner=self.owner
+        # The lease must not retain bytes after arena accounting is released.
+        object.__setattr__(self,'records',())
+        for name in ('scope','owner','forest','work','session','plan'):
+            object.__setattr__(self,name,None)
+        object.__setattr__(scope,'closed',True)
+        for block,size,_ in records:
+            # Cleanup uses our admitted allocation metadata, even after a
+            # rejected owner/size substitution. No foreign block is released.
+            block.owner=owner; block.size=size; block.release()
+
+
 class PairWorkspace:
     def __setattr__(self,name,value):
-        if name=='scoped_traversal' and hasattr(self,name):
+        if name in ('scoped_traversal','retain_pair_scope') and hasattr(self,name):
             raise AttributeError('immutable traversal choice')
         object.__setattr__(self,name,value)
 
     def __delattr__(self,name):
-        if name=='scoped_traversal': raise AttributeError('immutable traversal choice')
+        if name in ('scoped_traversal','retain_pair_scope'): raise AttributeError('immutable traversal choice')
         object.__delattr__(self,name)
 
-    def __init__(self,forest,work,*,capacity=POLICY['total_bytes'],scoped_traversal=False):
+    def __init__(self,forest,work,*,capacity=POLICY['total_bytes'],scoped_traversal=False,
+                 retain_pair_scope=False):
         require(type(scoped_traversal) is bool,'explicit scoped traversal opt-in')
+        require(type(retain_pair_scope) is bool,'explicit pair lifetime opt-in')
         self.scoped_traversal=scoped_traversal
+        self.retain_pair_scope=retain_pair_scope
         self.owner=Owner(forest,work,capacity=capacity)
         self._maps=[]; self._descriptors=[]; self.scope=None; self._pair=None
+        self._session=None; self._tiles=None; self._next=0; self._live=None; self._lease=None
+        self.lifetime_stats=dict(scopes_created=0,scopes_reused=0,scopes_retired=0,
+                                scope_work=0,global_seal_work=0,lease_work=0,plan_work=0)
         self.traversal_stats=dict(prepared_tiles=0,setup_work=0,selector_work=0,
                                  scoped_calls=0,global_calls=0,planned_iteration_saving=0)
         self.blocks_checked=0; self.maximum_block=0
@@ -223,15 +281,81 @@ class PairWorkspace:
         require(self.owner.forest is forest and self.owner.work is work,'workspace identity')
 
     def select(self,pair):
+        require(not self.retain_pair_scope,'retained scopes require private Session plan')
+        self._select(pair)
+
+    def _select(self,pair):
         self.owner.check(); require(self.scope is None,'one scoped pair per live tile')
-        self.scope=Scope(self.owner,pair); self._pair=pair
+        before=sum(self.owner.work.counts.values())
+        try: self.scope=Scope(self.owner,pair)
+        finally: self.lifetime_stats['scope_work']+=sum(self.owner.work.counts.values())-before
+        self._pair=pair
+        self.lifetime_stats['scopes_created']+=1
         if self.scoped_traversal:
             before=sum(self.owner.work.counts.values())
             try: self.scope.prepare_traversal(self.owner,pair)
             finally: self.traversal_stats['setup_work']+=sum(self.owner.work.counts.values())-before
             self.traversal_stats['prepared_tiles']+=1
 
+    def configure(self,session):
+        from scoped_source.scaled_endpoints import Session
+        require(self.retain_pair_scope and self._session is None and type(session) is Session
+                and session._Session__workspace is self,'one private Session lifetime')
+        self._session=session; self._tiles=session._Session__tiles
+
+    def _session_check(self,session,index):
+        before=sum(self.owner.work.counts.values())
+        try: self.owner.work.visit('row_visits')
+        finally: self.lifetime_stats['plan_work']+=sum(self.owner.work.counts.values())-before
+        require(session is self._session and session._Session__workspace is self
+                and session._Session__tiles is self._tiles
+                and type(index) is int and index==self._next and 0<=index<len(self._tiles),
+                'same private plan and next tile')
+        self.bind(session._Session__forest,session._Session__work)
+
+    def _lease_check(self):
+        before=sum(self.owner.work.counts.values())
+        try:
+            require(type(self._lease) is PairLease,'complete pair lease required')
+            self._lease.check(self)
+        finally:
+            self.lifetime_stats['lease_work']+=sum(self.owner.work.counts.values())-before
+
+    def select_tile(self,session,index):
+        self._session_check(session,index); require(self._live is None,'no retained live tile')
+        pair=self._tiles[index][0].pair
+        if self.scope is None:
+            self._select(pair)
+            if not self.scoped_traversal:
+                before=sum(self.owner.work.counts.values())
+                try:
+                    # Global order does not require scoped canonical ranks.
+                    for block in self.scope._blocks: block.seal()
+                finally:
+                    self.lifetime_stats['global_seal_work']+=sum(self.owner.work.counts.values())-before
+            before=sum(self.owner.work.counts.values())
+            try: self._lease=PairLease(self)
+            finally: self.lifetime_stats['lease_work']+=sum(self.owner.work.counts.values())-before
+        else:
+            require(pair==self._pair,'previous pair must retire at its last tile')
+            self.lifetime_stats['scopes_reused']+=1
+        self._lease_check(); self._live=index
+
+    def check_tile(self,session,index):
+        self._session_check(session,index)
+        require(self._live==index,'prepared retained tile'); self._lease_check()
+
+    def finish_tile(self,session,index):
+        self.check_tile(session,index)
+        self._clear_temporaries()
+        if index+1==len(self._tiles) or self._tiles[index+1][0].pair!=self._pair:
+            self._clear_scope()
+        self._live=None; self._next+=1; self.owner.work.tick()
+
     def _node_ids(self,columns):
+        if self.retain_pair_scope:
+            require(self._live is not None,'active tile required for retained traversal')
+            self._lease_check()
         n=len(self.owner.forest.nodes)
         if not self.scoped_traversal: return range(n-1,-1,-1)
         before=sum(self.owner.work.counts.values())
@@ -251,6 +375,7 @@ class PairWorkspace:
         return range(n-1,-1,-1)
 
     def mapping(self,kind,values=()):
+        require(not self.retain_pair_scope or self._live is not None,'active tile required for retained map')
         require(self.scope is not None,'select checked pair first')
         self.scope.bind(self.owner,self.scope.pair)
         m=ScopedMap(self.scope,kind); self._maps.append(m)
@@ -258,6 +383,7 @@ class PairWorkspace:
         return m
 
     def objective(self,task):
+        require(not self.retain_pair_scope or self._live is not None,'active tile required for retained objective')
         self.scope.bind(self.owner,task.pair)
         from scoped_source.bounded_runtime import shared_source, shared_objective
         if shared_source(self.owner.forest):
@@ -303,12 +429,21 @@ class PairWorkspace:
         for m in self._maps: m.close()
         self._maps.clear()
 
-    def clear_tile(self):
+    def _clear_temporaries(self):
         self.clear_block()
         for r in self._descriptors: r.close()
         self._descriptors.clear()
-        if self.scope is not None: self.scope.close(); self.scope=None
+
+    def _clear_scope(self):
+        if self._lease is not None:
+            self._lease.revoke(); self._lease=None
+        elif self.scope is not None: self.scope.close()
+        if self.scope is not None: self.lifetime_stats['scopes_retired']+=1
+        self.scope=None
         self._pair=None
 
+    def clear_tile(self):
+        self._clear_temporaries(); self._clear_scope(); self._live=None
+
     def close(self):
-        self.clear_tile(); self.owner.close()
+        self.clear_tile(); self._session=None; self._tiles=None; self.owner.close()

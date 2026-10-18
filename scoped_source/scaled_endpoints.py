@@ -150,6 +150,7 @@ class Session:
         self.__tiles=tuple(self.__plan.tiles(width)); self.__width=width; self.__next=0
         self.__live=None; self.__issued={}; self.__values={}; self.__raw=[]; self.__bytes=0
         self.__closed=False
+        if self.__scoped and workspace.retain_pair_scope: workspace.configure(self)
 
     @property
     def tasks(self): return self.__plan.tasks
@@ -167,7 +168,9 @@ class Session:
         self._check(); require(type(index) is int and index==self.__next and self.__live is None
                                and index<len(self.__tiles),'one next private tile')
         tasks=self.__tiles[index]; roots=[]; objectives=[]
-        if self.__scoped: self.__workspace.select(tasks[0].pair)
+        if self.__scoped:
+            if self.__workspace.retain_pair_scope: self.__workspace.select_tile(self,index)
+            else: self.__workspace.select(tasks[0].pair)
         for task in tasks:
             d,alpha=(objective_roots(self.__forest,task,self.__work) if self.__workspace is None
                      else self.__workspace.objective(task))
@@ -196,6 +199,8 @@ class Session:
     def _consume(self,access,raw):
         # This private entry is reached only through the two closed accessors.
         tasks,roots,objectives=self.__live; work=self.__work
+        if self.__scoped and self.__workspace.retain_pair_scope:
+            self.__workspace.check_tile(self,self.__next)
         self.__bytes+=len(raw); require(self.__bytes<=16*2**20-8192,'bounded cumulative evidence')
         issued=[]; candidate_hash=digest(raw)
         from scoped_source.pair_workspace import CHECK_WIDTH
@@ -220,8 +225,12 @@ class Session:
             work.tick()  # Release cost is inside the original deadline.
         work.tick()
         if self.__retain_raw: self.__raw.append(raw)
-        self.__next+=1; self.__live=None
-        if self.__workspace is not None: self.__workspace.clear_tile()
+        if self.__scoped and self.__workspace.retain_pair_scope:
+            self.__workspace.finish_tile(self,self.__next)
+            self.__next+=1; self.__live=None
+        else:
+            self.__next+=1; self.__live=None
+            if self.__workspace is not None: self.__workspace.clear_tile()
         return tuple(issued)
 
     def _consume_block(self,access,tasks,roots,objectives,start,candidate_hash):
