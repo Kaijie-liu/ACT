@@ -95,7 +95,7 @@ def run(root):
                                        cwd=REPO,text=True).splitlines())
     if not changed <= set(frozen['files'])|{FREEZE,'docs/CODEX_HANDOFF.md'}:
         raise ValueError('unbound change since frozen base (including transitive dependencies)')
-    root.mkdir(); deadline=START+300; save(root/'freeze.json',frozen)
+    root.mkdir(parents=True); deadline=START+300; save(root/'freeze.json',frozen)
     logpath=root/'process.log'; timed_out=False; returncode=None
     with logpath.open('xb') as log:
         process=subprocess.Popen([PYTHON,'-I','-S','-B',str(Path(__file__).resolve()),

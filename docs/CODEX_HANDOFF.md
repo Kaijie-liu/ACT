@@ -1,5 +1,16 @@
 # MoE project handoff — current entry point
 
+Scoped traversal R1 startup failed before worker creation: 2026-10-18.
+See [implementation and retained failure](hz_support_traversal_controls_results_20261018.md)
+and [counts/identity record](hz_support_traversal_controls_results_20261018.json).
+Frozen 87a146582 invoked once; missing fixed results parent caused root.mkdir
+to fail. Zero tests and zero paired requests ran; no cost/coverage result exists.
+Default-off implementation has static source review and syntax checks only.
+Parent-directory creation is repaired but unexecuted; old freeze is unchanged
+and rejects the new runner hash. Preserve R1; no automatic retry. A new versioned
+freeze and explicit execution decision are needed, with the same finite roster,
+checks/caps/300s and no model/GPU. Do not count this as G1 or runtime validation.
+
 Scoped traversal implementation/control scope approved: 2026-10-18.
 User explicitly approved the default-off scope/global choice and finite stdlib
 differential/fault controls. See [frozen scope and cost contract](hz_support_traversal_controls_20261018.md).
