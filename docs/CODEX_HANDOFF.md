@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+Two factor fault cases explicitly approved, separately frozen: 2026-10-19.
+See [the narrow follow-up](hz_pair_factor_faults_20261019.md).
+Only missing/permuted factor maps on the EXISTING eight_private_six_outputs
+source, fresh checked forest/Work/Scope per case, unchanged selected>1 assertion
+and exact rejection gates. No production change, performance/oracle/replay rerun,
+model/GPU, quota or 300s change. Commit freeze before ONE new-directory execution.
+R1 stays FAIL; this follow-up can close only its two uncompleted fault cases.
+Results will be archived separately. Full capacity and G1-G6 remain OPEN.
+
 Implemented pair-lifetime Work difference closed, STATIC ONLY: 2026-10-18.
 See [conditional net accounting](hz_pair_lifetime_net_cost_20261018.md) and
 [source-bound integer check](hz_pair_lifetime_net_cost_20261018.json).
