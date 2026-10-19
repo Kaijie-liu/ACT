@@ -1,5 +1,19 @@
 # MoE project handoff — current entry point
 
+R3 single finite launch FAILED after component actor output: 2026-10-20.
+See [result, late evidence and minimal next decision](hz_endpoint_midpoint_r3_results_20261020.md)
+and [saved-prefix audit](hz_endpoint_midpoint_r3_results_20261020.json).
+Execution fb42be8b5, freeze192016eb5c8b: actor22/22 recorded PASS, but outer
+SESSION_CLEANUP_ValueError/CLEANUP_INCOMPLETE; no slot/batch receipt,0 accepted positions.
+Four normal algorithm comparisons and two outer fault slots UNEXECUTED. One admission,
+9.601743s through first export;749,666,304B sampled;180files/943,128B saved after exit.
+Controller COMPLETE is0.112441s later than host negative reception: cannot rescue success.
+Stat/status exit-race is a concrete code risk, not established unique cause; first error
+detail was overwritten. Empty final roster is not cleanup evidence; later ps found no SID.
+Authority consumed/EMPTY, no retry. No real model/GPU, no paired efficacy result.
+Next requires separately scoped existing-observer race/error-detail controls, not more
+wrappers/quotas or new search. G1-G6/full-source admission remain OPEN.
+
 R3 finite endpoint CPU batch APPROVED AND FREEZING: 2026-10-20.
 See [scope, timing and scientific stop rule](hz_endpoint_midpoint_r3_20261020.md).
 User approved minimal host binding, static review/freeze, one fresh admission and
