@@ -1,5 +1,19 @@
 # MoE project handoff — current entry point
 
+R4 finite algorithm attempt FAILED; authorization consumed: 2026-10-20.
+See [failure, scientific boundary and minimum next decision](hz_endpoint_midpoint_r4_results_20261020.md),
+[saved-prefix audit](hz_endpoint_midpoint_r4_results_20261020.json) and
+[compact bound records](hz_endpoint_midpoint_r4_records_20261020.json).
+Execution77e9d2652, freezef34f87f1:one admission; actor22/22 but0accepted positions.
+Four normal algorithm arms and two outer faults UNEXECUTED; no paired efficacy data.
+9.733223s through first export,751,988,736B sampled,180files/943,722B retained.
+Both errors now preserved: confirm_stat PID279607 live process RSS unavailable;
+remaining_session=null/unknown. Controller COMPLETE arrives0.108386s after negative receipt.
+Existing controls covered fail-closed rejection, not guaranteed real-process liveness.
+RSS-required scan also aborts member cleanup: separately scoped minimal diagnosis/repair
+needed, not another supervisor layer, quota increase or automatic algorithm rerun.
+No code fix or new control authorized here. Approval registry EMPTY; R3/R4 kept; G1-G6 OPEN.
+
 R4 finite algorithm comparison APPROVED AND FREEZING: 2026-10-20.
 See [research question, execution identity and stop rule](hz_endpoint_midpoint_r4_20261020.md).
 User approved one new freeze/admission, the original seven CPU positions and saved-record audit/archive.
