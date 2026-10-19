@@ -19,7 +19,7 @@ from scoped_proof.pidfd_compat import Pidfd
 from scoped_source.hz_request_store import compact, digest, identity, require
 from scoped_source.native_protocol import PYTHON, read_json, write_json, REPORT_CAP
 from scoped_source.native_supervised import clean_env
-from scoped_source.endpoint_batch import validate, ORDER, LIMITS, FREEZE_CAP, RECEIPT_CAP, BATCH_META_CAP
+from scoped_source.endpoint_batch import validate, verify_host, ORDER, LIMITS, FREEZE_CAP, RECEIPT_CAP, BATCH_META_CAP
 
 
 def start_record(value, expected_hash):
@@ -271,6 +271,7 @@ def execute(root, freeze_path, expected, *, start_anchor, start_sha256, enabled=
     validate(freeze,expected,deadline=started+60)  # Empty authority refuses before side effects.
     require(LOG_CAP==LIMITS['batch_log_bytes'] and MEMBERS==LIMITS['batch_session_members'],
             'frozen observation storage bounds')
+    verify_host(freeze['host_environment'],started+60)
     Pidfd().probe()  # Both operations, before admission or any child creation.
     root=Path(root)
     require(root.is_absolute() and root.resolve()==root and root.is_relative_to('/data1/Kane/MOE')

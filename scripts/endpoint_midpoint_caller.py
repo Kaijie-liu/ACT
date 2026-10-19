@@ -8,8 +8,8 @@ create a launcher, register authority, or grant execution permission.
 from pathlib import Path
 from scoped_source.endpoint_batch_observer import execute, observe_return
 
-RUN_DIRECTORY='/data1/Kane/MOE/runs/hz_endpoint_midpoint_20261019_r2'
-FREEZE_FILE='/data1/Kane/MOE/ACT/docs/hz_endpoint_midpoint_freeze_v4_20261019.json'
+RUN_DIRECTORY='/data1/Kane/MOE/runs/hz_endpoint_midpoint_20261020_r3'
+FREEZE_FILE='/data1/Kane/MOE/ACT/docs/hz_endpoint_midpoint_freeze_r3_20261020.json'
 
 
 def receive_once(expected, *, start_anchor, start_sha256, enabled=False):

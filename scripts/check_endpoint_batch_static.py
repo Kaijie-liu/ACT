@@ -29,9 +29,9 @@ def check():
     assert set(registry)=={'schema','batches'} and registry['schema']=='ENDPOINT_BATCH_APPROVALS_V1'
     assert registry['batches']==sorted(set(registry['batches']))
     if registry['batches']:
-        raw=(ROOT/'docs/hz_endpoint_midpoint_freeze_v4_20261019.json').read_bytes()
+        raw=(ROOT/'docs/hz_endpoint_midpoint_freeze_r3_20261020.json').read_bytes()
         assert registry['batches']==[hashlib.sha256(raw).hexdigest()]
-        assert json.loads(raw)['schema']=='ENDPOINT_FINITE_FREEZE_V4'
+        assert json.loads(raw)['schema']=='ENDPOINT_FINITE_FREEZE_V5'
     # No tests or runtime body is called to obtain these literals.
     component=parsed['scripts/endpoint_midpoint_components.py']
     ids=next(ast.literal_eval(n.value) for n in component.body if isinstance(n,ast.Assign)
@@ -63,6 +63,12 @@ def check():
     tree=parsed['scoped_source/endpoint_batch_observer.py']
     functions={n.name:n for n in tree.body if isinstance(n,ast.FunctionDef)}
     execute=functions['execute']
+    host_check=next(n for n in ast.walk(execute) if isinstance(n,ast.Call)
+        and isinstance(n.func,ast.Name) and n.func.id=='verify_host')
+    probe=next(n for n in ast.walk(execute) if isinstance(n,ast.Call)
+        and isinstance(n.func,ast.Attribute) and n.func.attr=='probe')
+    assert host_check.lineno<probe.lineno
+    assert ast.unparse(host_check.args[1])=='started + 60'
     assert [a.arg for a in execute.args.kwonlyargs]==['start_anchor','start_sha256','enabled']
     assert execute.args.kw_defaults[:2]==[None,None]
     origins=[n.value for n in ast.walk(execute) if isinstance(n,ast.Assign)

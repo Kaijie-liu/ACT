@@ -1,6 +1,10 @@
 """Closed finite midpoint control contract. No execution approvals are granted here."""
 import ast
+import hashlib
+import os
 from pathlib import Path
+import stat
+import sys
 import time
 
 from scoped_source.hz_request_store import POLICY, identity, require, sha, digest, decode, compact
@@ -30,6 +34,11 @@ LIMITS = dict(seconds=300,cumulative_seconds=2100,final_reserve_seconds=FINAL_RE
     batch_log_bytes=16384,batch_session_members=512,
     observation='TRUSTED_PRELAUNCH_AND_POST_PUBLICATION_RETURN_V2')
 ADMISSION = dict(attempts=1,wait_seconds=60,available_bytes=4*2**30,disk_free_bytes=8*2**30)
+HOST_FILES = (
+    '/data1/Kane/miniconda3/envs/act-py312/bin/python',
+    '/data1/Kane/miniconda3/envs/act-py312/lib/python3.12/ctypes/__init__.py',
+    '/data1/Kane/miniconda3/envs/act-py312/lib/python3.12/lib-dynload/_ctypes.cpython-312-x86_64-linux-gnu.so',
+    '/usr/lib/x86_64-linux-gnu/libc.so.6')
 COMPONENT_META = {'component-invocation.json':FREEZE_CAP,'controller.log':REPORT_CAP,
     'component.log':LOG_CAP,'component.json':REPORT_CAP,'controller.json':REPORT_CAP,
     'slot.json':RECEIPT_CAP,'components/progress.jsonl':LOG_CAP,
@@ -71,13 +80,61 @@ def approved_batch(expected):
     require(sha(expected) in r['batches'],'no separately approved endpoint batch')
 
 
+def host_contract(value):
+    require(type(value) is dict and set(value)=={'schema','scope','files'}
+            and value['schema']=='ENDPOINT_SELECTED_HOST_FILES_V1'
+            and value['scope']=='SELECTED_FILES_NOT_LINKMAP_OR_OS_PROOF'
+            and type(value['files']) is list and len(value['files'])==4,
+            'closed selected host identity')
+    for name, row in zip(HOST_FILES,value['files']):
+        require(type(row) is dict and set(row)=={'file','resolved','bytes','sha256'}
+                and row['file']==name and row['resolved']==
+                    (name+'3.12' if name==HOST_FILES[0] else name)
+                and type(row['bytes']) is int and 0<row['bytes']<=64*2**20,
+                'exact host files and fixed canonical targets')
+        sha(row['sha256'])
+
+
+def verify_host(value, deadline):
+    """Once per request, streamed in original admission window; no native imports.
+
+    Conda's existing executable symlink and hardlinks are permitted ONLY here.
+    The immutable environment, Python loader, linker and OS remain trusted.
+    """
+    host_contract(value)
+    require(str(Path(sys.executable).resolve())==value['files'][0]['resolved'],
+            'same approved host interpreter')
+    def signature(s):
+        return (s.st_dev,s.st_ino,s.st_size,s.st_mtime_ns,s.st_ctime_ns,s.st_mode,s.st_nlink)
+    for row in value['files']:
+        require(time.monotonic()<deadline,'host identity deadline')
+        path=Path(row['file']); target=Path(row['resolved'])
+        require(str(path.resolve(strict=True))==str(target),'fixed host target')
+        before=target.stat(); require(stat.S_ISREG(before.st_mode) and before.st_size==row['bytes'],
+                                      'bounded regular host file')
+        h=hashlib.sha256(); total=0
+        with target.open('rb') as stream:
+            require(signature(os.fstat(stream.fileno()))==signature(before),'host descriptor identity')
+            while total<row['bytes']:
+                require(time.monotonic()<deadline,'streamed host identity deadline')
+                raw=stream.read(min(65536,row['bytes']-total))
+                require(bool(raw),'host file truncated'); total+=len(raw); h.update(raw)
+            require(not stream.read(1) and signature(os.fstat(stream.fileno()))==signature(before),
+                    'host file stable through read')
+        require(str(path.resolve(strict=True))==str(target)
+                and signature(target.stat())==signature(before) and h.hexdigest()==row['sha256'],
+                'unchanged selected host content')
+    require(time.monotonic()<deadline,'host identity completed in original window')
+
+
 def validate(freeze, expected, *, authorize=True, verify=True, deadline=None):
     """No source generation/import of native code; old approvals cannot run a new batch."""
     require(identity(freeze)==sha(expected),'endpoint freeze identity')
     if authorize: approved_batch(expected)  # Before any setup, source or process side effect.
     require(type(freeze) is dict and set(freeze)=={'schema','limits','admission','policy',
-        'records','component','code','native_registry','startup'}
-        and freeze['schema']=='ENDPOINT_FINITE_FREEZE_V4','closed finite freeze')
+        'records','component','code','native_registry','startup','host_environment'}
+        and freeze['schema']=='ENDPOINT_FINITE_FREEZE_V5','closed finite freeze')
+    host_contract(freeze['host_environment'])
     startup=freeze['startup']
     require(type(startup) is dict and set(startup)=={'schema','clock','origin','issuer','caller_limits_before_request',
             'measurement_host','provisioning','request_work_after_origin'}

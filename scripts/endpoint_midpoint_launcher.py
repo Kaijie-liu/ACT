@@ -20,8 +20,8 @@ import time
 import uuid
 
 ROOT=Path('/data1/Kane/MOE/ACT')
-RUN_DIRECTORY='/data1/Kane/MOE/runs/hz_endpoint_midpoint_20261019_r2'
-FREEZE_FILE='/data1/Kane/MOE/ACT/docs/hz_endpoint_midpoint_freeze_v4_20261019.json'
+RUN_DIRECTORY='/data1/Kane/MOE/runs/hz_endpoint_midpoint_20261020_r3'
+FREEZE_FILE='/data1/Kane/MOE/ACT/docs/hz_endpoint_midpoint_freeze_r3_20261020.json'
 REGISTRY=ROOT/'docs/hz_endpoint_execution_approvals.json'
 SELF='scripts/endpoint_midpoint_launcher.py'
 AS_CAP=8*2**30
@@ -170,7 +170,7 @@ def launch_from_retained_start(expected, *, origin, origin_sha256, enabled=False
         freeze_raw=read(Path(FREEZE_FILE),131072,deadline)
         require(hashlib.sha256(freeze_raw).hexdigest()==expected,'exact frozen request bytes')
         freeze=json.loads(freeze_raw)
-        require(freeze['schema']=='ENDPOINT_FINITE_FREEZE_V4'
+        require(freeze['schema']=='ENDPOINT_FINITE_FREEZE_V5'
                 and freeze['startup']['issuer']==sha(saved['issuer'])
                 and freeze['startup']['caller_limits_before_request'] is True
                 and freeze['startup']['origin']==saved['origin'],'frozen startup contract')

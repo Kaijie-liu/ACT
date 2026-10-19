@@ -1,5 +1,16 @@
 # MoE project handoff — current entry point
 
+R3 finite endpoint CPU batch APPROVED AND FREEZING: 2026-10-20.
+See [scope, timing and scientific stop rule](hz_endpoint_midpoint_r3_20261020.md).
+User approved minimal host binding, static review/freeze, one fresh admission and
+ONE same seven-position/22-control CPU batch plus saved-record audit/archive.
+New R3 directory/schema V5; four selected host files verified in original clock
+before probe. Conda environment links allowed by fixed-target/content binding only;
+source/evidence alias gates unchanged. Native60/six profiles/native32 unchanged.
+No new supervisor, source/algorithm/quota/check changes, model/GPU or retry.
+This supersedes the pending authorization below; V4 failure and pidfd results stay.
+Controls alone do not establish efficacy; report exact gain/loss and all costs.
+
 Next algorithm batch static binding delta prepared: 2026-10-20.
 See [minimal changes and bundled decision](hz_endpoint_binding_delta_20261020.md)
 and [NOT_READY/NOT_AUTHORIZED candidate data](hz_endpoint_binding_delta_20261020.json).
