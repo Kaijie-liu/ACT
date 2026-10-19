@@ -1,5 +1,17 @@
 # MoE project handoff — current entry point
 
+Next algorithm batch static binding delta prepared: 2026-10-20.
+See [minimal changes and bundled decision](hz_endpoint_binding_delta_20261020.md)
+and [NOT_READY/NOT_AUTHORIZED candidate data](hz_endpoint_binding_delta_20261020.json).
+Native60/code/methods and six profile identities unchanged; native32 needs no new
+entries. Batch76→77, only two pidfd callers changed plus local adapter. Four selected
+host environment files match the passed control; libc cannot enter env-only native
+profile. Minimal next wiring binds these outside native profiles and changes old
+launcher/caller paths; no new supervisor. Pending one bundled scope: implement/static
+check/freeze, one fresh admission, one same seven-position/22-case CPU run, audit/archive.
+No execution files/directories or approval entries created; three registries unchanged.
+Do not run under the exhausted pidfd approval. Scientific question/limits remain fixed.
+
 Local pidfd compatibility finite control COMPLETE: 2026-10-19.
 See [result, scope and next boundary](hz_pidfd_control_results_20261019.md) and
 [read-only archive audit](hz_pidfd_control_archive_audit_20261019.json).
