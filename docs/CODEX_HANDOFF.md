@@ -1,5 +1,17 @@
 # MoE project handoff — current entry point
 
+Local pidfd compatibility finite control COMPLETE: 2026-10-19.
+See [result, scope and next boundary](hz_pidfd_control_results_20261019.md) and
+[read-only archive audit](hz_pidfd_control_archive_audit_20261019.json).
+Execution92244f51e, freeze753be81d3fb7:8/8groups PASS in3.096818s through stdout
+export, process exit0; LIBC_PIDFD actually used, FD4→4, sampled43,782,144bytes,
+9,011runtime artifact bytes. Normal/error/deadline and owned/foreign cleanup
+controls passed; no native algorithm/source/model/GPU. Single approval consumed.
+Earlier cold startup/external full process wall duration remain unknown, not zero.
+V4 failure retained, endpoint registry EMPTY, full-source admission/G1-G6 OPEN.
+Next separately freeze/authorize the existing finite algorithm batch with the new
+closure; do NOT rerun seven positions under this compatibility-only approval.
+
 Local pidfd compatibility implementation/control approved: 2026-10-19.
 See [finite scope, roster and acceptance](hz_pidfd_control_20261019.md).
 Implement only the local libc-symbol fallback and same existing-session wiring;
