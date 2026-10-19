@@ -1,5 +1,18 @@
 # MoE project handoff — current entry point
 
+Timing-boundary review and decision proposal, NOT ADOPTED: 2026-10-19.
+See [measurement host versus request startup](hz_endpoint_prelaunch_binding_20261019.md#计时边界复核与待批准选择).
+Earlier preparation distinguished an existing measurement host from a fresh request
+process. Later wiring unconditionally requires the host's own cold-start origin;
+applying this recursively to its measurer does not close the concrete host binding.
+Proposal: explicitly provision a standard-library-only measurement host for the SAME
+finite CPU roster; all request/project work starts after t0, provisioning cost separate
+and never silently zero. This changes the V3 host-cold-start boundary: approval needed,
+not a ready protocol or a claim of cold-start total cost. No runtime/registry/freeze
+changes, no controls/models/GPU; existing V3 remains NOT_READY. Do not add more wrappers.
+Next obtain this concrete boundary decision (or an actual earlier cold-start measurer),
+then bounded interface/freeze preparation; execution still separate. G1-G6 remain OPEN.
+
 Minimal retained-origin wiring implemented, STATIC ONLY: 2026-10-19.
 See [current wiring scope and live-host boundary](hz_endpoint_prelaunch_binding_20261019.md).
 Default-off scripts/endpoint_midpoint_launcher.py consumes an externally retained
