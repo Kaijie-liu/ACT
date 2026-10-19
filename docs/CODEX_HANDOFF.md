@@ -1,5 +1,23 @@
 # MoE project handoff — current entry point
 
+Minimal retained-origin wiring implemented, STATIC ONLY: 2026-10-19.
+See [current wiring scope and live-host boundary](hz_endpoint_prelaunch_binding_20261019.md).
+Default-off scripts/endpoint_midpoint_launcher.py consumes an externally retained
+pre-request origin in the SAME pre-limited host, builds the anchor, then calls the
+existing caller once. No new process/supervisor/service, no new t0 or setrlimit.
+Early failures return negative records; missing original cost stays null, not zero.
+Final reception extends the existing receipt time and can only revoke late acceptance.
+Preloaded/foreign project modules, shadow loaders and unbound bytecode are refused;
+no global import patch or cache deletion. Python/import machinery and an immutable
+checkout through import remain trusted. Issuer code hash is NOT actual host provenance.
+Static12entry/4bootstrap/75dependencies and native12entry/60dependencies PASS.
+All numeric caps,7positions/22names,checks and old approvals/frozen evidence unchanged.
+No controls/sources/native/model/GPU execution; no V3 freeze or r2 directory created.
+Implementation permission is exercised. Actual host/early clock still UNBOUND;
+next obtain that concrete environment binding, then separately freeze execution.
+Do not add another wrapper or pretend fresh Python entry covers its cold startup.
+No algorithm efficacy or new certificate; full-source admission and G1-G6 OPEN.
+
 Pre-launch accounting interface fixed, STATIC ONLY: 2026-10-19.
 See [implemented start binding and remaining launcher dependency](hz_endpoint_prelaunch_binding_20261019.md).
 The narrow approval is implemented: required external pre-request monotonic anchor,

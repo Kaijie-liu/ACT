@@ -7,7 +7,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 FILES=('scoped_source/endpoint_batch.py','scoped_source/endpoint_component_supervised.py',
     'scoped_source/endpoint_batch_observer.py','scoped_proof/owned_session.py',
-    'scripts/endpoint_midpoint_caller.py',
+    'scripts/endpoint_midpoint_caller.py','scripts/endpoint_midpoint_launcher.py',
     'scripts/run_endpoint_midpoint_controls.py','scripts/audit_endpoint_midpoint_controls.py',
     'scripts/endpoint_midpoint_components.py','scoped_source/native_supervised.py',
     'scoped_source/native_production.py','scoped_proof/owned_bounded.py')
@@ -82,6 +82,39 @@ def check():
     assert [n.func.id for n in calls]==['execute','observe_return']
     assert all({k.arg:ast.unparse(k.value) for k in n.keywords}.items()
         >= {'start_anchor':'start_anchor','start_sha256':'start_sha256'}.items() for n in calls)
+    launcher=parsed['scripts/endpoint_midpoint_launcher.py']
+    launch=next(n for n in launcher.body if isinstance(n,ast.FunctionDef)
+                and n.name=='launch_from_retained_start')
+    assert [a.arg for a in launch.args.kwonlyargs]==['origin','origin_sha256','enabled']
+    assert launch.args.kw_defaults[:2]==[None,None]
+    origins=[n.value for n in ast.walk(launch) if isinstance(n,ast.Assign)
+        and any(isinstance(t,ast.Name) and t.id=='started' for t in n.targets)]
+    assert [ast.unparse(n) for n in origins]==['None',"saved['started']"]
+    forbidden={'Popen','fork','forkpty','posix_spawn','posix_spawnp','setrlimit','system','execv','execve'}
+    assert not any(isinstance(n,ast.Call) and isinstance(n.func,ast.Attribute)
+        and n.func.attr in forbidden for n in ast.walk(launcher))
+    runtime=[n for n in ast.walk(launch) if isinstance(n,ast.Call)
+        and isinstance(n.func,ast.Name) and n.func.id=='receive_once']
+    assert len(runtime)==1
+    imported=next(n for n in ast.walk(launch) if isinstance(n,ast.ImportFrom)
+                  and n.module=='scripts.endpoint_midpoint_caller')
+    assert imported.lineno<runtime[0].lineno
+    authority=next(n for n in ast.walk(launch) if isinstance(n,ast.Assign)
+        and any(isinstance(t,ast.Name) and t.id=='authority' for t in n.targets))
+    anchor=next(n for n in ast.walk(launch) if isinstance(n,ast.Assign)
+        and any(isinstance(t,ast.Name) and t.id=='anchor' for t in n.targets))
+    import_check=next(n for n in ast.walk(launch) if isinstance(n,ast.Call)
+                     and isinstance(n.func,ast.Name) and n.func.id=='import_state')
+    assert authority.lineno<import_check.lineno<anchor.lineno<imported.lineno
+    assert not any(isinstance(n,ast.Assign) and any(isinstance(t,ast.Attribute)
+        and isinstance(t.value,ast.Name) and t.value.id=='sys' for t in n.targets)
+        for n in ast.walk(launcher))
+    assert 'ENDPOINT_LAUNCH_FAILURE_V1' in (ROOT/'scripts/endpoint_midpoint_launcher.py').read_text()
+    def constants(tree):
+        return {t.id:ast.literal_eval(n.value) for n in tree.body if isinstance(n,ast.Assign)
+            and isinstance(n.value,ast.Constant) for t in n.targets if isinstance(t,ast.Name)}
+    for name in ('RUN_DIRECTORY','FREEZE_FILE'):
+        assert constants(launcher)[name]==constants(caller)[name]
     assignments={t.id:n.value for n in protocol.body if isinstance(n,ast.Assign)
         for t in n.targets if isinstance(t,ast.Name)}
     def literal(node):
@@ -133,6 +166,7 @@ def check():
         native_metadata_upper_bytes=native_metadata,component_metadata_upper_bytes=component_metadata,
         batch_metadata_upper_bytes=batch_metadata,
         startup='REQUIRED_EXTERNAL_ANCHOR_NO_FALLBACK',numeric_limits_unchanged=True,
+        launcher='STATIC_IN_PROCESS_WIRING_NO_NEW_HOST_OR_EXECUTION',
         approvals=0,project_runtime_imports=0,controls_executed=0,models=0,gpu=0,sha256=hashes)
 
 
