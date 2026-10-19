@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+R4 finite algorithm comparison APPROVED AND FREEZING: 2026-10-20.
+See [research question, execution identity and stop rule](hz_endpoint_midpoint_r4_20261020.md).
+User approved one new freeze/admission, the original seven CPU positions and saved-record audit/archive.
+Same sources/methods/checks/300s each/2100s batch/resources; only passed observer repair
+and launcher/caller R4 paths differ from R3. Native60/six profiles unchanged.
+No extra observer controls/layers, model/GPU, retries or quota changes. Preserve R3 failure.
+Judge exact pair/property gain/loss and complete cost, not number of passing controls.
+This supersedes the waiting-for-algorithm-authorization statements below for ONE R4 attempt.
+
 Existing observer repair controls COMPLETE: 2026-10-20.
 See [results, scope and next decision](hz_owned_observer_results_20261020.md),
 [saved-record audit](hz_owned_observer_audit_20261020.json) and

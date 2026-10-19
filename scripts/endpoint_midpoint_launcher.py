@@ -20,8 +20,8 @@ import time
 import uuid
 
 ROOT=Path('/data1/Kane/MOE/ACT')
-RUN_DIRECTORY='/data1/Kane/MOE/runs/hz_endpoint_midpoint_20261020_r3'
-FREEZE_FILE='/data1/Kane/MOE/ACT/docs/hz_endpoint_midpoint_freeze_r3_20261020.json'
+RUN_DIRECTORY='/data1/Kane/MOE/runs/hz_endpoint_midpoint_20261020_r4'
+FREEZE_FILE='/data1/Kane/MOE/ACT/docs/hz_endpoint_midpoint_freeze_r4_20261020.json'
 REGISTRY=ROOT/'docs/hz_endpoint_execution_approvals.json'
 SELF='scripts/endpoint_midpoint_launcher.py'
 AS_CAP=8*2**30

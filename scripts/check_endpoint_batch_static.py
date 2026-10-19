@@ -29,7 +29,11 @@ def check():
     assert set(registry)=={'schema','batches'} and registry['schema']=='ENDPOINT_BATCH_APPROVALS_V1'
     assert registry['batches']==sorted(set(registry['batches']))
     if registry['batches']:
-        raw=(ROOT/'docs/hz_endpoint_midpoint_freeze_r3_20261020.json').read_bytes()
+        launcher_tree=parsed['scripts/endpoint_midpoint_launcher.py']
+        freeze_path=next(ast.literal_eval(n.value) for n in launcher_tree.body
+            if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name)
+                and t.id=='FREEZE_FILE' for t in n.targets))
+        raw=Path(freeze_path).read_bytes()
         assert registry['batches']==[hashlib.sha256(raw).hexdigest()]
         assert json.loads(raw)['schema']=='ENDPOINT_FINITE_FREEZE_V5'
     # No tests or runtime body is called to obtain these literals.
