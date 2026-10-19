@@ -1,5 +1,23 @@
 # MoE project handoff — current entry point
 
+Research objective reset at user request: 2026-10-19, starting HEAD f798e6b6d.
+Goal service registration returned ACTIVE; its 3575-character execution summary binds
+the full contract below. This is a goal reset, not an algorithm or experiment result.
+Read the [current research contract](ALGORITHM_RESEARCH_GOAL.md#现行目标-2026年10月19日)
+before the historical stage entries below. G1-G6 and all failed/frozen evidence remain OPEN/preserved.
+Priority is a testable MoE-specific HybridZ algorithm increment, not more startup wrappers.
+Track algorithm hypothesis, full-source capacity, launch permission, GPU, external comparison
+and same-source proof separately. A local execution dependency is not a global research gate;
+only pursue other work when it has genuine nonduplicative evidence value and is authorized.
+Do not invent busywork to prevent a blocked status; exhausted lawful paths need a concrete decision.
+The midpoint hypothesis is already implemented/default-off, statically reviewed, NOT efficacy-tested.
+Its finite CPU batch still needs a timing-boundary decision and execution freeze/approval;
+no further static restatement or supervisor expansion is the next scientific result.
+Full-source 13,926,024>8M and membership rejection remain independent; no resource increase.
+The measurement-host proposal below remains NOT ADOPTED. This reset authorizes goal/docs/static
+analysis, not new CPU controls, model/GPU execution, approval activation or changed cost semantics.
+Group any new permission request into one bounded stage; do not repeatedly re-request granted scope.
+
 Timing-boundary review and decision proposal, NOT ADOPTED: 2026-10-19.
 See [measurement host versus request startup](hz_endpoint_prelaunch_binding_20261019.md#计时边界复核与待批准选择).
 Earlier preparation distinguished an existing measurement host from a fresh request
