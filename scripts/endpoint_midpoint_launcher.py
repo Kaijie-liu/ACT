@@ -1,9 +1,10 @@
-"""One-shot wiring in an ALREADY RUNNING, pre-limited trusted host. No CLI.
+"""One-shot wiring in the frozen provisioned, pre-limited measurement root. No CLI.
 
 This module does not manufacture an earlier clock, install limits retrospectively,
 or establish a host's trust. The host must retain the external pre-request origin
 and expected hash. A new Python importing this file is NOT that external origin.
 Only the existing observer spawns a worker; no extra supervisor is introduced.
+V4 explicitly excludes root provisioning, NOT any request/module/worker startup.
 """
 import hashlib
 import importlib.machinery
@@ -20,7 +21,7 @@ import uuid
 
 ROOT=Path('/data1/Kane/MOE/ACT')
 RUN_DIRECTORY='/data1/Kane/MOE/runs/hz_endpoint_midpoint_20261019_r2'
-FREEZE_FILE='/data1/Kane/MOE/ACT/docs/hz_endpoint_midpoint_freeze_v3_20261019.json'
+FREEZE_FILE='/data1/Kane/MOE/ACT/docs/hz_endpoint_midpoint_freeze_v4_20261019.json'
 REGISTRY=ROOT/'docs/hz_endpoint_execution_approvals.json'
 SELF='scripts/endpoint_midpoint_launcher.py'
 AS_CAP=8*2**30
@@ -66,7 +67,7 @@ def issuer_identity(raw):
     """Code/contract identity only, NOT evidence that a live host exists."""
     return hashlib.sha256(packed(dict(schema='ENDPOINT_RETAINED_HOST_WIRING_V1',
         path=SELF,sha256=hashlib.sha256(raw).hexdigest(),clock='CLOCK_MONOTONIC',
-        origin='BEFORE_REQUEST_PREPARATION_AND_SPAWN',as_bytes=AS_CAP,file_bytes=FILE_CAP,
+        origin='AFTER_HOST_PROVISIONING_BEFORE_REQUEST',as_bytes=AS_CAP,file_bytes=FILE_CAP,
         mode='IN_PROCESS_FROM_EXTERNALLY_RETAINED_ORIGIN',attempts=1))).hexdigest()
 
 
@@ -83,6 +84,11 @@ def import_state(code, deadline):
     require(sys.meta_path==[machinery.BuiltinImporter,machinery.FrozenImporter,machinery.PathFinder],
             'standard trusted import machinery')
     require(len(sys.modules)<=512,'bounded pre-import module inventory')
+    main=sys.modules.get('__main__')
+    host_path=str(ROOT/'scripts/endpoint_measurement_host.py')
+    require(getattr(main,'__file__',None)==host_path
+            and main.main.__code__.co_filename==host_path,
+            'frozen measurement entry; Python execution and immutable checkout trusted')
     for name in tuple(sys.modules):
         top=name.split('.')[0]
         require(top not in ('torch','numpy','scipy','act'),'no preloaded model/native execution')
@@ -115,8 +121,9 @@ def launch_from_retained_start(expected, *, origin, origin_sha256, enabled=False
 
     Never reads an origin from a file, CLI or /proc clock. `origin` must already
     be retained by the trusted host. Its hash is an integrity check, not authority.
-    The externally held invocation clock includes this module/host's cold startup;
-    if the host cannot supply that provenance it must NOT invoke this function.
+    The externally held invocation clock includes this module and all request work.
+    Only the explicitly frozen standard-library measurement root is provisioned
+    before it; its cost is separately disclosed, never called a cold-start total.
     """
     global CLAIMED
     require(enabled is True,'default-off launcher')
@@ -140,7 +147,7 @@ def launch_from_retained_start(expected, *, origin, origin_sha256, enabled=False
                 and 0<=saved['host_start_ticks']<2**64,'same dedicated host')
         require(saved['schema']=='ENDPOINT_RETAINED_ORIGIN_V1'
                 and saved['clock']=='CLOCK_MONOTONIC'
-                and saved['origin']=='BEFORE_REQUEST_PREPARATION_AND_SPAWN'
+                and saved['origin']=='AFTER_HOST_PROVISIONING_BEFORE_REQUEST'
                 and saved['freeze']==sha(expected),'retained request and clock')
         raw=packed(saved)
         require(len(raw)<=4096 and hashlib.sha256(raw).hexdigest()==sha(origin_sha256),
@@ -149,7 +156,7 @@ def launch_from_retained_start(expected, *, origin, origin_sha256, enabled=False
         failure_stage='inherited_limits'
         require(resource.getrlimit(resource.RLIMIT_AS)==(AS_CAP,AS_CAP)
                 and resource.getrlimit(resource.RLIMIT_FSIZE)==(FILE_CAP,FILE_CAP),
-                'limits must already cover host startup; never set/raise/repair here')
+                'limits must already cover request start; never set/raise/repair here')
         with os.scandir('/proc/self/task') as tasks:
             require(next(tasks,None) is not None and next(tasks,None) is None,'single-thread dedicated host')
         failure_stage='authority'
@@ -163,9 +170,10 @@ def launch_from_retained_start(expected, *, origin, origin_sha256, enabled=False
         freeze_raw=read(Path(FREEZE_FILE),131072,deadline)
         require(hashlib.sha256(freeze_raw).hexdigest()==expected,'exact frozen request bytes')
         freeze=json.loads(freeze_raw)
-        require(freeze['schema']=='ENDPOINT_FINITE_FREEZE_V3'
+        require(freeze['schema']=='ENDPOINT_FINITE_FREEZE_V4'
                 and freeze['startup']['issuer']==sha(saved['issuer'])
-                and freeze['startup']['caller_limits_before_spawn'] is True,'frozen startup contract')
+                and freeze['startup']['caller_limits_before_request'] is True
+                and freeze['startup']['origin']==saved['origin'],'frozen startup contract')
         own=read(ROOT/SELF,131072,deadline)
         require(issuer_identity(own)==saved['issuer'],'frozen wiring identity, not a host claim')
         failure_stage='code'
@@ -209,7 +217,7 @@ def launch_from_retained_start(expected, *, origin, origin_sha256, enabled=False
         end=time.monotonic()
         # No source/read/setup failure can become a positive result or zero cost.
         return dict(schema='ENDPOINT_LAUNCH_FAILURE_V1',status='INCOMPLETE_OR_FAILED',
-            stage=failure_stage,error=type(exc).__name__,start_sha256=start_hash,
+            stage=failure_stage,error=type(exc).__name__,message=str(exc)[:400],start_sha256=start_hash,
             started=started,observed_entry=entry,observed_end=end,
             seconds=None if started is None else end-started,
             observed_prefix_seconds=end-entry,missing_cost_is_not_zero=True,

@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+Finite endpoint CPU stage explicitly approved: 2026-10-19.
+See [V4 freeze scope and provisioned measurement boundary](hz_endpoint_midpoint_v4_20261019.md).
+The user's answer approves the concrete pending bundled question, not unlimited "perfect" settings.
+Adopt standard-library-only measurement-root provisioning, disclose its measured prefix and unknown
+cold-start separately; ALL request work follows t0. Same process chain, no added supervisor.
+Prepare/freeze/commit, then ONE existing seven-position/22-control CPU batch; no model/GPU,
+quota/gate/time/source changes or retries after unexpected failure. Original eight-expert capacity
+refusal remains. The older NOT_ADOPTED/permission-pending entries below are historical.
+V4 evidence must determine algorithm continuation; startup implementation itself is not efficacy.
+
 Research objective reset at user request: 2026-10-19, starting HEAD f798e6b6d.
 Goal service registration returned ACTIVE; its 3575-character execution summary binds
 the full contract below. This is a goal reset, not an algorithm or experiment result.

@@ -32,7 +32,7 @@ def start_record(value, expected_hash):
             and all(c in '0123456789abcdef' for c in expected_hash),'externally retained start hash')
     require(value['schema']=='ENDPOINT_TRUSTED_PRELAUNCH_V1'
             and value['clock']=='CLOCK_MONOTONIC'
-            and value['origin']=='BEFORE_REQUEST_PREPARATION_AND_SPAWN','trusted start meaning')
+            and value['origin']=='AFTER_HOST_PROVISIONING_BEFORE_REQUEST','trusted start meaning')
     for k in ('freeze','issuer'):
         require(type(value[k]) is str and len(value[k])==64
                 and all(c in '0123456789abcdef' for c in value[k]),'start hash field')
@@ -261,10 +261,10 @@ def execute(root, freeze_path, expected, *, start_anchor, start_sha256, enabled=
     require(enabled is True,'default-off trusted batch observer')
     start=start_record(start_anchor,start_sha256); started=start['started']
     require(started<=observer_entry<started+60,'original startup/admission window')
-    # The trusted issuer must impose these before spawning/importing this caller.
+    # The frozen measurement root imposes these before request start/imports.
     # Checking now cannot prove their past installation, and must not repair it.
     for kind,cap in ((resource.RLIMIT_AS,LIMITS['as_bytes']),(resource.RLIMIT_FSIZE,LIMITS['file_bytes'])):
-        require(resource.getrlimit(kind)==(cap,cap),'required pre-spawn caller limits, never raise/repair')
+        require(resource.getrlimit(kind)==(cap,cap),'required pre-request caller limits, never raise/repair')
     live_clock(start)
     freeze,_=read_json(freeze_path,expected=expected,cap=FREEZE_CAP,deadline=started+60)
     validate(freeze,expected,deadline=started+60)  # Empty authority refuses before side effects.

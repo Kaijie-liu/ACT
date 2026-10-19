@@ -19,6 +19,7 @@ ORDER = ('components','guarded_baseline','guarded_midpoint','mixed_midpoint',
 SEEDS = ('scoped_source/endpoint_batch.py','scoped_source/endpoint_component_supervised.py',
          'scoped_source/endpoint_batch_observer.py','scoped_proof/owned_session.py',
          'scripts/endpoint_midpoint_caller.py','scripts/endpoint_midpoint_launcher.py',
+         'scripts/endpoint_measurement_host.py',
          'scripts/run_endpoint_midpoint_controls.py','scripts/audit_endpoint_midpoint_controls.py',
          'scripts/endpoint_midpoint_components.py','scoped_source/scaled_endpoint_controls.py')
 LIMITS = dict(seconds=300,cumulative_seconds=2100,final_reserve_seconds=FINAL_RESERVE,
@@ -76,14 +77,18 @@ def validate(freeze, expected, *, authorize=True, verify=True, deadline=None):
     if authorize: approved_batch(expected)  # Before any setup, source or process side effect.
     require(type(freeze) is dict and set(freeze)=={'schema','limits','admission','policy',
         'records','component','code','native_registry','startup'}
-        and freeze['schema']=='ENDPOINT_FINITE_FREEZE_V3','closed finite freeze')
+        and freeze['schema']=='ENDPOINT_FINITE_FREEZE_V4','closed finite freeze')
     startup=freeze['startup']
-    require(type(startup) is dict and set(startup)=={'schema','clock','origin','issuer','caller_limits_before_spawn'}
-            and startup['schema']=='ENDPOINT_PRELAUNCH_CONTRACT_V1'
+    require(type(startup) is dict and set(startup)=={'schema','clock','origin','issuer','caller_limits_before_request',
+            'measurement_host','provisioning','request_work_after_origin'}
+            and startup['schema']=='ENDPOINT_PROVISIONED_HOST_CONTRACT_V1'
             and startup['clock']=='CLOCK_MONOTONIC'
-            and startup['origin']=='BEFORE_REQUEST_PREPARATION_AND_SPAWN'
-            and startup['caller_limits_before_spawn'] is True,
-            'explicit trusted pre-launch contract, no process-birth substitute')
+            and startup['origin']=='AFTER_HOST_PROVISIONING_BEFORE_REQUEST'
+            and startup['caller_limits_before_request'] is True
+            and startup['measurement_host']=='scripts/endpoint_measurement_host.py'
+            and startup['provisioning']=='SEPARATE_OBSERVED_PREFIX_COLD_START_UNKNOWN'
+            and startup['request_work_after_origin'] is True,
+            'approved provisioned measurement root; no free request preparation')
     sha(startup['issuer'])  # Identity of a separately registered REAL launcher, not this API.
     require(freeze['limits']==LIMITS and freeze['admission']==ADMISSION
             and freeze['policy']==dict(POLICY),'unchanged finite resource contract')

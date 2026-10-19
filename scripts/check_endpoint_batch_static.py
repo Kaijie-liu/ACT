@@ -8,6 +8,7 @@ ROOT=Path(__file__).resolve().parents[1]
 FILES=('scoped_source/endpoint_batch.py','scoped_source/endpoint_component_supervised.py',
     'scoped_source/endpoint_batch_observer.py','scoped_proof/owned_session.py',
     'scripts/endpoint_midpoint_caller.py','scripts/endpoint_midpoint_launcher.py',
+    'scripts/endpoint_measurement_host.py',
     'scripts/run_endpoint_midpoint_controls.py','scripts/audit_endpoint_midpoint_controls.py',
     'scripts/endpoint_midpoint_components.py','scoped_source/native_supervised.py',
     'scoped_source/native_production.py','scoped_proof/owned_bounded.py')
@@ -25,7 +26,12 @@ def check():
                 compile(node.value.value,name+':bootstrap','exec'); bootstraps+=1
     assert bootstraps==4
     registry=json.loads((ROOT/'docs/hz_endpoint_execution_approvals.json').read_bytes())
-    assert registry==dict(schema='ENDPOINT_BATCH_APPROVALS_V1',batches=[])
+    assert set(registry)=={'schema','batches'} and registry['schema']=='ENDPOINT_BATCH_APPROVALS_V1'
+    assert registry['batches']==sorted(set(registry['batches']))
+    if registry['batches']:
+        raw=(ROOT/'docs/hz_endpoint_midpoint_freeze_v4_20261019.json').read_bytes()
+        assert registry['batches']==[hashlib.sha256(raw).hexdigest()]
+        assert json.loads(raw)['schema']=='ENDPOINT_FINITE_FREEZE_V4'
     # No tests or runtime body is called to obtain these literals.
     component=parsed['scripts/endpoint_midpoint_components.py']
     ids=next(ast.literal_eval(n.value) for n in component.body if isinstance(n,ast.Assign)
@@ -115,6 +121,20 @@ def check():
             and isinstance(n.value,ast.Constant) for t in n.targets if isinstance(t,ast.Name)}
     for name in ('RUN_DIRECTORY','FREEZE_FILE'):
         assert constants(launcher)[name]==constants(caller)[name]
+    host=parsed['scripts/endpoint_measurement_host.py']
+    host_main=next(n for n in host.body if isinstance(n,ast.FunctionDef) and n.name=='main')
+    host_start=next(n for n in host_main.body if isinstance(n,ast.Assign)
+        and any(isinstance(t,ast.Name) and t.id=='started' for t in n.targets))
+    for n in ast.walk(host):
+        if isinstance(n,ast.Import):
+            assert all(x.name in {'time','hashlib','json','os','resource','sys'} for x in n.names)
+        if isinstance(n,ast.ImportFrom) and n.module.startswith('scripts.'):
+            assert n.lineno>host_start.lineno
+        if isinstance(n,ast.Call) and isinstance(n.func,ast.Attribute) and n.func.attr=='setrlimit':
+            assert n.lineno<host_start.lineno
+    assert not any(isinstance(n,ast.Call) and isinstance(n.func,ast.Attribute)
+        and n.func.attr in {'Popen','fork','system','execv','execve'} for n in ast.walk(host))
+    assert 'full_cold_start_seconds=None' in (ROOT/'scripts/endpoint_measurement_host.py').read_text()
     assignments={t.id:n.value for n in protocol.body if isinstance(n,ast.Assign)
         for t in n.targets if isinstance(t,ast.Name)}
     def literal(node):
@@ -166,8 +186,8 @@ def check():
         native_metadata_upper_bytes=native_metadata,component_metadata_upper_bytes=component_metadata,
         batch_metadata_upper_bytes=batch_metadata,
         startup='REQUIRED_EXTERNAL_ANCHOR_NO_FALLBACK',numeric_limits_unchanged=True,
-        launcher='STATIC_IN_PROCESS_WIRING_NO_NEW_HOST_OR_EXECUTION',
-        approvals=0,project_runtime_imports=0,controls_executed=0,models=0,gpu=0,sha256=hashes)
+        launcher='FROZEN_STANDARD_LIBRARY_ROOT_NO_ADDED_SUPERVISOR',
+        approvals=len(registry['batches']),project_runtime_imports=0,controls_executed=0,models=0,gpu=0,sha256=hashes)
 
 
 if __name__=='__main__': print(json.dumps(check(),sort_keys=True,indent=2))
