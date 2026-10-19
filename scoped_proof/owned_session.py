@@ -41,7 +41,8 @@ def _identity(pid,reader):
     if int(raw.split(b' (',1)[0])!=pid: raise ValueError('process PID mismatch')
     fields=raw.rsplit(b')',1)[1].split()
     state=fields[0].decode('ascii'); sid=int(fields[3]); start=int(fields[19])
-    if len(state)!=1 or sid<0 or start<0: raise ValueError('invalid process identity')
+    if len(state)!=1 or not 0<=sid<2**63 or not 0<=start<2**63:
+        raise ValueError('invalid process identity')
     return state,sid,start
 
 
@@ -58,26 +59,40 @@ def _error_detail(exc,phase,pid):
 
 
 class _ObservationFailure(RuntimeError):
-    def __init__(self,exc,phase,pid):
+    def __init__(self,exc,phase,pid,observation=None):
         self.detail=_error_detail(exc,phase,pid)
+        if observation is not None: self.detail['observation']=dict(observation)
         self.timed_out=isinstance(exc,TimeoutError)
         super().__init__(self.detail['message'])
 
 
+def _identity_record(value):
+    return dict(state=value[0],sid=value[1],start_ticks=value[2])
+
+
 def _observe(sid,deadline,reader):
     live=[]; zombies=[]; rss=0; pid=None; phase='scan_begin'
+    context=None
     try:
         gate(deadline)
         for pid in reader.pids():
+            context=dict(first_identity=None,last_identity=None,status_read='NOT_ATTEMPTED',
+                         status_bytes=None,rss_present=None)
             phase='initial_stat'; gate(deadline)
             try: first=_identity(pid,reader)
             except (FileNotFoundError,ProcessLookupError): continue
+            context['first_identity']=_identity_record(first)
             if first[1]!=sid: continue
             phase='status'; gate(deadline)
-            try: raw=reader.read(pid,'status',65536)
-            except (FileNotFoundError,ProcessLookupError): raw=b''
+            context['status_read']='ERROR'
+            try:
+                raw=reader.read(pid,'status',65536); context['status_read']='READ'
+            except (FileNotFoundError,ProcessLookupError):
+                raw=b''; context['status_read']='DISAPPEARED'
+            context['status_bytes']=len(raw)
             if len(raw)>65536: raise ValueError('bounded process status')
             values=[line.split() for line in raw.splitlines() if line.startswith(b'VmRSS:')]
+            context['rss_present']=bool(values)
             if len(values)>1: raise ValueError('duplicate RSS')
             value=None
             if values:
@@ -89,6 +104,7 @@ def _observe(sid,deadline,reader):
             phase='confirm_stat'; gate(deadline)
             try: last=_identity(pid,reader)
             except (FileNotFoundError,ProcessLookupError): continue
+            context['last_identity']=_identity_record(last)
             if first[1:]!=last[1:]: raise ValueError('process identity changed during observation')
             if last[0] in ('Z','X','x'):
                 zombies.append(pid)  # terminal/non-running; not a claim of reaping
@@ -96,14 +112,48 @@ def _observe(sid,deadline,reader):
                 if value is None: raise ValueError('live process RSS unavailable')
                 live.append(pid); rss+=value
             if len(live)+len(zombies)>MEMBERS: raise ValueError('bounded session roster')
-        phase='scan_end'; pid=None; gate(deadline)
+        phase='scan_end'; pid=None; context=None; gate(deadline)
         return dict(live=sorted(live),zombies=sorted(zombies),rss=rss)
     except Exception as exc:
-        raise _ObservationFailure(exc,phase,pid) from exc
+        raise _ObservationFailure(exc,phase,pid,context) from exc
 
 
 def observe(sid,deadline):
     return _observe(sid,deadline,_ProcReader())
+
+
+def _observe_cleanup(sid,deadline,reader):
+    """Identity roster for cleanup only. Never supplies memory evidence."""
+    live=[]; zombies=[]; identities=[]; pid=None; phase='cleanup_scan_begin'; context=None
+    try:
+        gate(deadline)
+        for pid in reader.pids():
+            context=dict(first_identity=None,last_identity=None)
+            phase='cleanup_initial_stat'; gate(deadline)
+            try: first=_identity(pid,reader)
+            except (FileNotFoundError,ProcessLookupError): continue
+            context['first_identity']=_identity_record(first)
+            if first[1]!=sid: continue
+            phase='cleanup_confirm_stat'; gate(deadline)
+            try: last=_identity(pid,reader)
+            except (FileNotFoundError,ProcessLookupError): continue
+            context['last_identity']=_identity_record(last)
+            if first[1:]!=last[1:]: raise ValueError('cleanup process identity changed')
+            if last[0] in ('Z','X','x'): zombies.append(pid)
+            else:
+                live.append(pid)
+                identities.append(dict(pid=pid,sid=sid,start_ticks=last[2]))
+            if len(live)+len(zombies)>MEMBERS: raise ValueError('bounded session roster')
+        phase='cleanup_scan_end'; pid=None; context=None; gate(deadline)
+        return dict(live=sorted(live),zombies=sorted(zombies),rss=None,rss_known=False,
+                    observation_scope='IDENTITY_ONLY_CLEANUP',
+                    identities=sorted(identities,key=lambda v:v['pid']))
+    except Exception as exc:
+        raise _ObservationFailure(exc,phase,pid,context) from exc
+
+
+def observe_cleanup(sid,deadline):
+    return _observe_cleanup(sid,deadline,_ProcReader())
 
 
 class _SessionEvidence:
@@ -130,17 +180,23 @@ class _SessionEvidence:
             ('' if self.execution_error else 'SESSION_CLEANUP_')+first['kind'])
         return dict(error=error,execution_error=self.execution_error,cleanup_error=self.cleanup_error,
                     remaining_session=self.remaining,remaining_session_known=self.remaining is not None,
-                    observation_contract='CONFIRMED_IDENTITY_V2')
+                    observation_contract='CONFIRMED_IDENTITY_V2',cleanup_contract='IDENTITY_ONLY_V1')
 
 
-def kill_owned(pid,sid,deadline, *, pidfd=None):
+def kill_owned(pid,sid,deadline, *, pidfd=None,expected_start=None):
+    return _kill_owned(pid,sid,deadline,pidfd=pidfd,expected_start=expected_start,reader=_ProcReader())
+
+
+def _kill_owned(pid,sid,deadline, *, pidfd,expected_start,reader):
     """Open first, then recheck SID. Never signal a bare discovered PID/PGID."""
     gate(deadline); fd=None
     pidfd=Pidfd() if pidfd is None else pidfd
     try:
         fd=pidfd.pidfd_open(pid,0)
-        _,current=process(pid)
-        if current!=sid: return False
+        _,current,start=_identity(pid,reader)
+        if current!=sid or (expected_start is not None and start!=expected_start):
+            if expected_start is not None: raise ValueError('signal process identity changed')
+            return False
         gate(deadline); pidfd.pidfd_send_signal(fd,int(signal.SIGKILL),None,0)
         return True
     except (FileNotFoundError,ProcessLookupError): return False
@@ -151,10 +207,11 @@ def kill_owned(pid,sid,deadline, *, pidfd=None):
 def execute(argv, *, run_deadline, cleanup_deadline, env, rss_limit):
     """One spawn; caller has already authorized source, code, limits and times."""
     return _execute(argv,run_deadline=run_deadline,cleanup_deadline=cleanup_deadline,
-                    env=env,rss_limit=rss_limit,_observer=observe)
+                    env=env,rss_limit=rss_limit,_observer=observe,_cleanup_observer=observe_cleanup)
 
 
-def _execute(argv, *, run_deadline, cleanup_deadline, env, rss_limit, _observer):
+def _execute(argv, *, run_deadline, cleanup_deadline, env, rss_limit, _observer,
+             _cleanup_observer=observe_cleanup):
     """Private deterministic fault seam. Public execute always binds observe."""
     if run_deadline>cleanup_deadline: raise ValueError('shared session cleanup budget')
     started=time.monotonic()
@@ -212,17 +269,21 @@ def _execute(argv, *, run_deadline, cleanup_deadline, env, rss_limit, _observer)
                 # it exited normally. Its SID cannot be given to another job.
                 while time.monotonic()<cleanup_deadline:
                     phase='cleanup_observe'
-                    final=evidence.scan(p.pid,cleanup_deadline,_observer)
+                    final=evidence.scan(p.pid,cleanup_deadline,_cleanup_observer)
                     if not final['live']:
                         phase='cleanup_reap'
                         if bounded_reap(p,cleanup_deadline):
                             rc=p.returncode; cleanup='LEADER_REAPED_NO_LIVE_SESSION'
                         break
-                    for pid in final['live']:
+                    for member in final['identities']:
+                        pid=member['pid']
                         phase='cleanup_member_signal'
-                        signals+=kill_owned(pid,p.pid,cleanup_deadline,pidfd=pidfd)
+                        signals+=kill_owned(pid,p.pid,cleanup_deadline,pidfd=pidfd,
+                                            expected_start=member['start_ticks'])
+                    evidence.remaining=None  # Signals invalidate the pre-signal roster until a fresh scan.
                     time.sleep(min(.005,max(0.,cleanup_deadline-time.monotonic())))
             except BaseException as exc:
+                evidence.remaining=None  # A signal/reap failure can invalidate the last identity roster.
                 evidence.failed('cleanup',exc,phase,p.pid if phase!='cleanup_member_signal' else pid)
             try:
                 if p.stdout is not None: p.stdout.close()
@@ -231,7 +292,9 @@ def _execute(argv, *, run_deadline, cleanup_deadline, env, rss_limit, _observer)
             if leader_fd is not None: os.close(leader_fd)
         except BaseException as exc: evidence.failed('cleanup',exc,'leader_fd_close',None if p is None else p.pid)
         if evidence.cleanup_error is not None: cleanup='CLEANUP_INCOMPLETE'
-        if p is not None and cleanup!='LEADER_REAPED_NO_LIVE_SESSION': status='CLEANUP_INCOMPLETE'
+        if p is not None and cleanup!='LEADER_REAPED_NO_LIVE_SESSION':
+            evidence.remaining=None
+            status='CLEANUP_INCOMPLETE'
     end=time.monotonic()
     if status=='COMPLETED' and end>=cleanup_deadline: status='TIMEOUT'
     import base64

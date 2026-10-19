@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+Identity-only cleanup repair APPROVED AND PREPARING: 2026-10-20.
+See [scope, four-group controls and cost boundary](hz_owned_cleanup_control_20261020.md).
+User approved this minimal repair plus ONE <=300s standard-library control/archive stage.
+Execution still rejects live missing RSS; bounded diagnostics added. Cleanup uses PID/SID/starttick
+without claiming memory evidence, with pidfd-open-then-identity-check before signal; stale rosters
+cleared after signals/deadlines. Successful cleanup never upgrades execution error.
+Four groups/20 subcases, four short actual executions (one with owned member), no algorithm/model/GPU.
+Freeze/commit precede execution. Same resource caps, empty endpoint approval registry, no retry.
+This supersedes only the pending repair permission below; R4 failure and G1-G6 remain unchanged.
+
 R4 finite algorithm attempt FAILED; authorization consumed: 2026-10-20.
 See [failure, scientific boundary and minimum next decision](hz_endpoint_midpoint_r4_results_20261020.md),
 [saved-prefix audit](hz_endpoint_midpoint_r4_results_20261020.json) and
