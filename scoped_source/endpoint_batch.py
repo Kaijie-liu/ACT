@@ -27,7 +27,7 @@ LIMITS = dict(seconds=300,cumulative_seconds=2100,final_reserve_seconds=FINAL_RE
     receipt_bytes=RECEIPT_CAP,freeze_bytes=FREEZE_CAP,batch_metadata_bytes=BATCH_META_CAP,
     batch_metadata_members=4,batch_run_seconds=2098,batch_cleanup_seconds=2098.5,
     batch_log_bytes=16384,batch_session_members=512,
-    observation='TRUSTED_CALLER_ENTRY_AND_POST_PUBLICATION_RETURN_V1')
+    observation='TRUSTED_PRELAUNCH_AND_POST_PUBLICATION_RETURN_V2')
 ADMISSION = dict(attempts=1,wait_seconds=60,available_bytes=4*2**30,disk_free_bytes=8*2**30)
 COMPONENT_META = {'component-invocation.json':FREEZE_CAP,'controller.log':REPORT_CAP,
     'component.log':LOG_CAP,'component.json':REPORT_CAP,'controller.json':REPORT_CAP,
@@ -75,8 +75,16 @@ def validate(freeze, expected, *, authorize=True, verify=True, deadline=None):
     require(identity(freeze)==sha(expected),'endpoint freeze identity')
     if authorize: approved_batch(expected)  # Before any setup, source or process side effect.
     require(type(freeze) is dict and set(freeze)=={'schema','limits','admission','policy',
-        'records','component','code','native_registry'}
-        and freeze['schema']=='ENDPOINT_FINITE_FREEZE_V2','closed finite freeze')
+        'records','component','code','native_registry','startup'}
+        and freeze['schema']=='ENDPOINT_FINITE_FREEZE_V3','closed finite freeze')
+    startup=freeze['startup']
+    require(type(startup) is dict and set(startup)=={'schema','clock','origin','issuer','caller_limits_before_spawn'}
+            and startup['schema']=='ENDPOINT_PRELAUNCH_CONTRACT_V1'
+            and startup['clock']=='CLOCK_MONOTONIC'
+            and startup['origin']=='BEFORE_REQUEST_PREPARATION_AND_SPAWN'
+            and startup['caller_limits_before_spawn'] is True,
+            'explicit trusted pre-launch contract, no process-birth substitute')
+    sha(startup['issuer'])  # Identity of a separately registered REAL launcher, not this API.
     require(freeze['limits']==LIMITS and freeze['admission']==ADMISSION
             and freeze['policy']==dict(POLICY),'unchanged finite resource contract')
     require(sum(META_CAPS.values())+RECEIPT_CAP<=META_RESERVE and len(META_CAPS)+1<=META_MEMBERS

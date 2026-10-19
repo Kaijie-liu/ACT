@@ -1,5 +1,21 @@
 # MoE project handoff — current entry point
 
+Pre-launch accounting interface fixed, STATIC ONLY: 2026-10-19.
+See [implemented start binding and remaining launcher dependency](hz_endpoint_prelaunch_binding_20261019.md).
+The narrow approval is implemented: required external pre-request monotonic anchor,
+pre-spawn inherited caps, startup_seconds, and one start hash through worker/receipt/audit.
+No function-entry/process-birth/file-time fallback; no new supervisor or control positions.
+Anchor is copied before validation/hash; reception clock is taken after identity checks.
+Actual launcher remains UNBOUND: hashes and /proc identity are not launch authority.
+V3 interface exists, but no V3 freeze/run directory or registry activation was created.
+Old V2 candidate/review/script and all three approval registries remain byte-identical;
+the old candidate checker belongs with its historical e6b323103 code, not current V3.
+Static11entry/4bootstrap/74dependencies and native12entry/60dependencies pass.
+Seven positions,22 names,all numeric caps and mathematical checks unchanged; zero runtime
+controls/source/native/model/GPU. Next requires concrete existing launcher binding;
+creating a service would be separate scope, not another approval for this finished fix.
+No new algorithm efficacy claim; full-source admission and G1-G6 remain OPEN.
+
 Endpoint seven-position freeze CANDIDATE archived, NOT READY: 2026-10-19.
 See [candidate identity and precise caller blocker](hz_endpoint_midpoint_freeze_candidate_20261019.md)
 and [read-only review](hz_endpoint_midpoint_freeze_review_20261019.json).

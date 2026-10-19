@@ -185,17 +185,21 @@ def audit(directory, freeze, expected, *, caller_return=None, caller_sha256=None
     require(sum(metadata.values())<=BATCH_META_CAP and len(metadata)<=4,'old batch metadata cap')
     if not {'batch.json','batch-received.json'}<=names:
         require(caller_return is None,'no positive caller binding to missing durable batch')
-        return dict(schema='ENDPOINT_FINITE_AUDIT_V2',status='INCOMPLETE_OR_FAILED',
+        return dict(schema='ENDPOINT_FINITE_AUDIT_V3',status='INCOMPLETE_OR_FAILED',
             online_batch_acceptance=False,post_return_observation_bound=False,
             work_complete=False,work=None,seconds=None,unexecuted=None,
             batch_metadata_bytes=sum(metadata.values()),missing_cost_is_not_zero=True,
+            startup_seconds=a['startup_seconds'],start_sha256=a['start_sha256'],
             reason='Missing final record: cannot reconstruct completed prefix or deadline from files')
     terminal,th=read_json(root/'batch-received.json',cap=RECEIPT_CAP)
+    require(terminal['schema']=='ENDPOINT_BATCH_OBSERVER_V2'
+            and terminal['start_sha256']==a['start_sha256'],'observer uses original pre-launch anchor')
     execution=terminal['owned_execution']; sid=execution['session']
     b,bh,summary_complete=batch_check(root,freeze,expected,a,ah,sid)
     require(set(b)=={'schema','freeze','started','admission_sha256','positions','stop','unexecuted',
-                    'before_publish','models','gpu','retries','quota_increases','owner_session','worker_deadline'}
-            and b['schema']=='ENDPOINT_FINITE_BATCH_V2' and b['freeze']==expected
+                    'before_publish','models','gpu','retries','quota_increases','owner_session','worker_deadline',
+                    'start_sha256'}
+            and b['schema']=='ENDPOINT_FINITE_BATCH_V3' and b['freeze']==expected
             and all(type(b[k]) is int and b[k]==0 for k in ('models','gpu','retries','quota_increases')),
             'bound finite batch receipt')
     require([x['id'] for x in b['positions']]==list(ORDER[:len(b['positions'])])
@@ -235,7 +239,7 @@ def audit(directory, freeze, expected, *, caller_return=None, caller_sha256=None
         checks.append(dict(id=row['id'],seconds=row['seconds'],bytes=actual['bytes'],audit=result,
                            sampled_managed_phase_rss=r['observed']['owned_execution']['sampled_peak_rss']))
     # Cumulative init, every position and final metadata reception are all charged.
-    require(terminal['schema']=='ENDPOINT_BATCH_OBSERVER_V1' and terminal['launch_sha256']==ah
+    require(terminal['schema']=='ENDPOINT_BATCH_OBSERVER_V2' and terminal['launch_sha256']==ah
             and terminal['freeze']==expected and terminal['online_batch_acceptance'] is False
             and (terminal['batch_sha256'] is None or terminal['batch_sha256']==bh)
             and execution['schema']=='OWNED_ENDPOINT_SESSION_V1'
@@ -263,11 +267,12 @@ def audit(directory, freeze, expected, *, caller_return=None, caller_sha256=None
     accepted=consistent and bound and caller_return['online_batch_acceptance'] is True
     # Directory-only data cannot authenticate their own final fsync or delivery.
     # The extra value is supplied by the separately trusted live receiver.
-    return dict(schema='ENDPOINT_FINITE_AUDIT_V2',
+    return dict(schema='ENDPOINT_FINITE_AUDIT_V3',
         status='PASS_TRUSTED_CALLER_OBSERVATION' if accepted else
             'CONSISTENT_PENDING_CALLER_OBSERVATION' if consistent and not bound else 'INCOMPLETE_OR_FAILED',
         checks=checks,problems=problems,unexecuted=b['unexecuted'],
         seconds=caller_return['seconds'] if bound else None,
+        startup_seconds=a['startup_seconds'],start_sha256=a['start_sha256'],
         observed_prefix_seconds=terminal['before_publish']-a['started'],batch_metadata_bytes=sum(metadata.values()),
         online_batch_acceptance=accepted,post_return_observation_bound=bound,
         models=0,gpu=0,retries=0,scope='saved terminal audit, not a scientific efficacy gate or independent human review')

@@ -90,7 +90,8 @@ def worker(root, expected, launch_hash):
         if not row['ok']: stop=spec['id']; break
     # Only bounded batch bookkeeping follows. The offline auditor cannot change
     # the online flags or turn a partial/late position into successful completion.
-    b=dict(schema='ENDPOINT_FINITE_BATCH_V2',freeze=expected,started=a['started'],
+    b=dict(schema='ENDPOINT_FINITE_BATCH_V3',freeze=expected,started=a['started'],
+        start_sha256=a['start_sha256'],
         admission_sha256=ah,positions=rows,stop=stop,owner_session=owner_session,worker_deadline=a['run_deadline'],
         unexecuted=list(ORDER[len(rows):]),before_publish=time.monotonic(),
         models=0,gpu=0,retries=0,quota_increases=0)

@@ -46,12 +46,61 @@ def check():
     assert 'online_batch_acceptance=False' in audit
     assert "'PASS_TRUSTED_CALLER_OBSERVATION'" in audit
     observer=(ROOT/'scoped_source/endpoint_batch_observer.py').read_text()
-    assert "schema='ENDPOINT_CALLER_PROPOSAL_V1'" in observer
-    assert 'def observe_return(proposal)' in observer
+    assert "schema='ENDPOINT_CALLER_PROPOSAL_V2'" in observer
+    assert 'def observe_return(proposal, *, start_anchor, start_sha256)' in observer
     assert "anchor['all_work_complete'] is False" in observer
     worker=(ROOT/'scripts/run_endpoint_midpoint_controls.py').read_text()
     assert 'ENTRY_STARTED' not in worker and "write_json(root/'batch-received.json'" not in worker
     assert 'No standalone timer/CLI' in worker
+    # No new supervisor/clock fallback: only an external pre-request anchor can
+    # supply started. These are source checks, NOT executed rejection controls.
+    tree=parsed['scoped_source/endpoint_batch_observer.py']
+    functions={n.name:n for n in tree.body if isinstance(n,ast.FunctionDef)}
+    execute=functions['execute']
+    assert [a.arg for a in execute.args.kwonlyargs]==['start_anchor','start_sha256','enabled']
+    assert execute.args.kw_defaults[:2]==[None,None]
+    origins=[n.value for n in ast.walk(execute) if isinstance(n,ast.Assign)
+        and any(isinstance(t,ast.Name) and t.id=='started' for t in n.targets)]
+    assert len(origins)==1 and ast.unparse(origins[0])=="start['started']"
+    assert not any(isinstance(n,ast.Call) and isinstance(n.func,ast.Attribute)
+                   and n.func.attr=='setrlimit' for n in ast.walk(execute))
+    reception=functions['observe_return']
+    assert any(isinstance(n,ast.Call) and isinstance(n.func,ast.Name)
+               and n.func.id=='live_clock' for n in ast.walk(reception))
+    checked_at=next(n.lineno for n in ast.walk(reception) if isinstance(n,ast.Call)
+        and isinstance(n.func,ast.Name) and n.func.id=='live_clock')
+    observed_at=next(n.lineno for n in ast.walk(reception) if isinstance(n,ast.Assign)
+        and any(isinstance(t,ast.Name) and t.id=='observed' for t in n.targets))
+    assert checked_at<observed_at
+    assert 'start_sha256' in audit and 'startup_seconds' in audit
+    assert "start_sha256=a['start_sha256']" in worker
+    caller=parsed['scripts/endpoint_midpoint_caller.py']
+    entry=next(n for n in caller.body if isinstance(n,ast.FunctionDef) and n.name=='receive_once')
+    assert [a.arg for a in entry.args.kwonlyargs]==['start_anchor','start_sha256','enabled']
+    assert entry.args.kw_defaults[:2]==[None,None] and len(entry.body)==2
+    calls=(entry.body[0].value,entry.body[1].value)
+    assert [n.func.id for n in calls]==['execute','observe_return']
+    assert all({k.arg:ast.unparse(k.value) for k in n.keywords}.items()
+        >= {'start_anchor':'start_anchor','start_sha256':'start_sha256'}.items() for n in calls)
+    assignments={t.id:n.value for n in protocol.body if isinstance(n,ast.Assign)
+        for t in n.targets if isinstance(t,ast.Name)}
+    def literal(node):
+        if isinstance(node,ast.Constant): return node.value
+        if isinstance(node,ast.Name):
+            return 1048576 if node.id=='REPORT_CAP' else literal(assignments[node.id])
+        if isinstance(node,ast.BinOp):
+            a,b=literal(node.left),literal(node.right)
+            if isinstance(node.op,ast.Mult): return a*b
+            if isinstance(node.op,ast.Pow): return a**b
+        if isinstance(node,ast.Call) and isinstance(node.func,ast.Name) and node.func.id=='dict':
+            assert not node.args and all(k.arg is not None for k in node.keywords)
+            return {k.arg:literal(k.value) for k in node.keywords}
+        raise AssertionError('closed static literal')
+    current=literal(assignments['LIMITS'])
+    old=json.loads((ROOT/'docs/hz_endpoint_midpoint_freeze_candidate_20261019.json').read_bytes())['limits']
+    assert set(current)==set(old)
+    assert {k for k in old if current[k]!=old[k]}=={'observation'}
+    assert current['observation']=='TRUSTED_PRELAUNCH_AND_POST_PUBLICATION_RETURN_V2'
     session=(ROOT/'scoped_proof/owned_session.py').read_text()
     assert 'pidfd_send_signal' in session and 'os.kill(' not in session and 'os.killpg(' not in session
     owned=(ROOT/'scoped_proof/owned_bounded.py').read_text()
@@ -83,6 +132,7 @@ def check():
         bootstraps=bootstraps,dependency_files=len(found),components=22,positions=7,
         native_metadata_upper_bytes=native_metadata,component_metadata_upper_bytes=component_metadata,
         batch_metadata_upper_bytes=batch_metadata,
+        startup='REQUIRED_EXTERNAL_ANCHOR_NO_FALLBACK',numeric_limits_unchanged=True,
         approvals=0,project_runtime_imports=0,controls_executed=0,models=0,gpu=0,sha256=hashes)
 
 

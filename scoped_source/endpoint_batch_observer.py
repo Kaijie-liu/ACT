@@ -1,8 +1,9 @@
 """Prepared default-off outer caller. No execution authority is registered.
 
-An already-running trusted service invokes execute, then retains its live return
-outside the worker directory. File timestamps are NOT a substitute for that
-receiver. The caller/clock/OS are trusted; this is not a machine-checked OS proof.
+A registered launcher supplies its LIVE pre-request start anchor and expected
+hash before starting this caller. This caller never starts a fresh budget.
+File timestamps/process birth are not substitutes for that origin or receiver.
+The launcher/clock/OS are trusted; this is not a machine-checked OS proof.
 """
 import math
 import os
@@ -18,6 +19,72 @@ from scoped_source.hz_request_store import compact, digest, identity, require
 from scoped_source.native_protocol import PYTHON, read_json, write_json, REPORT_CAP
 from scoped_source.native_supervised import clean_env
 from scoped_source.endpoint_batch import validate, ORDER, LIMITS, FREEZE_CAP, RECEIPT_CAP, BATCH_META_CAP
+
+
+def start_record(value, expected_hash):
+    """Bounded immutable copy; a hash binds data, NOT an untrusted issuer's truth."""
+    keys={'schema','freeze','issuer','root','code_root','clock','origin','started','nonce',
+          'boot_id','time_namespace','launcher_pid','launcher_start_ticks'}
+    require(type(value) is dict and set(value)==keys,'closed pre-launch anchor')
+    value=dict(value)  # Validate/hash/return THIS snapshot, not a later caller-owned version.
+    require(set(value)==keys,'closed snapshot after detachment')
+    require(type(expected_hash) is str and len(expected_hash)==64
+            and all(c in '0123456789abcdef' for c in expected_hash),'externally retained start hash')
+    require(value['schema']=='ENDPOINT_TRUSTED_PRELAUNCH_V1'
+            and value['clock']=='CLOCK_MONOTONIC'
+            and value['origin']=='BEFORE_REQUEST_PREPARATION_AND_SPAWN','trusted start meaning')
+    for k in ('freeze','issuer'):
+        require(type(value[k]) is str and len(value[k])==64
+                and all(c in '0123456789abcdef' for c in value[k]),'start hash field')
+    require(all(type(value[k]) is str and 0<len(value[k])<=512 for k in ('root','code_root'))
+            and type(value['nonce']) is str and len(value['nonce'])==32
+            and all(c in '0123456789abcdef' for c in value['nonce']),'bounded request binding')
+    require(type(value['started']) in (int,float) and math.isfinite(value['started'])
+            and 0<=value['started']<2**53,'finite original clock')
+    require(type(value['boot_id']) is str and len(value['boot_id'])==36
+            and str(uuid.UUID(value['boot_id']))==value['boot_id']
+            and type(value['time_namespace']) is str and len(value['time_namespace'])<=64
+            and value['time_namespace'].startswith('time:[') and value['time_namespace'].endswith(']')
+            and value['time_namespace'][6:-1].isdigit(),'boot and clock namespace identity')
+    require(type(value['launcher_pid']) is int and 0<value['launcher_pid']<2**31
+            and type(value['launcher_start_ticks']) is int
+            and 0<=value['launcher_start_ticks']<2**64,'launcher process incarnation')
+    raw=compact(value)
+    require(len(raw)<=4096 and digest(raw)==expected_hash,'bounded original start identity')
+    # All validated values are immutable scalars.
+    return value
+
+
+def live_clock(start):
+    """Local identity check only. /proc ticks are NEVER converted to a start time."""
+    info=time.get_clock_info('monotonic')
+    require(info.monotonic and not info.adjustable
+            and info.implementation=='clock_gettime(CLOCK_MONOTONIC)','same Linux monotonic clock')
+    with Path('/proc/sys/kernel/random/boot_id').open('rb') as stream: boot=stream.read(65)
+    require(len(boot)<=64 and boot.decode('ascii').strip()==start['boot_id'], 'same boot')
+    ns=os.readlink('/proc/self/ns/time')
+    p=Path('/proc')/str(start['launcher_pid'])
+    require(ns==start['time_namespace'] and p.stat().st_uid==os.getuid()
+            and os.readlink(p/'ns/time')==ns,'same local launcher owner and clock namespace')
+    with (p/'stat').open('rb') as stream: raw=stream.read(8193)
+    require(len(raw)<=8192,'bounded launcher incarnation')
+    close=raw.rfind(b') '); tail=raw[close+2:].split()
+    require(close>0 and int(raw.split(b' ',1)[0])==start['launcher_pid'] and len(tail)>=20
+            and tail[0] not in (b'Z',b'X',b'x')
+            and int(tail[19])==start['launcher_start_ticks'],'same live launcher, no PID reuse')
+
+
+def launch_start(a, freeze, expected, root):
+    start=start_record(a['start_anchor'],a['start_sha256'])
+    require(start['freeze']==expected and start['issuer']==freeze['startup']['issuer']
+            and start['root']==str(root) and start['code_root']==str(ROOT)
+            and start['started']==a['started'] and start['nonce']==a['nonce'],
+            'one frozen launcher, request and original start')
+    require(type(a['observer_entry']) in (int,float) and math.isfinite(a['observer_entry'])
+            and a['started']<=a['observer_entry']<=a['admission_started']
+            and a['startup_seconds']==a['observer_entry']-a['started'],
+            'caller startup is charged, never a new function-entry budget')
+    return start
 
 
 def admission(deadline):
@@ -41,7 +108,8 @@ def admission(deadline):
 
 
 def launch_check(a, freeze, expected, root):
-    require(a['schema']=='ENDPOINT_BATCH_LAUNCH_V1' and a['freeze']==expected
+    launch_start(a,freeze,expected,root)
+    require(a['schema']=='ENDPOINT_BATCH_LAUNCH_V2' and a['freeze']==expected
             and a['root']==str(root) and a['code_root']==str(ROOT)
             and type(a['started']) in (int,float) and math.isfinite(a['started'])
             and a['started']>=0 and a['run_deadline']==a['started']+LIMITS['batch_run_seconds']
@@ -99,8 +167,9 @@ def batch_check(root, freeze, expected, a, ah, sid, deadline=None):
     second exact checker or another all-artifact census outside request budgets.
     """
     b,bh=read_json(root/'batch.json',deadline=deadline)
-    require(b['schema']=='ENDPOINT_FINITE_BATCH_V2' and b['freeze']==expected
+    require(b['schema']=='ENDPOINT_FINITE_BATCH_V3' and b['freeze']==expected
             and b['started']==a['started'] and b['admission_sha256']==ah
+            and b['start_sha256']==a['start_sha256']
             and b['owner_session']==sid and b['worker_deadline']==a['run_deadline']
             and all(type(b[k]) is int and b[k]==0 for k in ('models','gpu','retries','quota_increases')),
             'worker identity, session and original clock')
@@ -126,22 +195,30 @@ def batch_check(root, freeze, expected, a, ah, sid, deadline=None):
     return b,bh,good and len(rows)==7 and b['stop'] is None and not b['unexecuted']
 
 
-def observe_return(proposal):
+def observe_return(proposal, *, start_anchor, start_sha256):
     """Trusted caller invokes this AFTER execute actually returned.
 
     This observation is the receiver's trust boundary, not another disk receipt.
     Retain the returned anchor separately. Never call from the batch worker or
     recreate a missing observation later to upgrade an earlier partial run.
     """
-    observed=time.monotonic()
-    require(proposal['schema']=='ENDPOINT_CALLER_PROPOSAL_V1','live observer proposal')
+    start=start_record(start_anchor,start_sha256); live_clock(start)
+    require(proposal['schema']=='ENDPOINT_CALLER_PROPOSAL_V2'
+            and proposal['start_sha256']==start_sha256 and proposal['freeze']==start['freeze']
+            and proposal['nonce']==start['nonce'] and proposal['started']==start['started'],
+            'live observer proposal bound to retained original start')
     require(type(proposal['producer_finished_at']) in (int,float)
             and math.isfinite(proposal['producer_finished_at'])
-            and proposal['started']<=proposal['producer_finished_at']<=observed,
-            'actual post-return observation, same monotonic clock')
+            and proposal['started']<=proposal['producer_finished_at'],
+            'finite producer completion on original clock')
+    # Charge start/clock validation before recording completed reception, rather
+    # than reporting an earlier arrival that omits these (possibly delayed) reads.
+    observed=time.monotonic()
+    require(proposal['producer_finished_at']<=observed,'actual post-return observation, same clock')
     result={k:proposal[k] for k in ('freeze','launch_sha256','terminal_sha256','batch_sha256',
-                                   'nonce','started','producer_finished_at')}
-    result.update(schema='ENDPOINT_CALLER_RETURN_V1',received_at=observed,seconds=observed-proposal['started'],
+                                   'nonce','started','producer_finished_at','start_sha256',
+                                   'observer_entry','startup_seconds')}
+    result.update(schema='ENDPOINT_CALLER_RETURN_V2',received_at=observed,seconds=observed-proposal['started'],
         online_batch_acceptance=proposal['candidate_complete'] is True and observed<proposal['started']+2100,
         elapsed_observed=True,all_work_complete=False)
     # The actual root-of-trust event is receipt above, not this function's own
@@ -159,11 +236,14 @@ def receive(anchor, expected_hash, terminal, terminal_hash, a, ah, batch_hash):
     """
     require(set(anchor)=={'schema','freeze','launch_sha256','terminal_sha256','batch_sha256',
         'nonce','started','producer_finished_at','received_at','seconds','online_batch_acceptance',
-        'elapsed_observed','all_work_complete'}
-        and identity(anchor)==expected_hash and anchor['schema']=='ENDPOINT_CALLER_RETURN_V1'
+        'elapsed_observed','all_work_complete','start_sha256','observer_entry','startup_seconds'}
+        and identity(anchor)==expected_hash and anchor['schema']=='ENDPOINT_CALLER_RETURN_V2'
         and anchor['freeze']==a['freeze'] and anchor['nonce']==a['nonce']
         and anchor['launch_sha256']==ah and anchor['terminal_sha256']==terminal_hash
-        and anchor['batch_sha256']==batch_hash and anchor['started']==a['started'],
+        and anchor['batch_sha256']==batch_hash and anchor['started']==a['started']
+        and anchor['start_sha256']==a['start_sha256']==terminal['start_sha256']
+        and anchor['observer_entry']==a['observer_entry']
+        and anchor['startup_seconds']==a['startup_seconds'],
         'externally retained caller return identity')
     require(type(anchor['received_at']) in (int,float) and math.isfinite(anchor['received_at'])
         and terminal['before_publish']<=anchor['producer_finished_at']<=anchor['received_at']
@@ -176,9 +256,16 @@ def receive(anchor, expected_hash, terminal, terminal_hash, a, ah, batch_hash):
             'positive caller reception inside original budget')
 
 
-def execute(root, freeze_path, expected, *, enabled=False):
-    started=time.monotonic()  # Existing service entry: before validation, admission or spawn.
+def execute(root, freeze_path, expected, *, start_anchor, start_sha256, enabled=False):
+    observer_entry=time.monotonic()  # Observation only, NEVER the budget origin.
     require(enabled is True,'default-off trusted batch observer')
+    start=start_record(start_anchor,start_sha256); started=start['started']
+    require(started<=observer_entry<started+60,'original startup/admission window')
+    # The trusted issuer must impose these before spawning/importing this caller.
+    # Checking now cannot prove their past installation, and must not repair it.
+    for kind,cap in ((resource.RLIMIT_AS,LIMITS['as_bytes']),(resource.RLIMIT_FSIZE,LIMITS['file_bytes'])):
+        require(resource.getrlimit(kind)==(cap,cap),'required pre-spawn caller limits, never raise/repair')
+    live_clock(start)
     freeze,_=read_json(freeze_path,expected=expected,cap=FREEZE_CAP,deadline=started+60)
     validate(freeze,expected,deadline=started+60)  # Empty authority refuses before side effects.
     require(LOG_CAP==LIMITS['batch_log_bytes'] and MEMBERS==LIMITS['batch_session_members'],
@@ -188,21 +275,19 @@ def execute(root, freeze_path, expected, *, enabled=False):
     require(root.is_absolute() and root.resolve()==root and root.is_relative_to('/data1/Kane/MOE')
             and root!=Path('/data1/Kane/MOE') and not root.exists() and root.parent.is_dir(),
             'new canonical batch, no resume')
+    # Check request binding before observation/setup; authority never comes from this anchor alone.
+    require(start['freeze']==expected and start['issuer']==freeze['startup']['issuer']
+            and start['root']==str(root) and start['code_root']==str(ROOT),'registered pre-launch request')
     available,jobs,begin=admission(started+60); disk=shutil.disk_usage(root.parent).free; at=time.monotonic()
-    a=dict(schema='ENDPOINT_BATCH_LAUNCH_V1',freeze=expected,root=str(root),code_root=str(ROOT),
+    a=dict(schema='ENDPOINT_BATCH_LAUNCH_V2',freeze=expected,root=str(root),code_root=str(ROOT),
         started=started,run_deadline=started+LIMITS['batch_run_seconds'],
         cleanup_deadline=started+LIMITS['batch_cleanup_seconds'],deadline=started+2100,
-        nonce=uuid.uuid4().hex,attempts=1,available_bytes=available,disk_free_bytes=disk,jobs=jobs,
+        nonce=start['nonce'],start_anchor=start,start_sha256=start_sha256,
+        observer_entry=observer_entry,startup_seconds=observer_entry-started,
+        attempts=1,available_bytes=available,disk_free_bytes=disk,jobs=jobs,
         admission_started=begin,admission_end=at,seconds=at-begin,device='cpu',threads=1,
         admission_in_total_budget=True)
     launch_check(a,freeze,expected,root)
-    # Dedicated caller only: these process limits are intentionally not restored.
-    # Lower inherited hard limits must not be raised to admit an execution.
-    for kind,cap in ((resource.RLIMIT_AS,LIMITS['as_bytes']),(resource.RLIMIT_FSIZE,LIMITS['file_bytes'])):
-        soft,hard=resource.getrlimit(kind)
-        require(all(v==resource.RLIM_INFINITY or v>=cap for v in (soft,hard)),
-                'caller limit too low: refuse, never increase')
-        resource.setrlimit(kind,(cap,cap))
     root.mkdir(); (root/'runs').mkdir()
     write_json(root/'freeze.json',freeze,deadline=a['run_deadline'],cap=FREEZE_CAP)
     ar=write_json(root/'admission.json',a,deadline=a['run_deadline'])
@@ -217,7 +302,8 @@ def execute(root, freeze_path, expected, *, enabled=False):
         require(time.monotonic()<a['deadline'],'observer reception deadline')
     except BaseException as exc:
         error=dict(kind=type(exc).__name__,message=str(exc)[:400]); candidate=False
-    terminal=dict(schema='ENDPOINT_BATCH_OBSERVER_V1',freeze=expected,launch_sha256=ar['sha256'],
+    terminal=dict(schema='ENDPOINT_BATCH_OBSERVER_V2',freeze=expected,launch_sha256=ar['sha256'],
+        start_sha256=start_sha256,
         batch_sha256=bh,owned_execution=execution,candidate_complete=candidate,error=error,
         before_publish=time.monotonic(),online_batch_acceptance=False,
         worker_summary_received=batch is not None,
@@ -232,7 +318,8 @@ def execute(root, freeze_path, expected, *, enabled=False):
     # Still only a proposal. Its receiver must call observe_return AFTER this
     # function returns; producer timestamps cannot prove that event occurred.
     end=time.monotonic()
-    proposal=dict(schema='ENDPOINT_CALLER_PROPOSAL_V1',freeze=expected,launch_sha256=ar['sha256'],
+    proposal=dict(schema='ENDPOINT_CALLER_PROPOSAL_V2',freeze=expected,launch_sha256=ar['sha256'],
+        start_sha256=start_sha256,observer_entry=observer_entry,startup_seconds=observer_entry-started,
         terminal_sha256=None if publication is None else publication['sha256'],batch_sha256=bh,
         nonce=a['nonce'],started=started,producer_finished_at=end,
         candidate_complete=candidate and error is None and end<a['deadline'],
