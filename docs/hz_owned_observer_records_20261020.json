@@ -1,0 +1,327 @@
+{
+  "exported": {
+    "after_export": 11266776.87114038,
+    "online_acceptance": true,
+    "schema": "OWNED_OBSERVER_EXPORT_V1",
+    "seconds": 0.39332093857228756
+  },
+  "returned": {
+    "finished_at": 11266776.87081849,
+    "online_acceptance": true,
+    "reception": {
+      "online_acceptance": true,
+      "received_at": 11266776.869682185,
+      "result_bytes": 5742,
+      "result_sha256": "33e4bf3f8f1dfa91eff0ed7a64293965b30eeae4776df2516268d49c4e2f7a47",
+      "seconds": 0.3918627444654703
+    },
+    "result": {
+      "admission": {
+        "at": 11266776.549274458,
+        "available_bytes": 61049417728,
+        "disk_free_bytes": 350938193920
+      },
+      "algorithm_executed": false,
+      "algorithm_work_consumed": 0,
+      "before_export": 11266776.866962815,
+      "caps": {
+        "artifact_bytes": 134217728,
+        "as_bytes": 8589934592,
+        "rss_bytes": 2147483648,
+        "seconds": 300,
+        "work": 8000000
+      },
+      "cases": [
+        {
+          "details": {
+            "live_to_gone": {
+              "live": [],
+              "rss": 0,
+              "zombies": []
+            },
+            "live_to_zombie": {
+              "live": [],
+              "rss": 0,
+              "zombies": [
+                101
+              ]
+            },
+            "live_with_rss": {
+              "live": [
+                101
+              ],
+              "rss": 12288,
+              "zombies": []
+            },
+            "missing_status_then_gone": {
+              "live": [],
+              "rss": 0,
+              "zombies": []
+            }
+          },
+          "id": "confirmed_exit",
+          "seconds": 0.0006131120026111603,
+          "status": "PASS"
+        },
+        {
+          "details": {
+            "changed_sid": {
+              "error": {
+                "kind": "ValueError",
+                "message": "process identity changed during observation",
+                "phase": "confirm_stat",
+                "pid": 101
+              },
+              "reads": 3,
+              "remaining_reads": 0
+            },
+            "expired_deadline": {
+              "error": {
+                "kind": "TimeoutError",
+                "message": "owned session deadline",
+                "phase": "scan_begin",
+                "pid": null
+              },
+              "reads": 0,
+              "remaining_reads": 0
+            },
+            "malformed_stat": {
+              "error": {
+                "kind": "IndexError",
+                "message": "list index out of range",
+                "phase": "confirm_stat",
+                "pid": 101
+              },
+              "reads": 3,
+              "remaining_reads": 0
+            },
+            "missing_rss_live": {
+              "error": {
+                "kind": "ValueError",
+                "message": "live process RSS unavailable",
+                "phase": "confirm_stat",
+                "pid": 101
+              },
+              "reads": 3,
+              "remaining_reads": 0
+            },
+            "missing_status_live": {
+              "error": {
+                "kind": "ValueError",
+                "message": "live process RSS unavailable",
+                "phase": "confirm_stat",
+                "pid": 101
+              },
+              "reads": 3,
+              "remaining_reads": 0
+            },
+            "oversized_status": {
+              "error": {
+                "kind": "ValueError",
+                "message": "bounded process status",
+                "phase": "status",
+                "pid": 101
+              },
+              "reads": 2,
+              "remaining_reads": 1
+            },
+            "permission_denied": {
+              "error": {
+                "kind": "PermissionError",
+                "message": "cannot confirm",
+                "phase": "confirm_stat",
+                "pid": 101
+              },
+              "reads": 3,
+              "remaining_reads": 0
+            },
+            "reused_pid": {
+              "error": {
+                "kind": "ValueError",
+                "message": "process identity changed during observation",
+                "phase": "confirm_stat",
+                "pid": 101
+              },
+              "reads": 3,
+              "remaining_reads": 0
+            }
+          },
+          "id": "uncertain_rejection",
+          "seconds": 0.0006792489439249039,
+          "status": "PASS"
+        },
+        {
+          "details": {
+            "actual_execute_two_errors": {
+              "calls": 2,
+              "session_index": 0
+            },
+            "bounded_error_text": {
+              "kind": "ValueError",
+              "message": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "observation_known": false,
+              "phase": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp",
+              "pid": 101
+            }
+          },
+          "id": "dual_error_preservation",
+          "seconds": 0.1656678393483162,
+          "status": "PASS"
+        },
+        {
+          "details": {
+            "actual_execute_cleanup_does_not_upgrade": {
+              "session_index": 1
+            },
+            "partial_scan_unknown": {
+              "after": {
+                "cleanup_error": null,
+                "error": "ValueError",
+                "execution_error": {
+                  "kind": "ValueError",
+                  "message": "live process RSS unavailable",
+                  "observation_known": false,
+                  "phase": "confirm_stat",
+                  "pid": 102
+                },
+                "observation_contract": "CONFIRMED_IDENTITY_V2",
+                "remaining_session": null,
+                "remaining_session_known": false
+              },
+              "before": {
+                "cleanup_error": null,
+                "error": null,
+                "execution_error": null,
+                "observation_contract": "CONFIRMED_IDENTITY_V2",
+                "remaining_session": {
+                  "live": [
+                    101
+                  ],
+                  "rss": 12288,
+                  "zombies": []
+                },
+                "remaining_session_known": true
+              },
+              "reads": 6
+            }
+          },
+          "id": "unknown_and_no_upgrade",
+          "seconds": 0.15036819502711296,
+          "status": "PASS"
+        }
+      ],
+      "final_fds": 4,
+      "freeze_sha256": "3219b0c0d1fbe0a14f1ae9d7e39b9f9b590d00bb4101ee5286edc8c01d717fe5",
+      "full_cold_start_seconds": null,
+      "gpu_executed": false,
+      "initial_fds": 4,
+      "model_executed": false,
+      "online_acceptance": true,
+      "post_failure_reaps": [
+        {
+          "at": 11266776.665545903,
+          "changes_original_acceptance": false,
+          "disposition": "ALREADY_NOT_WAITABLE",
+          "pid": 2321703,
+          "post_observation": {
+            "live": [],
+            "rss": 0,
+            "zombies": []
+          },
+          "status": null
+        }
+      ],
+      "provisioning_seconds": 0.030382908880710602,
+      "sampled_managed_rss_bytes": 31072256,
+      "schema": "OWNED_OBSERVER_CONTROL_V1",
+      "seconds_before_export": 0.38914337381720543,
+      "sessions": [
+        {
+          "cleanup_deadline": 11266786.550858095,
+          "cleanup_error": {
+            "kind": "PermissionError",
+            "message": "cleanup fault",
+            "observation_known": false,
+            "phase": "fixed_cleanup",
+            "pid": 2321703
+          },
+          "cleanup_seconds": 0.05121096782386303,
+          "cleanup_status": "CLEANUP_INCOMPLETE",
+          "error": "ValueError",
+          "escaped_sessions_checked": false,
+          "execution_error": {
+            "kind": "ValueError",
+            "message": "execution fault",
+            "observation_known": false,
+            "phase": "fixed_execution",
+            "pid": 2321703
+          },
+          "execution_seconds": 0.061168717220425606,
+          "exit_observed_at": null,
+          "finished_at": 11266776.66323968,
+          "kill_signals": 1,
+          "log_base64": "",
+          "log_bytes": 0,
+          "log_complete": true,
+          "observation_contract": "CONFIRMED_IDENTITY_V2",
+          "pidfd_backend": "LIBC_PIDFD",
+          "remaining_session": null,
+          "remaining_session_known": false,
+          "returncode": null,
+          "run_deadline": 11266781.55085694,
+          "sampled_session_plus_caller_rss": 0,
+          "schema": "OWNED_ENDPOINT_SESSION_V1",
+          "session": 2321703,
+          "started_at": 11266776.550859995,
+          "status": "CLEANUP_INCOMPLETE",
+          "zombie_reaping_complete": false
+        },
+        {
+          "cleanup_deadline": 11266786.716682741,
+          "cleanup_error": null,
+          "cleanup_seconds": 0.09911845996975899,
+          "cleanup_status": "LEADER_REAPED_NO_LIVE_SESSION",
+          "error": "ValueError",
+          "escaped_sessions_checked": false,
+          "execution_error": {
+            "kind": "ValueError",
+            "message": "execution rejected",
+            "observation_known": false,
+            "phase": "fixed_execution",
+            "pid": 2321796
+          },
+          "execution_seconds": 0.050715817138552666,
+          "exit_observed_at": null,
+          "finished_at": 11266776.86651963,
+          "kill_signals": 1,
+          "log_base64": "",
+          "log_bytes": 0,
+          "log_complete": true,
+          "observation_contract": "CONFIRMED_IDENTITY_V2",
+          "pidfd_backend": "LIBC_PIDFD",
+          "remaining_session": {
+            "live": [],
+            "rss": 0,
+            "zombies": [
+              2321796
+            ]
+          },
+          "remaining_session_known": true,
+          "returncode": -9,
+          "run_deadline": 11266781.716681324,
+          "sampled_session_plus_caller_rss": 0,
+          "schema": "OWNED_ENDPOINT_SESSION_V1",
+          "session": 2321796,
+          "started_at": 11266776.716685353,
+          "status": "ERROR",
+          "zombie_reaping_complete": false
+        }
+      ],
+      "seven_position_batch_authorized": false,
+      "started": 11266776.47781944,
+      "status": "PASS",
+      "unexecuted": []
+    },
+    "seconds": 0.3929990492761135
+  }
+}

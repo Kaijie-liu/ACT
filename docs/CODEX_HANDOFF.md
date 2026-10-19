@@ -1,5 +1,18 @@
 # MoE project handoff — current entry point
 
+Existing observer repair controls COMPLETE: 2026-10-20.
+See [results, scope and next decision](hz_owned_observer_results_20261020.md),
+[saved-record audit](hz_owned_observer_audit_20261020.json) and
+[complete compact records](hz_owned_observer_records_20261020.json).
+Execution6f5521f7f, freeze3219b0c0d1fb:4/4groups,16subcases PASS;0.393321s through
+stdout export,31,072,256B sampled,12,103B runtime artifacts,FD4→4,no remaining children.
+Actual two-error session remains CLEANUP_INCOMPLETE/null roster; later not-waitable
+status has unknown exit code and cannot upgrade it. Other failed execution retains
+ERROR even after successful cleanup. Same numerical/resource gates; no algorithm run.
+This one control authorization consumed. No retry/extra observer layer. Next separately
+freeze/authorize the existing finite CPU algorithm comparison; old R3 remains FAILED,
+endpoint approval registry EMPTY, full-source/G1-G6 and algorithm efficacy still OPEN.
+
 Existing observer repair and four-group control APPROVED: 2026-10-20.
 See [bounded scope, race/error contract and timing](hz_owned_observer_control_20261020.md).
 One <=300s standard-library batch, fixed readers and two short owned process fixtures;
