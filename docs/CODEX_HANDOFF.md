@@ -1,5 +1,19 @@
 # MoE project handoff — current entry point
 
+V4 single authorized launch REJECTED BEFORE ADMISSION: 2026-10-19.
+See [retained failure and exact next scope](hz_endpoint_midpoint_v4_results_20261019.md)
+and [independent saved-record audit](hz_endpoint_midpoint_v4_results_20261019.json).
+Frozen execution 7cddef31f, freeze f42a8d2a5637: existing act-py312 exposes neither
+os.pidfd_open nor signal.pidfd_send_signal. Rejected at caller capability gate in
+0.786397s through export, before admission/directory/session creation. All seven
+positions and22controls UNEXECUTED; no factory/candidate/model/GPU or algorithm result.
+Do NOT retry the host or relabel shell exit0 as PASS. Single authorization consumed;
+endpoint registry EMPTY again, native32/resource registry/freeze/history preserved.
+Static preparation missed runtime API availability. Next requires a separately scoped
+pidfd-compatible implementation/control decision, not more supervisor layers, quotas,
+unsafe bare-PID cleanup, interpreter replacement or a new mathematical hypothesis.
+Current algorithm efficacy/full-source admission/G1-G6 remain OPEN.
+
 Finite endpoint CPU stage explicitly approved: 2026-10-19.
 See [V4 freeze scope and provisioned measurement boundary](hz_endpoint_midpoint_v4_20261019.md).
 The user's answer approves the concrete pending bundled question, not unlimited "perfect" settings.
