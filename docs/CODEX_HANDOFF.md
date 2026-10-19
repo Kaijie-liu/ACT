@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+Local pidfd compatibility implementation/control approved: 2026-10-19.
+See [finite scope, roster and acceptance](hz_pidfd_control_20261019.md).
+Implement only the local libc-symbol fallback and same existing-session wiring;
+self open/signal0/close precedes spawn/admission. One new eight-group compatibility
+control batch, cumulative300s, existing limits/checks/environment; failure stops.
+No raw PID/PGID fallback, global patch, install, model/GPU or seven-position rerun.
+Freeze/review/commit precede execution; audit/archival follows. V4 retained rejection,
+empty endpoint registry, original source capacity refusal and G1-G6 remain unchanged.
+This unblocks a concrete execution dependency, not an algorithm efficacy result.
+
 V4 single authorized launch REJECTED BEFORE ADMISSION: 2026-10-19.
 See [retained failure and exact next scope](hz_endpoint_midpoint_v4_results_20261019.md)
 and [independent saved-record audit](hz_endpoint_midpoint_v4_results_20261019.json).

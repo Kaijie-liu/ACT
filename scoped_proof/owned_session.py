@@ -13,6 +13,7 @@ import time
 
 from scoped_proof.io import ROOT
 from scoped_proof.owned_bounded import exited_unreaped, bounded_reap, parent_rss
+from scoped_proof.pidfd_compat import Pidfd
 
 LOG_CAP=16384
 MEMBERS=512
@@ -51,14 +52,15 @@ def observe(sid,deadline):
     return dict(live=sorted(live),zombies=sorted(zombies),rss=rss)
 
 
-def kill_owned(pid,sid,deadline):
+def kill_owned(pid,sid,deadline, *, pidfd=None):
     """Open first, then recheck SID. Never signal a bare discovered PID/PGID."""
     gate(deadline); fd=None
+    pidfd=Pidfd() if pidfd is None else pidfd
     try:
-        fd=os.pidfd_open(pid,0)
+        fd=pidfd.pidfd_open(pid,0)
         _,current=process(pid)
         if current!=sid: return False
-        gate(deadline); signal.pidfd_send_signal(fd,signal.SIGKILL,None,0)
+        gate(deadline); pidfd.pidfd_send_signal(fd,int(signal.SIGKILL),None,0)
         return True
     except (FileNotFoundError,ProcessLookupError): return False
     finally:
@@ -67,17 +69,19 @@ def kill_owned(pid,sid,deadline):
 
 def execute(argv, *, run_deadline, cleanup_deadline, env, rss_limit):
     """One spawn; caller has already authorized source, code, limits and times."""
-    if not hasattr(os,'pidfd_open') or not hasattr(signal,'pidfd_send_signal'):
-        raise RuntimeError('Linux pidfd support required; no unsafe fallback')
     if run_deadline>cleanup_deadline: raise ValueError('shared session cleanup budget')
-    started=time.monotonic(); p=None; selector=selectors.DefaultSelector(); chunks=[]; size=0
+    started=time.monotonic()
+    gate(run_deadline)
+    pidfd=Pidfd(); pidfd.probe()  # Before Popen; unavailability cannot strand a child.
+    gate(run_deadline)
+    p=None; selector=selectors.DefaultSelector(); chunks=[]; size=0
     peak=0; status='ERROR'; error=None; exit_at=None; rc=None; cleanup='NO_PROCESS'; eof=False
     final=dict(live=[],zombies=[],rss=0); before_cleanup=started; signals=0; leader_fd=None
     try:
         gate(run_deadline)
         p=subprocess.Popen(argv,cwd=ROOT,env=env,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,
                            stderr=subprocess.STDOUT,start_new_session=True)
-        leader_fd=os.pidfd_open(p.pid,0)
+        leader_fd=pidfd.pidfd_open(p.pid,0)
         os.set_blocking(p.stdout.fileno(),False); selector.register(p.stdout,selectors.EVENT_READ)
         while True:
             gate(run_deadline)
@@ -107,9 +111,9 @@ def execute(argv, *, run_deadline, cleanup_deadline, env, rss_limit):
                 # Direct child identity remains reserved by waitid(WNOWAIT).
                 # Also kill a pre-exec leader whose setsid has not yet happened.
                 gate(cleanup_deadline)
-                if leader_fd is None: leader_fd=os.pidfd_open(p.pid,0)
+                if leader_fd is None: leader_fd=pidfd.pidfd_open(p.pid,0)
                 try:
-                    signal.pidfd_send_signal(leader_fd,signal.SIGKILL,None,0); signals+=1
+                    pidfd.pidfd_send_signal(leader_fd,int(signal.SIGKILL),None,0); signals+=1
                 except ProcessLookupError: pass
                 # Leader stays unreaped throughout scans/signals, including when
                 # it exited normally. Its SID cannot be given to another job.
@@ -120,7 +124,7 @@ def execute(argv, *, run_deadline, cleanup_deadline, env, rss_limit):
                             rc=p.returncode; cleanup='LEADER_REAPED_NO_LIVE_SESSION'
                         break
                     for pid in final['live']:
-                        signals+=kill_owned(pid,p.pid,cleanup_deadline)
+                        signals+=kill_owned(pid,p.pid,cleanup_deadline,pidfd=pidfd)
                     time.sleep(min(.005,max(0.,cleanup_deadline-time.monotonic())))
             except BaseException as exc:
                 error='SESSION_CLEANUP_'+type(exc).__name__
@@ -137,4 +141,4 @@ def execute(argv, *, run_deadline, cleanup_deadline, env, rss_limit):
         run_deadline=run_deadline,cleanup_deadline=cleanup_deadline,kill_signals=signals,
         sampled_session_plus_caller_rss=peak,log_bytes=size,log_complete=size<=LOG_CAP,
         log_base64=base64.b64encode(b''.join(chunks)).decode(),
-        escaped_sessions_checked=False,zombie_reaping_complete=False)
+        escaped_sessions_checked=False,zombie_reaping_complete=False,pidfd_backend=pidfd.backend)
