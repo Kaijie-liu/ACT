@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+Existing observer repair and four-group control APPROVED: 2026-10-20.
+See [bounded scope, race/error contract and timing](hz_owned_observer_control_20261020.md).
+One <=300s standard-library batch, fixed readers and two short owned process fixtures;
+no algorithm/model/GPU, quota/acceptance change, new supervisor or retry.
+Missing RSS requires a single same-identity exit/disappearance confirmation; live/unknown
+rejects. Execution/cleanup errors stay separate; unfinished scans are null/unknown.
+Public execute always uses the real reader. Frozen code must be committed before launch.
+R3 remains FAILED; endpoint approvals EMPTY, all scientific claims/G1-G6 remain OPEN.
+
 R3 single finite launch FAILED after component actor output: 2026-10-20.
 See [result, late evidence and minimal next decision](hz_endpoint_midpoint_r3_results_20261020.md)
 and [saved-prefix audit](hz_endpoint_midpoint_r3_results_20261020.json).

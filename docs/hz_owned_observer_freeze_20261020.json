@@ -1,0 +1,58 @@
+{
+  "algorithm_batch_authorized": false,
+  "attempts": 1,
+  "caps": {
+    "artifact_bytes": 134217728,
+    "as_bytes": 8589934592,
+    "rss_bytes": 2147483648,
+    "seconds": 300,
+    "work": 8000000
+  },
+  "cases": [
+    "confirmed_exit",
+    "uncertain_rejection",
+    "dual_error_preservation",
+    "unknown_and_no_upgrade"
+  ],
+  "files": {
+    "/data1/Kane/MOE/ACT/scoped_proof/io.py": "ee080902b729bcc0ce50ead5696538b687302358f143b039a6f9bdee2256569d",
+    "/data1/Kane/MOE/ACT/scoped_proof/owned_bounded.py": "f0f7c4b72b2ffc10fd3b2e20cf44374d42b5c0d4aaddb9f47263bf6a20fa79c3",
+    "/data1/Kane/MOE/ACT/scoped_proof/owned_session.py": "d837d900c0c67ca5d7a0d7c68c74bb755bd9d52d94f1eac5d9a4c3ec7bb63c46",
+    "/data1/Kane/MOE/ACT/scoped_proof/pidfd_compat.py": "8bbc9c51377221aee889d217613ecd9fc176a18cce956763f423f2faacdbf41e",
+    "/data1/Kane/MOE/ACT/scripts/audit_owned_observer_control.py": "43744469b17e9eb3ae727032ce56dd6daa6c1ec3310f017005a9f0c5728374cf",
+    "/data1/Kane/MOE/ACT/scripts/owned_observer_finite_control.py": "b199a26817aaab93057689c47942b56e41be64a04d1be3197260eafae92f0224",
+    "/data1/Kane/miniconda3/envs/act-py312/bin/python": "3662f23758ced1fbeefff88a4f73dd8107f290f784dc13a1311ee6e7202cef21",
+    "/data1/Kane/miniconda3/envs/act-py312/lib/python3.12/ctypes/__init__.py": "e0db1242e78267cba0124ee9fe5963b72d1c8a1832bb51a88abcf012a9cbce76",
+    "/data1/Kane/miniconda3/envs/act-py312/lib/python3.12/lib-dynload/_ctypes.cpython-312-x86_64-linux-gnu.so": "b0d54337da2a302eb84acdbe8e380e1f66a1a887dd00f62724060866d70a96e6",
+    "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf"
+  },
+  "result_directory": "/data1/Kane/MOE/results/owned_observer_20261020_r1",
+  "schema": "OWNED_OBSERVER_FREEZE_V1",
+  "scope": "EXISTING_OBSERVER_REPAIR_ONLY",
+  "subcases": {
+    "confirmed_exit": [
+      "live_to_zombie",
+      "live_to_gone",
+      "missing_status_then_gone",
+      "live_with_rss"
+    ],
+    "dual_error_preservation": [
+      "actual_execute_two_errors",
+      "bounded_error_text"
+    ],
+    "uncertain_rejection": [
+      "missing_rss_live",
+      "missing_status_live",
+      "reused_pid",
+      "changed_sid",
+      "permission_denied",
+      "malformed_stat",
+      "oversized_status",
+      "expired_deadline"
+    ],
+    "unknown_and_no_upgrade": [
+      "partial_scan_unknown",
+      "actual_execute_cleanup_does_not_upgrade"
+    ]
+  }
+}
