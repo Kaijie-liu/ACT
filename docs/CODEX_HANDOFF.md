@@ -1,5 +1,19 @@
 # MoE project handoff — current entry point
 
+Identity-only cleanup finite repair COMPLETE: 2026-10-20.
+See [results, timing and next research boundary](hz_owned_cleanup_results_20261020.md),
+[saved-record audit](hz_owned_cleanup_audit_20261020.json) and
+[complete compact records](hz_owned_cleanup_records_20261020.json).
+Execution8cbe3cee4, freeze461a2b5289f7:4/4groups,20subcases PASS, exit0;
+0.440739s through stdout export,43,319,296B sampled,21,251B retained,FD4→4.
+Actual member cleanup succeeded after injected missingRSS but execution stayed ERROR;
+two-error fixture stayed CLEANUP_INCOMPLETE/null; actual deadline stayed TIMEOUT;
+normal execution used real RSS observation. Identity cleanup supplies no memory evidence.
+Full cold start/final exit/instantaneous memory peak remain unknown. One authorization consumed.
+Do not add supervisor layers/repeat controls. Next separately approve/freeze the SAME finite
+seven-position CPU algorithm comparison with this repair; no model/GPU or quota change.
+R3/R4 failure, empty algorithm registry, unknown algorithm efficacy and OPEN G1-G6 retained.
+
 Identity-only cleanup repair APPROVED AND PREPARING: 2026-10-20.
 See [scope, four-group controls and cost boundary](hz_owned_cleanup_control_20261020.md).
 User approved this minimal repair plus ONE <=300s standard-library control/archive stage.
