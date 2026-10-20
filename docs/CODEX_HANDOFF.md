@@ -1,5 +1,20 @@
 # MoE project handoff — current entry point
 
+## Rational N1 and M3 product interface prepared, 2026-10-21
+
+Default-off direct lambda/w LPs now connect the original shared HZ, rational
+slabs and checked same-cell d/−d ranges. Product and M3 rows are independently
+reconstructed; finite-box residual correction treats lambda/w correctly instead
+of using the HZ factor-box shortcut. Existing candidate kernel and supervisor
+are unchanged. No execution has occurred at this preparation point.
+
+[Finite protocol](margin_product_control_20261021.md): freeze then run once,
+four native calls/two cells×N1/M3, fixed degenerate/sign cases,23 faults and
+expired continued reception, all≤300s. Its fixed zero-dual range inputs test
+integration only; A2 must pay for strong fresh range supports. Pass permits the
+separate strong A2 comparison, not another interface or RSS round. Unexpected
+failure preserves prefixes and stops. No real model/GPU; real-stage ledger0/0/0.
+
 ## Exact closed-slice native/portable interface passed, 2026-10-21
 
 One frozen run at `3896a16ec02ff32752d79eeaed3152fdbbdac3e9` passed with outer
