@@ -1,0 +1,125 @@
+{
+  "schema": "GATE_FACTS_SAVED_CONTROL_AUDIT_V1",
+  "status": "PASS",
+  "date": "2026-10-20",
+  "execution_head": "a7eaf9c438a52eb06f45ab60c6033c3dd7707852",
+  "freeze_sha256": "6a970c6e22f353105a42bdcbd3f9c60ea829be0d0a8c8c4c276b3beaf2437554",
+  "source_hashes_checked": 20,
+  "attempts_executed": 1,
+  "native_model_or_optimizer_queries": 0,
+  "gpu_executed": false,
+  "case_groups_passed": 19,
+  "case_groups_expected": 19,
+  "checked_saved_pipeline_facts": 4,
+  "separate_read_only_recomputation": {
+    "status": "PASS",
+    "implementation": "Standard-library Fraction recomputation by a read-only reviewer, not model execution",
+    "pipeline_gate_facts": 4,
+    "signed_expert_bounds": 8,
+    "endpoint_expressions": 8,
+    "common_exact_lower_bound": "2251799797922647/4503599627370496",
+    "accepted_minimum": 0.49999999649999943,
+    "complete_request_status_in_both_fixtures": "UNKNOWN",
+    "reviewer_is_independent_human": false
+  },
+  "guarantee": "HZ_NUMERICAL_POLICY_CONDITIONAL_ON_INTERVAL_AND_GATE_SOURCES",
+  "frozen_control_outcomes": {
+    "staged_stub": {
+      "off_solve_calls": 4,
+      "on_solve_calls": 2,
+      "off_gate_calls": 2,
+      "on_gate_calls": 2,
+      "off_propagations": 2,
+      "on_propagations": 2,
+      "off_status": "UNKNOWN",
+      "on_status": "UNKNOWN"
+    },
+    "monolithic_stub": {
+      "off_solve_calls": 2,
+      "on_solve_calls": 1,
+      "off_gate_calls": 2,
+      "on_gate_calls": 2,
+      "off_propagations": 2,
+      "on_propagations": 2,
+      "off_status": "UNKNOWN",
+      "on_status": "UNKNOWN"
+    },
+    "old_positive_fast_paths": {
+      "staged": "SAFE_WITH_ZERO_PROPAGATION_GATE_BUILD_SOLVE",
+      "monolithic": "SAFE_WITH_ZERO_PROPAGATION_GATE_BUILD_SOLVE",
+      "scope": "FIXED_GIVEN_FACTS_AND_UNCHANGED_FUNCTION_AST_LOCAL_STUBS"
+    },
+    "partial_deadline": {
+      "staged": "TIMEOUT_PARTIAL_ROWS_CENSORED",
+      "monolithic": "TIMEOUT_PARTIAL_ROWS_CENSORED",
+      "scope": "INJECTED_REQUEST_CLOCK_AND_BACKEND_EXCEPTION_NOT_A_300_SECOND_SOAK"
+    }
+  },
+  "cost": {
+    "worker_work": 71416,
+    "reception_work": 800,
+    "combined_work": 72216,
+    "work_cap": 8000000,
+    "retained_runtime_bytes": 57176,
+    "external_output_reservation_bytes": 32768,
+    "artifact_cap_bytes": 134217728,
+    "sampled_session_plus_controller_peak_bytes": 45473792,
+    "sampled_rss_stop_bytes": 2147483648,
+    "per_process_address_space_cap_bytes": 8589934592,
+    "initial_fds": 4,
+    "final_fds": 4,
+    "elapsed_before_terminal_file_export": 0.5286697596311569,
+    "observed_through_terminal_file_export_seconds": 0.5303971320390701,
+    "full_cold_start_seconds": null,
+    "stdout_flush_and_final_exit_in_duration": false
+  },
+  "terminal": {
+    "controller_tool_exit_code": 0,
+    "worker_return_code": 0,
+    "session_status": "COMPLETED",
+    "cleanup_status": "LEADER_REAPED_NO_LIVE_SESSION",
+    "execution_error": null,
+    "cleanup_error": null,
+    "zombie_reaping_complete": false,
+    "escaped_sessions_checked": false
+  },
+  "runtime_sources": {
+    "result.json": {
+      "bytes": 2770,
+      "sha256": "8154cddcf09906d94d15b729e87e0b4b60c070fc7c6a5f27cee05b43057705b0"
+    },
+    "worker.json": {
+      "bytes": 54406,
+      "sha256": "18842cb5ab437230ea94214a68267d57fbfd68c7b5fe417711177217828af5f9"
+    }
+  },
+  "repository_archive": {
+    "path": "docs/gate_weighted_facts_records_20261020.json",
+    "bytes": 57470,
+    "sha256": "ac89d868a22852708864046ce387ca3085e573b54fa5cad3dd4f6462337af3f7",
+    "both_runtime_members_losslessly_reconstructable": true
+  },
+  "controller_stdout_receipt": {
+    "observed_through_terminal_file_export_seconds": 0.5303971320390701,
+    "result": {
+      "bytes": 2770,
+      "sha256": "8154cddcf09906d94d15b729e87e0b4b60c070fc7c6a5f27cee05b43057705b0"
+    },
+    "result_directory": "/data1/Kane/MOE/results/gate_weighted_facts_20261020_r1",
+    "status": "PASS",
+    "stdout_flush_and_final_exit_in_duration": false
+  },
+  "receipt_provenance": "Captured controller stdout and execution-tool exit status; original runtime files retained.",
+  "not_established": [
+    "real request F0 query savings",
+    "whole-request speedup",
+    "zero SAFE or UNSAFE loss on real models",
+    "network or sigmoid source proof",
+    "restored gate input coupling",
+    "full native package and solver integration",
+    "eight-expert capacity or GPU performance",
+    "G1-G6 completion"
+  ],
+  "independent_human_review": false,
+  "controls_rerun_during_audit": false
+}

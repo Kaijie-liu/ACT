@@ -1,5 +1,31 @@
 # MoE project handoff — current entry point
 
+M1 gate-weighted facts finite stage COMPLETE: 2026-10-20.
+See [results and next boundary](gate_weighted_facts_results_20261020.md),
+[saved-record audit](gate_weighted_facts_audit_20261020.json) and
+[lossless compact records](gate_weighted_facts_records_20261020.json).
+Execution `a7eaf9c438a52eb06f45ab60c6033c3dd7707852`, freeze `6a970c6e22f3`:
+ONE batch, 19/19 fixed groups PASS, exit0; no model/native optimizer/GPU.
+Saved-record checks recomputed four pipeline facts, separately reviewed with exact
+arithmetic. Two partial fixtures remain UNKNOWN. Stub calls staged4→2, monolithic2→1;
+these are not measured native query savings or request speedup. Old positive paths
+retain zero propagation/gate/F0 calls. Missing-source/nonpositive/unsupported gates
+fall back; source mismatches and incomplete coverage do not establish SAFE.
+
+Combined Work72,216; runtime artifacts57,176B; observed sampled RSS45,473,792B; FD4→4;
+0.530397s through terminal-file export, not full cold start/stdout flush/final exit.
+Same caps and checks. Owned leader reaped/no live SID member; no global zombie/escape
+claim. One authorization consumed, no retry. Implementation remains default off.
+Guarantee is conditional on given numerical interval/gate sources, not network lowering
+or a checked sigmoid derivation. G1-G6 OPEN; no new real strict certificate/efficacy claim.
+
+Next: separately authorize and freeze a finite native integration/development comparison.
+Preserve the single mechanism, actual full-request accounting and gain/loss; no models
+or GPU are authorized by completion of this control. Do not reopen the midpoint chain
+or repeat small controls. This stage is an optional computation rule, not G1 closure.
+
+## Earlier finite approval
+
 M1 gate-weighted facts implementation and finite controls APPROVED: 2026-10-20.
 The user explicitly resolved the goal-text conflict in favor of this bounded stage.
 The earlier static-only restriction below applies to the goal reset, not this approval.
