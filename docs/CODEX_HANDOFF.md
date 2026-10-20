@@ -1,5 +1,22 @@
 # MoE project handoff — current entry point
 
+## Exact closed-slice interface prepared, 2026-10-21
+
+The missing strong-comparator adapter is now default off: rational closed slabs
+over the original shared HZ, typed endpoint and signed-difference supports, and
+independent full-coverage aggregation. It reuses the CPU candidate kernel and
+owned-session supervisor. Two static reviews found no mathematical blocker;
+no new execution has occurred at this preparation point.
+
+[Finite protocol](margin_slice_control_20261021.md): freeze then execute once,
+two native synthetic calls/eight objectives plus fixed-candidate edge cases and
+sixteen faults/expired reception, total≤300s. Same deadline/Work continues into
+controller and relocated stdlib checking. No new model/GPU, old batch rerun or
+claim of algorithm improvement. Inverted difference bounds are incomplete,
+not permission to omit an empty-looking cell. Upon pass, freeze the separate
+strong A2 comparison; on unexpected failure stop and preserve the prefix.
+Real-development ledger remains0/0/0; G1–G6 OPEN.
+
 ## A2 saved transfer diagnostic completed with no aggregate gain, 2026-10-21
 
 One frozen saved-only execution at `0f87a541c39b71d247ac3cb7069ce9d3a1363ce2`
