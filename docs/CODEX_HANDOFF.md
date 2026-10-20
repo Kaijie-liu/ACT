@@ -1,5 +1,28 @@
 # MoE project handoff — current entry point
 
+## Exact closed-slice native/portable interface passed, 2026-10-21
+
+One frozen run at `3896a16ec02ff32752d79eeaed3152fdbbdac3e9` passed with outer
+exit0,14.523944s entry-to-terminal-export. [Results](margin_slice_results_20261021.md)
+and [lossless archive](margin_slice_records_20261021.json) preserve two native
+calls/eight objectives, three fixed-candidate edge cases, sixteen rejections and
+expired continued reception. Worker/controller/portable stdlib receipts agree;
+saved exact audit and independent arithmetic/accounting AI reviews passed
+(not human review). Native aggregate remains−1.295480932, no SAFE.
+
+This closes only the rational-slab comparator interface. It preserves all
+original shared/private factors/constraints and typed±d range obligations;
+the original kernel and supervisor are unchanged. Work10,396,378→12,689,188→
+14,981,998; run+archive3,398,497B, common300s and current development policy.
+
+**Next: strong A2 mechanism comparison preparation**, common continuous P and
+checked ranges, zero/finite/support-transfer/fresh slices/N1/M3 with explicit
+query and total-cost accounting and predeclared effect/stop gates. Connect only
+the remaining rational N1/M3 construction needed for that comparison, not new
+supervision or another round of source/RSS/slice controls. No integer-only gate
+ranges in this continuous comparison. Do not tune this source or infer speedup
+from mismatched old grids/query counts. Real-stage ledger0/0/0; G1–G6 OPEN.
+
 ## Exact closed-slice interface prepared, 2026-10-21
 
 The missing strong-comparator adapter is now default off: rational closed slabs
