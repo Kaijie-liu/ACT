@@ -1,5 +1,55 @@
 # MoE project handoff — current entry point
 
+Research goal reset and gate-focused priority adopted: 2026-10-20.
+Starting branch feat/moe-route-verification, HEAD e42469f3cefe47afa0adabe63710f034059c8e33,
+clean worktree. Read the [current complete contract](ALGORITHM_RESEARCH_GOAL.md#现行目标-2026年10月20日).
+User scope is goal/contract/priority updates and static review ONLY: no implementation,
+CPU controls, native candidates, models/GPU, dependency changes or approval activation.
+G1-G6 remain OPEN; goal registration and this documentation are not scientific efficacy.
+Goal service returned ACTIVE with a 3445-character summary bound to the full contract;
+no token budget was requested or set.
+
+STOP pursuing the endpoint-midpoint hypothesis and its execution-repair chain.
+The old seven-position batch is no longer the next research task. Preserve its code,
+R3/R4 failures and passed cleanup controls; no normal algorithm comparison established
+efficacy or ineffectiveness. Later historical "next approve/run seven positions" below
+is superseded, not a fresh permission. Completed/exhausted approvals stay exhausted.
+Provisioned-host timing was later approved for a finite historical scope; do not restore
+the obsolete "never approved" claim or extend that permission to a new mechanism.
+
+Next scientific factor: default-off gate-weighted SIGNED lower-bound facts.
+The combination min over gate endpoints uses same-request/property/domain sources;
+signed validity is not expert SAFE. Preserve the old positive-fact path; first version
+applies after the existing gate range and before F0 construction, with no extra support,
+propagation reorder, warm-start, budget change, GPU or CEGGR. Existing sigmoid/nextafter
+gates inherit numerical-policy guarantees; exact combination does not repair upstream
+sources. This is a computation-saving hypothesis, not restored gate-input coupling or
+automatic G1 closure. Implementation plus finite controls needs one bounded approval;
+then separately freeze end-to-end development. Neither is authorized by this reset.
+
+Primary endpoints: per-request joint F0 solve calls AND whole-request time, all costs.
+Separate SAFE/UNSAFE/solved gain-loss; zero loss is measured, not implied by soundness.
+Skipping a proved row can lose a candidate witnessing another violated property.
+Do not claim a gain by returning UNKNOWN earlier or secretly rerun skipped solves.
+Before execution freeze query/time criteria, including the review's undecided 10-30%
+band; proposed 30%/10% thresholds are not active. Gate refinement/row support/GPU stay
+separate factors. Add semantic compatibility with full alpha-beta-CROWN/GenBaB to the
+strong-baseline agenda without deploying it or replacing existing comparisons now.
+
+Review v2 and diagnostic hashes are bound in the current contract (sources outside ACT).
+Historical 402/752 positive rows and 7/89 limit rows motivate the hypothesis, not new
+SAFE or measured speedup. The 7 limit rows close no historical UNKNOWN request outright.
+33% is observed row-time share; .032s is a median of 182 support subcalls, not full cost.
+D2's 12 flat nonpositive rows are deduplicated ACROSS arms (adaptive5), not all single-pair.
+All retain historical input-source gaps. No more diagnosis reruns or control-count progress.
+The eight-expert full-source resource rejection remains independent, not a universal
+prerequisite for static research. Same checks/caps/300s/sealed sources; no quota increase.
+
+## Historical handoff entries
+
+The following entries retain their original decisions and evidence; their next-step
+instructions apply only at their historical time unless reaffirmed by the current entry.
+
 Identity-only cleanup finite repair COMPLETE: 2026-10-20.
 See [results, timing and next research boundary](hz_owned_cleanup_results_20261020.md),
 [saved-record audit](hz_owned_cleanup_audit_20261020.json) and
