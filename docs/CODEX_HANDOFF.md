@@ -1,5 +1,67 @@
 # MoE project handoff — current entry point
 
+## Current decision — margin-support research goal reset, 2026-10-21
+
+The user deleted the previous goal and explicitly requested adoption and registration
+of the new goal. Entry: clean `feat/moe-route-verification` at
+`4ded2454e26acb269c6a5028108e1cfbe46089a5`; goal service initially empty.
+The replacement goal is now registered **active**, matching the checked-in
+summary apart from the service's trailing-newline normalization; no token budget
+was requested or set. Goal activation is not completion of G1–G6.
+The [current full contract](ALGORITHM_RESEARCH_GOAL.md) and
+[registration text](ALGORITHM_RESEARCH_GOAL_SUMMARY_20261021.txt) now put
+**A1 real HybridZ integration → A2 strong mechanism comparison → A3 bounded
+full-request development** on the critical path. M1b is not a prerequisite.
+The previous sections below are historical decisions/results, not an automatic
+queue; old frozen failures and consumed attempts remain unchanged. G1–G6 OPEN.
+
+The user's new development decision is `DEV_MARGIN_20261021_V1`: per-request
+300 seconds, per-managed-process 8GiB RLIMIT_AS, RSS/ru_maxrss telemetry only,
+Work accounting without an 8M rejection gate, 128MiB cumulative artifacts per
+control batch/development stage. This is NOT a process-group physical-memory
+hard limit. Missing RSS is missing data, not zero. Identity, cleanup, exact bit
+limits, mathematical checks, complete coverage and online deadlines remain required.
+Proof-only/confirmation queues and historical runs retain their old policies.
+**This documentation stage does not implement that policy in the supervisor.**
+Minimal versioned integration and new-interface controls precede native execution;
+do not resume the terminal-observation repair chain or rerun old M1b batches.
+
+Standing authority now covers default-off implementation and frozen necessary
+controls (one finite batch, at most300s), followed by at most three real-development
+stages shared by A2/A3/A5: each at most60 complete calls and6h cumulative execution,
+at most180 calls/18h overall. Every path/arm/error counts; real partial probes
+also consume registered slots, including any A1 trained-source integration.
+A5 is conditionally authorized after an A2 signal:
+one isolated-environment CPU αβ-CROWN/GenBaB stage, including scoped dependencies
+and adaptation, without changing act-py312. It is not an extra fourth stage.
+Independent confirmation, GPU, changes outside this new resource policy, numerical
+acceptance/bit/300s/.25 changes, training, act-py312 installs, sealed inputs and
+author contact/publication still require explicit decisions. Complete authorized
+stages without waiting for another “继续”; freeze each roster and stop gate first.
+
+New-development budget ledger at this reset: **0 stages, 0 calls, 0 execution
+seconds consumed; allocation NOT YET FROZEN**. No new model, native solver, GPU,
+dataset selection or external installation is part of this documentation stage.
+Later stages must update this ledger with all attempts and failures; renaming
+a version does not reset it. No scientific objective is closed by resetting a goal.
+
+Immediate next A1 evidence: preserve both router rows in the joint expert HZ,
+bind their shared/private factor map, reconstruct the full rational objective
+`(t*q, (1-t)*q, nu, -nu)` plus `c` from original coefficients, and provide a
+lossless ten-class property view. Reuse existing candidate/residual checking;
+mark binary relaxation. Versioned capacity changes cannot drop rows, classes,
+bits or checks. New controls target this interface and new policy only; do not
+repeat the13 completed toy groups. Zero/finite tilt must share anchors/scalar
+checking, and strong slicing may reuse constant/sign-stable objectives. The
+remaining question is full-cost benefit, not novelty of adding `nu*m`.
+
+Documentation-stage verification: preserved the complete old goal body,
+checked current local evidence links and summary length, and passed `git diff
+--check`; two read-only AI reviews checked resource/authorization and scientific
+scope. This is not human technical review or an execution-control result.
+
+## Latest completed scientific evidence (prior policy; retained)
+
 Finite margin-support standard-library batch **PASS**, 2026-10-21:
 [result and limits](margin_support_results_20261021.md),
 [lossless records](margin_support_records_20261021.json).
@@ -17,9 +79,11 @@ Prototype remains unused by production. Parser/projection/policy/sigmoid rules
 share an explicit exact kernel; residual and cell-aggregation arithmetic are
 separate. No network source closure, route-set-changing proof, native numerical
 execution, GPU, external win, quota change or RSS-policy repair. G1–G6 OPEN.
-Next: bounded existing-HybridZ support-candidate mapping/cost design, not more
+Next at that archive: bounded existing-HybridZ support-candidate mapping/cost design, not more
 toy controls or observer work. Native execution is a separate decision and
-does not inherit acceptance from this stdlib batch.
+does not inherit acceptance from this stdlib batch. The later user decision
+above now supplies a new development policy/standing scope, not retroactive
+acceptance or a retry of that batch.
 
 ## Prior preparation record for the completed margin-support batch
 
