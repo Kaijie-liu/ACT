@@ -1,5 +1,24 @@
 # MoE project handoff — current entry point
 
+## Sparse scalar integration prepared, 2026-10-21
+
+The native source bridge is now connected to a default-off sparse margin plan
+and independent scalar checker. All source coefficients/dual residuals and
+closed cells are rechecked; ten-class properties and shared/private factors
+are retained. The sign/Lipschitz sigmoid enclosure is unchanged and its error
+is not claimed to vanish with finer cells. This is given-HZ conditional evidence,
+not full-request dispatch or G1 completion.
+
+The [new finite protocol](margin_scalar_control_20261021.md) uses one fixed
+synthetic source, two native calls/six objective slots and three checked scalar
+records, including a matched-zero control with identical common certificates.
+Nine new scalar mutations and an expired continuation are included. No old
+source/RSS/toy control is repeated. Freeze, clean commit and push precede one
+≤300s execution on the existing supervisor; unexpected failure stops without
+retry. Static reviews found and corrected a source-dictionary comparison before
+execution. At this preparation point no new native call has run.
+Real-development ledger remains0 stages/0 calls/0 seconds; G1–G6 OPEN.
+
 ## A1 native source integration gate passed, 2026-10-21
 
 The once-only frozen A1 batch at `7a26ffe3d1b63355053ec0f62d1763a2d6d66974`
