@@ -127,3 +127,59 @@ This rule still uses an input-independent gate interval. It is a computation
 optimization candidate, not a new HybridZ abstract domain, restored gate-input
 dependence, an external-tool victory or a complete same-source proof. G1-G6 remain
 OPEN, and the historical source gaps and sealed experiments remain unchanged.
+
+## Native integration readiness
+
+Static review at `da291a2686a668bb652859164d81546200cd7a5a` identifies the following
+remaining integration gaps. No controls, imports of numerical packages, models or
+solvers were run for this review. These findings do not invalidate the frozen
+stub results, but prevent treating them as native integration acceptance.
+
+| Boundary | Current implementation | Required next check |
+| --- | --- | --- |
+| Native gate metadata | `solver_hz.py:2643-2706` can return successful continuous support with `gaps=[None]`; M1 deliberately falls back | Observe real producer output, retaining missing-gap fallback; never rewrite `None` to zero to improve hit rate |
+| Default Work failures | `hz_request_store.py:41-54` raises ordinary `TimeoutError` or capacity `ValueError`; `GateFacts` construction is outside the Tier-2 wrappers | Consistent deadline/resource terminal handling, including capture and partially recorded facts; binding errors must remain errors |
+| Actual F0 calls | `staged_verifier.py:334-348` and `paired_monolithic.py:110-122` count calls only when a `GateFacts` instance exists | Give off and on the same instrumentation without enabling facts in off; separate attempted, returned and status-0 calls from saved rows |
+| Reception and total cost | `audit_staged_evidence.py:449-450` creates a new ledger; `route_complexity_paired.py:228-240` ends reported worker time before auditing | Thread the original deadline and cumulative ledger through reception, serialization and terminal acceptance, using the existing supervisor |
+| Experimental factor | The old paired runner fixes adaptive versus monolithic, not facts off versus on | Compare off/on within each unchanged execution path; do not relabel historical adaptive/monolithic results |
+
+The default-Work exception is a fail-closed integration issue, not a positive-bound
+soundness counterexample. Staged may record an ordinary Work exception as pair
+UNKNOWN, while monolithic or capture can let it escape; the present controls injected
+`BudgetExhausted` and supplied a separate batch Work object. This distinction requires
+testing before native request outcomes can be compared fairly.
+
+The native expert interval schema and conditioned-router identity fields match the
+M1 consumer by source inspection (`route_complexity_schedule.py:76-97` and
+`weighted_top2.py:425-461`). This supports testing the actual producer-to-consumer
+connection, not a claim that the connection has executed or that source lowering is
+independently proved.
+
+### Proposed finite next stage
+
+Seek one approval for minimal integration repairs and one frozen native **synthetic**
+control batch, not a trained-model experiment. Reuse existing constant, tie-multi-pair
+and variable-gate small-model fixtures; fix every weight, input, property, case and
+expected fallback before execution. At most three objects, each through staged and
+matched monolithic with facts off/on: at most twelve complete native invocations.
+Use actual CPU Torch/SciPy/HiGHS propagation, support and F0 calls, not backend doubles.
+Add only the newly identified default-Work deadline/capacity, partial-record and
+reception-ledger fault checks; do not rerun the nineteen-group batch.
+Synthetic UNSAFE candidates must be replayed on the same hash-bound constructed
+model; the historical package replay path's trained-checkpoint requirement cannot
+be met by borrowing an unrelated checkpoint. Final acceptance must check timeliness
+for both positive verdicts and replayed UNSAFE, not trust an internal late verdict.
+
+The proposal retains a single cumulative 300-second batch deadline, including imports,
+construction, all invocations, checking, publication and cleanup; it does not allocate
+twelve independent 300-second allowances. Keep 8M cumulative M1 Work, 128 MiB artifacts,
+8 GiB per-process AS and 2 GiB sampled RSS. Preserve every mathematical check, numerical
+gate, missing-gap fallback and .25 schedule. The measured costs are integration-control
+costs, not trained-model performance. An unexpected failure retains the prefix and
+stops without retry or increased limits.
+
+This proposal is not an execution freeze or approval. No real checkpoint, dataset,
+GPU, dependency installation or real-request development is included. Passing would
+close these concrete native-interface gaps; it would not establish G1 or justify
+additional synthetic cases. The next scientific experiment would remain a separately
+frozen complete-request off/on comparison with fixed effect and loss criteria.

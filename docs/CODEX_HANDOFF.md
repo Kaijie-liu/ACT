@@ -24,6 +24,18 @@ Preserve the single mechanism, actual full-request accounting and gain/loss; no 
 or GPU are authorized by completion of this control. Do not reopen the midpoint chain
 or repeat small controls. This stage is an optional computation rule, not G1 closure.
 
+Static native-readiness review at `da291a268` found concrete remaining gaps:
+default Work deadline/capacity exceptions do not share the request terminal path;
+off lacks the on-arm actual-call counters; the old runner stops cost accounting before
+audit and its auditor starts a separate ledger. It also compares adaptive/monolithic,
+not facts off/on. Native continuous support can legitimately have missing gap; keep
+the current conservative fallback. See the
+[readiness findings and bounded proposal](gate_weighted_facts_results_20261020.md#native-integration-readiness).
+Proposed next approval covers only minimal integration and one <=300s native synthetic
+batch (at most 12 full invocations plus the listed integration faults), same cumulative
+caps, using existing supervision. No code was changed or executed by this static review.
+Trained-model development remains a later separate freeze; do not activate this proposal.
+
 ## Earlier finite approval
 
 M1 gate-weighted facts implementation and finite controls APPROVED: 2026-10-20.
