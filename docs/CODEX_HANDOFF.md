@@ -1,5 +1,21 @@
 # MoE project handoff — current entry point
 
+M1b native integration attempt concluded, **overall FAIL**, 2026-10-20.
+See [results/failure boundary](gate_weighted_native_results_20261020.md),
+[offline saved-record audit](gate_weighted_native_audit_20261020.json) and
+[lossless JSON archive](gate_weighted_native_records_20261020.json).
+Execution8b6a8d51a, freezebed01d909897: worker12/12 invocations and8/8 faults PASS;
+six paired literal outcomes unchanged, actual joint-F0 calls7→2; two pairs slower.
+Outer owned-session observation rejected live RSS unavailable near worker exit;
+returncode0 and successful owned cleanup do not override ERROR. Parent online
+reception did not run. Offline six-fact recomputation does not recover acceptance.
+One attempt consumed; no retry, M2 launch, quota change or observer repair authorized
+by this result. No trained source/GPU. G1–G6 OPEN.
+
+Next scientific work is the independent within-slice gate–margin candidate linked
+below, not another midpoint/observer repair chain. N1 slicing already exists.
+The failure is not evidence against M1 arithmetic, nor proof of native performance.
+
 Standing bounded research authorization adopted: 2026-10-20.
 User reply after reviewing the revised goal: “OK 请你设置目标继续执行”.
 Starting `feat/moe-route-verification` @ `9a92570c98eeefa51811b13ccccebef009c007b3`,
