@@ -335,8 +335,20 @@ def audit_evidence_package(
     package_dir: Path,
     *,
     replay_unsafe: bool = False,
+    gate_work=None,
+    deadline=None,
+    replay_model=None,
 ) -> dict[str, Any]:
-    """Recompute package identities and fail closed on malformed verdicts."""
+    """Recompute identities; optional online mode continues the caller's ledger.
+
+    A replay_model is supplied by the trusted caller, NEVER loaded from a
+    package-specified factory. It must match the recorded model state.
+    """
+    from act.pipeline.moe.gate_native_contract import GateWork, validate_counts, require_continuation
+    if deadline is not None:
+        if not isinstance(gate_work, GateWork) or gate_work.deadline != deadline:
+            raise ValueError("online audit requires same GateWork/deadline")
+        gate_work.tick()
     package = _inside(package_dir)
     issues: list[str] = []
     manifest_path = package / "manifest.json"
@@ -345,6 +357,19 @@ def audit_evidence_package(
         return {"status": "FAIL", "issues": ["missing manifest or evidence"]}
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+    if deadline is not None:
+        gate_work.tick()
+        if evidence.get("gate_native_contract", {}).get("deadline") != deadline:
+            raise ValueError("online audit/evidence deadline mismatch")
+        require_continuation(gate_work, evidence["gate_native_contract"]["work_counts"])
+    if evidence.get("gate_native_contract") is not None:
+        validate_counts(evidence.get("f0_calls", {}))
+        facts = evidence.get("gate_weighted_facts")
+        if facts is not None:
+            expected = {key: facts[field] for key, field in (
+                ("attempted", "f0_solve_attempted"), ("returned", "f0_solve_returned"),
+                ("status0_returned", "f0_status0_returned"))}
+            _record_issue(issues, expected == evidence["f0_calls"], "F0 counter mismatch")
     _record_issue(
         issues,
         manifest.get("schema_version") == 1,
@@ -447,7 +472,8 @@ def audit_evidence_package(
             _record_issue(issues, row.get("expert_relation") == relation,
                           "weighted query lacks registered expert relation")
     from act.pipeline.moe.gate_weighted_facts import audit_evidence, Work
-    gate_work = Work(__import__("time").monotonic() + 300)
+    if gate_work is None:
+        gate_work = Work(__import__("time").monotonic() + 300)
     if status != "SAFE":
         try:
             audit_evidence(evidence, work=gate_work)
@@ -499,15 +525,37 @@ def audit_evidence_package(
                 "witness request id mismatch",
             )
 
+    if replay_model is not None:
+        from act.pipeline.moe.staged_verifier import _model_state_identity, _require_cpu_float64_model
+        from act.back_end.moe.model import OutputLevelMoE
+        from act.back_end.moe.schema import GateKind, TiePolicy
+        _require_cpu_float64_model(replay_model)
+        _record_issue(issues, type(replay_model) is OutputLevelMoE
+                      and replay_model.spec.top_k == 2
+                      and replay_model.spec.gate == GateKind.SELECTED_SOFTMAX
+                      and replay_model.spec.tie_policy == TiePolicy.ANY_LEGAL_TOPK
+                      and replay_model.spec.normalized and replay_model.spec.nonnegative
+                      and replay_model.spec.affine_decoder and replay_model.shared_expert is None,
+                      "trusted replay model semantics mismatch")
+        _record_issue(issues, _model_state_identity(replay_model) == evidence["identity"]["model_state"],
+                      "trusted replay model state mismatch")
+        if request is not None:
+            with torch.no_grad():
+                clean_output, _ = replay_model.forward_with_routing(request["center"])
+            _record_issue(issues, int(clean_output.argmax(dim=1).item()) ==
+                          int(evidence["request"]["clean_prediction"]),
+                          "trusted replay model clean property mismatch")
     if replay_unsafe and status == "UNSAFE":
         checkpoint = evidence.get("identity", {}).get("checkpoint", {})
         checkpoint_path = checkpoint.get("path")
-        if request is None or witness_path is None or not checkpoint_path:
+        if request is None or witness_path is None or (not checkpoint_path and replay_model is None):
             issues.append("UNSAFE replay lacks checkpoint, request, or witness")
         else:
-            model_path = _inside(Path(checkpoint_path))
-            _record_issue(issues, model_path.is_file(), "checkpoint missing for replay")
-            if model_path.is_file():
+            model = replay_model
+            model_path = _inside(Path(checkpoint_path)) if model is None else None
+            if model_path is not None:
+                _record_issue(issues, model_path.is_file(), "checkpoint missing for replay")
+            if model_path is not None and model_path.is_file():
                 _record_issue(
                     issues,
                     _file_sha256(model_path) == checkpoint.get("sha256"),
@@ -516,6 +564,7 @@ def audit_evidence_package(
                 initialize_device("cpu", "float64")
                 model, _ = load_output_moe_checkpoint(model_path, map_location="cpu")
                 model.cpu().double().eval()
+            if model is not None:
                 witness = torch.load(witness_path, map_location="cpu", weights_only=True)["input"]
                 value = (
                     witness.unsqueeze(0)
@@ -541,6 +590,8 @@ def audit_evidence_package(
                     "witness does not violate the requested prediction property",
                 )
 
+    if deadline is not None:
+        gate_work.tick()  # Includes replay, I/O and all structure/exact checks.
     return {
         "schema_version": 1,
         "package": str(package),
@@ -550,6 +601,7 @@ def audit_evidence_package(
         "status": "PASS" if not issues else "FAIL",
         "issue_count": len(issues),
         "issues": issues,
+        "online_same_deadline": deadline is not None,
     }
 
 

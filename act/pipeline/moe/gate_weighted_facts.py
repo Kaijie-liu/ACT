@@ -240,7 +240,11 @@ class GateFacts:
     def __init__(self, branches, scope, budget, *, work=None):
         require(budget is not None and budget.seconds == 300, "shared 300-second request budget")
         self.budget = budget
-        self.work = work if work is not None else Work(budget.deadline)
+        if work is None:
+            from act.pipeline.moe.gate_native_contract import GateWork
+            work = GateWork(budget.deadline)
+        require(work.deadline == budget.deadline, "gate Work/request deadline mismatch")
+        self.work = work
         self.scope = _copy(scope, self.work)
         self.sources = {}
         for branch in branches:

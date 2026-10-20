@@ -49,6 +49,10 @@ from act.pipeline.moe.experiment1f0 import _support_record, _support_status
 from act.pipeline.moe.train import _load_dataset
 from act.util.device_manager import initialize_device
 from act.pipeline.moe.request_budget import BudgetExhausted, RequestBudget
+from act.pipeline.moe.gate_native_contract import (
+    GateCapacity, GateSourceError, GateWork, F0Calls, source_call, terminal as gate_terminal,
+    validate_config as validate_native_gate,
+)
 
 
 DEFAULT_CONFIG = PROJECT_ROOT / "act/pipeline/moe/configs/staged_verifier_v1.json"
@@ -204,8 +208,8 @@ def _run_f0(*, model, center, clean_prediction, internal, config, reuse=None, bu
     try:
         return _run_f0_impl(model=model, center=center, clean_prediction=clean_prediction,
                             internal=internal, config=config, reuse=reuse, budget=budget)
-    except BudgetExhausted as exc:
-        return {"invoked": True, "status": "TIMEOUT", "reason": "REQUEST_BUDGET_EXHAUSTED",
+    except (BudgetExhausted, GateCapacity) as exc:
+        return {"invoked": True, **gate_terminal(exc),
                 "stopped_at": str(exc), "pairs": [], "partial_rows_censored": True,
                 "feasible_route_sets": [list(p) for p in internal["route_sets"].feasible],
                 "full_model_witness_valid": False,
@@ -246,6 +250,7 @@ def _run_f0_impl(
     total_tightening = total_solve = 0.0
     reused_count = 0
     gate_facts = reuse.get("gate_weighted") if reuse is not None else None
+    calls = reuse.get("native_f0_calls") if reuse is not None else None
     unproved_by_pair = None
     if budget:
         from act.pipeline.moe.scoped_f0_proofs import reuse_property
@@ -306,8 +311,8 @@ def _run_f0_impl(
             margin_seconds = time.monotonic() - margin_started
             total_solve += margin_seconds
             if gate_facts is not None:
-                gate_facts.record_gate(pair, gate_range, _support_status(gate_range.margin_support),
-                                       conditioned_router)
+                source_call(gate_facts.record_gate, pair, gate_range,
+                            _support_status(gate_range.margin_support), conditioned_router)
             for property_index, (q, constant) in enumerate(properties):
                 if budget:
                     budget.check("f0_property_start")
@@ -317,7 +322,7 @@ def _run_f0_impl(
                     continue
                 property_started = time.monotonic()
                 if gate_facts is not None:
-                    gate_row = gate_facts.attempt(pair, property_index, q, constant)
+                    gate_row = source_call(gate_facts.attempt, pair, property_index, q, constant)
                     if gate_row is not None:
                         property_rows.append(gate_row)
                         continue
@@ -337,6 +342,8 @@ def _run_f0_impl(
                     if budget else float(solver["property_seconds"]))
                 if gate_facts is not None:
                     gate_facts.stats["f0_solve_attempted"] += 1
+                if calls is not None:
+                    calls.attempted()
                 decision = solve_weighted_top2_f0(
                     encoding,
                     input_shape=tuple(center.shape),
@@ -346,6 +353,8 @@ def _run_f0_impl(
                 if gate_facts is not None:
                     gate_facts.stats["f0_solve_returned"] += 1
                     gate_facts.stats["f0_status0_returned"] += int(decision.solver_status == 0)
+                if calls is not None:
+                    calls.returned(decision.solver_status)
                 property_seconds = time.monotonic() - property_started
                 total_solve += property_seconds
                 replay = _forward_validate(
@@ -358,7 +367,7 @@ def _run_f0_impl(
                 valid = bool(replay["valid"])
                 if valid:
                     witness = decision.candidate_input.detach().cpu()
-                elif budget:
+                if budget and (not valid or calls is not None):
                     budget.check("f0_property_complete")
                 property_rows.append(
                     {
@@ -424,7 +433,7 @@ def _run_f0_impl(
                     "elapsed_seconds": time.monotonic() - pair_started,
                 }
             )
-        except BudgetExhausted:
+        except (BudgetExhausted, GateCapacity, GateSourceError):
             raise
         except Exception as exc:
             pair_rows.append(
@@ -468,9 +477,13 @@ def verify_staged_linf(
     progress_callback: Callable[[dict[str, Any]], None] | None = None,
     budget_started_at: float | None = None,
     common_fact_callback: Callable[[dict[str, Any]], None] | None = None,
+    gate_work=None,
 ) -> StagedVerificationReport:
     """Verify top-1 prediction robustness without experiment-only controls."""
     _validate_config(config)
+    native_gate = validate_native_gate(config)
+    if gate_work is not None and not native_gate:
+        raise ValueError("external gate Work requires native gate contract")
     method = config.get("comparison_method", "staged")
     _require_cpu_float64_model(model)
     if model.spec.gate != GateKind.SELECTED_SOFTMAX or model.spec.top_k != 2:
@@ -485,6 +498,18 @@ def verify_staged_linf(
         raise ValueError("common fact snapshot requires the registered schedule prelude")
     budget = (RequestBudget(schedule["total_seconds"], started=(started if budget_started_at is None else budget_started_at))
               if schedule is not None else None)
+    calls = F0Calls() if native_gate else None
+    if native_gate:
+        if gate_work is None:
+            try:
+                gate_work = GateWork(budget.deadline)
+            except BudgetExhausted:
+                # prepare() produces the normal expired-request terminal;
+                # no fresh ledger or candidate work is created.
+                pass
+        if gate_work is not None and (
+                not isinstance(gate_work, GateWork) or gate_work.deadline != budget.deadline):
+            raise ValueError("native gate Work/request deadline mismatch")
     center = center.detach().cpu().double()
     if center.dim() < 2 or center.shape[0] != 1:
         raise ValueError("center must be a one-lane batched tensor")
@@ -596,11 +621,19 @@ def verify_staged_linf(
                            internal["router"].output_hz.frame_id, config["numerical_safety"])
         reuse = {"scope": scope, "facts": facts_from_branches(tier1["branches"], scope)}
     gate_facts = None
+    capture_stop = None
+    if native_gate and reuse is not None:
+        reuse["native_f0_calls"] = calls
     if (config["f0"].get("gate_weighted_facts", False) and reuse is not None
             and status == "UNKNOWN" and reason == "SCHEDULE_WEIGHTED_READY"):
         from act.pipeline.moe.gate_weighted_facts import GateFacts
-        gate_facts = GateFacts(tier1["branches"], reuse["scope"], budget)
-        reuse["gate_weighted"] = gate_facts
+        try:
+            gate_facts = source_call(GateFacts, tier1["branches"], reuse["scope"], budget, work=gate_work)
+            reuse["gate_weighted"] = gate_facts
+        except (BudgetExhausted, GateCapacity) as exc:
+            stopped = gate_terminal(exc)
+            status, reason = stopped["status"], stopped["reason"]
+            capture_stop = {"stage": "GATE_FACT_CAPTURE", **stopped, "detail": str(exc)}
     reuse_preparation_seconds = time.monotonic() - reuse_started
     if status == "SAFE":
         reason = "SAFE_GATE_ELIMINATION"
@@ -650,7 +683,8 @@ def verify_staged_linf(
         transitions.append({"stage": "MONOLITHIC_F0_COMPLETE", "status": status,
                             "reason": reason, "elapsed_seconds": tier2["elapsed_seconds"]})
     budget_record = budget.record() if budget is not None else None
-    if budget_record is not None and budget_record["remaining_seconds"] <= 0 and status != "UNSAFE":
+    if (budget_record is not None and budget_record["remaining_seconds"] <= 0
+            and (status != "UNSAFE" or native_gate)):
         status, reason = "TIMEOUT", "REQUEST_BUDGET_EXHAUSTED"
     elapsed = time.monotonic() - started
     evidence = {
@@ -688,6 +722,13 @@ def verify_staged_linf(
                         "available_fact_count": len(reuse["facts"]) if reuse else 0,
                         "source_kind": "TIER1_GUARDED_OUTPUT_INTERVAL"},
         **({"gate_weighted_facts": gate_facts.record()} if gate_facts is not None else {}),
+        **({"gate_native_contract": {
+            "schema": "GATE_NATIVE_V1", "capture_stop": capture_stop,
+            "deadline": budget.deadline, "work_counts": (
+                dict(gate_work.counts) if gate_work is not None else
+                dict(row_visits=0, coefficient_visits=0, arithmetic=0)),
+            "work_scope": "cumulative signed-fact work; not upstream HZ instructions",
+        }, "f0_calls": calls.record()} if native_gate else {}),
         "transitions": transitions,
         "route_coverage": {
             "candidate_experts": tier1.get("candidate_experts"),

@@ -1,5 +1,38 @@
 # MoE project handoff — current entry point
 
+Standing bounded research authorization adopted: 2026-10-20.
+User reply after reviewing the revised goal: “OK 请你设置目标继续执行”.
+Starting `feat/moe-route-verification` @ `9a92570c98eeefa51811b13ccccebef009c007b3`,
+clean. The [current goal contract](ALGORITHM_RESEARCH_GOAL.md#现行目标-2026年10月20日)
+now permits default-off implementation and one frozen <=300s native synthetic M1b batch,
+including at most twelve complete invocations and fixed integration faults; same checks/caps.
+Fix only Work terminal handling, common actual-call counters and deadline/ledger reception.
+No trained checkpoint/data/GPU in M1b, no supervisor expansion or repeated nineteen-group batch.
+Expected fault rejection passes; unexpected failure preserves the prefix and consumes the attempt.
+Freeze/commit/push before execution; audit and archive afterward. Root remains sole writer.
+
+After M1b acceptance, one separately frozen M2 development on the existing three MLPs
+is within standing authorization: <=60 complete calls and <=6h, new registered inputs
+excluding historical verification/diagnosis/tuning identities. Freeze actual allocation,
+effect/gray/stop rules and resource units first. Independent confirmation, GPU, quota/
+acceptance changes, retraining, dependency installation/external deployment and reopening
+sealed sources still require explicit approval. Model performance is not yet tested.
+M3 mathematical contract/design may proceed in parallel, with no claim of exact coupling
+or novelty before its assumptions and direct comparisons are established.
+Static deduplication now found N1 already performs closed margin slicing. See
+[the concrete within-slice relation candidate](gate_margin_relation_design_20261020.md);
+N1+H2 alone is not a new mechanism. No M3 implementation/solver run occurred.
+
+M1b implementation and once-only native plan:
+[frozen scope and resource/receipt contract](gate_weighted_native_control_20261020.md).
+Twelve literal invocations and eight finite interface faults, one shared D/Work;
+no trained checkpoint or GPU. Existing supervisor and hard limits are reused.
+
+Earlier requests for M1b permission below are superseded by this approval, not scientific
+acceptance. Exhausted historical attempts remain exhausted. G1-G6 remain OPEN.
+
+## Prior M1 results and native readiness
+
 M1 gate-weighted facts finite stage COMPLETE: 2026-10-20.
 See [results and next boundary](gate_weighted_facts_results_20261020.md),
 [saved-record audit](gate_weighted_facts_audit_20261020.json) and

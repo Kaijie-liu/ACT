@@ -13,6 +13,7 @@ from act.back_end.moe import (
 from act.config.config import HybridZConfig
 from act.pipeline.moe.experiment1 import shared_input_pair_propagation, _forward_validate
 from act.pipeline.moe.request_budget import BudgetExhausted
+from act.pipeline.moe.gate_native_contract import GateCapacity, terminal as gate_terminal
 from act.pipeline.moe.scoped_f0_proofs import reuse_property
 from act.pipeline.moe.experiment1f0 import _support_status
 
@@ -22,10 +23,10 @@ def run_monolithic(*, model, center, clean_prediction, internal, config, reuse=N
     try:
         return _run_monolithic(model=model, center=center, clean_prediction=clean_prediction,
                                internal=internal, config=config, reuse=reuse, budget=budget)
-    except BudgetExhausted as exc:
+    except (BudgetExhausted, GateCapacity) as exc:
         # No partial property list may establish SAFE. Source facts remain in
         # the caller's Tier-1 record; this terminal explicitly marks censoring.
-        return {"invoked": True, "status": "TIMEOUT", "reason": "REQUEST_BUDGET_EXHAUSTED",
+        return {"invoked": True, **gate_terminal(exc),
                 "stopped_at": str(exc), "property_rows": [], "partial_rows_censored": True,
                 "feasible_route_sets": [list(p) for p in internal["route_sets"].feasible],
                 "full_model_witness_valid": False, "elapsed_seconds": time.monotonic()-started}, None
@@ -48,6 +49,7 @@ def _run_monolithic(*, model, center, clean_prediction, internal, config, reuse=
     all_pairs = [tuple(sorted(int(v) for v in p)) for p in internal["route_sets"].feasible]
     reused = {}
     gate_facts = reuse.get("gate_weighted") if reuse is not None else None
+    calls = reuse.get("native_f0_calls") if reuse is not None else None
     if reuse is not None:
         for pair in all_pairs:
             for index in range(len(properties)):
@@ -112,6 +114,8 @@ def _run_monolithic(*, model, center, clean_prediction, internal, config, reuse=
             if budget else float(solver["property_seconds"]))
         if gate_facts is not None:
             gate_facts.stats["f0_solve_attempted"] += 1
+        if calls is not None:
+            calls.attempted()
         decision = solve_monolithic_weighted_top2_f0(
             encodings, input_shape=tuple(center.shape),
             time_limit=solve_limit,
@@ -120,6 +124,8 @@ def _run_monolithic(*, model, center, clean_prediction, internal, config, reuse=
         if gate_facts is not None:
             gate_facts.stats["f0_solve_returned"] += 1
             gate_facts.stats["f0_status0_returned"] += int(decision.solver_status == 0)
+        if calls is not None:
+            calls.returned(decision.solver_status)
         replay = _forward_validate(
             model, decision.candidate_input, lower=internal["lower"],
             upper=internal["upper"], clean_prediction=clean_prediction,
@@ -138,7 +144,7 @@ def _run_monolithic(*, model, center, clean_prediction, internal, config, reuse=
         if replay["valid"]:
             witness = decision.candidate_input.detach().cpu()
             row.update(status="UNSAFE", reason="UNSAFE_FULL_FORWARD_FALLBACK")
-        elif budget:
+        if budget and (not replay["valid"] or calls is not None):
             budget.check("monolithic_property_complete")
         if reuse is not None:
             row["coverage_partition"] = {"reused": proofs, "solved_pairs": [list(p) for p in residual]}
