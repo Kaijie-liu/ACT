@@ -1,5 +1,30 @@
 # MoE project handoff — current entry point
 
+## A2 saved transfer diagnostic completed with no aggregate gain, 2026-10-21
+
+One frozen saved-only execution at `0f87a541c39b71d247ac3cb7069ce9d3a1363ce2`
+passed, outer exit0. [Results](margin_slice_transfer_results_20261021.md) and
+[lossless archive](margin_slice_transfer_records_20261021.json) preserve all
+48 anchor transfers and48 local endpoint receipts. Zero/matched-zero improved
+7/8 cells; finite median improved0/8. **All three complete minima are unchanged**
+because cell0 remains limiting. No native/model call or new candidate occurred.
+Independent saved Fraction and structural reviews pass; not human review.
+
+**Stop this residual-combination optimization branch on these records.** No
+new cells/tilts/certificate-pair search or source tuning follows. The useful
+finding is that a priced shared-certificate slicing reference can reproduce
+the current scalar result; global support queries cannot be free for that
+reference, and this is not a measured slicing speedup.
+
+**Next authorized work:** implement only the missing exact closed-slice support
+view and same-budget original-coefficient reception required for a strong A2
+comparison. Reuse existing candidate/checking kernels and supervisor. Before
+execution freeze a genuinely new finite interface roster, then freeze A2's
+fresh-slice/N1/M3/zero/finite comparison with common P/ranges, explicit query
+costs and effect/stop gates. Do not reopen the consumed A1/transfer control or
+M1b/RSS chain. No claim of inherent relaxation superiority remains justified.
+Real-development ledger0 stages/0 calls/0 seconds; G1–G6 OPEN.
+
 ## A2 comparison strengthened by exact dual transfer, 2026-10-21
 
 Static analysis gives a concrete limit on the candidate's representation claim:
