@@ -1,5 +1,19 @@
 # MoE project handoff — current entry point
 
+M3 static mechanism audit completed at `4edc5f882`, 2026-10-20:
+[strong baseline, sign/mapping/row contract and bounded next step](gate_margin_relation_static_audit_20261020.md).
+The two-slice analytical separation survives tight sigmoid ranges, but existing
+four-slice N1 already proves the same example. GenBaB has generic nonlinear
+branching/envelopes; no novelty or external lead is inferred.
+Next is the minimal default-off gate–margin row implementation, not new slicing
+or M1b observer repair. Accept only exact factor-box/direct-retained-row sign
+premises; bind unsliced common factors and explicit slice rows (private expert
+rows break a naive complete-prefix check), and independently check outward rows.
+Existing rational gate/McCormick/row checkers may be reused, but their Work
+accounts currently do not compose automatically. No M3 code/test/solver,
+trained source/GPU or new execution attempt occurred in this static stage.
+M1b FAIL and M2 gate below remain unchanged; G1–G6 OPEN.
+
 M1b native integration attempt concluded, **overall FAIL**, 2026-10-20.
 See [results/failure boundary](gate_weighted_native_results_20261020.md),
 [offline saved-record audit](gate_weighted_native_audit_20261020.json) and
