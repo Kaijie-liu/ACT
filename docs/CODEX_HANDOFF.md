@@ -1,5 +1,28 @@
 # MoE project handoff — current entry point
 
+Finite margin-support standard-library batch **PASS**, 2026-10-21:
+[result and limits](margin_support_results_20261021.md),
+[lossless records](margin_support_records_20261021.json).
+Execution `144f5053fc19713b685a491e45860ca60cb1e58c`,
+freeze `02df94104ab97f55`: 13/13 groups; online reception and outer command exit0.
+The main given continuous shared/private source improves from -89/256 (zero tilt)
+to 19/2048 (finite tilt); diamond stays -1/16. Eight complete source certificates
+and one nonzero-dual slice support were independently recomputed. These are
+2 versus 4 objective slots, zero native solves; not a runtime win or model SAFE.
+Observed entry-to-file-export 0.990055s, combined online Work101,831,
+sampled session-plus-caller peak43,634,688 bytes, FDs4→4; original caps unchanged.
+The saved-only audit passed without altering the online status. Two read-only
+AI archive reviews, no human review. One attempt consumed; no repeat authorized.
+Prototype remains unused by production. Parser/projection/policy/sigmoid rules
+share an explicit exact kernel; residual and cell-aggregation arithmetic are
+separate. No network source closure, route-set-changing proof, native numerical
+execution, GPU, external win, quota change or RSS-policy repair. G1–G6 OPEN.
+Next: bounded existing-HybridZ support-candidate mapping/cost design, not more
+toy controls or observer work. Native execution is a separate decision and
+does not inherit acceptance from this stdlib batch.
+
+## Prior preparation record for the completed margin-support batch
+
 Finite margin-support prototype and stdlib controls frozen, 2026-10-21,
 from clean `4665002951acd0dd1d684d60cae53bbd9bbba88b`; NOT YET EXECUTED.
 User replied “继续” after the bounded implementation/control next step. Under
@@ -19,6 +42,8 @@ no repair/retry, no trained source, numerical solver, GPU or GenBaB.
 Two read-only AI reviews and AST parsing precede execution; no control pretrial.
 Freeze commit/push and clean status before launch; preserve all terminal outcomes.
 This is a given-source mechanism control, not G1–G6 completion.
+
+## Prior mathematical design entries
 
 Finite tilt policy and nonconstant-difference analysis completed, 2026-10-21,
 from clean `4218aec46d35cf4a053758630052729d557410e1`:
