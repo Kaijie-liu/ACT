@@ -1,5 +1,18 @@
 # MoE project handoff — current entry point
 
+Finite observation compatibility repair approved, 2026-10-20; not yet executed.
+User reply “批准” authorizes only the bounded stage in
+[identity-bound terminal confirmation protocol](terminal_confirmation_control_20261020.md).
+Starting clean `feat/moe-route-verification @ 8d1299234282c80a7a036f645ba7d74753f878ca`.
+V3 is default-off: missing RSS may be excluded from the live roster only after
+same-identity pidfd terminal confirmation; live/unknown RSS still rejects,
+missing samples stay null. This is an observation-contract change, not an
+unchanged resource classifier or a mathematical gate change.
+Freeze then run one <=300-second batch: 27 fixed deterministic controls and
+three short compatibility processes, no models/solver/GPU. Failure stops.
+No new supervisor, M1b/M3 retry, M2 or GenBaB execution. Old FAILs remain.
+Success closes only compatibility work; G1–G6 remain OPEN.
+
 G4 static semantic audit completed at `36e8936f5`, 2026-10-20:
 [guarded weighted pair and strong-baseline contract](genbab_guarded_pair_semantics_20261020.md).
 The pinned external tool has an unsafe output-conjunction path: append router

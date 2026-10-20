@@ -7,6 +7,7 @@ No GPU/driver cleanup or hard aggregate RSS guarantee is claimed.
 import os
 from pathlib import Path
 import selectors
+import select
 import signal
 import subprocess
 import time
@@ -18,6 +19,7 @@ from scoped_proof.pidfd_compat import Pidfd
 LOG_CAP=16384
 MEMBERS=512
 ERROR_TEXT=256
+TERMINAL_POLL_MS=10
 
 
 def gate(deadline):
@@ -70,8 +72,43 @@ def _identity_record(value):
     return dict(state=value[0],sid=value[1],start_ticks=value[2])
 
 
-def _observe(sid,deadline,reader):
-    live=[]; zombies=[]; rss=0; pid=None; phase='scan_begin'
+def _poll_terminal(fd,milliseconds):
+    poll=select.poll()
+    poll.register(fd,select.POLLIN)
+    return poll.poll(milliseconds)
+
+
+def _terminal_without_rss(pid,identity,deadline,reader,context,*,pidfd=None,poll=None):
+    """One identity-bound terminal query; never reconstructs a missing RSS."""
+    gate(deadline)
+    api=Pidfd() if pidfd is None else pidfd
+    poll=_poll_terminal if poll is None else poll
+    fd=None
+    try:
+        fd=api.pidfd_open(pid,0)
+        gate(deadline)
+        bound=_identity(pid,reader)
+        if bound[1:]!=identity[1:]:
+            raise ValueError('terminal process identity changed')
+        gate(deadline)
+        wait_ms=min(TERMINAL_POLL_MS,max(0,int((deadline-time.monotonic())*1000)))
+        events=poll(fd,wait_ms)
+        gate(deadline)
+        if (len(events)!=1 or events[0][0]!=fd
+                or not events[0][1]&select.POLLIN
+                or events[0][1]&~(select.POLLIN|select.POLLHUP)):
+            raise ValueError('live process RSS unavailable: terminal unconfirmed')
+        return dict(pid=pid,identity=_identity_record(bound),
+                    missing_observation=dict(context),rss=None,
+                    evidence='IDENTITY_BOUND_PIDFD_POLLIN',pidfd_backend=api.backend,
+                    poll_events=events[0][1],poll_limit_ms=wait_ms,confirmed_at=time.monotonic())
+    finally:
+        if fd is not None: os.close(fd)
+
+
+def _observe(sid,deadline,reader,*,terminal_confirmation=False,_pidfd=None,_poll=None):
+    if type(terminal_confirmation) is not bool: raise ValueError('terminal confirmation flag')
+    live=[]; zombies=[]; terminals=[]; rss=0; pid=None; phase='scan_begin'
     context=None
     try:
         gate(deadline)
@@ -109,17 +146,27 @@ def _observe(sid,deadline,reader):
             if last[0] in ('Z','X','x'):
                 zombies.append(pid)  # terminal/non-running; not a claim of reaping
             else:
-                if value is None: raise ValueError('live process RSS unavailable')
-                live.append(pid); rss+=value
-            if len(live)+len(zombies)>MEMBERS: raise ValueError('bounded session roster')
+                if value is None:
+                    if not terminal_confirmation: raise ValueError('live process RSS unavailable')
+                    phase='terminal_pidfd_confirmation'
+                    terminals.append(_terminal_without_rss(pid,last,deadline,reader,context,
+                                                          pidfd=_pidfd,poll=_poll))
+                else:
+                    live.append(pid); rss+=value
+            if len(live)+len(zombies)+len(terminals)>MEMBERS: raise ValueError('bounded session roster')
         phase='scan_end'; pid=None; context=None; gate(deadline)
-        return dict(live=sorted(live),zombies=sorted(zombies),rss=rss)
+        result=dict(live=sorted(live),zombies=sorted(zombies),rss=rss)
+        if terminal_confirmation:
+            result.update(terminal_without_rss=terminals,rss_scope='OBSERVED_LIVE_ONLY')
+        return result
     except Exception as exc:
-        raise _ObservationFailure(exc,phase,pid,context) from exc
+        failure=_ObservationFailure(exc,phase,pid,context)
+        if terminals: failure.detail['terminal_without_rss']=terminals
+        raise failure from exc
 
 
-def observe(sid,deadline):
-    return _observe(sid,deadline,_ProcReader())
+def observe(sid,deadline,*,terminal_confirmation=False):
+    return _observe(sid,deadline,_ProcReader(),terminal_confirmation=terminal_confirmation)
 
 
 def _observe_cleanup(sid,deadline,reader):
@@ -157,13 +204,32 @@ def observe_cleanup(sid,deadline):
 
 
 class _SessionEvidence:
-    def __init__(self):
+    def __init__(self,terminal_confirmation=False):
         self.remaining=None
         self.execution_error=None; self.cleanup_error=None
+        self.terminal_confirmation=terminal_confirmation
+        self.terminals={}
+
+    def retain_terminals(self,records):
+        for record in records:
+            key=(record['pid'],record['identity']['sid'],record['identity']['start_ticks'])
+            if key not in self.terminals:
+                if len(self.terminals)>=MEMBERS: raise ValueError('bounded terminal evidence')
+                self.terminals[key]=record
 
     def scan(self,sid,deadline,observer):
         self.remaining=None  # A failed/unfinished scan cannot retain an old roster.
-        self.remaining=observer(sid,deadline)
+        try:
+            current=observer(sid,deadline)
+        except _ObservationFailure as exc:
+            try: self.retain_terminals(exc.detail.get('terminal_without_rss',[]))
+            except Exception as retention:
+                # Evidence capacity failure cannot erase the original scan or
+                # deadline error. This scan remains rejected in either case.
+                exc.detail['terminal_retention_error']=_error_detail(retention,'terminal_retention',None)
+            raise
+        self.retain_terminals(current.get('terminal_without_rss',[]))
+        self.remaining=current
         return self.remaining
 
     def failed(self,stage,exc,phase,pid):
@@ -178,9 +244,12 @@ class _SessionEvidence:
         error=None if first is None else (
             'SESSION_DEADLINE' if self.execution_error and first['kind']=='TimeoutError' else
             ('' if self.execution_error else 'SESSION_CLEANUP_')+first['kind'])
-        return dict(error=error,execution_error=self.execution_error,cleanup_error=self.cleanup_error,
+        result=dict(error=error,execution_error=self.execution_error,cleanup_error=self.cleanup_error,
                     remaining_session=self.remaining,remaining_session_known=self.remaining is not None,
-                    observation_contract='CONFIRMED_IDENTITY_V2',cleanup_contract='IDENTITY_ONLY_V1')
+                    observation_contract=('CONFIRMED_IDENTITY_V3' if self.terminal_confirmation
+                                          else 'CONFIRMED_IDENTITY_V2'),cleanup_contract='IDENTITY_ONLY_V1')
+        if self.terminal_confirmation: result['terminal_without_rss']=list(self.terminals.values())
+        return result
 
 
 def kill_owned(pid,sid,deadline, *, pidfd=None,expected_start=None):
@@ -204,14 +273,18 @@ def _kill_owned(pid,sid,deadline, *, pidfd,expected_start,reader):
         if fd is not None: os.close(fd)
 
 
-def execute(argv, *, run_deadline, cleanup_deadline, env, rss_limit):
+def execute(argv, *, run_deadline, cleanup_deadline, env, rss_limit,terminal_confirmation=False):
     """One spawn; caller has already authorized source, code, limits and times."""
+    if type(terminal_confirmation) is not bool: raise ValueError('terminal confirmation flag')
+    observer=observe if not terminal_confirmation else (
+        lambda sid,deadline:observe(sid,deadline,terminal_confirmation=True))
     return _execute(argv,run_deadline=run_deadline,cleanup_deadline=cleanup_deadline,
-                    env=env,rss_limit=rss_limit,_observer=observe,_cleanup_observer=observe_cleanup)
+                    env=env,rss_limit=rss_limit,_observer=observer,_cleanup_observer=observe_cleanup,
+                    _terminal_confirmation=terminal_confirmation)
 
 
 def _execute(argv, *, run_deadline, cleanup_deadline, env, rss_limit, _observer,
-             _cleanup_observer=observe_cleanup):
+             _cleanup_observer=observe_cleanup,_terminal_confirmation=False):
     """Private deterministic fault seam. Public execute always binds observe."""
     if run_deadline>cleanup_deadline: raise ValueError('shared session cleanup budget')
     started=time.monotonic()
@@ -220,7 +293,8 @@ def _execute(argv, *, run_deadline, cleanup_deadline, env, rss_limit, _observer,
     gate(run_deadline)
     p=None; selector=selectors.DefaultSelector(); chunks=[]; size=0
     peak=0; status='ERROR'; exit_at=None; rc=None; cleanup='NO_PROCESS'; eof=False
-    evidence=_SessionEvidence(); before_cleanup=started; signals=0; leader_fd=None; phase='spawn'
+    evidence=_SessionEvidence(_terminal_confirmation)
+    before_cleanup=started; signals=0; leader_fd=None; phase='spawn'
     try:
         gate(run_deadline)
         p=subprocess.Popen(argv,cwd=ROOT,env=env,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,
