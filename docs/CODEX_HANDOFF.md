@@ -1,5 +1,34 @@
 # MoE project handoff — current entry point
 
+## A1 sparse scalar integration passed, 2026-10-21
+
+The once-only frozen batch at `261ad37bc0020f1b4d9fbc036c2ed148aaf92811`
+passed with outer exit0 and9.696977s entry-to-terminal-export:
+[results and boundaries](margin_scalar_results_20261021.md),
+[lossless archive](margin_scalar_records_20261021.json).
+Two native calls/six objective slots now connect original ten-class shared HZ
+supports to independently checked scalar bounds. Worker/controller/relocated
+stdlib receipts agree for all three records; nine scalar mutations and expired
+reception are rejected. No new observation layer or old control was rerun.
+
+Zero and matched-zero lower−1.295650847; finite tilt−1.289611148, exact increase
+about0.006039699. **All remain negative.** This is conditional given-HZ mechanism
+integration, not a complete certificate, speedup or comparison with slicing.
+Finite uses four objectives versus two and took0.893483s versus0.772033s in
+nested call scopes. Sigmoid/anchor/optimality gaps remain unquantified.
+Saved-only independent arithmetic and execution reviews pass; not human review.
+Work6,194,578→7,195,370→8,196,162, same budget and development policy;
+run+archive969,751 bytes. Owned leaders reaped/no live recorded members,
+FDs4→4; broader cleanup limitations remain explicit.
+
+**Next:** freeze A2's strong mechanism comparison and continue under existing
+authority; same P/ranges, zero versus finite tilt and strong slice comparisons,
+query/full-cost/guarantee accounting with predefined effect and stopping rules.
+Do not repeat the consumed A1 batch, tune this synthetic source, restart M1b/RSS
+or call the small bound increase G1 completion. Production full-request dispatch
+is still subsequent work. Real-development ledger0 stages/0 calls/0 seconds;
+G1–G6 OPEN. All old failures/source gaps and sealed boundaries remain.
+
 ## Sparse scalar integration prepared, 2026-10-21
 
 The native source bridge is now connected to a default-off sparse margin plan
