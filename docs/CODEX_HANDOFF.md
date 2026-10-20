@@ -1,5 +1,25 @@
 # MoE project handoff — current entry point
 
+## A2 comparison strengthened by exact dual transfer, 2026-10-21
+
+Static analysis gives a concrete limit on the candidate's representation claim:
+its current scalar-cell bound can be reproduced by adding exact slice duals to
+the same global support certificates. Blending duals before residual compensation
+can further improve it without new support queries. See
+[derivation and bounded diagnostic](margin_slice_transfer_20261021.md).
+Thus A2 must price shared-certificate reuse and fresh strong slices; it cannot
+call four global objectives versus16 local objectives an equal-query victory,
+or use integer-only native gate ranges on the new continuous P.
+
+Next in this stage is one hash-frozen saved-only diagnostic on the three A1
+scalar records: unchanged8 cells,48 local endpoint transfers, no new queries,
+no candidate tuning and no native/model run. It will independently recheck
+original-coefficient residuals under exact slab rows, then archive whether the
+early scalarization loss is strict on those saved records. This is distinct
+evidence, not a repeat of the A1 control or a full A2 performance comparison.
+At this preparation point no diagnostic execution has occurred. Real-stage
+usage remains0; G1–G6 OPEN, source/proof gaps and old failures unchanged.
+
 ## A1 sparse scalar integration passed, 2026-10-21
 
 The once-only frozen batch at `261ad37bc0020f1b4d9fbc036c2ed148aaf92811`
