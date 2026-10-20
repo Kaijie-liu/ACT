@@ -1,0 +1,104 @@
+{
+  "schema": "MARGIN_A2_FINITE_FREEZE_V1",
+  "policy": "DEV_MARGIN_20261021_V1",
+  "start_head": "eecf47b2018497cddcd80f8bbc3fcb8aace45d55",
+  "attempts": 1,
+  "result_directory": "/data1/Kane/MOE/results/margin_a2_strong_20261021_r1",
+  "caps": {
+    "seconds": 300,
+    "artifact_bytes": 134217728,
+    "as_bytes": 8589934592,
+    "rss_gate": false,
+    "work_gate": false
+  },
+  "arms": [
+    "zero",
+    "finite",
+    "transfer",
+    "endpoint_2",
+    "N1_2",
+    "M3_2",
+    "endpoint_4",
+    "N1_4",
+    "M3_4"
+  ],
+  "query_slots": {
+    "zero": 2,
+    "finite": 4,
+    "transfer": 0,
+    "endpoint_2": 4,
+    "N1_2": 10,
+    "M3_2": 10,
+    "endpoint_4": 8,
+    "N1_4": 20,
+    "M3_4": 20
+  },
+  "native_call_limit": 78,
+  "query_seconds": 1.0,
+  "global_cells": 4,
+  "minimum_effect": "1/1024",
+  "cost_ratio": 0.8,
+  "cuts": {
+    "2": [
+      "1/2"
+    ],
+    "4": [
+      "3/32",
+      "1/2",
+      "29/32"
+    ]
+  },
+  "faults": {
+    "negative_duration": "valid duration",
+    "nonfinite_duration": "valid duration",
+    "wrong_native_lp": "original source/objective/cell/native event binding",
+    "missing_proposal_group": "all native proposal groups"
+  },
+  "trained_source": false,
+  "gpu": false,
+  "portable_files": {
+    "scripts/margin_a2_cases.py": "margin_a2_cases.py",
+    "scripts/margin_a2_recheck.py": "margin_a2_recheck.py",
+    "scripts/margin_native_cases.py": "margin_native_cases.py",
+    "scripts/analyze_margin_slice_transfer_20261021.py": "analyze_margin_slice_transfer_20261021.py",
+    "scoped_source/development_work.py": "scoped_source/development_work.py",
+    "scoped_source/check_margin_hz_source.py": "scoped_source/check_margin_hz_source.py",
+    "scoped_source/check_gate_margin_rows.py": "scoped_source/check_gate_margin_rows.py",
+    "scoped_source/hz_request_store.py": "scoped_source/hz_request_store.py",
+    "scoped_source/check_margin_support.py": "scoped_source/check_margin_support.py",
+    "scoped_source/check_native_margin_support.py": "scoped_source/check_native_margin_support.py",
+    "scoped_source/check_margin_slices.py": "scoped_source/check_margin_slices.py",
+    "scoped_source/check_margin_product.py": "scoped_source/check_margin_product.py",
+    "scoped_proof/io.py": "scoped_proof/io.py"
+  },
+  "files": {
+    "scripts/margin_a2_cases.py": "1586cc5072fecc4cc514d40a62950275ee7edeb6c50ef0a3542924d820333267",
+    "scripts/margin_a2_recheck.py": "2d3693cb7ad6721d65e8161d48264922f9efcf7ad720b8dacde8103fa97507e4",
+    "scripts/margin_native_cases.py": "7325be6fdf6401fb3ac372a350344725f166d0de60c034e6a0930a16bc537aab",
+    "scripts/analyze_margin_slice_transfer_20261021.py": "e54d33dd5a5ce6e99f194b6c13e044d4d68e73d4bd84a51e77ac5a52df65575c",
+    "scoped_source/development_work.py": "2c3058be39f5fbb57ac74b623c262b9668cb823a6885b813fbac1a7177b22470",
+    "scoped_source/check_margin_hz_source.py": "44df9870efa8614b47dc8035ea105b9ea8f55bdd599ef8c28402e1d11ace4a94",
+    "scoped_source/check_gate_margin_rows.py": "3b70596972535d6d0bfb0553f616866368f764cc7139033afe8b99c4ba2a69b1",
+    "scoped_source/hz_request_store.py": "7cb2be7647039f59d3c896b7856f634f43be9c532d9d2fd43632be09ab3230e0",
+    "scoped_source/check_margin_support.py": "dd3005a50b75f2b12475a806e9b35b8049f611af5eb8a23ff7421417c63de933",
+    "scoped_source/check_native_margin_support.py": "b5fd9b03656fdf9e95b7c6b6a4b9ec2a9eabed7f0fbd41f91889c94fa43fc7de",
+    "scoped_source/check_margin_slices.py": "69d28727ca3dcb9eef867873fc5dd86883980364b65ac86c4a42426138790926",
+    "scoped_source/check_margin_product.py": "5dd6264538c6065e1d48fa4eb91426a4e9a0b2d623a292e79cdfa17e0e3c6391",
+    "scoped_proof/io.py": "ee080902b729bcc0ce50ead5696538b687302358f143b039a6f9bdee2256569d",
+    "scripts/margin_a2_control.py": "f4c6dd242946e46395671ad46dc81f0ee39e14baea2cb4e908c6d1155af3136d",
+    "scripts/audit_margin_a2_20261021.py": "e8f6a9f0fba70bd481feb4f86ae2273225ad1d38e9fb80e5d2cabcacc4cfa2a7",
+    "scripts/margin_native_control.py": "30e814f5bd07ff5e59e463fb2e70b5e157bf528cfae65590b3c008d3ed2aa252",
+    "docs/margin_a2_control_20261021.md": "a1863dc62a994f5671d991352ef74251f64dcf365752cc9b276b2c367d551291",
+    "act/back_end/moe/margin_hz_source.py": "07f80a04282c8a23a0836a6256bee35ad39479673ffd34efd81112fd7c39e8c2",
+    "act/back_end/moe/margin_slice_support.py": "c456629322f561309f199b4bb14429f7daa85f3fd6c1753bdff54a2bd7677039",
+    "act/back_end/moe/margin_product_support.py": "d3994093d7310871f2df819aee3c0a82d2abf7deb8c22883335fb8b69652ecbf",
+    "act/back_end/moe/margin_lp_candidates.py": "26d7fcf6035771d4c0e771c554e2dbfe739040b917b757b46c041ee151da8fcc",
+    "scoped_source/rowwise_native.py": "18c41381e7c837ff5e0abccb72ada6ad13b40b93e486352f26f12a8d775603b9",
+    "scoped_proof/owned_session.py": "8b9e80e259679490a2f72e2d5011c5345e17d75c7cf2ad80952b00f651aed798"
+  },
+  "trees": {
+    "act": "efa06deba508885cf34a2581c767e2ad31852f21155cf300608f52d5e2ab0401",
+    "scoped_source": "1974ce3bf8ae7498ac82a9d81303985b78bb481913222b9864d67dee0a9e1bf1",
+    "scoped_proof": "6b6a09915a064a012f9b687dd3d5ece946c672eef4c5bef59051e5275e6e9694"
+  }
+}

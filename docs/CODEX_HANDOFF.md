@@ -1,5 +1,28 @@
 # MoE project handoff — current entry point
 
+## A2 strong comparison prepared for one frozen execution, 2026-10-21
+
+The [finite protocol](margin_a2_control_20261021.md) now fixes the unchanged
+synthetic source/property, nine global/transfer/two- and four-cell reference
+arms, strong HiGHS proposals, at most78 native calls, priced range/endpoint
+fallbacks, exact independent reception, and1/1024 bound/0.8 cost gates.
+No trained input or new real-development slot is used. G1–G6 remain OPEN.
+
+The new driver uses the existing owned-session supervisor and development
+policy, not another RSS layer. New duration and native-query identity controls
+are part of this batch. Portable transfer import no longer searches its parent;
+its mathematical implementation is unchanged. Original consumed runs and their
+source revisions remain preserved. Static AST/diff and read-only math/API
+reviews precede execution, not evidence of runtime success.
+
+**Next:** after hash freeze, clean commit/push and fresh resource checks, execute
+this batch once. Any missing required arm is inconclusive, not a win over a
+truncated reference. A complete below-effect/dominated outcome stops this
+fixed-tilt mechanism; do not change source/grid/time to retry it. Shared-cost
+allocations are not independent cold starts; unused-budget tail bounds are
+not measured time. Only a signal surviving the frozen gates supports considering
+the separate finite real development. The real-stage ledger remains0/0/0.
+
 ## Strong LP candidate bridge prepared without execution, 2026-10-21
 
 From clean `f111067e7b8d6c6acc0d9eb90a4e44d541526169`, the three existing

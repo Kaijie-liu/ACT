@@ -16,12 +16,12 @@ import sys
 from fractions import Fraction as F
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path[:0] = [str(ROOT), str(ROOT/"scripts")]
+if __name__ == "__main__":
+    sys.path[:0] = [str(ROOT), str(ROOT/"scripts")]
 from scoped_source.hz_request_store import compact, require, rational
 from scoped_source.development_work import DevelopmentWork, POLICY
 from scoped_source import check_margin_hz_source as source
 from scoped_proof.io import save
-import margin_scalar_cases as cases
 
 RUN = Path("/data1/Kane/MOE/results/margin_slice_transfer_20261021_r1")
 FREEZE = ROOT/"docs/margin_slice_transfer_freeze_20261021.json"
@@ -145,6 +145,7 @@ def transfer(parsed, record, work):
 
 
 def main(anchor):
+    import margin_scalar_cases as cases
     deadline = ENTRY+300
     for name, cap in ((resource.RLIMIT_AS, 8*2**30), (resource.RLIMIT_FSIZE, CAP)):
         resource.setrlimit(name, (cap, cap))
