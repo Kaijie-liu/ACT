@@ -1,5 +1,30 @@
 # MoE project handoff — current entry point
 
+Finite tilt policy and nonconstant-difference analysis completed, 2026-10-21,
+from clean `4218aec46d35cf4a053758630052729d557410e1`:
+[policy, shared/private example and stronger-baseline limits](margin_conditioned_tilt_policy_20261021.md).
+Two fixed gate anchors, each with zero and one box-weighted-median tilt, define
+at most four objective slots without conditional LP tuning. Closest-to-zero
+median selection preserves pair reversal; an equivalent duplicated-factor
+source can still change the box heuristic. Original guarded P remains intact.
+A three-factor affine toy with nonconstant d has analytic lower bound 3/256, while
+the default sign-slice product rectangle admits value -1/64 even at a true
+sigmoid point. The proposed fixed 128-cell rational check has paper lower bound 3/512;
+no candidate/checker was implemented or run. These are mechanism proofs, not
+four required native solves, a route-set-changing result or runtime evidence.
+The simpler d=m example is rejected; stronger subdivision already proves the
+zero-private variant, so no dominance over N1/GenBaB follows.
+The interpolation also has an explicit nonnegative-weighted lifted form;
+a comparator with those rows and equally strong scalar treatment can reproduce
+it. The remaining research question is useful construction and full cost, not
+an irreducible primitive or automatic novelty.
+Two read-only AI reviews; documentation only. No model, solver, native import,
+GPU, adapter, resource change or failed-attempt retry. G1–G6 OPEN.
+Next meaningful step is a bounded standard-library operator/control proposal
+with the linked strong comparators and faults, not more observer repair or
+unbounded analytic case search. Freeze scope and receive execution authority
+before running; this note is not a control-batch authorization.
+
 Margin-conditioned support static contract completed, 2026-10-20, based on
 `31c3ccde12318a4b66f266270bf0ba7971707c2b`:
 [checked support rule, error decomposition and direct comparisons](margin_conditioned_support_contract_20261020.md).
