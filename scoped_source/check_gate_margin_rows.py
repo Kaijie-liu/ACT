@@ -369,13 +369,13 @@ def check(record, *, expected_binding, expected_context, expected_property, work
     expected = decode(freeze({"context": expected_context,
                               "property": list(expected_property)}, work)[0])
     context(expected["context"])
-    require(type(record) is dict and set(record) == {
-        "schema", "binding", "active", "old_f0", "parameters", "premise",
-        "status", "new_f0"}, "complete relation record")
-    require(record["schema"] == SCHEMA, "relation schema")
+    require(type(record) is dict, "relation record type")
     original = record
     raw, before_hash = freeze(original, work)
     record = decode(raw)
+    require(set(record) == {"schema", "binding", "active", "old_f0", "parameters",
+                           "premise", "status", "new_f0"}, "complete relation record")
+    require(record["schema"] == SCHEMA, "relation schema")
     require(record["binding"]["context"] == expected["context"], "request/domain/pair binding")
     require([record["parameters"]["q"], record["parameters"]["offset"]] == expected["property"],
             "property identity")

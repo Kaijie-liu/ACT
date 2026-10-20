@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+M3 finite construction control is being frozen, NOT YET EXECUTED:
+[fixed scientific cases, faults and stop rule](gate_margin_rows_control_20261020.md).
+Eight off/on literal specifications plus four fixed old-F0 references give twenty
+F0 constructions, zero support/optimizer/model-forward calls, twenty-eight
+specified refusals, and one shared <=300s/8M ledger. Exact stored LP checks
+are conditional given-source results, not trained-model certificates.
+Only the existing public supervisor/caps are used; M1b is not repaired/retried.
+The remaining schema validation was moved onto the privately captured record.
+Freeze and commit before the one attempt; archive any failure without retry.
+
 M3 default-off implementation is now present; controls NOT YET EXECUTED.
 See [implementation, conditional guarantee and finite-control boundary](gate_margin_rows_implementation_20261020.md).
 New `gate_margin_rows` captures/binds original shared sources and inserts two
