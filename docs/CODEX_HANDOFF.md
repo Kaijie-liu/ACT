@@ -1,17 +1,21 @@
 # MoE project handoff — current entry point
 
-Finite observation compatibility repair approved, 2026-10-20; not yet executed.
-User reply “批准” authorizes only the bounded stage in
-[identity-bound terminal confirmation protocol](terminal_confirmation_control_20261020.md).
-Starting clean `feat/moe-route-verification @ 8d1299234282c80a7a036f645ba7d74753f878ca`.
-V3 is default-off: missing RSS may be excluded from the live roster only after
-same-identity pidfd terminal confirmation; live/unknown RSS still rejects,
-missing samples stay null. This is an observation-contract change, not an
-unchanged resource classifier or a mathematical gate change.
-Freeze then run one <=300-second batch: 27 fixed deterministic controls and
-three short compatibility processes, no models/solver/GPU. Failure stops.
-No new supervisor, M1b/M3 retry, M2 or GenBaB execution. Old FAILs remain.
-Success closes only compatibility work; G1–G6 remain OPEN.
+Finite terminal-observation compatibility batch ended **overall FAIL**, 2026-10-20.
+See [result and stop decision](terminal_confirmation_results_20261020.md),
+[lossless records](terminal_confirmation_records_20261020.json) and
+[offline saved-record audit](terminal_confirmation_saved_audit_20261020.json).
+Execution `7fbc55c8f`, freeze `51e83fdc346c7219`: 27/27 deterministic controls PASS;
+stdlib child COMPLETED; native import/CPU-zeros child rejected
+`live process RSS unavailable: terminal unconfirmed`, final exit0/cleanup success
+did not override ERROR. Third native child not launched. Reception rejected;
+4.302s through export timestamp, sampled peak647.48MiB, zero real accepted
+pidfd terminal confirmations. Raw failed poll events were not saved: no unique
+OS-cause attribution or reason to extend the wait follows. Final batch FD/child
+assertions were not reached; per-child cleanup receipts have no live members.
+The one approved attempt is consumed; default-off V3 and old FAILs retained.
+No retry, observer expansion, M1b/M3, M2, models, GenBaB or GPU authorization.
+This is not algorithm progress. Return to the scoped strong-baseline/research
+decision below; do not continue an automatic RSS repair chain. G1–G6 OPEN.
 
 G4 static semantic audit completed at `36e8936f5`, 2026-10-20:
 [guarded weighted pair and strong-baseline contract](genbab_guarded_pair_semantics_20261020.md).

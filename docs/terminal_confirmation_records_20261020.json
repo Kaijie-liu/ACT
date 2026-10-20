@@ -1,0 +1,1090 @@
+{
+  "files": {
+    "reception.json": {
+      "bytes": 370,
+      "content": {
+        "audit": {
+          "accepted": false,
+          "consistent": true,
+          "independent_scope": "saved-record consistency, not reexecution or algorithm proof",
+          "issues": [],
+          "native_confirmation_events": 0,
+          "schema": "TERMINAL_SAVED_AUDIT_V1"
+        },
+        "online_acceptance": false,
+        "received_at": 11336450.040435128,
+        "result_bytes": 15782,
+        "result_sha256": "00f3243b914b1c8a53bdd9fdd793f67e9c17f7aabc1baf5bb8eba5bff43a9257"
+      },
+      "sha256": "7197c6a90ceb313a042f838c8107cffb3ffdb7d06ceec80e3a67538ea9091f64"
+    },
+    "result.json": {
+      "bytes": 15782,
+      "content": {
+        "admission": {
+          "at": 11336445.83188916,
+          "available_bytes": 84852994048,
+          "disk_bytes": 198584451072
+        },
+        "algorithm_executed": false,
+        "algorithm_work_consumed": 0,
+        "before_export": 11336450.03727054,
+        "caps": {
+          "artifact_bytes": 134217728,
+          "as_bytes": 8589934592,
+          "rss_bytes": 2147483648,
+          "seconds": 300,
+          "work": 8000000
+        },
+        "cases": [
+          {
+            "detail": {
+              "error": null,
+              "fd_closed": true,
+              "observation": {
+                "live": [
+                  101
+                ],
+                "rss": 12288,
+                "rss_scope": "OBSERVED_LIVE_ONLY",
+                "terminal_without_rss": [],
+                "zombies": []
+              },
+              "opens": 0,
+              "poll_waits_ms": [],
+              "reads": 3
+            },
+            "id": "known_rss",
+            "seconds": 0.0001909993588924408,
+            "status": "PASS"
+          },
+          {
+            "detail": {
+              "error": {
+                "kind": "ValueError",
+                "message": "live process RSS unavailable",
+                "observation": {
+                  "first_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "last_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "rss_present": false,
+                  "status_bytes": 14,
+                  "status_read": "READ"
+                },
+                "phase": "confirm_stat",
+                "pid": 101
+              },
+              "fd_closed": true,
+              "observation": null,
+              "opens": 0,
+              "poll_waits_ms": [],
+              "reads": 3
+            },
+            "id": "default_missing_reject",
+            "seconds": 0.00016530975699424744,
+            "status": "PASS"
+          },
+          {
+            "detail": {
+              "error": null,
+              "fd_closed": true,
+              "observation": {
+                "live": [],
+                "rss": 0,
+                "rss_scope": "OBSERVED_LIVE_ONLY",
+                "terminal_without_rss": [],
+                "zombies": [
+                  101
+                ]
+              },
+              "opens": 0,
+              "poll_waits_ms": [],
+              "reads": 3
+            },
+            "id": "terminal_Z",
+            "seconds": 0.0001507289707660675,
+            "status": "PASS"
+          },
+          {
+            "detail": {
+              "error": null,
+              "fd_closed": true,
+              "observation": {
+                "live": [],
+                "rss": 0,
+                "rss_scope": "OBSERVED_LIVE_ONLY",
+                "terminal_without_rss": [],
+                "zombies": [
+                  101
+                ]
+              },
+              "opens": 0,
+              "poll_waits_ms": [],
+              "reads": 3
+            },
+            "id": "terminal_X",
+            "seconds": 8.22022557258606e-05,
+            "status": "PASS"
+          },
+          {
+            "detail": {
+              "error": null,
+              "fd_closed": true,
+              "observation": {
+                "live": [],
+                "rss": 0,
+                "rss_scope": "OBSERVED_LIVE_ONLY",
+                "terminal_without_rss": [],
+                "zombies": [
+                  101
+                ]
+              },
+              "opens": 0,
+              "poll_waits_ms": [],
+              "reads": 3
+            },
+            "id": "terminal_x",
+            "seconds": 7.150694727897644e-05,
+            "status": "PASS"
+          },
+          {
+            "detail": {
+              "error": null,
+              "fd_closed": true,
+              "observation": {
+                "live": [],
+                "rss": 0,
+                "rss_scope": "OBSERVED_LIVE_ONLY",
+                "terminal_without_rss": [
+                  {
+                    "confirmed_at": 11336445.834660644,
+                    "evidence": "IDENTITY_BOUND_PIDFD_POLLIN",
+                    "identity": {
+                      "sid": 101,
+                      "start_ticks": 55,
+                      "state": "R"
+                    },
+                    "missing_observation": {
+                      "first_identity": {
+                        "sid": 101,
+                        "start_ticks": 55,
+                        "state": "R"
+                      },
+                      "last_identity": {
+                        "sid": 101,
+                        "start_ticks": 55,
+                        "state": "R"
+                      },
+                      "rss_present": false,
+                      "status_bytes": 14,
+                      "status_read": "READ"
+                    },
+                    "pid": 101,
+                    "pidfd_backend": "CONTROL_ONLY",
+                    "poll_events": 1,
+                    "poll_limit_ms": 10,
+                    "rss": null
+                  }
+                ],
+                "zombies": []
+              },
+              "opens": 1,
+              "poll_waits_ms": [
+                10
+              ],
+              "reads": 4
+            },
+            "id": "confirmed_missing",
+            "seconds": 0.00013171322643756866,
+            "status": "PASS"
+          },
+          {
+            "detail": {
+              "error": null,
+              "fd_closed": true,
+              "observation": {
+                "live": [],
+                "rss": 0,
+                "rss_scope": "OBSERVED_LIVE_ONLY",
+                "terminal_without_rss": [
+                  {
+                    "confirmed_at": 11336445.834831277,
+                    "evidence": "IDENTITY_BOUND_PIDFD_POLLIN",
+                    "identity": {
+                      "sid": 101,
+                      "start_ticks": 55,
+                      "state": "R"
+                    },
+                    "missing_observation": {
+                      "first_identity": {
+                        "sid": 101,
+                        "start_ticks": 55,
+                        "state": "R"
+                      },
+                      "last_identity": {
+                        "sid": 101,
+                        "start_ticks": 55,
+                        "state": "R"
+                      },
+                      "rss_present": false,
+                      "status_bytes": 0,
+                      "status_read": "DISAPPEARED"
+                    },
+                    "pid": 101,
+                    "pidfd_backend": "CONTROL_ONLY",
+                    "poll_events": 1,
+                    "poll_limit_ms": 10,
+                    "rss": null
+                  }
+                ],
+                "zombies": []
+              },
+              "opens": 1,
+              "poll_waits_ms": [
+                10
+              ],
+              "reads": 4
+            },
+            "id": "confirmed_status_gone",
+            "seconds": 0.0001069679856300354,
+            "status": "PASS"
+          },
+          {
+            "detail": {
+              "error": {
+                "kind": "ValueError",
+                "message": "live process RSS unavailable: terminal unconfirmed",
+                "observation": {
+                  "first_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "last_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "rss_present": false,
+                  "status_bytes": 14,
+                  "status_read": "READ"
+                },
+                "phase": "terminal_pidfd_confirmation",
+                "pid": 101
+              },
+              "fd_closed": true,
+              "observation": null,
+              "opens": 1,
+              "poll_waits_ms": [
+                10
+              ],
+              "reads": 4
+            },
+            "id": "no_events",
+            "seconds": 0.00039071962237358093,
+            "status": "PASS"
+          },
+          {
+            "detail": {
+              "error": {
+                "kind": "ValueError",
+                "message": "live process RSS unavailable: terminal unconfirmed",
+                "observation": {
+                  "first_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "last_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "rss_present": false,
+                  "status_bytes": 14,
+                  "status_read": "READ"
+                },
+                "phase": "terminal_pidfd_confirmation",
+                "pid": 101
+              },
+              "fd_closed": true,
+              "observation": null,
+              "opens": 1,
+              "poll_waits_ms": [
+                10
+              ],
+              "reads": 4
+            },
+            "id": "hup_only",
+            "seconds": 0.00011760368943214417,
+            "status": "PASS"
+          },
+          {
+            "detail": {
+              "error": {
+                "kind": "ValueError",
+                "message": "live process RSS unavailable: terminal unconfirmed",
+                "observation": {
+                  "first_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "last_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "rss_present": false,
+                  "status_bytes": 14,
+                  "status_read": "READ"
+                },
+                "phase": "terminal_pidfd_confirmation",
+                "pid": 101
+              },
+              "fd_closed": true,
+              "observation": null,
+              "opens": 1,
+              "poll_waits_ms": [
+                10
+              ],
+              "reads": 4
+            },
+            "id": "poll_error",
+            "seconds": 9.519979357719421e-05,
+            "status": "PASS"
+          },
+          {
+            "detail": {
+              "error": {
+                "kind": "ValueError",
+                "message": "live process RSS unavailable: terminal unconfirmed",
+                "observation": {
+                  "first_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "last_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "rss_present": false,
+                  "status_bytes": 14,
+                  "status_read": "READ"
+                },
+                "phase": "terminal_pidfd_confirmation",
+                "pid": 101
+              },
+              "fd_closed": true,
+              "observation": null,
+              "opens": 1,
+              "poll_waits_ms": [
+                10
+              ],
+              "reads": 4
+            },
+            "id": "poll_invalid",
+            "seconds": 9.821541607379913e-05,
+            "status": "PASS"
+          },
+          {
+            "detail": {
+              "error": {
+                "kind": "ValueError",
+                "message": "live process RSS unavailable: terminal unconfirmed",
+                "observation": {
+                  "first_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "last_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "rss_present": false,
+                  "status_bytes": 14,
+                  "status_read": "READ"
+                },
+                "phase": "terminal_pidfd_confirmation",
+                "pid": 101
+              },
+              "fd_closed": true,
+              "observation": null,
+              "opens": 1,
+              "poll_waits_ms": [
+                10
+              ],
+              "reads": 4
+            },
+            "id": "wrong_fd",
+            "seconds": 0.0002793800085783005,
+            "status": "PASS"
+          },
+          {
+            "detail": {
+              "error": {
+                "kind": "ValueError",
+                "message": "live process RSS unavailable: terminal unconfirmed",
+                "observation": {
+                  "first_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "last_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "rss_present": false,
+                  "status_bytes": 14,
+                  "status_read": "READ"
+                },
+                "phase": "terminal_pidfd_confirmation",
+                "pid": 101
+              },
+              "fd_closed": true,
+              "observation": null,
+              "opens": 1,
+              "poll_waits_ms": [
+                10
+              ],
+              "reads": 4
+            },
+            "id": "multiple_events",
+            "seconds": 0.00010151602327823639,
+            "status": "PASS"
+          },
+          {
+            "detail": {
+              "error": {
+                "kind": "ValueError",
+                "message": "terminal process identity changed",
+                "observation": {
+                  "first_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "last_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "rss_present": false,
+                  "status_bytes": 14,
+                  "status_read": "READ"
+                },
+                "phase": "terminal_pidfd_confirmation",
+                "pid": 101
+              },
+              "fd_closed": true,
+              "observation": null,
+              "opens": 1,
+              "poll_waits_ms": [],
+              "reads": 4
+            },
+            "id": "changed_sid",
+            "seconds": 8.818507194519043e-05,
+            "status": "PASS"
+          },
+          {
+            "detail": {
+              "error": {
+                "kind": "ValueError",
+                "message": "terminal process identity changed",
+                "observation": {
+                  "first_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "last_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "rss_present": false,
+                  "status_bytes": 14,
+                  "status_read": "READ"
+                },
+                "phase": "terminal_pidfd_confirmation",
+                "pid": 101
+              },
+              "fd_closed": true,
+              "observation": null,
+              "opens": 1,
+              "poll_waits_ms": [],
+              "reads": 4
+            },
+            "id": "changed_start",
+            "seconds": 8.417479693889618e-05,
+            "status": "PASS"
+          },
+          {
+            "detail": {
+              "error": {
+                "kind": "FileNotFoundError",
+                "message": "fixed stat gone",
+                "observation": {
+                  "first_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "last_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "rss_present": false,
+                  "status_bytes": 14,
+                  "status_read": "READ"
+                },
+                "phase": "terminal_pidfd_confirmation",
+                "pid": 101
+              },
+              "fd_closed": true,
+              "observation": null,
+              "opens": 1,
+              "poll_waits_ms": [],
+              "reads": 4
+            },
+            "id": "binding_disappeared",
+            "seconds": 8.444488048553467e-05,
+            "status": "PASS"
+          },
+          {
+            "detail": {
+              "error": {
+                "kind": "PermissionError",
+                "message": "fixed stat denied",
+                "observation": {
+                  "first_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "last_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "rss_present": false,
+                  "status_bytes": 14,
+                  "status_read": "READ"
+                },
+                "phase": "terminal_pidfd_confirmation",
+                "pid": 101
+              },
+              "fd_closed": true,
+              "observation": null,
+              "opens": 1,
+              "poll_waits_ms": [],
+              "reads": 4
+            },
+            "id": "binding_permission",
+            "seconds": 8.91759991645813e-05,
+            "status": "PASS"
+          },
+          {
+            "detail": {
+              "error": {
+                "kind": "PermissionError",
+                "message": "fixed open denied",
+                "observation": {
+                  "first_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "last_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "rss_present": false,
+                  "status_bytes": 14,
+                  "status_read": "READ"
+                },
+                "phase": "terminal_pidfd_confirmation",
+                "pid": 101
+              },
+              "fd_closed": true,
+              "observation": null,
+              "opens": 1,
+              "poll_waits_ms": [],
+              "reads": 3
+            },
+            "id": "open_permission",
+            "seconds": 7.854774594306946e-05,
+            "status": "PASS"
+          },
+          {
+            "detail": {
+              "error": {
+                "kind": "PermissionError",
+                "message": "fixed poll denied",
+                "observation": {
+                  "first_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "last_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "rss_present": false,
+                  "status_bytes": 14,
+                  "status_read": "READ"
+                },
+                "phase": "terminal_pidfd_confirmation",
+                "pid": 101
+              },
+              "fd_closed": true,
+              "observation": null,
+              "opens": 1,
+              "poll_waits_ms": [
+                10
+              ],
+              "reads": 4
+            },
+            "id": "poll_permission",
+            "seconds": 0.00011136196553707123,
+            "status": "PASS"
+          },
+          {
+            "detail": {
+              "error": {
+                "kind": "ValueError",
+                "message": "invalid literal for int() with base 10: b'invalid'",
+                "observation": {
+                  "first_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "last_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "rss_present": false,
+                  "status_bytes": 14,
+                  "status_read": "READ"
+                },
+                "phase": "terminal_pidfd_confirmation",
+                "pid": 101
+              },
+              "fd_closed": true,
+              "observation": null,
+              "opens": 1,
+              "poll_waits_ms": [],
+              "reads": 4
+            },
+            "id": "malformed_binding",
+            "seconds": 9.526871144771576e-05,
+            "status": "PASS"
+          },
+          {
+            "detail": {
+              "error": {
+                "kind": "ValueError",
+                "message": "bounded process identity",
+                "observation": {
+                  "first_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "last_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "rss_present": false,
+                  "status_bytes": 14,
+                  "status_read": "READ"
+                },
+                "phase": "terminal_pidfd_confirmation",
+                "pid": 101
+              },
+              "fd_closed": true,
+              "observation": null,
+              "opens": 1,
+              "poll_waits_ms": [],
+              "reads": 4
+            },
+            "id": "oversized_binding",
+            "seconds": 8.243508636951447e-05,
+            "status": "PASS"
+          },
+          {
+            "detail": {
+              "error": {
+                "kind": "ValueError",
+                "message": "invalid RSS unit",
+                "observation": {
+                  "first_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "last_identity": null,
+                  "rss_present": true,
+                  "status_bytes": 13,
+                  "status_read": "READ"
+                },
+                "phase": "status",
+                "pid": 101
+              },
+              "fd_closed": true,
+              "observation": null,
+              "opens": 0,
+              "poll_waits_ms": [],
+              "reads": 2
+            },
+            "id": "malformed_rss",
+            "seconds": 7.08848237991333e-05,
+            "status": "PASS"
+          },
+          {
+            "detail": {
+              "error": {
+                "kind": "TimeoutError",
+                "message": "owned session deadline",
+                "phase": "scan_begin",
+                "pid": null
+              },
+              "fd_closed": true,
+              "observation": null,
+              "opens": 0,
+              "poll_waits_ms": [],
+              "reads": 0
+            },
+            "id": "deadline_before",
+            "seconds": 6.08544796705246e-05,
+            "status": "PASS"
+          },
+          {
+            "detail": {
+              "error": {
+                "kind": "TimeoutError",
+                "message": "owned session deadline",
+                "observation": {
+                  "first_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "last_identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "rss_present": false,
+                  "status_bytes": 14,
+                  "status_read": "READ"
+                },
+                "phase": "terminal_pidfd_confirmation",
+                "pid": 101
+              },
+              "fd_closed": true,
+              "observation": null,
+              "opens": 1,
+              "poll_waits_ms": [
+                10
+              ],
+              "reads": 4
+            },
+            "id": "deadline_after_poll",
+            "seconds": 0.05289005674421787,
+            "status": "PASS"
+          },
+          {
+            "detail": {
+              "error": null,
+              "fd_closed": true,
+              "observation": {
+                "live": [
+                  102
+                ],
+                "rss": 12288,
+                "rss_scope": "OBSERVED_LIVE_ONLY",
+                "terminal_without_rss": [
+                  {
+                    "confirmed_at": 11336445.89057331,
+                    "evidence": "IDENTITY_BOUND_PIDFD_POLLIN",
+                    "identity": {
+                      "sid": 101,
+                      "start_ticks": 55,
+                      "state": "R"
+                    },
+                    "missing_observation": {
+                      "first_identity": {
+                        "sid": 101,
+                        "start_ticks": 55,
+                        "state": "R"
+                      },
+                      "last_identity": {
+                        "sid": 101,
+                        "start_ticks": 55,
+                        "state": "R"
+                      },
+                      "rss_present": false,
+                      "status_bytes": 14,
+                      "status_read": "READ"
+                    },
+                    "pid": 101,
+                    "pidfd_backend": "CONTROL_ONLY",
+                    "poll_events": 1,
+                    "poll_limit_ms": 10,
+                    "rss": null
+                  }
+                ],
+                "zombies": []
+              },
+              "opens": 1,
+              "poll_waits_ms": [
+                10
+              ],
+              "reads": 7
+            },
+            "id": "terminal_with_live_peer",
+            "seconds": 0.00022128410637378693,
+            "status": "PASS"
+          },
+          {
+            "detail": {
+              "cleanup_contract": "IDENTITY_ONLY_V1",
+              "cleanup_error": {
+                "kind": "ValueError",
+                "message": "fixed cleanup failure",
+                "observation_known": false,
+                "phase": "cleanup",
+                "pid": 101
+              },
+              "error": "PermissionError",
+              "execution_error": {
+                "kind": "PermissionError",
+                "message": "fixed later scan denied",
+                "observation_known": false,
+                "phase": "fixed",
+                "pid": 102,
+                "terminal_without_rss": [
+                  {
+                    "evidence": "CONTROL_ONLY",
+                    "identity": {
+                      "sid": 101,
+                      "start_ticks": 55,
+                      "state": "R"
+                    },
+                    "pid": 103,
+                    "rss": null
+                  }
+                ]
+              },
+              "observation_contract": "CONFIRMED_IDENTITY_V3",
+              "remaining_session": {
+                "live": [],
+                "rss": null,
+                "zombies": []
+              },
+              "remaining_session_known": true,
+              "terminal_without_rss": [
+                {
+                  "evidence": "CONTROL_ONLY",
+                  "identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "pid": 101,
+                  "rss": null
+                },
+                {
+                  "evidence": "CONTROL_ONLY",
+                  "identity": {
+                    "sid": 101,
+                    "start_ticks": 55,
+                    "state": "R"
+                  },
+                  "pid": 103,
+                  "rss": null
+                }
+              ]
+            },
+            "id": "partial_scan_and_first_errors",
+            "seconds": 0.00012865476310253143,
+            "status": "PASS"
+          },
+          {
+            "detail": {
+              "original_error": "PermissionError",
+              "overflow_error": "bounded terminal evidence",
+              "retained": 512,
+              "retention_error": {
+                "kind": "ValueError",
+                "message": "bounded terminal evidence",
+                "phase": "terminal_retention",
+                "pid": null
+              }
+            },
+            "id": "bounded_terminal_records",
+            "seconds": 0.0008862577378749847,
+            "status": "PASS"
+          }
+        ],
+        "deadline": 11336745.73975844,
+        "execution_head": "7fbc55c8fcbe85314a4892535516e7d30d24446c",
+        "failure": {
+          "kind": "ValueError",
+          "message": "real compatibility: native_zero"
+        },
+        "freeze_sha256": "51e83fdc346c721931db795956b1aaccbaf4badf379d691a0b84d81e3c8d2b0b",
+        "full_cold_start_seconds": null,
+        "gpu_executed": false,
+        "initial_fds": 4,
+        "measurement_boundary": "FIRST_PYTHON_MONOTONIC",
+        "model_executed": false,
+        "peak_sampled_rss_bytes": 678932480,
+        "schema": "TERMINAL_CONTROL_V1",
+        "sessions": [
+          {
+            "id": "stdlib_zero",
+            "receipt": {
+              "cleanup_contract": "IDENTITY_ONLY_V1",
+              "cleanup_deadline": 11336500.891871678,
+              "cleanup_error": null,
+              "cleanup_seconds": 0.03369249776005745,
+              "cleanup_status": "LEADER_REAPED_NO_LIVE_SESSION",
+              "error": null,
+              "escaped_sessions_checked": false,
+              "execution_error": null,
+              "execution_seconds": 0.14123851992189884,
+              "exit_observed_at": 11336446.03311618,
+              "finished_at": 11336446.066812137,
+              "kill_signals": 1,
+              "log_base64": "c3RkbGliCg==",
+              "log_bytes": 7,
+              "log_complete": true,
+              "observation_contract": "CONFIRMED_IDENTITY_V3",
+              "pidfd_backend": "LIBC_PIDFD",
+              "remaining_session": {
+                "identities": [],
+                "live": [],
+                "observation_scope": "IDENTITY_ONLY_CLEANUP",
+                "rss": null,
+                "rss_known": false,
+                "zombies": [
+                  1966811
+                ]
+              },
+              "remaining_session_known": true,
+              "returncode": 0,
+              "run_deadline": 11336495.891871678,
+              "sampled_session_plus_caller_rss": 21577728,
+              "schema": "OWNED_ENDPOINT_SESSION_V1",
+              "session": 1966811,
+              "started_at": 11336445.89188112,
+              "status": "COMPLETED",
+              "terminal_without_rss": [],
+              "zombie_reaping_complete": false
+            }
+          },
+          {
+            "id": "native_zero",
+            "receipt": {
+              "cleanup_contract": "IDENTITY_ONLY_V1",
+              "cleanup_deadline": 11336501.069463888,
+              "cleanup_error": null,
+              "cleanup_seconds": 0.04805748164653778,
+              "cleanup_status": "LEADER_REAPED_NO_LIVE_SESSION",
+              "error": "ValueError",
+              "escaped_sessions_checked": false,
+              "execution_error": {
+                "kind": "ValueError",
+                "message": "live process RSS unavailable: terminal unconfirmed",
+                "observation": {
+                  "first_identity": {
+                    "sid": 1966899,
+                    "start_ticks": 1133644606,
+                    "state": "R"
+                  },
+                  "last_identity": {
+                    "sid": 1966899,
+                    "start_ticks": 1133644606,
+                    "state": "R"
+                  },
+                  "rss_present": false,
+                  "status_bytes": 1156,
+                  "status_read": "READ"
+                },
+                "observation_known": false,
+                "phase": "terminal_pidfd_confirmation",
+                "pid": 1966899
+              },
+              "execution_seconds": 3.9195645824074745,
+              "exit_observed_at": null,
+              "finished_at": 11336450.037095714,
+              "kill_signals": 1,
+              "log_base64": "Mi4zLjUgMS4xNi4zIDIuOS4xK2N1MTI4Cg==",
+              "log_bytes": 25,
+              "log_complete": true,
+              "observation_contract": "CONFIRMED_IDENTITY_V3",
+              "pidfd_backend": "LIBC_PIDFD",
+              "remaining_session": {
+                "identities": [],
+                "live": [],
+                "observation_scope": "IDENTITY_ONLY_CLEANUP",
+                "rss": null,
+                "rss_known": false,
+                "zombies": [
+                  1966899
+                ]
+              },
+              "remaining_session_known": true,
+              "returncode": 0,
+              "run_deadline": 11336496.069463888,
+              "sampled_session_plus_caller_rss": 678932480,
+              "schema": "OWNED_ENDPOINT_SESSION_V1",
+              "session": 1966899,
+              "started_at": 11336446.06947365,
+              "status": "ERROR",
+              "terminal_without_rss": [],
+              "zombie_reaping_complete": false
+            }
+          }
+        ],
+        "started": 11336445.73975844,
+        "status": "FAIL",
+        "unexecuted_cases": [],
+        "unexecuted_native": [
+          "native_seven"
+        ]
+      },
+      "sha256": "00f3243b914b1c8a53bdd9fdd793f67e9c17f7aabc1baf5bb8eba5bff43a9257"
+    }
+  },
+  "original_directory": "/data1/Kane/MOE/results/terminal_confirmation_20261020_r1",
+  "schema": "TERMINAL_CONTROL_ARCHIVE_V1",
+  "tool_observed_export": {
+    "after_export": 11336450.041751754,
+    "online_acceptance": false,
+    "process_exit_code": 1,
+    "source": "execution tool stderr"
+  }
+}
