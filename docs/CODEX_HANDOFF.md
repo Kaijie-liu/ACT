@@ -1,5 +1,28 @@
 # MoE project handoff — current entry point
 
+Margin-conditioned support static contract completed, 2026-10-20, based on
+`31c3ccde12318a4b66f266270bf0ba7971707c2b`:
+[checked support rule, error decomposition and direct comparisons](margin_conditioned_support_contract_20261020.md).
+User approved continuing this bounded mathematical/design stage after review;
+root is the sole writer. No implementation, control run, model/solver/native
+import, GPU, GenBaB adapter or RSS-policy change.
+The candidate reuses the existing shared P and arbitrary-objective support;
+its potential difference is margin-value lower-envelope reuse and checked scalar
+aggregation, not first preservation of shared inputs or a new support kernel.
+Anchor chord error is at most Delta_t*(dplus-dminus)/4 under a valid range;
+finite-tilt/support gaps are not numerically bounded by lower certificates alone.
+The complete scalar cell rule gives a checkable lower bound without trusting
+a local minimizer. Analytic examples refute high-endpoint-only screening and
+universal dominance over slicing; another example separates four tilted supports
+from a fixed four-call two-slice roster, but not from constant-objective reuse
+or strong sigmoid envelopes. A conditional feasible-path certificate can bound
+the combined tilt/support error for continuous P; it is a design, not generated
+evidence or a new exact-feasibility search.
+Two read-only AI reviews, not numerical controls or human review. G1–G6 OPEN.
+Next: a bounded anchor/tilt selection and scalar-certificate design before any
+implementation/execution decision. Do not make full-shape/RSS admission a
+precondition for this mathematical work or resume the exhausted repair chain.
+
 Finite terminal-observation compatibility batch ended **overall FAIL**, 2026-10-20.
 See [result and stop decision](terminal_confirmation_results_20261020.md),
 [lossless records](terminal_confirmation_records_20261020.json) and
