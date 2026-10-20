@@ -524,13 +524,21 @@ def build_segmented_weighted_top2_f0(
     margin_time_limit: float,
     feasibility_time_limit: float,
     difference_time_limit: float,
+    gate_margin_binding=None,
+    gate_margin_work=None,
 ) -> SegmentedWeightedTop2Encoding:
     """Build one range-only F0 encoding for every retained margin segment.
 
     The sigmoid is never symbolically encoded. Each segment obtains an ordinary
     monotone sigmoid range from its guarded affine margin and a disagreement
     range recomputed under the same retained path constraints.
+    Optional gate/margin rows share the unsliced source binding and caller Work
+    across every segment; no fresh budget or extra support query is introduced.
     """
+    if (gate_margin_binding is None) != (gate_margin_work is None):
+        raise ValueError("segmented gate-margin binding requires the same caller Work")
+    if gate_margin_work is not None:
+        gate_margin_work.tick()
     selected = tuple(sorted(int(value) for value in pair))
     if len(selected) != 2 or len(set(selected)) != 2:
         raise ValueError("segmented weighted fallback requires two experts")
@@ -556,6 +564,8 @@ def build_segmented_weighted_top2_f0(
     )
     branches: list[SegmentedWeightedTop2Branch] = []
     for result in conditioned.segments:
+        if gate_margin_work is not None:
+            gate_margin_work.tick()
         if not result.active or result.tightened_bounds is None:
             continue
         if result.raw_support is None:
@@ -607,6 +617,8 @@ def build_segmented_weighted_top2_f0(
             difference_time_limit=0.0,
             gate_range=gate_range,
             difference_range=difference_range,
+            gate_margin_binding=gate_margin_binding,
+            gate_margin_work=gate_margin_work,
         )
         branches.append(
             SegmentedWeightedTop2Branch(

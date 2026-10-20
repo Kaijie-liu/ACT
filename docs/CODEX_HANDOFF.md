@@ -1,5 +1,19 @@
 # MoE project handoff — current entry point
 
+M3 default-off implementation is now present; controls NOT YET EXECUTED.
+See [implementation, conditional guarantee and finite-control boundary](gate_margin_rows_implementation_20261020.md).
+New `gate_margin_rows` captures/binds original shared sources and inserts two
+checked gate–margin inequalities into actual F0; existing N1 forwards the same
+binding and Work. The stdlib receiver independently checks source composition,
+sign, row compensation and unchanged old F0. It does not prove old F0 lowering,
+network sources, slice coverage or full requests. Source capacity remains
+128 factors/256 total constraints; this is not full-shape admission.
+Separate AI static reviews plus AST parsing completed; no native/control run.
+Next: prepare and freeze the finite synthetic call/fault roster and existing
+supervisor reception, then at most one control attempt under standing limits.
+Do not enable production, start M2, repair/retry M1b or run models/GPU.
+G1–G6 remain OPEN; no performance or new certificate result.
+
 M3 static mechanism audit completed at `4edc5f882`, 2026-10-20:
 [strong baseline, sign/mapping/row contract and bounded next step](gate_margin_relation_static_audit_20261020.md).
 The two-slice analytical separation survives tight sigmoid ranges, but existing

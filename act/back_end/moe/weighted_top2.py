@@ -108,6 +108,7 @@ class WeightedTop2F0Encoding:
     difference_support: HZSupportBoundsResult
     mccormick_A: np.ndarray
     mccormick_b: np.ndarray
+    gate_margin_evidence: object | None = field(default=None, repr=False, compare=False)
 
 
 @dataclass(frozen=True)
@@ -527,8 +528,18 @@ def build_weighted_top2_f0(
     difference_time_limit: float,
     gate_range: WeightedTop2GateRange | None = None,
     difference_range: WeightedTop2DifferenceRange | None = None,
+    gate_margin_binding=None,
+    gate_margin_work=None,
 ) -> WeightedTop2F0Encoding:
-    """Build the range-only sigmoid + McCormick relaxation for one safe row."""
+    """Build F0, optionally adding checked same-factor gate/margin rows.
+
+    Default off: no source capture, row check, query or ledger is added.
+    Opt-in checks only new rows on supplied sources, not old F0/source lowering.
+    """
+    if (gate_margin_binding is None) != (gate_margin_work is None):
+        raise ValueError("gate-margin binding and shared Work must be supplied together")
+    if gate_margin_work is not None:
+        gate_margin_work.tick()
     selected = _canonical_top2_pair(pair)
     if pair_hz.relation_mode not in {"shared_input", "independent_inputs"}:
         raise ValueError("unknown expert relation mode")
@@ -665,6 +676,17 @@ def build_weighted_top2_f0(
         frame_id=base.frame_id,
         exact=False,
     )
+    gate_margin_evidence = None
+    if gate_margin_binding is not None:
+        from act.back_end.moe.gate_margin_rows import apply_rows
+        output, record, receipt = apply_rows(
+            binding=gate_margin_binding, pair_hz=pair_hz, router=conditioned_router,
+            pair=selected, q=q, offset=property_constant, old_f0=output,
+            lambda_slot=lambda_slot, product_slot=product_slot,
+            lambda_center=lambda_center, lambda_radius=lambda_radius,
+            gate=(lambda_lower, lambda_upper), work=gate_margin_work,
+        )
+        gate_margin_evidence = {"record": record, "receipt": receipt}
     return WeightedTop2F0Encoding(
         output_hz=output,
         input_hz=sparse_hz_pad_frame(pair_hz.input_hz, n_cont, base.n_bin),
@@ -677,6 +699,7 @@ def build_weighted_top2_f0(
         difference_support=difference_support,
         mccormick_A=mccormick_A,
         mccormick_b=mccormick_b,
+        gate_margin_evidence=gate_margin_evidence,
     )
 
 
