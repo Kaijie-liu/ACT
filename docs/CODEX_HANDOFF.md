@@ -1,5 +1,19 @@
 # MoE project handoff — current entry point
 
+G4 static semantic audit completed at `36e8936f5`, 2026-10-20:
+[guarded weighted pair and strong-baseline contract](genbab_guarded_pair_semantics_20261020.md).
+The pinned external tool has an unsafe output-conjunction path: append router
+scores, conjoin every selected-vs-outsider comparison with one failed property,
+and aggregate all pair/property disjuncts. Its input-polytope parser refusal does
+not exclude this route. The current ACT worker uses whole-box plain CROWN and
+hardcodes ten classes; the new guarded path is NOT implemented or run.
+M3 rows are within a standard sigmoid tangent/chord family, not a new nonlinear
+envelope theorem; generic finite-budget bound dominance is not implied.
+Next meaningful comparison is the semantically matched strong external path,
+not more ACT-only envelope fixtures. External adaptation/execution and resolution
+of the repeated native observation failure still need separately scoped approval.
+No model/solver/GPU/import/control was run. G1–G6 remain OPEN.
+
 M3 once-only native control ended **overall FAIL**, 2026-10-20.
 See [scientific observations, cost and failure boundary](gate_margin_rows_results_20261020.md),
 [lossless archive](gate_margin_rows_records_20261020.json) and
