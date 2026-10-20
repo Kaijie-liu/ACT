@@ -1,5 +1,25 @@
 # MoE project handoff — current entry point
 
+Finite margin-support prototype and stdlib controls frozen, 2026-10-21,
+from clean `4665002951acd0dd1d684d60cae53bbd9bbba88b`; NOT YET EXECUTED.
+User replied “继续” after the bounded implementation/control next step. Under
+the existing standing authorization, this stage implements the optional exact
+prototype and freezes one <=300s stdlib-only batch, not a native retry:
+[protocol](margin_support_control_20261021.md),
+[immutable roster/source/code binding](margin_support_freeze_20261021.json).
+Thirteen fixed groups compare zero/median supports on the nonconstant example,
+retain the diamond negative result, and check direction, complete coverage,
+source/constraint/ownership binding, deadlines and capacities.
+The producer is not imported by production; support residual/cell arithmetic
+is independently recomputed, while parser/projection/policy/sigmoid rules share
+an explicit exact kernel. Original source, strategy and cells are externally
+bound at reception; one Work/deadline continues across both phases.
+Existing owned-session supervision and RSS policy are unchanged. One attempt,
+no repair/retry, no trained source, numerical solver, GPU or GenBaB.
+Two read-only AI reviews and AST parsing precede execution; no control pretrial.
+Freeze commit/push and clean status before launch; preserve all terminal outcomes.
+This is a given-source mechanism control, not G1–G6 completion.
+
 Finite tilt policy and nonconstant-difference analysis completed, 2026-10-21,
 from clean `4218aec46d35cf4a053758630052729d557410e1`:
 [policy, shared/private example and stronger-baseline limits](margin_conditioned_tilt_policy_20261021.md).
