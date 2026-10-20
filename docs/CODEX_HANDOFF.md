@@ -1,5 +1,27 @@
 # MoE project handoff — current entry point
 
+M3 once-only native control ended **overall FAIL**, 2026-10-20.
+See [scientific observations, cost and failure boundary](gate_margin_rows_results_20261020.md),
+[lossless archive](gate_margin_rows_records_20261020.json) and
+[offline saved-record recheck](gate_margin_rows_saved_audit_20261020.json).
+Execution `9d28bbc8e`, freeze `0deb8518b3344dfd`:
+worker20/20 constructions,28/28 expected refusals completed; actual stored
+P0/P1 old relaxed values -1/16 and new checked lower1/16, N -3/16 to1/16.
+All four fixed old-method slices already have positive minimum1/4096.
+These are conditional synthetic LP observations, not full MoE certificates.
+The on construction/check path was slower in all eight paired controls.
+Outer `live process RSS unavailable` caused ERROR; online reception never ran.
+Returncode0, cleanup and offline exact checks do not recover acceptance.
+One attempt consumed, no retry/M2/model/GPU or observer repair authorized here.
+Retain the representation evidence and stronger baseline; G1–G6 remain OPEN.
+Any further native execution requires a separately scoped resolution of the
+repeated observation failure. Do not use infrastructure work as algorithm progress.
+
+## Superseded M3 preparation entries (historical)
+
+The entries below describe earlier preparation states; the final result above
+supersedes their “not yet executed” wording and proposed next execution.
+
 M3 finite construction control is being frozen, NOT YET EXECUTED:
 [fixed scientific cases, faults and stop rule](gate_margin_rows_control_20261020.md).
 Eight off/on literal specifications plus four fixed old-F0 references give twenty
