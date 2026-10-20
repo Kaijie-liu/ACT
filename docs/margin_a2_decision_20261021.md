@@ -56,18 +56,56 @@ already obtained by that same arm; it is not free on top of a3K product arm.
 A post-hoc best-of-arms frontier is descriptive oracle information, not a
 deployable portfolio at the cost of its cheapest component.
 
-## One essential remaining implementation item
+## Strong LP proposal bridge
 
-Use a reasonable native LP candidate source for **all** arms and independently
-check its proposed duals against original rational coefficients. The repository
-already has SciPy/HiGHS proposal code in `scoped_source/rowwise_native.py`;
-reuse that capability instead of developing a new optimizer or installing a
-backend. Its proposal/failure and marginal interface must be connected to the
-new source/slice/product records, with common deadline and cumulative Work.
-Its current extra check does not by itself provide the new scope binding or
-Work accounting; those obligations remain. Native success/objective is not the
-certificate. Keep the unchanged128-step kernel results separate if reported;
-they cannot stand in for a strong LP optimum reference.
+The default-off `provider="highs"` option now connects all three existing
+producers: global shared-HZ supports, rational closed-slice supports/ranges,
+and N1/M3 product LPs. `margin_lp_candidates.columns()` bounds and freezes each
+original exact LP before calling the shared SciPy/HiGHS proposal core. The
+provider, explicit native query allowance and caller-owned event sink must be
+supplied; no production dispatch or default was changed. The existing128-step
+candidate remains the default and must not stand in for a strong LP reference.
+
+The opt-in `rowwise_native.propose_duals()` returns only raw marginals and
+bounded metadata. It does not call the legacy `_evaluate()` or generic
+`rowwise_bound.check_bound()` paths, whose additional Fraction operations lack
+this Work/bit contract. The legacy `propose()` API retains those checks.
+New-path parsing/conversion uses the same cumulative Work and4096-bit stored
+contract; existing metered producers perform8192-bit-limited residual arithmetic,
+then the unchanged independent source/slice/product receivers check acceptance.
+This reuses the solver capability, not a new optimizer or proof checker.
+
+Original inequality marginals map to y≤0 and equality marginals to free z.
+Slice records split the final two marginals into their ordered slab rows.
+Product records retain the whole vector and finite lambda/w boxes. Original
+LP identities and live HZ snapshots are checked before/after proposal. The raw
+API is a low-level interface: its caller must bound/freeze the LP before native
+allocation, as `columns()` does. This does not prevent arbitrary concurrent
+mutate-and-restore attacks; the existing ordinary-alias contract is unchanged.
+
+HiGHS makes one invocation per objective, not one invocation per batch. The
+event sink receives intent before each numerical call and return/status or
+exception afterward. Intent means not-yet-confirmed entered; it is not proof of
+solver completion. If a later objective fails, earlier status0 events are only
+partial numerical proposals, not checked partial certificates. No truncated
+roster or unsuccessful-solver zero-dual fallback is returned. The existing
+checked zero-dual comparison remains available after successful full proposals
+and its selection is reported explicitly.
+
+Only successful status0 with complete finite marginals reaches exact claim
+construction; other outcomes retain their status and cannot exclude a cell.
+Native status0, objective and unchecked primal values do not certify exact
+optimality. The query allowance limits HiGHS's cooperative solve time, not the
+whole adapter; import, parsing, conversion, callbacks, hashing and reception all
+use the common outer deadline. Native kernel operations are reported separately
+from Python Work visits. No new supervisor, environment or backend installation.
+
+This preparation has AST/diff checks and two read-only static AI reviews, not a
+runtime test. Static review corrected a legacy stub compatibility issue: the old
+given-LP API does not require result status/message fields that its original
+stubs never provided. No old control was replayed. Next implement the bounded
+A2 comparison driver and freeze its full roster/effect/cost/stop rules; this
+adapter's existence does not authorize an unfrozen numerical call.
 
 This is a bounded adapter task in service of a concrete comparison, not a new
 supervision or RSS project. Preserve fault evidence, do not repair/rerun the

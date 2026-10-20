@@ -13,9 +13,11 @@ from scoped_source.check_margin_hz_source import parameter
 from scoped_source import check_margin_slices as checker
 
 
-def propose(bound, property_bytes, *, expected_property, cuts, index, goals, work):
-    from act.back_end.moe.batched_support import _candidate_columns
-
+def propose(bound, property_bytes, *, expected_property, cuts, index, goals, work,
+            provider="subgradient_128", query_seconds=None, observe=None):
+    require(provider in ("subgradient_128", "highs")
+            and (provider == "highs" or (query_seconds is None and observe is None)),
+            "explicit fixed slice provider")
     parsed, plan, identity = checker.prepare(
         bound.payload, property_bytes, expected_source=bound.sha256,
         expected_property=expected_property, cuts=cuts, work=work)
@@ -44,12 +46,18 @@ def propose(bound, property_bytes, *, expected_property, cuts, index, goals, wor
         work.visit("coefficient_visits", n)
         row = [sparse.get(j, F(0)) for j in range(n)]
         exact.append((center, row))
-        objectives.append([float(v) for v in row]); constants.append(float(center))
+        if provider == "subgradient_128":
+            objectives.append([float(v) for v in row]); constants.append(float(center))
     # Only the proposal receives rounded copies; exact RHS/CSR remain authoritative.
-    native = dict(base, b=[float(F(v)) for v in base["b"]], h=[float(F(v)) for v in base["h"]])
-    ys, zs = _candidate_columns(native, objectives, constants, deadline=work.deadline)
+    if provider == "highs":
+        from act.back_end.moe.margin_lp_candidates import columns
+        ys, zs, native_report = columns(base, exact, work=work, query_seconds=query_seconds, observe=observe)
+    else:
+        from act.back_end.moe.batched_support import _candidate_columns
+        native = dict(base, b=[float(F(v)) for v in base["b"]], h=[float(F(v)) for v in base["h"]])
+        ys, zs = _candidate_columns(native, objectives, constants, deadline=work.deadline)
     require(len(ys) == len(zs) == len(goals), "complete slice candidate columns")
-    supports = []
+    supports, choices = [], []
     for spec, (center, row), y, z in zip(goals, exact, ys, zs):
         lp = dict(base, c=list(map(str, row)), offset=str(center))
         lower = _claimed_lower(lp, y, z, work)
@@ -57,6 +65,9 @@ def propose(bound, property_bytes, *, expected_property, cuts, index, goals, wor
         zero_lower = _claimed_lower(lp, zero_y, zero_z, work)
         if zero_lower > lower:
             y, z, lower = zero_y, zero_z, zero_lower
+            choices.append("CHECKED_ZERO_DUAL_STRONGER")
+        else:
+            choices.append("NATIVE_DUAL")
         supports.append(dict(goal=[spec[0], checker.stored(spec[1])],
                              y=[str(parameter(v, work)) for v in y[:-2]],
                              z=[str(parameter(v, work)) for v in z],
@@ -70,5 +81,9 @@ def propose(bound, property_bytes, *, expected_property, cuts, index, goals, wor
     require(snapshot(bound.output_hz, work, profile=MARGIN_PROFILE) == parsed["obj"]["augmented"],
             "live slice source changed during proposal")
     work.tick()
-    return dict(record=record, receipt=receipt, native_candidate_calls=1, objective_slots=len(goals),
+    result = dict(record=record, receipt=receipt, native_candidate_calls=1, objective_slots=len(goals),
                 iterations=128, device="cpu", hard_budget_supervision=False)
+    if provider == "highs":
+        result.update(native_candidate_calls=len(goals), iterations=None,
+                      native_report=native_report, selected_candidates=choices)
+    return result

@@ -124,16 +124,18 @@ def _claimed_lower(lp, y, z, work):
     return checker.parameter(value, work)
 
 
-def propose_supports(bound, property_bytes, *, expected_property, goals, work):
+def propose_supports(bound, property_bytes, *, expected_property, goals, work,
+                     provider="subgradient_128", query_seconds=None, observe=None):
     """Existing floating CPU proposals; returns only independently checked supports.
 
     One caller-owned Work/deadline spans source validation, proposal and exact
     reception. It does not install a hard request supervisor or aggregate margin
     cells. The legacy optimizer itself has no authority to accept a bound.
     """
-    from act.back_end.moe.batched_support import _candidate_columns
-
     work.tick()
+    require(provider in ("subgradient_128", "highs")
+            and (provider == "highs" or (query_seconds is None and observe is None)),
+            "explicit fixed support provider")
     src = checker.inspect_property(bound.payload, property_bytes, expected_source=bound.sha256,
                                    expected_property=expected_property, work=work)
     require(type(goals) is tuple and 1 <= len(goals) <= 8, "caller-owned finite goals")
@@ -151,14 +153,20 @@ def propose_supports(bound, property_bytes, *, expected_property, goals, work):
         work.visit("coefficient_visits", n)
         row = [coeff.get(j, F(0)) for j in range(n)]
         exact.append((center, row))
-        objectives.append([float(v) for v in row]); constants.append(float(center))
+        if provider == "subgradient_128":
+            objectives.append([float(v) for v in row]); constants.append(float(center))
     # No unbounded fallback/search or altered 128-step strategy.
     # The native proposal API consumes numeric RHS values. Keep the exact RHS
     # strings for residual checks; conversion is never evidence for acceptance.
-    native_base = dict(base, b=[float(v) for v in hz["ub"]], h=[float(v) for v in hz["b"]])
-    ys, zs = _candidate_columns(native_base, objectives, constants, deadline=work.deadline)
+    if provider == "highs":
+        from act.back_end.moe.margin_lp_candidates import columns
+        ys, zs, native_report = columns(base, exact, work=work, query_seconds=query_seconds, observe=observe)
+    else:
+        from act.back_end.moe.batched_support import _candidate_columns
+        native_base = dict(base, b=[float(v) for v in hz["ub"]], h=[float(v) for v in hz["b"]])
+        ys, zs = _candidate_columns(native_base, objectives, constants, deadline=work.deadline)
     require(len(ys) == len(zs) == len(goals), "complete candidate columns")
-    candidates = []
+    candidates, choices = [], []
     for goal, (center, row), y, z in zip(goals, exact, ys, zs):
         work.tick()
         lp = dict(base, c=list(map(str, row)), offset=str(center))
@@ -167,6 +175,9 @@ def propose_supports(bound, property_bytes, *, expected_property, goals, work):
         zero_lower = _claimed_lower(lp, zero_y, zero_z, work)
         if zero_lower > lower:
             y, z, lower = zero_y, zero_z, zero_lower
+            choices.append("CHECKED_ZERO_DUAL_STRONGER")
+        else:
+            choices.append("NATIVE_DUAL")
         candidates.append(dict(t=str(checker.parameter(goal[0], work)),
                                nu=str(checker.parameter(goal[1], work)),
                                y=[str(work.exact(F(v))) for v in y],
@@ -177,6 +188,11 @@ def propose_supports(bound, property_bytes, *, expected_property, goals, work):
     require(snapshot(bound.output_hz, work, profile=MARGIN_PROFILE) == src["obj"]["augmented"],
             "live joint source changed during proposal")
     work.tick()
-    return dict(candidates=candidates, receipt=receipt,
+    result = dict(candidates=candidates, receipt=receipt,
                 algorithm="projected_dual_subgradient_multiobjective_v1", iterations=128,
                 device="cpu", hard_budget_supervision=False)
+    if provider == "highs":
+        result.update(algorithm=native_report["provider"], iterations=None,
+                      native_report=native_report, selected_candidates=choices,
+                      native_candidate_calls=len(goals), objective_slots=len(goals))
+    return result

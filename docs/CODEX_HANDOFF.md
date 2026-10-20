@@ -1,5 +1,29 @@
 # MoE project handoff — current entry point
 
+## Strong LP candidate bridge prepared without execution, 2026-10-21
+
+From clean `f111067e7b8d6c6acc0d9eb90a4e44d541526169`, the three existing
+global/slice/product producers now accept default-off `provider="highs"`.
+[A2 design and bridge contract](margin_a2_decision_20261021.md) describes
+the shared raw-marginal core, original LP binding and continued Work/deadline.
+The existing independent exact receivers and default128-step candidate remain.
+HiGHS costs one call per objective; status0 proposals are not checked certificates
+until the full caller roster is independently received. No native call, old
+control rerun, source tuning, trained model, GPU or dependency change occurred.
+
+Static AST/diff checks and two read-only AI reviews found/corrected a legacy
+stub status/message compatibility issue before any execution. Raw proposals
+avoid the legacy unmetered exact-bound traversals; all new exact claims still
+use the metered producers and original-scope receivers. This is strong-baseline
+preparation, not algorithm gain or a runtime compatibility claim.
+
+**Next:** finish only the finite A2 driver/freeze, not another generic interface
+or observation cycle. Keep the product timing defect/consumed roster unchanged;
+the new entry must validate finite nonnegative phase durations under the common
+deadline. Freeze sameP/ranges, priced originating queries and fallback, strong
+LP candidates for all arms, complete cost and material continue/stop thresholds.
+No A2 execution is frozen yet. Real-stage ledger0/0/0; G1–G6 OPEN.
+
 ## Product interface archived with an invalid subduration, 2026-10-21
 
 The once-only run at `c1d46f3577061ef98e7baec98dff4b7cb0e989a8` has original

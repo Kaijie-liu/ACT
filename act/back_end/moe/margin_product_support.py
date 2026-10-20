@@ -67,22 +67,34 @@ def proposed_lower(lp, y, z, work):
     return parameter(value, work)
 
 
-def propose(bound, view, ranges, *, expected_property, cuts, index, mode, work):
-    from act.back_end.moe.batched_support import _candidate_columns
+def propose(bound, view, ranges, *, expected_property, cuts, index, mode, work,
+            provider="subgradient_128", query_seconds=None, observe=None):
+    require(provider in ("subgradient_128", "highs")
+            and (provider == "highs" or (query_seconds is None and observe is None)),
+            "explicit fixed product provider")
     parsed, plan, identity, difference, sign = checker.premises(bound.payload, view, ranges,
         expected_source=bound.sha256, expected_property=expected_property, cuts=cuts, index=index, mode=mode, work=work)
     require(snapshot(bound.output_hz, work, profile=MARGIN_PROFILE) == parsed["obj"]["augmented"],
             "live product source changed before proposal")
     cell = plan["cells"][index]; lp = build(parsed, cell, difference, sign, work)
     _, lp_id = freeze(lp, work, profile=MARGIN_PROFILE)
-    native = dict(lp, **{key: [float(F(v)) for v in lp[key]] for key in ("b", "h", "lower", "upper")})
-    ys, zs = _candidate_columns(native, [[float(F(v)) for v in lp["c"]]],
-                                [float(F(lp["offset"]))], deadline=work.deadline)
+    if provider == "highs":
+        from act.back_end.moe.margin_lp_candidates import columns
+        exact = [(parameter(lp["offset"], work), [parameter(v, work) for v in lp["c"]])]
+        ys, zs, native_report = columns(lp, exact, work=work, query_seconds=query_seconds, observe=observe)
+    else:
+        from act.back_end.moe.batched_support import _candidate_columns
+        native = dict(lp, **{key: [float(F(v)) for v in lp[key]] for key in ("b", "h", "lower", "upper")})
+        ys, zs = _candidate_columns(native, [[float(F(v)) for v in lp["c"]]],
+                                    [float(F(lp["offset"]))], deadline=work.deadline)
     require(len(ys) == len(zs) == 1, "complete product candidate")
     y, z = ys[0], zs[0]; lower = proposed_lower(lp, y, z, work)
     zero_y, zero_z = [0]*len(y), [0]*len(z)
     zero = proposed_lower(lp, zero_y, zero_z, work)
-    if zero > lower: y, z, lower = zero_y, zero_z, zero
+    choice = "NATIVE_DUAL"
+    if zero > lower:
+        y, z, lower = zero_y, zero_z, zero
+        choice = "CHECKED_ZERO_DUAL_STRONGER"
     cert = dict(lp_sha256=lp_id, y=[stored(parameter(v, work)) for v in y],
                 z=[stored(parameter(v, work)) for v in z], lower=stored(lower))
     record = dict(schema=checker.SCHEMA, source=bound.sha256, property=expected_property,
@@ -93,5 +105,8 @@ def propose(bound, view, ranges, *, expected_property, cuts, index, mode, work):
     require(snapshot(bound.output_hz, work, profile=MARGIN_PROFILE) == parsed["obj"]["augmented"],
             "live product source changed during proposal")
     work.tick()
-    return dict(record=record, receipt=receipt, native_candidate_calls=1, objective_slots=1,
+    result = dict(record=record, receipt=receipt, native_candidate_calls=1, objective_slots=1,
                 iterations=128, device="cpu", hard_budget_supervision=False)
+    if provider == "highs":
+        result.update(iterations=None, native_report=native_report, selected_candidates=[choice])
+    return result
