@@ -14,6 +14,7 @@ from act.config.config import HybridZConfig
 from act.pipeline.moe.experiment1 import shared_input_pair_propagation, _forward_validate
 from act.pipeline.moe.request_budget import BudgetExhausted
 from act.pipeline.moe.scoped_f0_proofs import reuse_property
+from act.pipeline.moe.experiment1f0 import _support_status
 
 
 def run_monolithic(*, model, center, clean_prediction, internal, config, reuse=None, budget=None):
@@ -46,6 +47,7 @@ def _run_monolithic(*, model, center, clean_prediction, internal, config, reuse=
     properties = linear_safety_rows(internal["output_spec"], program.output_width)
     all_pairs = [tuple(sorted(int(v) for v in p)) for p in internal["route_sets"].feasible]
     reused = {}
+    gate_facts = reuse.get("gate_weighted") if reuse is not None else None
     if reuse is not None:
         for pair in all_pairs:
             for index in range(len(properties)):
@@ -73,6 +75,13 @@ def _run_monolithic(*, model, center, clean_prediction, internal, config, reuse=
         )
         if budget:
             budget.check("monolithic_pair_complete")
+        if gate_facts is not None:
+            gate_facts.record_gate(pair, gates, _support_status(gates.margin_support), conditioned)
+            for index, (q, constant) in enumerate(properties):
+                if (pair, index) not in reused:
+                    proof = gate_facts.attempt(pair, index, q, constant)
+                    if proof is not None:
+                        reused[pair, index] = proof
         pairs.append((pair, conditioned, propagated, gates))
     rows, witness = [], None
     for index, (q, constant) in enumerate(properties):
@@ -81,7 +90,10 @@ def _run_monolithic(*, model, center, clean_prediction, internal, config, reuse=
         proofs = [{"pair": list(p), "proof": reused[p, index]} for p in all_pairs if (p, index) in reused]
         residual = [p for p in all_pairs if (p, index) not in reused]
         if not residual:
-            rows.append({"property_index": index, "status": "SAFE", "reason": "SAFE_REUSED_TIER1_INTERVAL",
+            reason = ("SAFE_GATE_AND_TIER1_PARTITION" if any(
+                v["proof"]["solver_bound_kind"] == "scoped_gate_weighted_interval_v1"
+                for v in proofs) else "SAFE_REUSED_TIER1_INTERVAL")
+            rows.append({"property_index": index, "status": "SAFE", "reason": reason,
                          "minimum": min(v["proof"]["accepted_minimum"] for v in proofs),
                          "pair_count": 0, "solver_status": None, "solver_bound_kind": "scoped_pair_partition",
                          "full_model_witness_valid": False,
@@ -95,13 +107,19 @@ def _run_monolithic(*, model, center, clean_prediction, internal, config, reuse=
                 propagated.joint, conditioned, pair, q, constant,
                 difference_time_limit=(budget.limit("monolithic_difference", float(solver["difference_support_seconds"]))
                                        if budget else float(solver["difference_support_seconds"])), gate_range=gates))
+        solve_limit = (budget.limit("monolithic_property_solve", obligations=sum(
+            any((p, i) not in reused for p in all_pairs) for i in range(index, len(properties))))
+            if budget else float(solver["property_seconds"]))
+        if gate_facts is not None:
+            gate_facts.stats["f0_solve_attempted"] += 1
         decision = solve_monolithic_weighted_top2_f0(
             encodings, input_shape=tuple(center.shape),
-            time_limit=(budget.limit("monolithic_property_solve", obligations=sum(
-                any((p, i) not in reused for p in all_pairs) for i in range(index, len(properties))))
-                        if budget else float(solver["property_seconds"])),
+            time_limit=solve_limit,
             tolerance=float(solver["safety_tolerance"]),
         )
+        if gate_facts is not None:
+            gate_facts.stats["f0_solve_returned"] += 1
+            gate_facts.stats["f0_status0_returned"] += int(decision.solver_status == 0)
         replay = _forward_validate(
             model, decision.candidate_input, lower=internal["lower"],
             upper=internal["upper"], clean_prediction=clean_prediction,

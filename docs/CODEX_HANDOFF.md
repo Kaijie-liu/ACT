@@ -1,5 +1,28 @@
 # MoE project handoff — current entry point
 
+M1 gate-weighted facts implementation and finite controls APPROVED: 2026-10-20.
+The user explicitly resolved the goal-text conflict in favor of this bounded stage.
+The earlier static-only restriction below applies to the goal reset, not this approval.
+Starting execution work at `8be61c822ab30608d9fd813673b7fd5d72e46a52`, same branch;
+the current uncommitted implementation belongs to this one root writer.
+
+See [M1 scope, theorem, fixed controls and stop rule](gate_weighted_facts_control_20261020.md).
+Implement default-off signed facts after the existing gate query, preserve positive reuse
+and native fallback, add no support queries or propagation reorder. Both staged and
+matched monolithic are wired. Freeze and commit before ONE <=300s synthetic/stdlib batch;
+reuse the existing owned-session supervisor, not another cleanup/measurement research chain.
+Same 8M Work/128MiB artifacts/8GiB AS/2GiB sampled RSS, all checks and numerical gates.
+No real model, native LP/MILP solver, GPU, real-request follow-up, quota increase or retry.
+Failure preserves the entire prefix and stops. Then saved-record audit, archive, commit/push.
+
+The standard-library controls exercise arithmetic, source binding and unchanged function
+ASTs with local backend doubles. They do not exercise heavyweight package imports, real
+propagation/optimization, same-source closure or performance. Gate inputs remain trusted
+numerical-policy sources. Complete request coverage is still required by the auditor.
+All G1-G6 remain OPEN; no claim of recovered gate-input dependence or core HybridZ innovation.
+
+## Earlier goal reset context
+
 Research goal reset and gate-focused priority adopted: 2026-10-20.
 Starting branch feat/moe-route-verification, HEAD e42469f3cefe47afa0adabe63710f034059c8e33,
 clean worktree. Read the [current complete contract](ALGORITHM_RESEARCH_GOAL.md#现行目标-2026年10月20日).

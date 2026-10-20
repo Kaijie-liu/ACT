@@ -85,7 +85,14 @@ def _load_bound_artifact(
     return path
 
 
-def _audit_safe_structure(evidence: Mapping[str, Any], issues: list[str]) -> None:
+def _audit_safe_structure(evidence: Mapping[str, Any], issues: list[str], *, gate_work=None) -> None:
+    from act.pipeline.moe.gate_weighted_facts import audit_evidence, Work
+    if gate_work is None:
+        gate_work = Work(__import__("time").monotonic() + 300)
+    try:
+        audit_evidence(evidence, work=gate_work)
+    except Exception as exc:
+        issues.append(f"invalid gate-weighted evidence: {exc}")
     coverage = evidence.get("route_coverage", {})
     _record_issue(
         issues,
@@ -179,6 +186,9 @@ def _audit_safe_structure(evidence: Mapping[str, Any], issues: list[str]) -> Non
                 "F0 property indices are incomplete",
             )
             for row in rows:
+                if row.get("solver_bound_kind") == "scoped_gate_weighted_interval_v1":
+                    # Checked above, with one cumulative request ledger.
+                    continue
                 if row.get("solver_bound_kind") == "scoped_tier1_interval":
                     try:
                         from act.pipeline.moe.scoped_f0_proofs import audit_reused_property
@@ -218,7 +228,7 @@ def _audit_safe_structure(evidence: Mapping[str, Any], issues: list[str]) -> Non
             partition = row.get("coverage_partition")
             if partition is not None:
                 try:
-                    _audit_monolithic_partition(row, canonical_sets, evidence)
+                    _audit_monolithic_partition(row, canonical_sets, evidence, gate_work=gate_work)
                 except Exception as exc:
                     issues.append(f"invalid monolithic proof partition: {exc}")
                 continue
@@ -242,8 +252,11 @@ def _audit_safe_structure(evidence: Mapping[str, Any], issues: list[str]) -> Non
                       "Tier-1-only SAFE invokes fallback")
 
 
-def _audit_monolithic_partition(row, canonical_sets, evidence):
+def _audit_monolithic_partition(row, canonical_sets, evidence, *, gate_work=None):
     from act.pipeline.moe.scoped_f0_proofs import audit_reused_property
+    if gate_work is None:
+        from act.pipeline.moe.gate_weighted_facts import Work
+        gate_work = Work(__import__("time").monotonic() + 300)
     part = row["coverage_partition"]
     reused = part["reused"]
     proved_pairs = [tuple(v["pair"]) for v in reused]
@@ -260,7 +273,11 @@ def _audit_monolithic_partition(row, canonical_sets, evidence):
         proof = value["proof"]
         if proof["property_index"] != row["property_index"]:
             raise ValueError("wrong reused property")
-        audit_reused_property(proof, value["pair"], evidence)
+        if proof.get("solver_bound_kind") == "scoped_gate_weighted_interval_v1":
+            from act.pipeline.moe.gate_weighted_facts import audit_row
+            audit_row(proof, value["pair"], evidence, gate_work)
+        else:
+            audit_reused_property(proof, value["pair"], evidence)
         if minimum > proof["accepted_minimum"]:
             raise ValueError("combined bound exceeds reused branch bound")
     if row.get("pair_count") != len(solved_pairs):
@@ -424,10 +441,18 @@ def audit_evidence_package(
         for pair in evidence.get("tier2", {}).get("pairs", []):
             rows.extend(pair.get("property_rows", []))
         for row in rows:
-            if row.get("solver_bound_kind") in {"scoped_tier1_interval", "scoped_pair_partition"}:
+            if row.get("solver_bound_kind") in {"scoped_tier1_interval", "scoped_pair_partition",
+                                               "scoped_gate_weighted_interval_v1"}:
                 continue
             _record_issue(issues, row.get("expert_relation") == relation,
                           "weighted query lacks registered expert relation")
+    from act.pipeline.moe.gate_weighted_facts import audit_evidence, Work
+    gate_work = Work(__import__("time").monotonic() + 300)
+    if status != "SAFE":
+        try:
+            audit_evidence(evidence, work=gate_work)
+        except Exception as exc:
+            issues.append(f"invalid gate-weighted evidence: {exc}")
     _audit_schedule(evidence, issues)
     _record_issue(
         issues,
@@ -450,7 +475,7 @@ def audit_evidence_package(
             manifest.get("witness") is None,
             "SAFE unexpectedly contains a witness artifact",
         )
-        _audit_safe_structure(evidence, issues)
+        _audit_safe_structure(evidence, issues, gate_work=gate_work)
     elif status == "UNSAFE":
         _record_issue(
             issues,

@@ -133,6 +133,8 @@ def _require_cpu_float64_model(model: torch.nn.Module) -> None:
 def _validate_config(config: Mapping[str, Any]) -> None:
     from act.pipeline.moe.route_complexity_schedule import validate_schedule
     validate_schedule(config)
+    from act.pipeline.moe.gate_weighted_facts import validate_config as validate_gate_facts
+    validate_gate_facts(config)
     if type(config.get("scoped_proof_reuse", False)) is not bool:
         raise ValueError("scoped_proof_reuse must be boolean")
     if config.get("comparison_method", "staged") not in {
@@ -243,6 +245,7 @@ def _run_f0_impl(
     witness: torch.Tensor | None = None
     total_tightening = total_solve = 0.0
     reused_count = 0
+    gate_facts = reuse.get("gate_weighted") if reuse is not None else None
     unproved_by_pair = None
     if budget:
         from act.pipeline.moe.scoped_f0_proofs import reuse_property
@@ -302,6 +305,9 @@ def _run_f0_impl(
             )
             margin_seconds = time.monotonic() - margin_started
             total_solve += margin_seconds
+            if gate_facts is not None:
+                gate_facts.record_gate(pair, gate_range, _support_status(gate_range.margin_support),
+                                       conditioned_router)
             for property_index, (q, constant) in enumerate(properties):
                 if budget:
                     budget.check("f0_property_start")
@@ -310,6 +316,11 @@ def _run_f0_impl(
                     reused_count += 1
                     continue
                 property_started = time.monotonic()
+                if gate_facts is not None:
+                    gate_row = gate_facts.attempt(pair, property_index, q, constant)
+                    if gate_row is not None:
+                        property_rows.append(gate_row)
+                        continue
                 encoding = build_weighted_top2_f0(
                     propagated.joint,
                     conditioned_router,
@@ -320,15 +331,21 @@ def _run_f0_impl(
                                            if budget else float(solver["difference_support_seconds"])),
                     gate_range=gate_range,
                 )
+                solve_limit = (budget.limit("f0_property_solve", obligations=
+                    sum(unproved_by_pair[pair_position+1:])
+                    + sum(i not in reused for i in range(property_index, len(properties))))
+                    if budget else float(solver["property_seconds"]))
+                if gate_facts is not None:
+                    gate_facts.stats["f0_solve_attempted"] += 1
                 decision = solve_weighted_top2_f0(
                     encoding,
                     input_shape=tuple(center.shape),
-                    time_limit=(budget.limit("f0_property_solve", obligations=
-                        sum(unproved_by_pair[pair_position+1:])
-                        + sum(i not in reused for i in range(property_index, len(properties))))
-                        if budget else float(solver["property_seconds"])),
+                    time_limit=solve_limit,
                     tolerance=float(solver["safety_tolerance"]),
                 )
+                if gate_facts is not None:
+                    gate_facts.stats["f0_solve_returned"] += 1
+                    gate_facts.stats["f0_status0_returned"] += int(decision.solver_status == 0)
                 property_seconds = time.monotonic() - property_started
                 total_solve += property_seconds
                 replay = _forward_validate(
@@ -578,6 +595,12 @@ def verify_staged_linf(
         scope = make_scope(request_id, request_identity,
                            internal["router"].output_hz.frame_id, config["numerical_safety"])
         reuse = {"scope": scope, "facts": facts_from_branches(tier1["branches"], scope)}
+    gate_facts = None
+    if (config["f0"].get("gate_weighted_facts", False) and reuse is not None
+            and status == "UNKNOWN" and reason == "SCHEDULE_WEIGHTED_READY"):
+        from act.pipeline.moe.gate_weighted_facts import GateFacts
+        gate_facts = GateFacts(tier1["branches"], reuse["scope"], budget)
+        reuse["gate_weighted"] = gate_facts
     reuse_preparation_seconds = time.monotonic() - reuse_started
     if status == "SAFE":
         reason = "SAFE_GATE_ELIMINATION"
@@ -664,6 +687,7 @@ def verify_staged_linf(
                         "preparation_seconds": reuse_preparation_seconds,
                         "available_fact_count": len(reuse["facts"]) if reuse else 0,
                         "source_kind": "TIER1_GUARDED_OUTPUT_INTERVAL"},
+        **({"gate_weighted_facts": gate_facts.record()} if gate_facts is not None else {}),
         "transitions": transitions,
         "route_coverage": {
             "candidate_experts": tier1.get("candidate_experts"),

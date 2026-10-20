@@ -74,11 +74,15 @@ def common_facts(e):
 def counters(e):
     if e["tier2"].get("partial_rows_censored"):
         return None
+    from act.pipeline.moe.gate_weighted_facts import KIND, audit_evidence
+    gate_reused = audit_evidence(e)
     reused = queries = 0
     for pair in e["tier2"].get("pairs", []):
         for prop in pair["property_rows"]:
             if prop.get("solver_bound_kind") == "scoped_tier1_interval":
                 audit_reused_property(prop, pair["pair"], e)
+                reused += 1
+            elif prop.get("solver_bound_kind") == KIND:
                 reused += 1
             else:
                 queries += 1
@@ -86,10 +90,14 @@ def counters(e):
         for item in prop.get("coverage_partition", {}).get("reused", []):
             if item["proof"]["property_index"] != prop["property_index"]:
                 raise ValueError("reused monolithic property mismatch")
-            audit_reused_property(item["proof"], item["pair"], e)
+            if item["proof"].get("solver_bound_kind") != KIND:
+                audit_reused_property(item["proof"], item["pair"], e)
             reused += 1
         queries += prop.get("pair_count", 0) > 0
-    return {"reused_pair_properties": reused, "recorded_weighted_query_rows": queries}
+    result = {"reused_pair_properties": reused, "recorded_weighted_query_rows": queries}
+    if e.get("gate_weighted_facts", {}).get("enabled"):
+        result["gate_weighted_pair_properties"] = gate_reused
+    return result
 
 
 def audit(root):
