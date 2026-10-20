@@ -1,5 +1,36 @@
 # MoE project handoff — current entry point
 
+## Product interface archived with an invalid subduration, 2026-10-21
+
+The once-only run at `c1d46f3577061ef98e7baec98dff4b7cb0e989a8` has original
+terminal PASS, outer exit0 and30.671494s entry-to-terminal export.
+[Results/audit finding](margin_product_results_20261021.md) and
+[lossless records](margin_product_records_20261021.json) preserve four native
+calls, four objectives, all23 faults, expiry and continued portable reception.
+Independent saved arithmetic reconstructs9 product LPs/18 range certificates;
+native N1/M3 complete bounds remain−1.393998642/−1.388011751, neither SAFE nor
+evidence of LP/model unsafety. Fixed zero-dual ranges are not strong A2 ranges.
+
+**Clean full-stage acceptance is withheld:** `mc_sign` overwrote the worker's
+`start` timestamp with a CSR pointer, invalidating only its reported subduration.
+Preserve the raw field. Outer/session/reception clocks, deadline and Work are
+independently coherent. The frozen audit's PASS does not cover this defect.
+No repair/rerun occurred; no new execution follows from this batch.
+Work24,768,815→29,046,959→33,325,103; run+archive9,535,412B.
+
+Continue only non-repeated static A2 preparation: same continuousP and common
+range rules, priced strong slice/N1/M3/native-LP reference, endpoint fallback,
+explicit effects and stopping gates. Address the timing finding in a separately
+frozen future entry, not another replay of these controls or an RSS repair chain.
+Functional interface evidence is retained but is not method novelty, full-request
+dispatch, speedup or source closure. Real-stage ledger0/0/0; G1–G6 OPEN.
+
+[A2 decision design](margin_a2_decision_20261021.md) narrows the scientific
+question to global-support amortization versus strong priced slicing, not a
+stronger-domain claim. It identifies the existing HiGHS proposal adapter as the
+one remaining strong-candidate bridge; no new optimizer/supervisor is needed.
+It is static preparation, not a frozen roster or permission to retry this batch.
+
 ## Rational N1 and M3 product interface prepared, 2026-10-21
 
 Default-off direct lambda/w LPs now connect the original shared HZ, rational
