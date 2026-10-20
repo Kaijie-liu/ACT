@@ -1,5 +1,33 @@
 # MoE project handoff — current entry point
 
+## A1 source bridge implemented but not yet exercised, 2026-10-21
+
+From clean `e541f9602ca4ce8a4d63e2e67fa21c3e1f081d3b`, the default-off
+[native margin-source bridge](margin_native_source_20261021.md) now retains
+all expert outputs plus both router rows in the same factor frame and unchanged P.
+An exact sparse property view preserves all ten classes and the constant;
+source composition, router-row maps, private factors and support residuals are
+checked against owned original coefficients. Existing CPU batch candidate search
+is reused without changing its128 updates. Its result is a given-HZ support
+receipt, NOT a scalar aggregate, full request, route-changing proof or speedup.
+
+The new explicit parser profile also retains full3,072-row input sources; old
+default128-output limits are unchanged. DevelopmentWork accumulates visits
+without8M rejection and keeps the old bit/deadline checks. **The hard supervisor
+still needs the minimal versioned development-policy wiring.** No native import,
+candidate search, trained source, GPU, new control batch or dependency install
+was executed. AST/diff checks and two read-only AI reviews are preparation only.
+Known pre-execution type/capacity/metering findings were fixed, not hidden behind
+a control PASS. No archived frozen source or failed attempt was rewritten.
+
+Next: finish only the essential existing-supervisor policy integration, freeze
+one ≤300s A1 source/candidate/reception control roster, then execute it under
+standing authority. No user “继续” or new permission is needed for that scope.
+Do not repeat the13 completed toy groups, resume M1b, or start real development
+before the new integration gate. Sparse scalar aggregation/full-request dispatch
+still remain after these source interfaces. New real-development ledger remains
+**0 stages/0 calls/0 execution seconds**. G1–G6 OPEN.
+
 ## Current decision — margin-support research goal reset, 2026-10-21
 
 The user deleted the previous goal and explicitly requested adoption and registration

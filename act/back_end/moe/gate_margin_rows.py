@@ -15,7 +15,7 @@ from act.back_end.solver.solver_hz import SparseHZono
 from scoped_source.hz_request_store import POLICY, decode, digest, require, sha
 from scoped_source.check_gate_margin_rows import (
     BINDING, FACTORS, GATE_SEMANTICS, MATRICES, OUTPUTS, ROWS, SCHEMA, VECTORS,
-    check, context, freeze, inspect, validate_binding,
+    capacity, check, context, freeze, inspect, validate_binding,
 )
 
 
@@ -26,14 +26,15 @@ class GateMarginBinding:
     sha256: str
 
 
-def snapshot(hz, work, *, f0=False):
+def snapshot(hz, work, *, f0=False, profile=None):
     """Capture canonical native CSR entries without floating coalescing."""
     work.tick()
+    factors, rows, outputs = capacity(profile)
     require(hz.frame_id is not None and type(hz.frame_id) is int and type(hz.exact) is bool,
             "explicit native frame/exact flag")
-    require(hz.n_cont + hz.n_bin <= FACTORS + (2 if f0 else 0)
-            and hz.n_out <= OUTPUTS
-            and hz.n_eq + hz.n_ineq <= ROWS + (6 if f0 else 0), "finite native source capacity")
+    require(hz.n_cont + hz.n_bin <= factors + (2 if f0 else 0)
+            and hz.n_out <= outputs
+            and hz.n_eq + hz.n_ineq <= rows + (6 if f0 else 0), "finite native source capacity")
     result = {"frame_id": hz.frame_id, "exact": bool(hz.exact)}
     for key in VECTORS:
         arr = getattr(hz, key)

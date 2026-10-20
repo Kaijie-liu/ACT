@@ -19,10 +19,23 @@ VECTORS = ("c", "b", "ub")
 MATRICES = ("Gc", "Gb", "Ac", "Ab", "Auc", "Aub")
 # The existing finite pair-map boundary, not eight-expert capacity admission.
 FACTORS, ROWS, OUTPUTS = 128, 256, 128
+MARGIN_PROFILE = "MARGIN_NATIVE_SOURCE_V1"
 
 
-def freeze(value, work):
+def capacity(profile=None):
+    """Explicit parser profile; legacy callers retain their frozen dimensions.
+
+    The larger opt-in source view borrows existing store shape limits, NOT
+    resource authorization, Work/bit increases, or full-shape admission.
+    """
+    require(profile in (None, MARGIN_PROFILE), "source capacity profile")
+    return ((FACTORS, ROWS, OUTPUTS) if profile is None else
+            (POLICY["factors"], POLICY["rows"], POLICY["view_rows"]))
+
+
+def freeze(value, work, *, profile=None):
     """Bound the JSON tree and a conservative encoded-size sum before copying."""
+    factors, rows, _ = capacity(profile)
     stack, size = [(value, 0)], 0
     while stack:
         item, depth = stack.pop()
@@ -33,7 +46,7 @@ def freeze(value, work):
             size += 2 + 4 * len(item) + sum(12 * len(k) + 2 for k in item)
             stack.extend((v, depth + 1) for v in item.values())
         elif type(item) is list:
-            require(len(item) <= (FACTORS + 2) * (ROWS + 6), "record list capacity")
+            require(len(item) <= (factors + 2) * (rows + 6), "record list capacity")
             size += 2 + len(item)
             stack.extend((v, depth + 1) for v in item)
         elif type(item) is str:
@@ -85,19 +98,20 @@ def _binary64(value, work):
     require(math.isfinite(stored) and work.exact(F(stored)) == value, "non-binary64 stored source")
 
 
-def source(raw, work, *, f0=False):
+def source(raw, work, *, f0=False, profile=None):
     """No floating normalization or duplicate-column summation."""
     work.tick()
+    factors, rows, outputs = capacity(profile)
     require(type(raw) is dict and set(raw) == set(VECTORS + MATRICES + ("frame_id", "exact")),
             "complete source fields")
     require(type(raw["frame_id"]) is int and type(raw["exact"]) is bool, "source frame")
     nc, nb = raw["Gc"]["shape"][1], raw["Gb"]["shape"][1]
     require(type(nc) is int and type(nb) is int and min(nc, nb) >= 0
-            and nc + nb <= FACTORS + (2 if f0 else 0), "finite factor capacity")
-    h = {k: _vector(raw[k], OUTPUTS if k == "c" else ROWS + (6 if f0 else 0), work)
+            and nc + nb <= factors + (2 if f0 else 0), "finite factor capacity")
+    h = {k: _vector(raw[k], outputs if k == "c" else rows + (6 if f0 else 0), work)
          for k in VECTORS}
-    require(0 < len(h["c"]) <= OUTPUTS, "source outputs")
-    require(len(h["b"]) + len(h["ub"]) <= ROWS + (6 if f0 else 0), "total constraint capacity")
+    require(0 < len(h["c"]) <= outputs, "source outputs")
+    require(len(h["b"]) + len(h["ub"]) <= rows + (6 if f0 else 0), "total constraint capacity")
     for values in h.values():
         for value in values:
             _binary64(value, work)
@@ -195,7 +209,7 @@ def context(value):
             "canonical pair direction")
 
 
-def validate_binding(binding, *, expected_hash, work):
+def validate_binding(binding, *, expected_hash, work, profile=None):
     """Independently reconstruct given entry/expert composition and router map."""
     require(type(binding) is dict and set(binding) == {
         "schema", "gate_semantics", "context", "sources", "metadata", "router_eq_rows", "router_le_rows"},
@@ -205,9 +219,9 @@ def validate_binding(binding, *, expected_hash, work):
     require(binding["gate_semantics"] == GATE_SEMANTICS, "declared gate semantics")
     require(type(binding["sources"]) is dict and set(binding["sources"]) ==
             {"entry", "a", "b", "joint", "input", "router"}, "source roster")
-    parsed = {k: source(v, work) for k, v in binding["sources"].items()}
+    parsed = {k: source(v, work, profile=profile) for k, v in binding["sources"].items()}
     work.tick()
-    require(freeze(binding, work)[1] == sha(expected_hash), "external source binding")
+    require(freeze(binding, work, profile=profile)[1] == sha(expected_hash), "external source binding")
     entry, a, b, joint, inp, router = (parsed[k] for k in ("entry", "a", "b", "joint", "input", "router"))
     require(len(a["c"]) == len(b["c"]), "expert output widths")
     for expert in (a, b):
