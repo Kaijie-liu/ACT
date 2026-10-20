@@ -1,5 +1,36 @@
 # MoE project handoff — current entry point
 
+## A1 native source integration gate passed, 2026-10-21
+
+The once-only frozen A1 batch at `7a26ffe3d1b63355053ec0f62d1763a2d6d66974`
+passed; outer exit0, observed entry-to-terminal-export8.558092s:
+[result and limits](margin_native_results_20261021.md),
+[lossless records](margin_native_records_20261021.json).
+Seven source groups and six observation cases passed; two four-column native
+CPU candidate calls produced eight independently checked support receipts.
+Full3,072 shared continuous factors, expert-private continuous/binary maps,
+all ten classes and router rows survived capture and exact projection.
+Controller and relocated `python -I -S` receptions agree exactly under the
+same deadline and continued Work. All eight lower bounds are negative;
+no scalar aggregate or full model certificate is claimed or required here.
+
+The development policy worked on an actual incomplete native RSS sample without
+using absence as exit evidence. Normal/normal/exit7/deadline session outcomes
+were preserved, all four owned leaders reaped, no live cleanup members, FDs4→4.
+Old policies/failures remain unchanged. Offline source and execution audits,
+including a second direct-coordinate Fraction residual, passed; not human review.
+Retained run1,551,417 bytes plus records189,856 bytes are within128MiB and the
+reserved archival copy. Work12,311,753 includes8,000,001 artificial control
+visits. Costs are reported as nested scopes, not speedup or full cold start.
+
+**Next research work:** complete sparse margin-plan/scalar-aggregation integration
+and then the directly comparable operator experiment. Native source/candidate
+interface is no longer a blocker. Do not repeat this batch, the13 old toy groups,
+M1b or the terminal repair chain. No trained input, GPU, new dependencies or
+real stage was used. Real-development ledger0 stages/0 calls/0 execution seconds;
+G1–G6 OPEN. Continue within standing authority, with a distinct frozen roster
+for genuinely new integration/algorithm evidence, not another run of this gate.
+
 ## A1 native integration control preparation, 2026-10-21
 
 The minimal opt-in `DEV_MARGIN_20261021_V1` path is now wired into the existing
