@@ -1,5 +1,23 @@
 # MoE project handoff — current entry point
 
+## A1 native integration control preparation, 2026-10-21
+
+The minimal opt-in `DEV_MARGIN_20261021_V1` path is now wired into the existing
+owned-session supervisor: missing RSS stays unknown/live, wait4 usage is separate
+telemetry, and identity/cleanup/exit/deadline gates remain. Legacy defaults are
+unchanged. A static API mismatch in native RHS types was corrected while retaining
+exact original RHS values for reception. No new native run has occurred yet.
+
+The [A1 control protocol](margin_native_control_20261021.md) freezes one source
+with3,072 shared continuous factors, unequal expert-private widths, all ten
+classes and both router rows. Two four-column CPU proposal calls, exact full
+projection/receipt checks and a relocated stdlib replay share one300s budget.
+Fixed mutations and process faults are included, not a repeat of the13 toy groups.
+Freeze/commit/push precede one execution. An unexpected failure stops the batch;
+no repair/retry or trained source follows automatically. This is the next
+authorized gate, not G1 completion. Sparse scalar aggregation and full-request
+dispatch remain subsequent work. Real-development ledger:0 stages/0 calls.
+
 ## A1 source bridge implemented but not yet exercised, 2026-10-21
 
 From clean `e541f9602ca4ce8a4d63e2e67fa21c3e1f081d3b`, the default-off

@@ -153,7 +153,10 @@ def propose_supports(bound, property_bytes, *, expected_property, goals, work):
         exact.append((center, row))
         objectives.append([float(v) for v in row]); constants.append(float(center))
     # No unbounded fallback/search or altered 128-step strategy.
-    ys, zs = _candidate_columns(base, objectives, constants, deadline=work.deadline)
+    # The native proposal API consumes numeric RHS values. Keep the exact RHS
+    # strings for residual checks; conversion is never evidence for acceptance.
+    native_base = dict(base, b=[float(v) for v in hz["ub"]], h=[float(v) for v in hz["b"]])
+    ys, zs = _candidate_columns(native_base, objectives, constants, deadline=work.deadline)
     require(len(ys) == len(zs) == len(goals), "complete candidate columns")
     candidates = []
     for goal, (center, row), y, z in zip(goals, exact, ys, zs):

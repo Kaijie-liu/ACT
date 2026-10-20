@@ -20,6 +20,7 @@ LOG_CAP=16384
 MEMBERS=512
 ERROR_TEXT=256
 TERMINAL_POLL_MS=10
+DEVELOPMENT_POLICY='DEV_MARGIN_20261021_V1'
 
 
 def gate(deadline):
@@ -106,9 +107,13 @@ def _terminal_without_rss(pid,identity,deadline,reader,context,*,pidfd=None,poll
         if fd is not None: os.close(fd)
 
 
-def _observe(sid,deadline,reader,*,terminal_confirmation=False,_pidfd=None,_poll=None):
+def _observe(sid,deadline,reader,*,terminal_confirmation=False,_pidfd=None,_poll=None,
+             development_policy=None):
     if type(terminal_confirmation) is not bool: raise ValueError('terminal confirmation flag')
+    if development_policy not in (None,DEVELOPMENT_POLICY): raise ValueError('development policy')
+    if development_policy and terminal_confirmation: raise ValueError('distinct observation policies')
     live=[]; zombies=[]; terminals=[]; rss=0; pid=None; phase='scan_begin'
+    unknown=[]
     context=None
     try:
         gate(deadline)
@@ -147,15 +152,22 @@ def _observe(sid,deadline,reader,*,terminal_confirmation=False,_pidfd=None,_poll
                 zombies.append(pid)  # terminal/non-running; not a claim of reaping
             else:
                 if value is None:
-                    if not terminal_confirmation: raise ValueError('live process RSS unavailable')
-                    phase='terminal_pidfd_confirmation'
-                    terminals.append(_terminal_without_rss(pid,last,deadline,reader,context,
-                                                          pidfd=_pidfd,poll=_poll))
+                    if development_policy:
+                        live.append(pid); unknown.append(pid)
+                    else:
+                        if not terminal_confirmation: raise ValueError('live process RSS unavailable')
+                        phase='terminal_pidfd_confirmation'
+                        terminals.append(_terminal_without_rss(pid,last,deadline,reader,context,
+                                                              pidfd=_pidfd,poll=_poll))
                 else:
                     live.append(pid); rss+=value
             if len(live)+len(zombies)+len(terminals)>MEMBERS: raise ValueError('bounded session roster')
         phase='scan_end'; pid=None; context=None; gate(deadline)
         result=dict(live=sorted(live),zombies=sorted(zombies),rss=rss)
+        if development_policy:
+            result.update(rss=None if unknown else rss,known_rss_subtotal=rss,
+                          rss_unknown_pids=sorted(unknown),rss_scope='TELEMETRY_ONLY',
+                          development_policy=development_policy)
         if terminal_confirmation:
             result.update(terminal_without_rss=terminals,rss_scope='OBSERVED_LIVE_ONLY')
         return result
@@ -165,8 +177,9 @@ def _observe(sid,deadline,reader,*,terminal_confirmation=False,_pidfd=None,_poll
         raise failure from exc
 
 
-def observe(sid,deadline,*,terminal_confirmation=False):
-    return _observe(sid,deadline,_ProcReader(),terminal_confirmation=terminal_confirmation)
+def observe(sid,deadline,*,terminal_confirmation=False,development_policy=None):
+    return _observe(sid,deadline,_ProcReader(),terminal_confirmation=terminal_confirmation,
+                    development_policy=development_policy)
 
 
 def _observe_cleanup(sid,deadline,reader):
@@ -273,18 +286,41 @@ def _kill_owned(pid,sid,deadline, *, pidfd,expected_start,reader):
         if fd is not None: os.close(fd)
 
 
-def execute(argv, *, run_deadline, cleanup_deadline, env, rss_limit,terminal_confirmation=False):
+def execute(argv, *, run_deadline, cleanup_deadline, env, rss_limit,terminal_confirmation=False,
+            development_policy=None):
     """One spawn; caller has already authorized source, code, limits and times."""
     if type(terminal_confirmation) is not bool: raise ValueError('terminal confirmation flag')
+    if development_policy not in (None,DEVELOPMENT_POLICY): raise ValueError('development policy')
+    if development_policy and (terminal_confirmation or rss_limit is not None):
+        raise ValueError('development RSS is telemetry, not a threshold')
     observer=observe if not terminal_confirmation else (
         lambda sid,deadline:observe(sid,deadline,terminal_confirmation=True))
+    if development_policy:
+        observer=lambda sid,deadline:observe(sid,deadline,development_policy=development_policy)
     return _execute(argv,run_deadline=run_deadline,cleanup_deadline=cleanup_deadline,
                     env=env,rss_limit=rss_limit,_observer=observer,_cleanup_observer=observe_cleanup,
-                    _terminal_confirmation=terminal_confirmation)
+                    _terminal_confirmation=terminal_confirmation,_development_policy=development_policy)
+
+
+def _reap_usage(process,deadline):
+    """Reap only this owned direct child, after the identity-only cleanup scan.
+
+    Linux wait4 ru_maxrss is a kernel per-child usage statistic, not simultaneous
+    session RSS. No second Popen.wait or reaping of unrelated children occurs.
+    """
+    while time.monotonic()<deadline:
+        pid,status,usage=os.wait4(process.pid,os.WNOHANG)
+        if pid:
+            if pid!=process.pid: raise ValueError('owned wait4 identity')
+            process.returncode=os.waitstatus_to_exitcode(status)
+            return dict(ru_maxrss_kib=usage.ru_maxrss,ru_maxrss_bytes=usage.ru_maxrss*1024,
+                        scope='LINUX_WAIT4_DIRECT_CHILD_USAGE_NOT_SESSION_PEAK')
+        time.sleep(min(.005,max(0.,deadline-time.monotonic())))
+    return None
 
 
 def _execute(argv, *, run_deadline, cleanup_deadline, env, rss_limit, _observer,
-             _cleanup_observer=observe_cleanup,_terminal_confirmation=False):
+             _cleanup_observer=observe_cleanup,_terminal_confirmation=False,_development_policy=None):
     """Private deterministic fault seam. Public execute always binds observe."""
     if run_deadline>cleanup_deadline: raise ValueError('shared session cleanup budget')
     started=time.monotonic()
@@ -293,6 +329,7 @@ def _execute(argv, *, run_deadline, cleanup_deadline, env, rss_limit, _observer,
     gate(run_deadline)
     p=None; selector=selectors.DefaultSelector(); chunks=[]; size=0
     peak=0; status='ERROR'; exit_at=None; rc=None; cleanup='NO_PROCESS'; eof=False
+    usage=None; samples=0; incomplete_samples=0; known_subtotal_peak=0
     evidence=_SessionEvidence(_terminal_confirmation)
     before_cleanup=started; signals=0; leader_fd=None; phase='spawn'
     try:
@@ -305,8 +342,19 @@ def _execute(argv, *, run_deadline, cleanup_deadline, env, rss_limit, _observer,
             phase='execution_observe'
             gate(run_deadline)
             current=evidence.scan(p.pid,run_deadline,_observer)
-            peak=max(peak,current['rss']+parent_rss())
-            if peak>rss_limit: status='RESOURCE_LIMIT'; break
+            if _development_policy:
+                samples+=1
+                try: caller=parent_rss()
+                except (OSError,ValueError,StopIteration): caller=None
+                known_subtotal_peak=max(known_subtotal_peak,
+                                       current['known_rss_subtotal']+(caller or 0))
+                if current['rss'] is None or caller is None:
+                    incomplete_samples+=1
+                else:
+                    peak=max(peak,current['rss']+caller)
+            else:
+                peak=max(peak,current['rss']+parent_rss())
+                if peak>rss_limit: status='RESOURCE_LIMIT'; break
             phase='execution_output'
             for key,_ in selector.select(min(.01,max(0.,run_deadline-time.monotonic()))):
                 raw=os.read(key.fileobj.fileno(),min(4096,LOG_CAP-size+1))
@@ -346,7 +394,12 @@ def _execute(argv, *, run_deadline, cleanup_deadline, env, rss_limit, _observer,
                     final=evidence.scan(p.pid,cleanup_deadline,_cleanup_observer)
                     if not final['live']:
                         phase='cleanup_reap'
-                        if bounded_reap(p,cleanup_deadline):
+                        if _development_policy:
+                            usage=_reap_usage(p,cleanup_deadline)
+                            reaped=usage is not None
+                        else:
+                            reaped=bounded_reap(p,cleanup_deadline)
+                        if reaped:
                             rc=p.returncode; cleanup='LEADER_REAPED_NO_LIVE_SESSION'
                         break
                     for member in final['identities']:
@@ -372,7 +425,7 @@ def _execute(argv, *, run_deadline, cleanup_deadline, env, rss_limit, _observer,
     end=time.monotonic()
     if status=='COMPLETED' and end>=cleanup_deadline: status='TIMEOUT'
     import base64
-    return dict(schema='OWNED_ENDPOINT_SESSION_V1',status=status,**evidence.fields(),
+    result=dict(schema='OWNED_ENDPOINT_SESSION_V1',status=status,**evidence.fields(),
         session=None if p is None else p.pid,returncode=rc,started_at=started,finished_at=end,
         execution_seconds=before_cleanup-started,cleanup_seconds=end-before_cleanup,
         cleanup_status=cleanup,exit_observed_at=exit_at,
@@ -380,3 +433,12 @@ def _execute(argv, *, run_deadline, cleanup_deadline, env, rss_limit, _observer,
         sampled_session_plus_caller_rss=peak,log_bytes=size,log_complete=size<=LOG_CAP,
         log_base64=base64.b64encode(b''.join(chunks)).decode(),
         escaped_sessions_checked=False,zombie_reaping_complete=False,pidfd_backend=pidfd.backend)
+    if _development_policy:
+        result.update(development_policy=_development_policy,
+                      observation_contract='IDENTITY_AND_RSS_TELEMETRY_DEV_V1',
+                      sampled_session_plus_caller_rss=None,
+                      complete_rss_sample_peak=peak if samples>incomplete_samples else None,
+                      known_rss_subtotal_peak=known_subtotal_peak if samples else None,
+                      rss_samples=samples,rss_incomplete_samples=incomplete_samples,
+                      rss_acceptance_gate=False,wait4_usage=usage)
+    return result
