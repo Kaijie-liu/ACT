@@ -1,5 +1,13 @@
 # MoE project handoff — current entry point
 
+## B2 retained suffix running 2026-10-21
+
+Real increment1 untouched request launched/0 finished; retained16full=8POSITIVE/7UNKNOWN/1ERROR,10locals unchanged.
+Controller290944 executes immutablef8eb02e6a from`b2_observed_20261021_r3`;[records](b2_observed_records_20261021.json) bind its start.
+Starts atb2_026 seed1/4257;26 previous attempts are retained,4393s debited from original6h,all directories/logs count toward128MiB.
+The fourth disclosed backend patch changes only absent-lA heuristic scoring; oldERROR and old snapshot remain. No failed request rerun.
+Do not edit live code or infer strict proof from numerical positives. Finish the frozen strong-path table before selecting B3;G1–G6 OPEN.
+
 ## B2 stopped prefix and sparse heuristic repair 2026-10-21
 
 Real ledger16full=8POSITIVE/7UNKNOWN/1ERROR,10locals unchanged; this repair adds0 model or solver calls.

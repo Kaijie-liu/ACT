@@ -84,8 +84,9 @@ No checkpoint or solver call was used. Two outdated patch-scope test assertions
 were corrected; an unavailable pytest invocation was replaced by existing
 unittest without installing dependencies.
 
-The next execution uses a new directory and versioned code copy, starts only at
-`b2_026`, and retains all 26 earlier attempts. The existing API control applies
+The suffix is running as PID290944 from immutable `f8eb02e6a`, in new directory
+`b2_observed_20261021_r3`. Its start receipt confirms `b2_026` is the first
+launch and all 26 earlier attempts are retained. The existing API control applies
 to unchanged graph, worker and supervision files; the new heuristic has its own
 ordinary tests. Carry **4,393 seconds** against the same six-hour stage: 4,373
 is a conservative upper bound observed after PID916650 was confirmed absent,
