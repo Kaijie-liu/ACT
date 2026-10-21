@@ -122,7 +122,7 @@ def run(root):
             run_deadline=end-3, cleanup_deadline=end-1, env=env, rss_limit=None,
             development_policy=old.POLICY)
         outcome = load(folder/'outcome.json', limit=old.CAP) if (folder/'outcome.json').exists() else None
-        accepted = (receipt['status'] == 'COMPLETED' and receipt['exit_code'] == 0
+        accepted = (receipt['status'] == 'COMPLETED' and receipt['returncode'] == 0
                     and receipt['execution_error'] is None and receipt['cleanup_error'] is None
                     and receipt['cleanup_status'] == 'LEADER_REAPED_NO_LIVE_SESSION'
                     and outcome is not None and outcome['terminal_clock'] < end-5)
