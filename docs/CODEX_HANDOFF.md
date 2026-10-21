@@ -1,5 +1,58 @@
 # MoE project handoff — current entry point
 
+## Current decision: attribution first, independent strong baseline, 2026-10-21 revision 2
+
+The user deleted the blocked goal and supplied new guidance requesting a reset.
+Start: clean `feat/moe-route-verification@f1a92cabf1c98c9d31c73b390344c1a452f6cbec`;
+the goal service was empty. The [current full contract](ALGORITHM_RESEARCH_GOAL.md)
+and [new registration summary](ALGORITHM_RESEARCH_GOAL_SUMMARY_20261021b.txt)
+replace the prior A1–A5 priority/authority, not any frozen result.
+
+**B2 no longer depends on A2 or another mechanism succeeding.** One isolated
+CPU alpha-beta-CROWN/GenBaB deployment/adaptation/control/execution stage is
+authorized after its own finite freeze; leave act-py312 unchanged. B1 first
+attributes unresolved obligations on preregistered new inputs of the three
+existing MLPs; B2 uses the same objects/obligations and separates whole-box pair,
+guarded pair and complete-route results. B3 selects a concrete mechanism from
+those findings; B4 is complete-request off/on development; B5 confirmation
+still requires approval. No experiment or installation was started by this reset.
+
+B1–B4 share at most four real stages, each at most60 call slots/6h, total240/24h;
+local real probes, diagnostic variants and failures also count. Current usage
+remains0/0/0, with prior attempts preserved. Existing development policy remains
+300s/request,8GiB AS/process,RSS telemetry,account-only cumulative Work, unchanged
+bits/checks and128MiB new artifacts per stage. Longer internal queries may fit
+inside a separately numbered frozen300s diagnostic; a single longer call needs
+explicit duration/attempt approval. No chunked restart or offline-as-online repair.
+
+**A2 STOP remains final for that fixed-tilt mechanism.** Its negative synthetic
+property does not invalidate the registered lower-bound-improvement gate.
+New calibration eligibility and stop rules must be prospective; zero gain may
+not be relabeled "no discrimination" after observing the candidate. B1 causes
+can overlap or remain unseparated; a timeout, absent attack or negative lower
+bound alone is not causal proof. Historical binary counts do not settle the
+dominant bottleneck. No new training/GPU/confirmation is authorized here.
+
+**Next:** design the common B1/B2 source/input/property roster and bounded query
+ledger, then the necessary default-off GenBaB adapter controls/environment plan
+and distinct freezes. Reuse completed semantics/A1 infrastructure; do not rerun
+M1b, A2, its sources or sealed inputs. G1–G6 OPEN; evidence grades and historical
+source gaps remain. Earlier "ask before B2"/"A5 gated by A2" entries below are
+superseded only for this newly authorized independent B2 agenda.
+
+Reset validation: the goal service now holds the new summary as an active goal;
+this is not completion of G1–G6. Contract/history/link consistency checks and a
+separate read-only text review passed. The existing review/layout regression
+suite ran13 tests:12 passed and1 errored in the historical619-source binding
+check. `conditioned_difference_support.py` differs from that old frozen digest
+already at starting HEAD; both the source and binding file are unchanged by
+this reset. The old expected digest is
+`346c90a30491e379fde992edb365a31f190659d4f907541edc32a7d8724eba7d`,
+whereas starting HEAD hashes to
+`3364ed61c227f3b27694d971d3677233b12df8220a6b93bc1f55a40e1fb42457`.
+No historical binding was rewritten to make this regression pass. This
+documentation reset used no new scientific execution or real-stage allowance.
+
 ## A2 saved-only diagnosis closes its attribution gap, 2026-10-21
 
 [Exact diagnosis](margin_a2_saved_diagnosis_20261021.md) and
