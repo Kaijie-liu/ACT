@@ -60,8 +60,86 @@ development allowance; only one stage remains for any subsequent real off/on wor
 LP-first and PGD-first are separately authorized default-off computation alignment,
 synthetic controls only for now, and are not claimed as G1 innovation.
 
-At the fixed 27-request snapshot, all 27 full requests are numerical POSITIVE.
-The remaining fixed queue continues; this is not the stage's final decision.
+The immutable queue is complete: **60/60 numerical POSITIVE**, with no UNKNOWN,
+TIMEOUT, ERROR, unexecuted request or partial-positive upgrade. All 60 cover
+28 pairs × nine properties, **15,120 obligations**. The earlier 27-request
+snapshot remains in the records for provenance; it is superseded by the final
+stage, not used as a second experiment.
+
+| Historical stratum | Requests | Distinct inputs | GenBaB numerical POSITIVE | Historical ACT-only positive | GenBaB full-call cost | Historical ACT cost |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| At least two recorded feasible pairs | 51 | 41 | 51 | 0 | 1545.656349s | 3573.607186s |
+| Fixed single-pair controls | 9 | 7 | 9 | 0 | 209.260816s | 489.581916s |
+| All (input groups overlap) | 60 | 43 | 60 | 0 | 1754.917165s | 4063.189102s |
+
+Seed0/1/2 contribute 23/20/17 requests, all positive; the multi-pair portions
+are 19/16/16. Final reception costs include terminal serialization: mean
+29.248619s, median 25.769624s, range 20.873064–92.603890s. These are independently
+launched processes, not a claim of machine-cache cold starts. Historical ACT
+costs come from the old execution/version; **do not turn these two totals into
+a controlled speedup or a new fair-population win rate**.
+
+Stage time through the complete record is **1760.680449s** (29.344674 minutes).
+Artifacts including all logs and the final receipt are **92,794,708 bytes**;
+the receipt's earlier 92,794,479-byte measurement excludes its own 229 bytes.
+Both are below the original six-hour/128MiB caps. The compact receipt write and
+interpreter-exit tail are disclosed, not represented as separately timed work.
+The controller has exited. No model, configuration, threshold or time limit
+changed during this queue.
+
+Two independent read-only reviews and the root's final-record recomputation
+agree on selection, all bound-source/model/input/property identities, complete
+pair/property coverage, guard/tie direction, receipt/reception/deadline/cleanup,
+and stage costs. All 60 historical artifact-size snapshots reconstruct exactly.
+The compact [records](advantage_region_records_20261021.json) bind the final
+files and the canonical 60-package hash list. This is **not** independent
+reverification of numerical bounds, upstream network conversion, or original
+input inclusion.
+
+Execution attribution, not isolated causality:
+
+| Pair membership in historical ACT roster | Initial CROWN | Alpha without BaB | Nonlinear BaB | Total |
+| --- | ---: | ---: | ---: | ---: |
+| Inside | 118 | 5 | 8 | 131 |
+| Outside | 1464 | 85 | 0 | 1549 |
+| All | 1582 | 90 | 8 | 1680 |
+
+At request level, 35 finish with initial bounds only, 19 use alpha but no BaB,
+and six use nonlinear BaB (eight pair calls). Thus **54/60 complete requests do
+not require nonlinear branching**. The incomplete-bound phase includes alpha;
+it must not all be renamed plain CROWN. All eight branched pairs belong to the
+historical roster. This is observed backend behavior, not proof that route
+guards are unnecessary or that all positive gains come from a particular phase.
+
+## Frozen decision and research consequence
+
+There is no multi-pair GenBaB UNKNOWN, so the fixed local diagnostic catalog is
+empty: **zero additional CROWN solves**, no missing diagnostic and no replay
+conflict. The registered pattern count is **0**, below the continuation threshold
+of three. The final disposition is `STOP_B3_MECHANISM_SELECTION_REPORT`.
+
+**Stop selecting or developing a guard-conditioned mechanism on this evidence.**
+Do not change the threshold, rerun failures, add samples, or choose a substitute
+mechanism merely to continue. This result does not prove that guards are useless,
+that all MoE architectures lack an advantage region, or that the external tool
+is a source-complete strict certifier. It shows that the proposed distinguishing
+pattern is absent in all registered historical-success requests, at the declared
+numerical guarantee level and fixed external configuration.
+
+Together with the existing stages:
+
+| Evidence | Completed observation | Research implication, not a stronger claim |
+| --- | --- | --- |
+| B1 failure-selected ACT requests | 41: 12 UNKNOWN, 28 TIMEOUT, 1 ERROR; 271 raw-positive status1 obligation results unaccepted; eight of nine captured continuous LPs positive | Evidence acquisition and execution deserve alignment; raw duals and selected LPs do not repair online results or establish a universal cause. |
+| B2 strong external path on that failure set | 17/41 complete numerical positives, 22 UNKNOWN, two ERROR; preserved prefixes and failures | Strong-tool competitiveness is a real challenge, not just a semantic compatibility issue. |
+| This historical-success diagnosis | 51/51 multi-pair plus 9/9 controls numerically positive externally | No observed ACT-only region in the registered success-selected cohort; the B3 continuation gate fails. |
+
+The default-off LP-first and PGD-first implementations below are computation
+alignment, **not G1 innovation**, and still have no real off/on result. One of
+the four real development stages remains; this stop does not authorize spending
+it on a replacement mechanism or training a different model. Any change of
+research/model direction should be reviewed by the PI. G1–G6 remain OPEN;
+historical input/source gaps and all old failures are unchanged.
 
 ## Separate computation-alignment controls, registered before execution
 

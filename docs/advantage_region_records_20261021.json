@@ -10,7 +10,8 @@
     "root": "/data1/Kane/MOE/results/advantage_region_20261021_r1",
     "controller": 2125324,
     "start_sha256": "0c1df6fddbc4ee286a86d13ffe28abb8fd1162e4a54df06395f9e3159d53aba2",
-    "scope": "live ledgers supersede fixed 27-request snapshot; running immutable copy"
+    "scope": "completed immutable queue; final result supersedes retained fixed 27-request snapshot",
+    "controller_exited": true
   },
   "controls": {"advantage_region": 7, "b2_regressions": 12, "native_smoke_repeated": false},
   "independent_review": "read-only selection, cost, scope and decision audit; fixes preserve missingness, conflict classification and compact final record",
@@ -26,6 +27,66 @@
     "independent_review": "read-only LP/PGD review; local solver-limit classification and final reception/null-config edges corrected",
     "cuda_note": "CPU tensors only with CUDA_VISIBLE_DEVICES empty; torch autograd emitted a cudaGetDeviceCount initialization warning; no GPU computation or evidence"
   },
-  "status": "RUNNING_PREFIX_27",
+  "final_stage_result": {
+    "status": "CATALOG_FINISHED",
+    "complete": "/data1/Kane/MOE/results/advantage_region_20261021_r1/complete.json",
+    "complete_sha256": "3f9df86eddb181acfcbf0c9984db486cc8f4facf5e46228a1a0a23469ba1691d",
+    "stage_receipt_sha256": "b0dd7a9586409306ca27e2b46d58e4acc43c20cd8b9cdbbfbbdf34bf39af96e3",
+    "local_catalog_sha256": "20c969852388b02d49fd7dd54907ff5bda71ae81dbb0c674d9933fd363bb97a9",
+    "ledger060_sha256": "b53fcf0e6bdbcccb27e797ce537f8d333ae76c28b41e7d331af896d3cad3f122",
+    "controller_log_sha256": "db7291654fec852ed4d0cda47e6495a5c572a425a890e875a8ce3ced3bd63573",
+    "full_attempts": 60,
+    "local_attempts": 0,
+    "statuses": {"POSITIVE": 60, "UNSAFE_REPLAYED": 0, "UNKNOWN": 0, "TIMEOUT": 0, "ERROR": 0, "UNEXECUTED": 0},
+    "distinct_inputs": 43,
+    "complete_obligations": 15120,
+    "missing_obligations": 0,
+    "cost_basis": "complete.rows seconds equals final reception.seconds_through_terminal, including terminal serialization",
+    "call_seconds": 1754.9171650689095,
+    "mean_seconds": 29.24861941781516,
+    "median_seconds": 25.76962386444211,
+    "minimum_seconds": 20.8730641156435,
+    "maximum_seconds": 92.60388971678913,
+    "seconds_through_complete": 1760.6804494187236,
+    "measurement_tail": "compact stage receipt write and interpreter exit, not separately timed",
+    "artifact_bytes_through_complete": 92794479,
+    "artifact_bytes_with_receipt": 92794708,
+    "historical_act_call_seconds": 4063.189102157019,
+    "historical_timing_scope": "different frozen verifier version and execution batch, not a matched speedup",
+    "strata": {
+      "multi_pair": {"requests": 51, "distinct_inputs": 41, "positive": 51, "historical_act_only_positive": 0, "call_seconds": 1545.6563491579145, "mean_seconds": 30.30698723839048, "median_seconds": 26.874367479234934, "historical_act_seconds": 3573.6071858080104, "seed_counts": {"seed0": 19, "seed1": 16, "seed2": 16}},
+      "single_pair_control": {"requests": 9, "distinct_inputs": 7, "positive": 9, "historical_act_only_positive": 0, "call_seconds": 209.260815910995, "mean_seconds": 23.251201767888332, "median_seconds": 23.19721350632608, "historical_act_seconds": 489.5819163490087, "seed_counts": {"seed0": 4, "seed1": 4, "seed2": 1}}
+    },
+    "by_model": {
+      "seed0": {"requests": 23, "positive": 23, "call_seconds": 706.1264161206782},
+      "seed1": {"requests": 20, "positive": 20, "call_seconds": 586.7216535508633},
+      "seed2": {"requests": 17, "positive": 17, "call_seconds": 462.0690953973681}
+    },
+    "phase_attribution": {
+      "interpretation": "observed execution phases, not isolated causal contributions or formal proofs",
+      "requests": {"initial_crown_only": 35, "alpha_without_bab": 19, "nonlinear_bab": 6},
+      "all_pairs": {"initial_crown": 1582, "alpha_without_bab": 90, "nonlinear_bab": 8},
+      "inside_historical_roster": {"initial_crown": 118, "alpha_without_bab": 5, "nonlinear_bab": 8},
+      "outside_historical_roster": {"initial_crown": 1464, "alpha_without_bab": 85, "nonlinear_bab": 0},
+      "bab_requests": [
+        {"model": "seed2", "dataset_index": 4146, "pairs": [[4,7]]},
+        {"model": "seed0", "dataset_index": 4172, "pairs": [[4,6],[4,7]]},
+        {"model": "seed0", "dataset_index": 4188, "pairs": [[4,7]]},
+        {"model": "seed1", "dataset_index": 4223, "pairs": [[2,5]]},
+        {"model": "seed1", "dataset_index": 4256, "pairs": [[0,3],[2,3]]},
+        {"model": "seed1", "dataset_index": 4389, "pairs": [[2,3]]}
+      ]
+    },
+    "decision": {"pattern_requests": 0, "missing": [], "local_queries": [], "replayed_violation_conflicts": [], "next": "STOP_B3_MECHANISM_SELECTION_REPORT", "reason": "OBSERVED_PATTERN_AT_MOST_TWO"},
+    "independent_audit": {
+      "status": "PASS",
+      "kind": "two read-only reviews plus root final-record recomputation, not independent bound/source reproof",
+      "checked": ["selection", "source/model/input/property bindings", "28x9 unique coverage", "guard/tie direction", "receipts/reception", "deadlines/cleanup", "compact references", "60 exact artifact-byte snapshot reconstructions", "final cost and decision"],
+      "hash_record_encoding": "ascending query_id; each record has query_id,outcome_sha256,ledger_sha256,launch_sha256,spec_sha256,reception_sha256,terminal_sha256; sort_keys compact JSON",
+      "fixed_27_hash_records_sha256": "ba993a8246d7e24406151341c00d6ef319fa8984391e5a81e552648b3a37dab3",
+      "all_60_hash_records_sha256": "68bf295a0bf5f0fba47627d70de203be2d96a345a66e6609fcc2d8e434ead4e4"
+    }
+  },
+  "status": "COMPLETED_STOP_B3",
   "formal_SAFE": false
 }

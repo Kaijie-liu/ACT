@@ -1,5 +1,16 @@
 # MoE project handoff — current entry point
 
+## Historical-success diagnosis complete; B3 stops 2026-10-21
+
+Real increment33 full calls since committed27 prefix; final60/60 numerical POSITIVE:51multi+9single,15,120 obligations,0missing/0locals.
+[Results](advantage_region_results_20261021.md)/[records](advantage_region_records_20261021.json) bind immutable d965ee76e, full read-only audits and original freeze; controller exited.
+Full-call cost1754.917s; stage1760.680s;92,794,708B including receipt, original300s/6h/128MiB unchanged; historical ACT cost is not a matched speedup reference.
+35requests initial-only,19alpha-without-BaB,6BaB; all8branched pairs inside historical ACT roster. This is numerical execution attribution, not proof rechecking.
+Pattern0 triggers STOP_B3_MECHANISM_SELECTION_REPORT; no guard-conditional development, substitute mechanism, extra samples or training authorized by this result.
+B1/B2 already show acquisition/execution gaps and17external positives on41ACT failures; no ACT-only success region appears in this registered cohort.
+Default-off LP-first/PGD-first have only16synthetic/stub controls,0real off/on; computational alignment is not G1 innovation. One real stage remains, not automatic replacement authority.
+Next report/review research direction with PI; all G1–G6 remain OPEN, source gaps/failures/old controls preserved. Do not resume superseded “select B3 next” prose below.
+
 ## Historical-success queue and alignment controls 2026-10-21
 
 Real increment27 full requests,27 numerical POSITIVE at fixed snapshot; live frozen queue continues, noACT rerun.
