@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## B2 proof acquisition cross analysis 2026-10-21
+
+Real increment0 diagnostic calls; fixed first20 full B2 results are10POSITIVE/9UNKNOWN/1ERROR, with live suffix continuing.
+[Results](b2_observed_results_20261021.md)/[records](b2_observed_records_20261021.json) bind ten positives to171 B1 roster obligations:33 reused/43 accepted/84 raw-positive/4 other/7 missing.
+Five positives finish in initial bounds, five use BaB; this is not a unique representation or branching attribution.
+Raw duals remain unchecked, B1 terminals unchanged; B2 covers252 obligations per positive request, not the B1 roster denominator.
+Independent read-only recomputation agrees. No solver/model query, new mechanism, or acceptance change was added.
+Controller290944 still runs immutablef8eb02e6a; live ledgers supersede the fixed prefix. Finish B2 before selecting B3; G1–G6 OPEN.
+
 ## B2 retained suffix running 2026-10-21
 
 Real increment1 untouched request launched/0 finished; retained16full=8POSITIVE/7UNKNOWN/1ERROR,10locals unchanged.

@@ -15,6 +15,48 @@ have not executed. The failed request and all earlier results are retained.
 [Records](b2_observed_records_20261021.json) retain that
 failure and will preserve every attempted and unexecuted entry and its cost.
 
+## Fixed first twenty complete requests
+
+The fixed prefix `b2_010` through `b2_029` contains ten numerical POSITIVE,
+nine UNKNOWN and one retained ERROR. The unchanged queue continues; this is a
+descriptive cross-analysis of that prefix, not its final result or a population
+comparison. The records bind the B1 inventories and observations to the B2
+outcomes. Independent read-only recomputation agrees, with no new solver calls.
+
+The ten complete positives cross several distinct ACT obstacles:
+
+| Model / input | B1 terminal | Reused | Accepted status0 positive | Unaccepted status1 raw positive | Other returned unresolved | Missing | B2 completion |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
+| Seed1 / 4113 | UNKNOWN | 13 | 4 | 0 | 1 | 0 | Includes BaB |
+| Seed2 / 4113 | TIMEOUT | 3 | 8 | 15 | 0 | 1 | All initial bounds |
+| Seed0 / 4129 | TIMEOUT | 0 | 1 | 14 | 2 | 1 | Includes BaB |
+| Seed1 / 4142 | TIMEOUT | 0 | 0 | 8 | 0 | 1 | All initial bounds |
+| Seed0 / 4150 | TIMEOUT | 0 | 1 | 7 | 0 | 1 | All initial bounds |
+| Seed2 / 4179 | TIMEOUT | 5 | 4 | 8 | 0 | 1 | All initial bounds |
+| Seed2 / 4223 | UNKNOWN | 10 | 11 | 6 | 0 | 0 | Includes BaB |
+| Seed1 / 4232 | TIMEOUT | 1 | 0 | 7 | 0 | 1 | Includes BaB |
+| Seed0 / 4275 | ERROR | 1 | 5 | 12 | 0 | 0 | Includes BaB |
+| Seed2 / 4275 | TIMEOUT | 0 | 9 | 7 | 1 | 1 | All initial bounds |
+| Total | | 33 | 43 | 84 | 4 | 7 | Five initial / five with BaB |
+
+These 171 obligations belong to the saved B1 route rosters. B2 instead covers
+all 252 pair/property obligations in each positive request; those denominators
+are not interchangeable. The seven missing B1 obligations were attempted but
+had no saved return. The four other unresolved returns comprise the status0
+nonpositive bound at Seed1/4113, two negative raw status1 duals, and one status1
+return without a raw dual. None establishes an exact negative optimum.
+
+Seven of these ten requests have positive raw duals for all returned remaining
+unresolved obligations, but five of the seven still lack an output return and
+another has the rejected ERROR terminal. The raw dual multipliers were not
+independently checked. Thus external closure supports investigating proof
+acquisition and incomplete coverage as well as bound strength; it does not
+justify removing ACT's acceptance gate. Five external positives require no
+actual BaB, so the external gains cannot all be attributed to nonlinear
+branching. Differences in representation and bound generation remain mixed.
+No B1 terminal or source guarantee is upgraded, and B3 selection remains pending
+the complete strong-path table.
+
 ## Stopped prefix and compatibility repair
 
 The sixteen complete-request attempts cost 2,722.531 seconds. The eight
