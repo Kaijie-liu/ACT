@@ -1,5 +1,30 @@
 # MoE project handoff — current entry point
 
+## B1 native capture integration passed, 2026-10-21
+
+[Results](b1_native_capture_results_20261021.md) and
+[lossless records](b1_native_capture_records_20261021.json) archive the once-only
+batch at `b2c7cd8866b8cc6e917b7e1702ab76ed81fbff4c`:8 native slots,29/29 controls,
+10 original/relocated structural receipts, exit0 and saved-only audit PASS.
+Elapsed3.602320s through terminal export; continued Work4555→5697→6839;
+run254,029 bytes plus archive206,579 bytes. No trained model/data/GPU.
+
+The default-off pair/monolithic hooks preserve the actual stored problem,
+raw candidate and objective/selector maps. All non-elapsed off/on decision
+fields match; capture cutoff errors propagate and missing/bad bindings reject.
+Relocated `python -S` reception uses no numerical package. **Structural
+reception is not feasible-point, lower-bound, network-lowering or complete-
+request proof.** The native-return interface is now tested; do not repeat it
+or treat the positive scalar fixture as a new real certificate/speedup.
+
+**Next B1 gap:** connect the actual guarded entry/router/joint expert source
+and complete route/property denominator to the optional capture, preserving
+the first-unresolved fixed selection rule and same request budget. Then finish
+the prospective input/query manifest. No real execution is frozen yet; real
+ledger stays0/0/0. Do not call the stopped fixed-tilt strategy to reconstruct a
+different source. B2 remains stopped at its consumed failed deployment audit;
+no automatic repair/reimport. G1–G6 remain OPEN.
+
 ## B1 default-off native capture ready to freeze, 2026-10-21
 
 The [finite protocol](b1_native_capture_protocol_20261021.md) specifies one
