@@ -70,7 +70,7 @@
     "request_seconds": 300,
     "stage_seconds": 21600
   },
-  "real_calls": 3,
+  "real_calls": 6,
   "root": "/data1/Kane/MOE/results/b2_observed_20261021_r2",
   "schema": "B2_OBSERVED_DIAGNOSTIC_RECORDS_V1",
   "status": "RUNNING",
@@ -82,7 +82,7 @@
   "controller_pid": 916650,
   "start_receipt_sha256": "ae7b861748c0207a0f489e4f600e750c6f3fb96eac201de88f29223be2ce33f3",
   "completed_local_calls": 10,
-  "completed_full_calls": 2,
+  "completed_full_calls": 5,
   "local_diagnosis": {
     "count": 10,
     "properties": 61,
@@ -527,10 +527,10 @@
     "interpretation": "Complete frozen local cohort, not full MoE requests or a fair population comparison. No per-property bound inference within UNKNOWN groups."
   },
   "full_request_prefix": {
-    "count": 2,
-    "positive": 2,
-    "closed_obligations": 504,
-    "seconds": 209.46343402191997,
+    "count": 5,
+    "positive": 3,
+    "closed_obligations": 1125,
+    "seconds": 930.4384893234819,
     "rows": [
       {
         "id": "b2_010",
@@ -617,8 +617,180 @@
           "reception.json": "7ad398d1cdff26f9311a6227d01ef448e92b8b9a092e2916aa479fa7948e1ae2"
         },
         "ledger_sha256": "52a579e4d1ad9e7487c3a32d83a857eda6c39386d85d343edab265098c1ef856"
+      },
+      {
+        "id": "b2_012",
+        "model": "seed0",
+        "dataset_index": 4129,
+        "status": "POSITIVE",
+        "accepted": true,
+        "seconds": 132.9915975537151,
+        "aggregate": {
+          "counts": {
+            "ERROR": 0,
+            "SAT": 0,
+            "TIMEOUT": 0,
+            "UNKNOWN": 0,
+            "UNSAT": 252
+          },
+          "evidence_grade": "GENBAB_NUMERICAL_FILTER",
+          "expected": 252,
+          "formal_SAFE": false,
+          "received": 252,
+          "request_sha256": "af6b321a0467f6f7ffd18cb447e5faafb610ac1ed76bde3747b58d66dc0d12f1",
+          "scope": "ALL_TIE_LEGAL_GUARDED_OBLIGATIONS",
+          "stages": {
+            "incomplete_only": 234,
+            "nonlinear_bab": 18,
+            "not_started": 0
+          },
+          "status": "POSITIVE",
+          "missing_count": 0
+        },
+        "pair_count": 28,
+        "pair_stages": {
+          "incomplete_only": 26,
+          "nonlinear_bab": 2
+        },
+        "files": {
+          "launch.json": "e45f304bed975605e2a139942f6350129066f93d535eea57daa0391dc2d64811",
+          "outcome.json": "7a03e8b9ac9eac129c2e964facd9e3fcb56b17eb13d65376d6a63402aacaddb3",
+          "reception.json": "146b83b747530f9cf07c13465470838df6e74320e103e008a6aa35fea400fcbd",
+          "spec.json": "b7425c9424a6dcd781dba07f5d6af25ebbfbcae3cea38d592814d78a54e34771",
+          "terminal.json": "4fc137f109aa88e194c914b1e4fef8b3b0f0cade29ad151b1d2ea91ed9b65252"
+        },
+        "ledger_sha256": "7223ddb1aa182436b8b0314dd337aa39932a9326749a47be95972e8259214432"
+      },
+      {
+        "id": "b2_013",
+        "model": "seed0",
+        "dataset_index": 4140,
+        "status": "UNKNOWN",
+        "accepted": true,
+        "seconds": 293.2561855185777,
+        "aggregate": {
+          "counts": {
+            "ERROR": 0,
+            "SAT": 0,
+            "TIMEOUT": 0,
+            "UNKNOWN": 9,
+            "UNSAT": 180
+          },
+          "evidence_grade": "GENBAB_NUMERICAL_FILTER",
+          "expected": 252,
+          "formal_SAFE": false,
+          "received": 189,
+          "request_sha256": "639611c598af635a9c5a5521653a19c95b2321350693e3d66e710c4ccfa52dc2",
+          "scope": "ALL_TIE_LEGAL_GUARDED_OBLIGATIONS",
+          "stages": {
+            "incomplete_only": 171,
+            "nonlinear_bab": 18,
+            "not_started": 0
+          },
+          "status": "UNKNOWN",
+          "missing_count": 63
+        },
+        "pair_count": 21,
+        "pair_stages": {
+          "incomplete_only": 19,
+          "nonlinear_bab": 2
+        },
+        "files": {
+          "launch.json": "c28152a308216ba1b168f425485da0f259f3411d95bfe1fd1ffe9c772582cee7",
+          "outcome.json": "3fa50ab38a6073158533c82713dac6720730879a0e2e3f433f34babf101e082f",
+          "reception.json": "00eee861ad0dd1547f8ae6f769435afea08cace56a66b8184d63d10313e4be75",
+          "spec.json": "29fd7628abe461360439b993ac67d04b20b75008dca9232e0eb660ad29e450bc",
+          "terminal.json": "c57cc4f6edfbebc821e64514cbc40e6020ede0fa6a0f60136eae8a902bea3a94"
+        },
+        "ledger_sha256": "ebd5be0d174a8e57e49f96a59ec26cbb502e08c4a0b0919d0d784934762778ab"
+      },
+      {
+        "id": "b2_014",
+        "model": "seed2",
+        "dataset_index": 4141,
+        "status": "UNKNOWN",
+        "accepted": true,
+        "seconds": 294.72727222926915,
+        "aggregate": {
+          "counts": {
+            "ERROR": 0,
+            "SAT": 0,
+            "TIMEOUT": 0,
+            "UNKNOWN": 9,
+            "UNSAT": 189
+          },
+          "evidence_grade": "GENBAB_NUMERICAL_FILTER",
+          "expected": 252,
+          "formal_SAFE": false,
+          "received": 198,
+          "request_sha256": "995a0587dee58732315da5e0e9ae5a405e68dc4e2ae232bdf7de4e80099357f5",
+          "scope": "ALL_TIE_LEGAL_GUARDED_OBLIGATIONS",
+          "stages": {
+            "incomplete_only": 189,
+            "nonlinear_bab": 9,
+            "not_started": 0
+          },
+          "status": "UNKNOWN",
+          "missing_count": 54
+        },
+        "pair_count": 22,
+        "pair_stages": {
+          "incomplete_only": 21,
+          "nonlinear_bab": 1
+        },
+        "files": {
+          "launch.json": "4216d1eab28d251f91eac9dbe67f7e810e9a20159676a0d6d4a3c088df537f3d",
+          "outcome.json": "b0003c16cdfce62a31c30f467d78b453e27b2a7036d786a8c90d70126411054b",
+          "reception.json": "b6c8ea2c6066a679a5e8bd69ee557ac80051ae0599e2cd7638c375bd6a2aa4d6",
+          "spec.json": "e06249844ab85f85c35f2bea124b9a5446e15613bcac78a66b04e48c428166ae",
+          "terminal.json": "d2c6371ab5b22b6cb656bb1e62445432942827c1f5be407c9da94b64e03743a1"
+        },
+        "ledger_sha256": "af8863276f4151ac503950b776b13f08c22fdd7128de5fd397cca7f429bace7a"
       }
     ],
-    "interpretation": "Complete numerical filters on two ACT-failure-selected requests, not a population comparison or source-complete proof."
+    "interpretation": "Five ACT-failure-selected complete attempts: three complete numerical positives and two UNKNOWN. Partial positive receipts never fill unresolved or missing obligations. Not a population comparison or source-complete proof.",
+    "unknown": 2,
+    "positive_complete_request_obligations": 756,
+    "unknown_obligations": 18,
+    "missing_obligations": 117,
+    "stage_seconds_at_prefix": 2307.555863475427,
+    "stage_bytes_at_prefix": 13517998
+  },
+  "pre_b3_saved_record_screen": {
+    "status": "STATIC_APPLICABILITY_ONLY_NO_B3_SELECTED",
+    "native_calls": 0,
+    "model_calls": 0,
+    "candidate": "Property-sign log-ratio affine support, not an implementation or established novelty",
+    "threshold_rule": "For the original threshold tau use A=qEa+c-tau and B=qEb+c-tau; A>0,B<0 gives F>tau iff m+log(A)-log(-B)>0.",
+    "seed0_4140": {
+      "property": "F5-F3",
+      "pair": [
+        3,
+        6
+      ],
+      "evidence": "/data1/Kane/MOE/results/b1_observed_20261021_r2/03_seed0_4140/package/evidence.json",
+      "evidence_sha256": "dea23145096156a11aee97af6e78ae45ec59b2bb2282298249caa605c308b70d",
+      "raw_expert_a_interval_approx": [
+        -0.895026112,
+        1.697096302
+      ],
+      "raw_expert_b_interval_approx": [
+        -1.686768209,
+        -0.075194301
+      ],
+      "tier1": "expert3 certified / expanded_violations_infeasible, numerical-policy only",
+      "gap": "Tier1 supplies raw A>1e-7, not a known positive lower endpoint for raw A-tau when tau=1e-7. No finite log secant follows from (0,U]."
+    },
+    "seed2_4141": {
+      "pair": [
+        3,
+        7
+      ],
+      "source": "data/moe/results/schedule_confirmation_100_full_20260912_r1/rank15_seed2_adaptive/common_facts.json",
+      "sha256": "e3308f99069b31f5a5bba13554e420ba4c21ccc25b63b5d4683db86371fe8f1e",
+      "gap": "Expert7 intervals straddle zero for all nine properties. Historical same-object facts, not a new proof or a B1 timeout package."
+    },
+    "domain": "Expert TOP2_MEMBERSHIP bounds restrict to the pair domain; input/network/guard lowering remains trusted.",
+    "conclusion": "Current saved evidence does not supply the bounded strict-sign premises for this candidate at the unchanged threshold. No added epsilon, source recapture, query, sample, or acceptance change. Wait for complete B2 results before B3 selection."
   }
 }

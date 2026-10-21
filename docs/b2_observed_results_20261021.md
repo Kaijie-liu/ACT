@@ -8,8 +8,9 @@ real source. A tuple/list difference in serialized compatibility metadata caused
 a false identity mismatch; actual source hashes were unchanged. The repaired
 controller is running from commit `2caeae501636bdc6237be89b9a4202f3451df1d2`
 in an independent code copy, PID916650. All ten local diagnoses are complete:
-eight positive numerical filters and two UNKNOWN. The first two complete
-all-pair requests are positive numerical filters; the remainder is still running.
+eight positive numerical filters and two UNKNOWN. The first five complete
+all-pair attempts give three positive numerical filters and two UNKNOWN;
+the remainder is still running.
 [Records](b2_observed_records_20261021.json) retain that
 failure and will preserve every attempted and unexecuted entry and its cost.
 
@@ -69,10 +70,12 @@ it is not a bound reproof.
 
 ## First complete request results
 
-Each result below covers all 28 unordered pairs and nine output properties:
-252 unique positive receipts per request, with zero missing obligations. Each
+Each request below registers all 28 unordered pairs and nine output properties.
+The three POSITIVE requests have 252 unique positive receipts each, with no
+missing obligations. The two UNKNOWN requests retain their unresolved and
+unexecuted obligations. Each
 request independently loads its frozen model and materialized input and
-constructs all pair graphs; it borrows neither ACT route exclusions nor earlier
+constructs each attempted pair graph under its shared deadline; it borrows neither ACT route exclusions nor earlier
 local diagnosis conclusions. Read-only review checks identities, complete
 coverage, deadlines, cleanup and reception, not the numerical bounds themselves.
 
@@ -80,16 +83,54 @@ coverage, deadlines, cleanup and reception, not the numerical bounds themselves.
 | --- | --- | ---: | --- | ---: |
 | Seed1 / 4113 | UNKNOWN | 55.467 | Numerical POSITIVE | 187.611 |
 | Seed2 / 4113 | TIMEOUT | 296.096 | Numerical POSITIVE | 21.852 |
+| Seed0 / 4129 | TIMEOUT | 296.117 | Numerical POSITIVE | 132.992 |
+| Seed0 / 4140 | UNKNOWN | 38.444 | UNKNOWN | 293.256 |
+| Seed2 / 4141 | TIMEOUT | 296.099 | UNKNOWN | 294.727 |
 
-For seed1, 27 pairs close in the incomplete bound phase and one uses nonlinear
-BaB. For seed2, all 28 close before BaB. The path is configured for alpha-CROWN
+For seed1/4113, 27 pairs close in the incomplete bound phase and one uses nonlinear
+BaB. For seed2/4113, all 28 close before BaB. For seed0/4129, 26 pairs close
+before BaB and pairs {1,4} and {4,5} use it. The path is configured for alpha-CROWN
 and GenBaB, but early completions do not establish that alpha optimization or
 nonlinear search was needed.
-The two complete external calls cost 209.463 seconds in total, each under its
-own 300-second budget. They establish complete numerical positives unavailable
-to the B1 online execution on these objects, not an ACT-exclusive advantage.
-This failure-selected prefix is not a fair population win-rate estimate, and
-neither external result is an independently checked source-complete proof.
+The five complete external calls cost 930.438 seconds in total, each under its
+own 300-second budget. Three establish complete numerical positives unavailable
+to B1 online on these objects. Seed0/4140 stops at pair {3,6}, with 180 positive,
+nine unresolved and 63 missing obligations. Seed2/4141 stops at pair {3,7}, with
+189 positive, nine unresolved and 54 missing obligations. Partial positive
+receipts, earlier local calls and ACT route exclusions cannot fill these gaps.
+The respective terminal BaB records report 924 and 430 visited domains; their
+scalar-max bounds remain approximately -0.092588444 and -0.105093709.
+
+The first fifteen-call ledger charges 2,307.556 seconds including the local
+cohort and retained failed startup, with 13,517,998 artifact bytes. Read-only
+review checks all five complete terminals. This failure-selected prefix is not
+a fair population win-rate estimate, and positive numerical filters are not
+independently checked source-complete proofs. The frozen queue continues.
+
+## Saved evidence limits for a candidate property transform
+
+No B3 mechanism has been selected. A static screen considered preserving the
+same-factor router/expert relation through a property-sign transform. For the
+unchanged output threshold tau, set A=qEa+c-tau, B=qEb+c-tau and m=ra-rb.
+If A>0 and B<0 throughout the domain, the output exceeds tau exactly when
+`m + log(A) - log(-B) > 0`. A lower secant for log(A) and an upper tangent for
+log(-B) would give an affine support objective on the same factors. This is
+not yet a new support algorithm, implementation or measured benefit.
+
+The saved evidence does not provide the needed bounded strict-sign premises.
+For seed0/4140 property F5-F3, common intervals alone put expert3 across zero
+and expert6 below zero. Tier1's numerical-policy result supports expert3's
+raw margin >1e-7, but after subtracting the same tau=1e-7 it supplies no known
+positive lower endpoint. There is no finite affine lower bound for log(A) on
+(0,U], so inventing a small epsilon would be unsound. For seed2/4141 pair {3,7},
+all nine expert7 intervals straddle zero. A negative candidate-point value
+cannot replace a whole-domain sign bound.
+
+These expert membership-domain facts can restrict to the pair domain, but
+retain their input, network and guard-lowering assumptions. The records bind
+the saved evidence; this screen made no model or solver calls and does not
+justify new range searches, acceptance changes or a claim that the candidate
+is empirically refuted. Finish B2 before selecting the next mechanism.
 
 ## Fixed order and semantics
 

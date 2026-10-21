@@ -1,5 +1,13 @@
 # MoE project handoff — current entry point
 
+## B2 first five complete attempts 2026-10-21
+
+Real increment3 complete attempts:1POSITIVE/2UNKNOWN; audited prefix5 gives3POSITIVE/2UNKNOWN, with10 local diagnoses unchanged.
+[Results](b2_observed_results_20261021.md)/[records](b2_observed_records_20261021.json) bind756 obligations in complete positives; unresolved requests retain18 UNKNOWN/117 missing.
+Five full calls cost930.438s; stage through ledger015 is2307.556s/13,517,998bytes. No partial-to-full upgrade.
+Samefactor property log-transform remains unselected: saved strict-sign intervals do not justify it at unchanged tau, no epsilon or new query added.
+Controller916650/immutable2caeae501 continues the unchanged queue. Finish strong-path results before choosing B3; G1–G6 OPEN.
+
 ## B2 first complete requests positive 2026-10-21
 
 Real increment2 complete requests POSITIVE,504 unique obligations closed numerically;10 local diagnoses remain8POSITIVE/2UNKNOWN.
