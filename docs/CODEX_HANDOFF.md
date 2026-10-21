@@ -1,5 +1,33 @@
 # MoE project handoff — current entry point
 
+## A2 completes and stops the fixed tilt mechanism, 2026-10-21
+
+The once-only strong comparison at `c5544fa6b94bfd33c563c13970b171128164649d`
+completed nine arms/78 native LP calls and both independent receptions in
+64.762928s entry-to-terminal export, outer exit0.
+[Results and stop decision](margin_a2_results_20261021.md) and
+[lossless archive](margin_a2_records_20261021.json)
+preserve the full denominator, all costs, raw product bounds and four new faults.
+The frozen saved-only audit passed; arithmetic/execution read-only reviews are
+separate from human review and full-network proof.
+
+**Scientific result: STOP_CURRENT_FIXED_TILT_MECHANISM.** Zero, matched-zero,
+finite, transfer and two-cell references all give−10521/8192. Finite's gain is
+exactly0, below1/1024. Four-cell references give−41/32, higher by25/8192. All
+product cells take their stronger, fully paid endpoint fallback. No positive
+certificate, LP optimality, network unsafety or full-request improvement follows.
+The zero-gain stop holds independently of the conservative unused-tail cost
+bound; the result document explains the preserved misleading tail flag.
+
+**Next:** do not run A3 or A5 on this candidate, retry this source, increase
+tilts/cells/time, or revive M1b/RSS. Only non-repeated static research into a
+distinct relation/value-function approximation is justified. Require a concrete
+mathematical difference from current slicing and dual transfer before proposing
+another finite control; otherwise ask for a new scientific direction rather
+than manufacture infrastructure work. Existing goal stays OPEN, not completed
+by this stage. Real-development ledger0/0/0; G1–G6 OPEN and all old source gaps
+and failures preserved.
+
 ## A2 strong comparison prepared for one frozen execution, 2026-10-21
 
 The [finite protocol](margin_a2_control_20261021.md) now fixes the unchanged
