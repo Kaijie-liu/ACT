@@ -1,4 +1,105 @@
 {
+  "vector_or_control": {
+    "root": "/data1/Kane/MOE/results/b2_vector_or_20261021_r1",
+    "commit": "47ce052face0c58701bad471e7d6413ab6864009",
+    "seconds": 11.42099430412054,
+    "real_calls": 0,
+    "status": "API_COMPLETED",
+    "accepted": true,
+    "result": {
+      "acceptance": "spec shape and ordinary completion, no new positive gate",
+      "native_calls": 1,
+      "real_calls": 0,
+      "status": "API_COMPLETED",
+      "verifier": {
+        "actual_raw_spec": [
+          [
+            [
+              [
+                1,
+                0
+              ]
+            ],
+            [
+              0
+            ]
+          ],
+          [
+            [
+              [
+                0,
+                1
+              ]
+            ],
+            [
+              0
+            ]
+          ]
+        ],
+        "bound_propagation": "alpha-crown",
+        "branching": "nonlinear",
+        "complete_verifier": "bab",
+        "guarantee": "GENBAB_NUMERICAL_FILTER_NOT_INDEPENDENT_PROOF",
+        "seconds": 2.4580324459820986,
+        "split_activations": {
+          "/17": [
+            {
+              "input_index": 0,
+              "kind": "BoundRelu",
+              "name": "/18"
+            }
+          ],
+          "/4": [
+            {
+              "input_index": 0,
+              "kind": "BoundSigmoid",
+              "name": "/5"
+            },
+            {
+              "input_index": 0,
+              "kind": "BoundRelu",
+              "name": "/12"
+            }
+          ],
+          "/5": [
+            {
+              "input_index": 0,
+              "kind": "BoundMul",
+              "name": "/8"
+            }
+          ],
+          "/7": [
+            {
+              "input_index": 1,
+              "kind": "BoundMul",
+              "name": "/8"
+            }
+          ]
+        },
+        "stage": "nonlinear_bab",
+        "stats": {
+          "bab": [
+            [
+              0,
+              1e-7,
+              16,
+              1.1787364482879639
+            ]
+          ],
+          "elapsed": 2.3144876956939697,
+          "pgd": null
+        },
+        "status": "verified",
+        "success": true
+      }
+    },
+    "complete_sha256": "fce14ae77c8fd3ff278b0bd8fff3c1ac1760e8c98d50a78688a271a393b33783",
+    "launch_sha256": "6c00c6bbf3e63934d91fd31516a4ae4ffd16517e6650737ca792a43b7d4cf08c",
+    "outcome_sha256": "8f7f4a3ef0f23260c9e958bbdadb0693b77d3c00200a1bd7d7fe756db0190240",
+    "reception_sha256": "cb08a27b09aeb0e2e7c6fd467a7ae07378359432f0fb2e4e0faf3e99239f767b",
+    "native_log_sha256": "a200971cdc478b03de4accf674acc4e5425deb367ea53ab3390743a6b16ee2c1",
+    "artifact_bytes": 132881
+  },
   "attempts": [
     {
       "artifact_bytes": 59529,

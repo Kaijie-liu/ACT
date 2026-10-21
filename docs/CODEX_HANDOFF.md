@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## B1 attribution complete and B2 API control passed 2026-10-21
+
+Real ledger41 requests/720 obligations;141 attribution calls (100 native),153 dispositions; online12UNKNOWN/28TIMEOUT/1ERROR unchanged.
+[Results](b1_observed_results_20261021.md)/[records](b1_observed_records_20261021.json):3 replayed violations;8 captured status1 obligations have positive continuous-LP bounds.
+Seed1/4113's remaining obligation: range-only stays−.0691,32/32 slice endpoints give+.200698;224.578s separate cost is not an online SAFE.
+Second slice source23optimal/9limit costs588.579s although its LP is positive;9 candidates fail strict box, source/network point attribution missing.
+Regular11858.434s,153-terminal audit passes;4 capacity-missing and8 extended-matrix-missing entries retained; no extended solve.
+B2 frozen47ce052fa vector-OR API control passes in11.421s at`b2_vector_or_20261021_r1`;no real source or new positive gate.
+Next freeze and execute existing10 local→41 aggregate→19 CROWN queue;no approval needed,missing suffix retained,G1–G6 OPEN.
+
 ## B1 online complete and attribution running 2026-10-21
 
 Real ledger41/41:UNKNOWN12/TIMEOUT28/ERROR1;42 attempts with the retained tooling error;529 returned F0 calls.

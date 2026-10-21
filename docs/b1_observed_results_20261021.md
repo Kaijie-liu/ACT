@@ -1,8 +1,8 @@
 # B1 observed-request attribution results
 
 Status: all 41 online requests have finished: **12 UNKNOWN, 28 TIMEOUT,
-1 ERROR, no SAFE or UNSAFE**. The registered offline attribution is running;
-its results cannot replace these online terminals. This is a failure-selected,
+1 ERROR, no SAFE or UNSAFE**. All registered offline diagnostics now have a
+terminal disposition; they cannot replace these online terminals. This is a failure-selected,
 already observed development cohort, not an independent performance comparison.
 
 ## Complete online denominator and cost
@@ -52,15 +52,98 @@ one missing due to capture capacity. No substitute was selected. Read-only
 review checks execution identity, deadlines, reception and owned cleanup; it is
 not independent bound reproof.
 
-## Registered offline diagnosis running
+## Completed offline attribution
 
-The frozen diagnostic copy is commit `47ce052face0c58701bad471e7d6413ab6864009`,
-running in `b1_observed_diagnostics_20261021_r1`. It instantiates the existing
-145-entry regular catalog, with 11,139.646 seconds remaining after online cost.
-The first eight sign-eligible extended queries lack retained full matrices and
-will remain unexecuted, without recapture or replacement. Their separate allowance
-does not repair the original requests. Final multi-label attribution and B2
-follow the terminal diagnostic catalog, without a positive-result gate.
+The frozen diagnostic copy `47ce052face0c58701bad471e7d6413ab6864009` completed
+the catalog in `b1_observed_diagnostics_20261021_r1`: 145 regular and eight
+extended entries. There were **141 actual calls: 41 replay/PGD calls and 100
+native solves**. Four regular entries lack the tenth source; all eight eligible
+extended entries lack retained matrices. No source was substituted, recaptured
+or projected, and no extended solve ran. The nine slice solver-limit returns
+are received unresolved results, not execution errors.
+
+| Registered diagnostic | Executed | Result |
+| --- | ---: | --- |
+| Full-model replay and fixed PGD | 41 | 3 replayed violations, 38 without a found counterexample |
+| Same-matrix continuous LP | 9 of 10 | 8 positive numerical bounds, 1 negative |
+| Integer difference endpoints | 18 of 20 | All optimal under the numerical policy |
+| Replace only the difference range | 9 of 10 | 8 positive, original negative remains negative |
+| Closed margin slice endpoints | 64 | 55 optimal, 9 solver-limit returns |
+| Eligible extended solves | 0 of 8 | Matrices not retained; no replacement |
+
+The three full-model violations are seed0/4237, seed0/4341 and seed1/4356,
+with margins about -0.868796, -0.082133 and -0.057577. Each saved float64 replay
+passes finite-value and exact materialized-box comparisons before dynamic model
+evaluation. The first two change the observed top-k set; the third does not.
+The archive binds their witness files. Read-only review checked the saved
+records, not a fresh independent model replay or an exact real-network proof.
+The other 38 attacks did not find a counterexample; this is not a safety result.
+
+### Different unresolved mechanisms
+
+The following labels overlap. The [records](b1_observed_records_20261021.json)
+retain all 41 request rows, including query references and missing evidence.
+
+| Evidence | Extent | Interpretation |
+| --- | --- | --- |
+| Returned solver-limit status | 368 calls across 35 requests | The chosen execution did not finish those solves |
+| Positive raw dual at a solver limit | 271 calls across 34 requests | Candidate proof evidence, not policy-accepted or independently checked bounds |
+| Missing returned output evidence | 32 obligations across 28 requests | Attempted or not reached; complete route roster does not close outputs |
+| Status0 negative candidates | 14 obligations across 9 requests | Pointwise gate/product diagnostics; not exact feasible network counterexamples |
+| Complete captured source | 9 obligations in 2 requests | Local LP/range/slice attribution is restricted to these sources |
+| Saved candidate outside strict input box | All 9 retained candidates | Source-to-network point comparison was not performed; cause remains unseparated |
+
+For seed2/4113, all eight captured status1 obligations become positive in the
+same-matrix continuous LP, with policy lower bounds from 1.196257828 to
+3.835909266. All nine same-LP queries together cost 19.778 seconds through
+reception. Thus integer search or a tighter representation is not necessary for
+these eight numerical obligations. This is not full-request closure, a universal
+LP advantage or an independently checked dual proof.
+
+For seed1/4113, pair {2,5}, property0, the continuous LP is -0.430532813 and
+the original integer F0 result is -0.069105368. Integer difference support
+tightens the old range [13.24769, 18.04530] to [14.18371, 17.53522], but the
+replacement F0 remains -0.069105368. These three range/replacement queries cost
+14.972 seconds; this factor alone did not repair the negative bound.
+
+The same property's **16 closed margin slices, two endpoints each, all finish**,
+with aggregate minimum **+0.200698232** and 169.112 seconds of query receipts.
+The original request's other 17 obligations already had positive policy results:
+13 scoped facts and four status0 F0 results. This supplies conditional numerical
+coverage potential for the one remaining obligation. Adding the separate online
+55.467 seconds gives 224.578 seconds, **not a measured single-budget online SAFE**.
+The comparison changes slicing, endpoint encoding and query allocation together;
+it does not uniquely isolate gate-interval width. Upstream lowering and the
+floating sigmoid envelopes are still not independently proved.
+
+The second sliced source, seed2/4113 pair {2,7}/property0, has 23 optimal and
+nine solver-limit endpoints, costs 588.579 seconds, and has no complete slice
+aggregate. Its continuous LP already returned +1.881425149 in 2.229 seconds.
+This is direct evidence against inserting the full slicing procedure before
+every obligation. It is not evidence that margin conditioning never helps.
+
+All nine stored candidate points fail the strict materialized-box check, so no
+`source_network` comparison was recorded. Their flags do not distinguish tiny
+rounding violations from mapping or input-envelope defects. The archive retains
+this attribution gap instead of assigning it to expert/guard lowering.
+
+### Cost and next research decision
+
+Regular diagnosis costs 1,398.080 seconds; with the online execution the stage
+uses **11,858.434 seconds**, within six hours. Missing extended-entry bookkeeping
+adds 0.380 seconds but no solve. The four B1 result directories total
+178,713,510 bytes; controller logs and this compact repository archive are
+separate recorded artifacts. The diagnostic record binds every query receipt,
+outcome and source; independent read-only review found no identity, deadline,
+reception or cleanup mismatch. No online terminal is upgraded.
+
+**B1 is complete as an attribution stage, not an algorithm success.** Continue
+the already authorized B2 strong path on this failure-selected cohort. Before
+selecting B3, distinguish obligations already sufficient under the continuous LP
+from those helped by conditional endpoint support, and test whether the strong
+external path already closes the latter. Generic LP cascading is an execution
+optimization, not a new MoE abstraction. Do not expand this sample, repeat the
+fixed-tilt experiment or make a universal gate-bottleneck claim.
 
 ## Historical prefix and suffix execution
 

@@ -33,8 +33,8 @@ one router/two-expert graph across property outputs. Each scalar output is
 `max(qF+c, all guards)`. Several output properties are an OR of single-row unsafe
 clauses, not one AND of their violations. Three ordinary forward/logic controls
 pass for all guards, ties, nonzero property constants and whole-box variable
-weights. This has not yet been exercised through the native multi-output API;
-the earlier one-output guard controls do not establish that compatibility.
+weights. The native multi-output API control below now passes; the earlier
+one-output guard controls alone did not establish that compatibility.
 No B2 real request runs before B1 completion. The old single-output path remains
 available; ordinary adapter preparation does not reinstate a positive smoke gate.
 
@@ -46,13 +46,24 @@ binding, UNKNOWN continuation, falsified-static versus replayed-full outcomes,
 and immutable-copy helper imports. B1's separate extended-deadline control and
 the existing metadata regressions pass too:21 ordinary tests,0 native solves.
 
-After B1, one new native API-shape control uses the existing analytic scalar-max
+After B1, the one new native API-shape control used the existing analytic scalar-max
 example with two property outputs, `F` and`F+1/4`, as two unsafe OR alternatives.
 The source and five concrete test points remain fixed. It performs one verifier
 call inside the existing≤300s owned-session supervisor. Ordinary UNKNOWN is
 accepted as API completion; verified is not required. A falsified result on this
 known-positive fixture must be investigated rather than accepted silently. This
-does not repeat the earlier two smoke arms and will not overlap the B1 batch.
+does not repeat the earlier two smoke arms and did not overlap the B1 batch.
+
+The control at `47ce052face0c58701bad471e7d6413ab6864009` completed in
+11.420994 seconds, including owned execution, reception and cleanup. The single
+native call accepted both unsafe OR clauses and returned `verified` as a
+numerical filter, with 16 BaB domains recorded; API completion did not require a
+positive result. The source still contains the three disclosed compatibility
+edits. [Records](genbab_cpu_ready_records_20261021.json) bind the launch, output,
+reception and native log in `b2_vector_or_20261021_r1`. No real request or new
+scientific mechanism was involved. Independent static review confirmed the
+28-pair/9-property aggregation, guard direction, ties, OR semantics and dynamic
+replay rule. The B1 diagnostic catalog is now complete.
 
 The real catalog is instantiated only after B1's41 requests and registered
 diagnostics finish: first10 fixed-order unresolved request/pair groups, then41
@@ -80,8 +91,12 @@ are charged. Cumulative stage artifacts are checked before launch and at
 reception against128MiB; native per-file limits use the remaining allowance
 with a terminal reserve. This is fail-closed cumulative reception, not a
 filesystem-wide quota: an overrun is rejected and its failed prefix retained.
-The real batch has not been frozen or executed yet. Its failure-selected results
-will be diagnostics, not an independent population win-rate comparison.
+The [real batch freeze](b2_observed_freeze_20261021.json) now binds the completed
+B1 catalog and fixed query order. Its failure-selected results are diagnostics,
+not an independent population win-rate comparison. The GenBaB configuration
+does not enable PGD or BaB attack; B1's additional PGD outcomes must not be used
+to manufacture a fair solved-rate comparison. A complete-request attempt stops
+at its first unresolved pair, retaining all remaining obligations as missing.
 
 ## Historical protocol and unchanged attempt records
 
