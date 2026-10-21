@@ -1,0 +1,33 @@
+# B2 inventory reception and nonlinear CPU smoke
+
+This is the user-authorized repair of the existing isolated installation, not a
+second deployment. The failed R1 inventory audit is preserved. Transitive
+distribution metadata is now a list of name/version/location records; actual
+torch, auto_LiRPA, verifier API, packaging and wheel paths are recorded separately.
+No dependencies or external source files are changed.
+
+The fixed synthetic source is `x in [-1,1]`, router `(x,-x,-1/2)`, pair `{0,1}`,
+experts `E0=1/2-x`, `E1=1/2+x`. The graph retains `sigmoid(2x)` and the product.
+Its weighted scalar output is `F=1/2-x*tanh(x)`. The pair guard is `|x|<=1/2`,
+where `F>=1/4`; the unguarded box contains negative values. The unsafe formula is
+the conjunction `F<=0`, `r2-r0<=0`, `r2-r1<=0`, including equality ties.
+
+The committed script fixes float64 CPU alpha-CROWN plus nonlinear BaB, uniform
+binary nonlinear branching and no input-split/attack substitution. Acceptance
+requires a numerical positive, nonzero native visited-domain count, branching
+point logs and a graph linking split candidates to sigmoid/multiplication.
+An incomplete-only positive does not cover the smoke; do not tune the example
+after observing that outcome. Ordinary metadata/path/serialization failures may
+be repaired under the approved policy, retaining attempts and costs.
+
+The existing owned-session supervisor charges imports, construction, solve,
+reception and cleanup within one 300-second control budget. Each managed process
+has 8GiB address-space limit; RSS and wait4 usage are telemetry, not equivalent
+group-memory limits. New control artifacts stay within 128MiB. Native output is
+saved to a file, not silently truncated to the supervisor's 16KiB console.
+The interpreter-start interval before the controller's first timestamp is not
+claimed as measured full cold start. No real request, model checkpoint or GPU.
+
+Implementation: `scripts/genbab_cpu_ready.py`; ordinary controls:
+`tests/test_genbab_cpu_ready.py`. This is baseline compatibility work, not a new
+ACT algorithm, benchmark win or independently checked network certificate.
