@@ -1,5 +1,43 @@
 # MoE project handoff — current entry point
 
+## B1 source-history follow-up and same-source diagnostic design, 2026-10-21
+
+The [historical inventory follow-up](b1_history_inventory_20261021.md) now
+reconstructs Dual RS's256 explicit test-control identities and8,719 fixed-recipe
+test-evaluation identities. The stdlib-only saved-source audit passes and reads
+460,457 bytes; its [receipt](b1_dual_rs_history_20261021.json) preserves every
+control index and exact source/digest bindings. The first256 are exclusions;
+the full cohort is prior evaluation to disclose, not8,719 ACT verification
+endpoints or a clean-correct table for the three MLPs.
+
+Source review also classifies110 specifically named H1/H2/HZ directories and
+the new127-large-metadata-file set by saved queue/generator. The
+[path/size roster](b1_history_family_roster_20261021.json) is not a numerical
+matrix audit or a global exclusion manifest. Old scan counts lacked path lists;
+do not silently equate their denominators with this reproducible follow-up.
+
+**B1's minimal remaining data gap is now explicit:** the current production
+packages discard raw factor assignments and original matrices. The
+[same-source design](b1_same_source_diagnostic_design_20261021.md) specifies
+default-off source/native-result capture in both staged and monolithic paths,
+without a new supervisor or changed solver acceptance. Do not call the existing
+fixed-tilt strategy as a diagnostic: it changes the margin range and would
+reopen the stopped A2 mechanism. A54-slot charged selection/request/diagnostic
+proposal is documented, but is **not yet an executable freeze**. Complete the
+dataset-aware candidate manifest, implement the two narrow capture interfaces,
+then freeze their necessary controls and exact real-query ledger before launch.
+
+This stage ran no model, clean-forward, native solve, GPU or environment repair;
+real-stage usage remains0/0/0. B2's failed deployment audit below is unchanged and
+must not be repaired/reimported without the separately scoped decision. The
+history audit and design close selection/attribution gaps, not G1 algorithm
+innovation, a new certificate or performance evidence. G1–G6 remain OPEN.
+Validation: saved-source audit exit0; static syntax, saved prefix digest and
+named-family denominator assertions PASS; separate read-only AI review found
+no blocking script issue and corrected the design's function name, incomplete
+route denominator and numerical-versus-checked MILP distinction. This is not
+the independently performed human review required by G6.
+
 ## B2 deployment executed; saved dependency audit failed, 2026-10-21
 
 [Results](genbab_cpu_deployment_results_20261021.md) and
