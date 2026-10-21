@@ -3,11 +3,94 @@
 The [frozen catalog](b2_observed_freeze_20261021.json) follows the completed
 [B1 diagnosis](b1_observed_results_20261021.md). It is a failure-selected
 development study, not an independent population comparison or a G4 win claim.
-The current retained prefix has **37 complete-request attempts: 17 numerical
-POSITIVE, 18 UNKNOWN and two ERROR**, plus ten local diagnoses (eight positive,
-two UNKNOWN). Four GenBaB and 19 CROWN requests remain unexecuted. The second
-ERROR is retained; only that untouched suffix continues after the bounded
-compatibility repair below. Earlier prefix sections are historical snapshots.
+The frozen queue is complete: **41 GenBaB requests give 17 numerical POSITIVE,
+22 UNKNOWN and two retained ERROR; 19 CROWN requests give four numerical
+POSITIVE and 15 UNKNOWN**. Ten local diagnoses give eight positives and two
+UNKNOWN. All 60 complete-request slots and ten local calls executed; nothing
+was substituted or rerun. Controller 4189850 has exited. Earlier prefix sections
+below are historical snapshots, not remaining work.
+
+## Complete external results and cost
+
+| Path and model | Requests | Numerical positive | UNKNOWN | ERROR | Full call seconds |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| GenBaB Seed0 | 11 | 5 | 5 | 1 | 1759.942 |
+| GenBaB Seed1 | 17 | 6 | 11 | 0 | 3628.107 |
+| GenBaB Seed2 | 13 | 6 | 6 | 1 | 2586.491 |
+| GenBaB total | 41 | 17 | 22 | 2 | 7974.539 |
+| ACT route frontend plus plain CROWN Seed0 | 6 | 1 | 5 | 0 | 65.778 |
+| ACT route frontend plus plain CROWN Seed1 | 8 | 1 | 7 | 0 | 86.551 |
+| ACT route frontend plus plain CROWN Seed2 | 5 | 2 | 3 | 0 | 52.787 |
+| ACT route frontend plus plain CROWN total | 19 | 4 | 15 | 0 | 205.116 |
+
+There are no additional TIMEOUT or unexecuted terminals. An accepted UNKNOWN
+may still reflect a timed-out internal query or missing obligations; it is not
+a complete negative decision. The separate ten local calls cost 798.385 seconds
+and do not enter the complete-request denominator.
+
+Each of the seventeen GenBaB positives covers all 28 pairs and nine properties,
+for 4,284 complete positive obligations. Across its 39 non-error requests,
+7,272 obligations have positive receipts, 189 have UNKNOWN receipts and 2,367
+are missing. The two ERROR requests remain in the request denominator; their
+partial outputs are not substituted into these accepted-coverage counts.
+CROWN independently computes its route roster, then covers every feasible
+pair and all nine properties for a positive result. No B1 exclusions or local
+diagnosis answers are borrowed.
+
+The complete stage records 10,197.301 seconds, including failed-start costs and
+conservative repair/control carry-forward charges, within the original six
+hours. This clock is recorded before writing `complete.json`; it is not a
+solver-only time and excludes the later read-only audit. All seven charged
+artifact roots occupy 77,176,277 bytes after the final file, within 128 MiB.
+The [records](b2_observed_records_20261021.json) bind every launch, terminal,
+reception and accepted outcome. Independent read-only audits agree on coverage,
+identity, deadlines, cleanup, counts and cost; they do not reprove the bounds.
+
+### Matched nineteen request intersection
+
+Only the first nineteen registered model–input pairs, covering fourteen distinct
+image indices, are common to both external paths:
+
+| GenBaB result | Plain CROWN positive | Plain CROWN UNKNOWN |
+| --- | ---: | ---: |
+| Numerical positive | 4 | 5 |
+| UNKNOWN | 0 | 9 |
+| ERROR | 0 | 1 |
+
+The five GenBaB-only positives are seed1/4113, seed0/4129, seed2/4223,
+seed1/4232 and seed0/4275. All five use nonlinear BaB somewhere, but this does
+not isolate the benefit of branching: GenBaB uses a guarded scalar-max graph
+and alpha optimization, whereas CROWN proves whole-box variable-weight pairs
+after its own ACT route analysis. Their environments also differ, as retained
+in each receipt. On these same nineteen model–input pairs, full call cost is 3,344.457
+seconds for GenBaB and 205.116 seconds for CROWN. Higher coverage at higher cost
+is not a speedup claim or a same-relaxation backend ablation.
+
+B1 has no accepted complete positive on the 41 failure-selected requests; the
+seventeen external positives therefore expose real computational gaps in ACT's
+current execution. They do not establish an independent population win rate,
+repair historical input-source gaps, or become strict certificates. The known
+saved witness at seed0/4237 is consistent with CROWN's UNKNOWN on its violating
+pair/property; no numerical positive conflict was observed.
+
+## Research implication
+
+B1 and the complete strong-path comparison now support selecting B3. They do
+not support a unique claim that all failures come from gate relaxation, ReLU
+integrality, or solver time. Some ACT requests have unaccepted positive dual
+candidates or missing obligations; others have evidence that a stronger
+relation-aware bound can help. Nine external positive requests need no BaB,
+while the common nineteen include five positives absent from plain CROWN.
+
+The next mechanism must name a specific retained or lost MoE relation, or a
+genuinely new structure-aware support algorithm, and distinguish it from the
+existing multiobjective support, shared/private blocks, residual checking and
+slicing. Ordinary compatibility, batching or proof reception is not by itself
+a G1 contribution. No B3 mechanism or new experiment is selected by this table;
+the next authorized step is its evidence-based mathematical contract. G1–G6
+remain open.
+
+## Historical startup and stopped prefixes
 
 The first controller stopped before creating its run directory or invoking a
 real source. A tuple/list difference in serialized compatibility metadata caused
@@ -75,6 +158,35 @@ generation. Many of these pairs lie outside ACT's saved route roster, so the
 pair counts are neither causal contributions nor cost percentages. All results
 remain numerical filters, not source-complete proofs. Complete the remaining
 strong-path queue before selecting B3.
+
+### Completion paths within the ACT route rosters
+
+For the same fixed seventeen positive requests, cross-referencing the B1 route
+rosters separates easy additional pairs from obligations ACT actually retained:
+
+| B1 route roster membership | Initial CROWN without alpha or BaB | Alpha without BaB | Nonlinear BaB | Total |
+| --- | ---: | ---: | ---: | ---: |
+| Inside | 25 | 0 | 9 | 34 |
+| Outside | 364 | 78 | 0 | 442 |
+| Total | 389 | 78 | 9 | 476 |
+
+Twenty of the 25 inside-roster pairs closed by initial CROWN still have unresolved
+B1 obligations; the other five already have all properties accepted or reused.
+Their 225 B1 properties comprise 59 reused, 57 accepted status0 positives,
+89 unaccepted status1 raw positives, one nonpositive raw bound, 11 returned
+without a raw dual and eight missing returns. The nine inside-roster BaB pairs
+comprise 81 properties: 12 reused, 19 accepted, 41 raw-positive but unaccepted,
+four raw-nonpositive, two returned without a raw dual and three missing.
+
+Thus the completion difference is not confined to pairs outside ACT's roster.
+It motivates separating proof acquisition and bound propagation from branching
+in the eventual B3 choice. It does not isolate any one cause: the external
+scalar-max graph can close by a guard or output disjunct, while B1 uses a guarded
+output problem. Outside-roster pairs are not independently proved unreachable
+by this cross-analysis. Raw duals remain unchecked and B1 outcomes unchanged.
+The records bind all seventeen inventories, their observation identities and
+the existing log/receipt phase analysis; independent read-only recomputation
+agrees. No new model or solver call was made.
 
 ## Fixed first twenty complete requests
 

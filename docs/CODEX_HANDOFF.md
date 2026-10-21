@@ -1,5 +1,16 @@
 # MoE project handoff — current entry point
 
+## B2 completed strong paths and attribution 2026-10-21
+
+Since the prior committed prefix,4 GenBaB and19 CROWN calls finish; all60 full slots/10locals executed, controller4189850 exited.
+[Results](b2_observed_results_20261021.md)/[records](b2_observed_records_20261021.json):GenBaB41=17POSITIVE/22UNKNOWN/2ERROR;CROWN19=4POSITIVE/15UNKNOWN;locals8/2 separately.
+Common19:4shared positives,5GenBaB-only,0CROWN-only,9shared UNKNOWN,1GenBaB ERROR; costs3344.457s versus205.116s, not isolated branching or speedup.
+All17 positives cover252 obligations each; independent read-only audits pass identities/coverage/receipts/costs, not bound reproof. OldERRORs/source gaps remain.
+Stage10197.301s before final write;77,176,277bytes after it, within original6h/128MiB; no new diagnostic solve or rerun.
+Fixed17 phase×ACT-roster analysis:25inside pairs close initial-CROWN,20still unresolved inB1; paired with raw-positive/missing obligations, not a unique cause.
+Next B3: choose one evidence-supported MoE mechanism and mathematical difference from existing support/blocks/residual/slicing; no new supervision or revived fixed tilt.
+This completes B2 diagnosis, not G4 population superiority or G1 innovation; G1–G6 remain OPEN.
+
 ## B2 initial identity read repair 2026-10-21
 
 Real increment1 full ERROR; retained37full=17POSITIVE/18UNKNOWN/2ERROR,10locals unchanged; PID290944 exited.
