@@ -2991,21 +2991,31 @@ def hz_minimize_output(
     input_hz: SparseHZono | None,
     input_shape: tuple[int, ...] | None,
     time_limit: float,
+    diagnostic_capture=None,
 ) -> HZMinimumResult:
     """Minimize one represented output row and recover a concrete input.
 
     The returned input is only a candidate when ``hz`` is a relaxation.  A
     caller must evaluate the concrete model before treating it as an unsafe
     witness.  Only an optimal ``minimum`` is suitable for certification.
+    Optional diagnostic capture owns copies of the actual stored problem and
+    untrusted result. Capture failures propagate; they are not solver UNKNOWN.
     """
     started = time.monotonic()
     if not _HAS_SCIPY:
+        if diagnostic_capture is not None:
+            diagnostic_capture.failure("SCIPY_UNAVAILABLE", native_called=False)
         return HZMinimumResult(
             "unknown", None, None, None, None, None, 0.0, "scipy_unavailable"
         )
+    lowering_error = None
     try:
         model = _lower_hz_milp(hz)
     except Exception as exc:
+        lowering_error = type(exc).__name__
+    if lowering_error is not None:
+        if diagnostic_capture is not None:
+            diagnostic_capture.failure("LOWERING_FAILED:" + lowering_error, native_called=False)
         return HZMinimumResult(
             "unknown",
             None,
@@ -3014,7 +3024,7 @@ def hz_minimize_output(
             None,
             None,
             time.monotonic() - started,
-            f"lowering_failed:{type(exc).__name__}",
+            f"lowering_failed:{lowering_error}",
         )
     row = int(row)
     if row < 0 or row >= model.value_center.size:
@@ -3022,14 +3032,21 @@ def hz_minimize_output(
     objective = model.value_matrix.getrow(row).toarray().reshape(-1)
     if model.n_var == 0:
         point = np.zeros(0, dtype=np.float64)
-        if not _valid_milp_point(
+        valid = _valid_milp_point(
             model,
             point,
             model.A,
             model.row_lb,
             model.row_ub,
             1e-8,
-        ):
+        )
+        if diagnostic_capture is not None:
+            diagnostic_capture.hz(hz=hz, input_hz=input_hz, model=model, row=row,
+                                  objective=objective, native_called=False,
+                                  result={"status": 0 if valid else 2,
+                                          "x": point if valid else None,
+                                          "fun": 0.0 if valid else None})
+        if not valid:
             return HZMinimumResult(
                 "infeasible",
                 None,
@@ -3061,6 +3078,7 @@ def hz_minimize_output(
         if model.A.shape[0]
         else None
     )
+    solver_error = None
     try:
         result = milp(
             c=objective,
@@ -3074,6 +3092,10 @@ def hz_minimize_output(
             },
         )
     except Exception as exc:
+        solver_error = type(exc).__name__
+    if solver_error is not None:
+        if diagnostic_capture is not None:
+            diagnostic_capture.failure("SOLVER_FAILED:" + solver_error, native_called=True)
         return HZMinimumResult(
             "unknown",
             None,
@@ -3082,8 +3104,11 @@ def hz_minimize_output(
             None,
             None,
             time.monotonic() - started,
-            f"solver_failed:{type(exc).__name__}",
+            f"solver_failed:{solver_error}",
         )
+    if diagnostic_capture is not None:
+        diagnostic_capture.hz(hz=hz, input_hz=input_hz, model=model, row=row,
+                              objective=objective, result=result)
     solver_status = int(getattr(result, "status", -1))
     gap_value = getattr(result, "mip_gap", None)
     gap = (

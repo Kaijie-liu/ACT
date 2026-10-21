@@ -293,10 +293,21 @@ def solve_monolithic_weighted_top2_f0(
     input_shape: tuple[int, ...],
     time_limit: float,
     tolerance: float = HZ_NUMERICAL_POLICY.safe_positive_margin,
+    diagnostic_capture=None,
 ) -> MonolithicF0Decision:
     """Minimize one safety row over the union of all supplied pair branches."""
     started = time.monotonic()
-    model = _build_disjunction(encodings)
+    if diagnostic_capture is not None:
+        diagnostic_capture.validate_encodings(encodings)
+    if diagnostic_capture is None:
+        model = _build_disjunction(encodings)
+    else:
+        try:
+            model = _build_disjunction(encodings)
+        except Exception as exc:
+            diagnostic_capture.failure("LOWERING_FAILED:" + type(exc).__name__, native_called=False)
+            raise
+    solver_error = None
     try:
         result = milp(
             c=model.objective,
@@ -309,13 +320,19 @@ def solve_monolithic_weighted_top2_f0(
                 "mip_rel_gap": HZ_NUMERICAL_POLICY.mip_relative_gap,
             },
         )
-    except Exception:
+    except Exception as exc:
+        solver_error = type(exc).__name__
+    if solver_error is not None:
+        if diagnostic_capture is not None:
+            diagnostic_capture.failure("SOLVER_FAILED:" + solver_error, native_called=True)
         return MonolithicF0Decision(
             "UNKNOWN", UNKNOWN_MONOLITHIC_NUMERICAL, None, None, None, None,
             None, None, 0, time.monotonic() - started, len(encodings),
             model.objective.size, int(model.integrality.sum()), model.A.shape[0],
             None, None,
         )
+    if diagnostic_capture is not None:
+        diagnostic_capture.monolithic(encodings=encodings, model=model, result=result)
     solver_status = int(getattr(result, "status", -1))
     raw_gap = getattr(result, "mip_gap", None)
     gap = float(raw_gap) if raw_gap is not None and np.isfinite(raw_gap) else None

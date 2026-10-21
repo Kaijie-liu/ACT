@@ -7,6 +7,8 @@ matched no-support ablation, or propagate an unguarded expert for accounting.
 
 from __future__ import annotations
 
+from scoped_source.native_capture import CaptureError
+
 import argparse
 from dataclasses import dataclass
 import hashlib
@@ -433,7 +435,7 @@ def _run_f0_impl(
                     "elapsed_seconds": time.monotonic() - pair_started,
                 }
             )
-        except (BudgetExhausted, GateCapacity, GateSourceError):
+        except (BudgetExhausted, GateCapacity, GateSourceError, CaptureError):
             raise
         except Exception as exc:
             pair_rows.append(

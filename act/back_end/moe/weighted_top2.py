@@ -709,14 +709,18 @@ def solve_weighted_top2_f0(
     input_shape: tuple[int, ...],
     time_limit: float,
     tolerance: float = HZ_NUMERICAL_POLICY.safe_positive_margin,
+    diagnostic_capture=None,
 ) -> WeightedTop2F0Decision:
     """Solve F0 without ever treating a relaxation witness as unsafe."""
+    if diagnostic_capture is not None:
+        diagnostic_capture.validate_encodings([encoding])
     result: HZMinimumResult = hz_minimize_output(
         encoding.output_hz,
         0,
         input_hz=encoding.input_hz,
         input_shape=input_shape,
         time_limit=float(time_limit),
+        **({"diagnostic_capture": diagnostic_capture} if diagnostic_capture is not None else {}),
     )
     if (
         result.status == "optimal"

@@ -1,5 +1,30 @@
 # MoE project handoff — current entry point
 
+## B1 default-off native capture ready to freeze, 2026-10-21
+
+The [finite protocol](b1_native_capture_protocol_20261021.md) specifies one
+synthetic batch:8 native call slots and29 fixed structure/fault controls,
+same300s development deadline. Default-off hooks retain the actual F0/native
+matrices, objective constants, raw candidates and monolithic branch maps;
+stdlib reception checks bounded structure and external identity, **not**
+feasibility, optimality, mathematical lowering or the original network.
+
+This is the native-result half of B1's missing diagnostic interface. The
+complete-request guarded-source factory, full obligation roster and real
+selection/query freeze remain unfinished. No new solver/strategy/supervisor is
+introduced. Typed capture failures cannot be swallowed as numerical UNKNOWN;
+the default numerical acceptance remains unchanged.
+
+Before freeze, static syntax/diff checks and read-only AI review corrected
+receiver completeness, unchanged deadline, conservative metadata capacity,
+branch/offset/call mapping and immutable-buffer mutation controls. Next: bind
+source hashes, commit/push clean, execute the once-only fixed batch, saved-only
+audit/archive. Unexpected failure stops with prefix; no repair/retry. Native
+stub fixtures must not be counted as additional real solver calls. No trained
+model, dataset, GPU or real-stage slot has run; real usage remains0/0/0.
+B2's failed deployment and A2's fixed-tilt STOP remain unchanged. This stage is
+necessary attribution infrastructure, not G1 innovation or a new certificate.
+
 ## B1 source-history follow-up and same-source diagnostic design, 2026-10-21
 
 The [historical inventory follow-up](b1_history_inventory_20261021.md) now
