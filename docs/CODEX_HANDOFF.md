@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## Guard controls passed and B1 online queue frozen 2026-10-21
+
+[B2 controls](genbab_cpu_ready_20261021.md): input-split AND and nonlinear scalar maximum both verified numerically;14.202344s batch,0 real calls.
+Scalar splits sigmoid/multiplication, not merely added ReLU; no general guard-incapability claim. B2 uses this stronger equivalent encoding.
+[B1 freeze](b1_observed_freeze_20261021.json) fixes41 calls/25 old UNKNOWN+16 TIMEOUT, same saved tensors and adaptive config, ascending index/seed.
+Run [driver](../scripts/b1_observed_batch.py) from a git-archive frozen copy; no concurrent B2 control and no offline-code prerequisite.
+First10 unresolved returned obligations reserve full-source ordinals;145 local queries and8 conditional extended queries retain separate IDs/budgets.
+Offline diagnostic implementation proceeds during online execution; no positive-result gate. Real ledger remains0/0/0 until first launch.
+
 ## User corrected B2 gate and immediate B1 launch 2026-10-21
 
 R6's24,498 nonlinear domains satisfy the authorized smoke gate; the extra positive requirement is withdrawn, old FAIL/UNKNOWN preserved.

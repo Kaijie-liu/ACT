@@ -28,6 +28,24 @@ applicable upstream fix was identified, so this batch does not upgrade versions.
 
 ## Historical protocol and unchanged attempt records
 
+### Authorized guard control outcome
+
+Both controls at execution commit`777ce61bf` returned **verified numerical
+filters**, with normal outer acceptance and cleanup. Input-split AND visited11
+domains (0.911284s verifier,6.072860s outer); nonlinear scalar maximum visited10
+(2.010659s verifier,8.029641s outer). The latter actually split the sigmoid
+input once and a multiplication input four times, not the added ReLUs.
+Through both cases the batch took14.201175s; console completion after the final
+summary was14.202344s. Saved files total275,662 bytes before this compact archive.
+Sixteen saved-file/receipt/deadline bindings pass independent read-only review.
+The attack candidate violates neither the full AND nor the scalar property.
+
+This rejects a blanket claim that nonlinear BaB cannot exploit these guards.
+Use the equivalent scalar-max encoding for B2 guarded obligations and complete
+route aggregation, retaining all legal pairs/properties and charging all calls.
+The positive results remain external numerical filters, not strict certificates.
+Original R6 UNKNOWN is preserved; no extra time or source/example change was used.
+
 This is the user-authorized repair of the existing isolated installation, not a
 second deployment. The failed R1 inventory audit is preserved. Transitive
 distribution metadata is now a list of name/version/location records; actual

@@ -899,5 +899,410 @@
     "shell_wall_seconds": 0.014744922,
     "status": "TOOLING_ERROR_BEFORE_NATIVE_CALL"
   },
-  "synthetic_verifier_calls": 4
+  "synthetic_verifier_calls": 4,
+  "authorized_guard_followup": {
+    "bytes_before_summary": 269314,
+    "cases": [
+      {
+        "execution_accepted": true,
+        "files": {
+          "imports.json": "6869023efac4e174da1420b9fcdfe530253d936a4483065e323d95e84ed468e0",
+          "native.log": "b372050585ea343ae6f890486acc56d75a498d7656a9ca48a6942ad2beaa83ac",
+          "outcome.json": "b98a6aadb5e31973600b6dbae5ccbd5cb976b28825f64ee7d2c223a430bccef0",
+          "spec.json": "b285890e12d600e354cfe7bb1decc55ea01c1b83bb87b7ef8e9ca8c757700bd8"
+        },
+        "mode": "input_split_and",
+        "outcome": {
+          "grade": "EXTERNAL_NUMERICAL_FILTER_NOT_INDEPENDENT_PROOF",
+          "graph": [
+            {
+              "kind": "BoundInput",
+              "name": "/0"
+            },
+            {
+              "kind": "BoundConstant",
+              "name": "/1"
+            },
+            {
+              "kind": "BoundSub",
+              "name": "/2"
+            },
+            {
+              "kind": "BoundConstant",
+              "name": "/3"
+            },
+            {
+              "kind": "BoundAdd",
+              "name": "/4"
+            },
+            {
+              "kind": "BoundConstant",
+              "name": "/5"
+            },
+            {
+              "kind": "BoundMul",
+              "name": "/6"
+            },
+            {
+              "kind": "BoundSigmoid",
+              "name": "/7"
+            },
+            {
+              "kind": "BoundSub",
+              "name": "/8"
+            },
+            {
+              "kind": "BoundMul",
+              "name": "/9"
+            },
+            {
+              "kind": "BoundAdd",
+              "name": "/10"
+            },
+            {
+              "kind": "BoundNeg",
+              "name": "/11"
+            },
+            {
+              "kind": "BoundConstant",
+              "name": "/12"
+            },
+            {
+              "kind": "BoundMul",
+              "name": "/13"
+            },
+            {
+              "kind": "BoundConstant",
+              "name": "/14"
+            },
+            {
+              "kind": "BoundSub",
+              "name": "/15"
+            },
+            {
+              "kind": "BoundConcat",
+              "name": "/16"
+            }
+          ],
+          "real_calls": 0,
+          "replay": [
+            {
+              "atoms": [
+                0.13831835499672346,
+                0.14014582450017432,
+                -1.1401458245001743
+              ],
+              "in_domain": true,
+              "violates": false,
+              "x": -0.6401458245001743
+            }
+          ],
+          "split_map": {},
+          "stats": {
+            "all_adv_candidates": null,
+            "attack_examples": [
+              [
+                -0.6401458245001743
+              ]
+            ],
+            "attack_margins": [
+              0.1383183549967235
+            ],
+            "bab": [
+              [
+                0,
+                1e-7,
+                11,
+                0.20145940780639648
+              ]
+            ],
+            "elapsed": 0.907200813293457,
+            "pgd": {
+              "num_restarts": 3000,
+              "num_steps": 100
+            }
+          },
+          "status": "verified",
+          "success": true,
+          "terminal_clock": 11407301.244609704,
+          "verifier_seconds": 0.9112839251756668
+        },
+        "outer_seconds": 6.07286012917757,
+        "session": {
+          "cleanup_contract": "IDENTITY_ONLY_V1",
+          "cleanup_deadline": 11407435.003526444,
+          "cleanup_error": null,
+          "cleanup_seconds": 0.027507157996296883,
+          "cleanup_status": "LEADER_REAPED_NO_LIVE_SESSION",
+          "complete_rss_sample_peak": 558129152,
+          "development_policy": "DEV_MARGIN_20261021_V1",
+          "error": null,
+          "escaped_sessions_checked": false,
+          "execution_error": null,
+          "execution_seconds": 6.045128101482987,
+          "exit_observed_at": 11407302.048692005,
+          "finished_at": 11407302.076202907,
+          "kill_signals": 1,
+          "known_rss_subtotal_peak": 558129152,
+          "log_base64": "",
+          "log_bytes": 0,
+          "log_complete": true,
+          "observation_contract": "IDENTITY_AND_RSS_TELEMETRY_DEV_V1",
+          "pidfd_backend": "LIBC_PIDFD",
+          "remaining_session": {
+            "identities": [],
+            "live": [],
+            "observation_scope": "IDENTITY_ONLY_CLEANUP",
+            "rss": null,
+            "rss_known": false,
+            "zombies": [
+              796781
+            ]
+          },
+          "remaining_session_known": true,
+          "returncode": 0,
+          "rss_acceptance_gate": false,
+          "rss_incomplete_samples": 1,
+          "rss_samples": 121,
+          "run_deadline": 11407433.003526444,
+          "sampled_session_plus_caller_rss": null,
+          "schema": "OWNED_ENDPOINT_SESSION_V1",
+          "session": 796781,
+          "started_at": 11407296.003567647,
+          "status": "COMPLETED",
+          "wait4_usage": {
+            "ru_maxrss_bytes": 534687744,
+            "ru_maxrss_kib": 522156,
+            "scope": "LINUX_WAIT4_DIRECT_CHILD_USAGE_NOT_SESSION_PEAK"
+          },
+          "zombie_reaping_complete": false
+        }
+      },
+      {
+        "execution_accepted": true,
+        "files": {
+          "imports.json": "6869023efac4e174da1420b9fcdfe530253d936a4483065e323d95e84ed468e0",
+          "native.log": "abdae5d37217b602538c8f1a1aea2ae8dfd89dfe29f8d963ffc03fa9fa7c9314",
+          "outcome.json": "865ad0f15a05a7bef59c5978b5f605361327a0a0826ef3ceb505fda774953d11",
+          "spec.json": "fc93fc6930619b7569e3339e22e6820d1486d5d4cdc8acce596aaa584b7ceb52"
+        },
+        "mode": "nonlinear_scalar_max",
+        "outcome": {
+          "grade": "EXTERNAL_NUMERICAL_FILTER_NOT_INDEPENDENT_PROOF",
+          "graph": [
+            {
+              "kind": "BoundInput",
+              "name": "/0"
+            },
+            {
+              "kind": "BoundConstant",
+              "name": "/1"
+            },
+            {
+              "kind": "BoundSub",
+              "name": "/2"
+            },
+            {
+              "kind": "BoundConstant",
+              "name": "/3"
+            },
+            {
+              "kind": "BoundAdd",
+              "name": "/4"
+            },
+            {
+              "kind": "BoundConstant",
+              "name": "/5"
+            },
+            {
+              "kind": "BoundMul",
+              "name": "/6"
+            },
+            {
+              "kind": "BoundSigmoid",
+              "name": "/7"
+            },
+            {
+              "kind": "BoundSub",
+              "name": "/8"
+            },
+            {
+              "kind": "BoundMul",
+              "name": "/9"
+            },
+            {
+              "kind": "BoundAdd",
+              "name": "/10"
+            },
+            {
+              "kind": "BoundConstant",
+              "name": "/11"
+            },
+            {
+              "kind": "BoundSub",
+              "name": "/12"
+            },
+            {
+              "kind": "BoundConstant",
+              "name": "/13"
+            },
+            {
+              "kind": "BoundAdd",
+              "name": "/14"
+            },
+            {
+              "kind": "BoundSub",
+              "name": "/15"
+            },
+            {
+              "kind": "BoundRelu",
+              "name": "/16"
+            },
+            {
+              "kind": "BoundAdd",
+              "name": "/17"
+            },
+            {
+              "kind": "BoundSub",
+              "name": "/18"
+            },
+            {
+              "kind": "BoundRelu",
+              "name": "/19"
+            },
+            {
+              "kind": "BoundAdd",
+              "name": "/20"
+            }
+          ],
+          "real_calls": 0,
+          "replay": [],
+          "split_map": {
+            "/15": [
+              {
+                "kind": "BoundRelu",
+                "name": "/16"
+              }
+            ],
+            "/18": [
+              {
+                "kind": "BoundRelu",
+                "name": "/19"
+              }
+            ],
+            "/6": [
+              {
+                "kind": "BoundSigmoid",
+                "name": "/7"
+              }
+            ],
+            "/7": [
+              {
+                "kind": "BoundMul",
+                "name": "/9"
+              }
+            ],
+            "/8": [
+              {
+                "kind": "BoundMul",
+                "name": "/9"
+              }
+            ]
+          },
+          "stats": {
+            "all_adv_candidates": null,
+            "attack_examples": null,
+            "attack_margins": null,
+            "bab": [
+              [
+                0,
+                1e-7,
+                10,
+                1.191312313079834
+              ]
+            ],
+            "elapsed": 2.0066680908203125,
+            "pgd": null
+          },
+          "status": "verified",
+          "success": true,
+          "terminal_clock": 11407309.27008863,
+          "verifier_seconds": 2.0106593649834394
+        },
+        "outer_seconds": 8.029640542343259,
+        "session": {
+          "cleanup_contract": "IDENTITY_ONLY_V1",
+          "cleanup_deadline": 11407441.078537041,
+          "cleanup_error": null,
+          "cleanup_seconds": 0.026598066091537476,
+          "cleanup_status": "LEADER_REAPED_NO_LIVE_SESSION",
+          "complete_rss_sample_peak": 561414144,
+          "development_policy": "DEV_MARGIN_20261021_V1",
+          "error": null,
+          "escaped_sessions_checked": false,
+          "execution_error": null,
+          "execution_seconds": 8.00280767120421,
+          "exit_observed_at": 11407310.08139424,
+          "finished_at": 11407310.107994556,
+          "kill_signals": 1,
+          "known_rss_subtotal_peak": 561414144,
+          "log_base64": "",
+          "log_bytes": 0,
+          "log_complete": true,
+          "observation_contract": "IDENTITY_AND_RSS_TELEMETRY_DEV_V1",
+          "pidfd_backend": "LIBC_PIDFD",
+          "remaining_session": {
+            "identities": [],
+            "live": [],
+            "observation_scope": "IDENTITY_ONLY_CLEANUP",
+            "rss": null,
+            "rss_known": false,
+            "zombies": [
+              802967
+            ]
+          },
+          "remaining_session_known": true,
+          "returncode": 0,
+          "rss_acceptance_gate": false,
+          "rss_incomplete_samples": 1,
+          "rss_samples": 162,
+          "run_deadline": 11407439.078537041,
+          "sampled_session_plus_caller_rss": null,
+          "schema": "OWNED_ENDPOINT_SESSION_V1",
+          "session": 802967,
+          "started_at": 11407302.07858882,
+          "status": "COMPLETED",
+          "wait4_usage": {
+            "ru_maxrss_bytes": 537329664,
+            "ru_maxrss_kib": 524736,
+            "scope": "LINUX_WAIT4_DIRECT_CHILD_USAGE_NOT_SESSION_PEAK"
+          },
+          "zombie_reaping_complete": false
+        }
+      }
+    ],
+    "deadline": 11407595.909184784,
+    "entry": 11407295.909184784,
+    "execution_head": "777ce61bf3e9c8a2fb3c0f10c8925a0d4420bbb5",
+    "modes": [
+      "input_split_and",
+      "nonlinear_scalar_max"
+    ],
+    "old_smoke_rule_correction": "R6 satisfied actual nonlinear branching; positive was not an authorized prerequisite",
+    "real_calls": 0,
+    "script_sha256": "3b1bd0e952d86a361d74c981f10a431def20e7f752d4a42fd63e41e2ffc56110",
+    "status": "COMPLETED",
+    "through_cases_seconds": 14.201175481081009,
+    "unguarded_exact_minimum": -0.26159415595576485,
+    "saved_only_review": {
+      "status": "PASS",
+      "hash_bindings_checked": 16,
+      "scalar_actual_split_nodes": {
+        "/6": 1,
+        "/7": 4
+      },
+      "real_request_increment": 0,
+      "scientific_decision": "Guarded scalar encoding reaches positive numerical filter; do not claim generic guard incapability"
+    }
+  }
 }
