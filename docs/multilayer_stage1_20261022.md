@@ -131,3 +131,21 @@ scientific endpoint was tuned to real outcomes.
 Final accounting separately includes result-audit cost. Census partial diagnostic
 receipts remain descriptive and are marked if received after the local3s soft
 sub-budget; no late public-PGD witness or late verifier result is accepted.
+
+## Execution started
+
+Detached controller123148 runs immutable`4f18c830e` in
+`executions/multilayer_stage1_20261022_r1`, results in the same basename under
+`results/`; no live source is edited. [Launch records](multilayer_stage1_records_20261022.json)
+bind manifest/start/selection/catalog. Prelaunch102GiB memory available,150GiB disk,
+load6.87 on20 logical CPUs; one native numerical thread, no other job modified.
+
+Selection completed in28.636s:30 common clean-correct inputs from474 ascending
+eligible scans. Independent read-only audit checked all150 materialized tensor
+contents against CIFAR float32-ToTensor/cast and properties, plus600 paired objects;
+it did not rerun predictions or prove input containment in exact real arithmetic.
+PublicPGD12/12 groups(240domains) completed,20 model/input objects have accepted
+full-model replay witnesses. Those are auxiliary observations, not verifier-arm
+successes. Census and the frozen verification queue continue automatically.
+Live ledgers supersede this fixed launch snapshot; no primary gate is evaluated
+before all registered witness sources finish.

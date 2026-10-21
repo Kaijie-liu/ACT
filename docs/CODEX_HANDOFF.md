@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## Stage1 frozen real queue running 2026-10-22
+
+Training12/12;selection30/30 and publicPGD240domains complete,20 accepted replay objects; no paired winner or primary decision yet.
+DetachedPID123148 executes immutable4f18c830e,root`/data1/Kane/MOE/results/multilayer_stage1_20261022_r1`;[records](multilayer_stage1_records_20261022.json) bind start/manifest/catalog.
+Independent read-only audit:474 ascending eligible scans,first30 all12-clean records,1855exclusions,150tensor contents,600paired objects all pass; no prediction rerun/G3 upgrade.
+Frozen600calls are ACT180/naive180/pruned240; census then full verification run automatically with existing hard supervisor and final reader.
+Do not edit running code/model/input/methods or borrow auxiliary answers; retain all errors/timeouts and full costs. Live ledgers override this launch prefix.
+Primary n' and Wilson decision wait for every registered witness source; sampled/candidate census counts alone do not establish a bottleneck.
+Next finish queue/audit and obey registered stop/gray/enter rule. G1–G6 OPEN, no new union mechanism or external advantage claimed.
+
 ## Stage1 three-arm bottleneck test frozen 2026-10-22
 
 Training12/12 audited; real verification0/600, new integration9/9 in5.170s; one additional offline-ledger control passes, no repeated native semantic solves.
