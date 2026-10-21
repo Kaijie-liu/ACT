@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## Approved execution correction and active goal, 2026-10-21
+
+[Current contract](ALGORITHM_RESEARCH_GOAL.md) and [registered goal](ALGORITHM_RESEARCH_GOAL_SUMMARY_20261021c.txt)
+now adopt the user's explicit correction:41 observed requests, numerical diagnostics,
+2GiB B1 artifacts, complete-only slots,150 local calls/stage and8×1800s separately charged.
+Tooling repair/retest is allowed with costs/failures retained; no reinstall is needed.
+Execute B2 inventory repair→actual nonlinear smoke→B1→B2; B1 has no positive-result gate.
+Previous pending/stop wording is historical, not a renewed authorization barrier.
+G1–G6 OPEN; real ledger0/0/0 at registration. Do not add per-interface protocol bundles.
+
 ## B1/B4 known-history union consolidated, 2026-10-21
 
 [Manifest](b1_candidate_history_20261021.json) and [audit](b1_history_inventory_20261021.md)
