@@ -1,5 +1,35 @@
 # B1 same-source diagnostic design — not an execution freeze
 
+## Current approved scope and numerical records
+
+The [third goal revision](ALGORITHM_RESEARCH_GOAL.md) supersedes the historical
+prospective54-slot plan below: B1 uses the41 explicitly reopened observed
+requests, numerical-policy attribution, stage-wide first10 unresolved F0
+obligations for full matrices, and2GiB cumulative artifacts. Exact reconstruction
+is not an exploratory prerequisite. The41-request execution and diagnostic
+query table still need to be frozen; no real request has started.
+
+`RequestDiagnostics(numerical_all=True)` records each existing attempt and return
+once, publishing ranges and observations separately and retaining hash references
+in progress inventories. It uses the same deadline and cumulative Work. The batch
+driver supplies the remaining stage-wide capture allowance; a missing source
+consumes its ordinal rather than being replaced. Default capture remains unchanged.
+The raw primal, offset-adjusted primal/dual, accepted lower bound and existing
+full-model replay are separate fields. Monolithic point values use the accepted
+active branch's source, never the first branch by assumption. A nonunit selector
+leaves point decomposition missing rather than silently rounding it. These are
+numerical observations, not feasible-point or network-lowering proofs; absent
+native dual multipliers leave residual-correction attribution explicitly missing.
+
+Ordinary tests in `tests/test_b1_compact_diagnostics.py` pass12 fixed-array checks
+and two complete synthetic requests. The staged path returns2 F0 calls; the
+monolithic path returns1 combined call. Both retain2 unresolved source records,
+keep all27 obligations and return UNKNOWN. Duplicate monolithic matrices count
+as storage, not additional solves. Numerical mode labels unchecked upstream
+prefixes; the original exact-prefix mode and production acceptance are unchanged.
+
+## Historical design before the approved correction
+
 Status: **DRAFT_NOT_EXECUTABLE** at `8534f1dc8`. No new model, clean-forward,
 solver or attack ran during this review. B1–B4's real-stage ledger remains0/0/0.
 This design closes a specific experimental-design gap: existing scalar records

@@ -383,7 +383,7 @@ def _run_f0_impl(
                 )
                 valid = bool(replay["valid"])
                 if diagnostics is not None:
-                    diagnostics.returned(decision, replay_valid=valid)
+                    diagnostics.returned(decision, replay_valid=valid, replay=replay)
                 if valid:
                     witness = decision.candidate_input.detach().cpu()
                 if budget and (not valid or calls is not None):

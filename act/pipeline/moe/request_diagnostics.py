@@ -1,7 +1,8 @@
 """Default-off B1 obligation tracking and deferred same-invocation capture.
 
-This is observational, not a verifier. The first returned unresolved F0 call is
-selected after the existing decision/replay; no extra solve or replay occurs.
+This is observational, not a verifier. Legacy mode selects the first returned
+unresolved F0 call. Opt-in numerical mode records all returns and captures a
+bounded prefix of unresolved obligations. No extra solve or replay occurs.
 """
 import hashlib
 import math
@@ -9,7 +10,7 @@ from functools import wraps
 from fractions import Fraction
 
 from scoped_source.native_capture import (
-    CaptureError, CaptureDeadline, CaptureLedger, canonical, require, receive,
+    CaptureError, CaptureDeadline, CaptureCapacity, CaptureLedger, canonical, require, receive,
 )
 
 
@@ -98,8 +99,12 @@ def constraint_prefix(left, right, offset, prefix, work):
                 require(row(lm, r) == row(rm, start+r), prefix+" coefficients")
 
 
-def source_context(*, encoding, entry, router, joint, router_input, work):
-    """Actual references plus checked stored-prefix maps; no repropagation."""
+def source_context(*, encoding, entry, router, joint, router_input, work, checked_prefix=True):
+    """Actual references, with optional exact stored-prefix checks; no propagation.
+
+    Disabling prefix checks is only a labelled numerical diagnostic mode. It
+    neither changes production acceptance nor establishes checked lowering.
+    """
     from act.pipeline.moe.experiment1f0 import _support_status
     require(joint.relation_mode == "shared_input" and encoding.gate_margin_evidence is None,
             "B1 diagnostic source is shared-input baseline F0")
@@ -119,9 +124,10 @@ def source_context(*, encoding, entry, router, joint, router_input, work):
     offsets = dict(eq=router_input.n_eq, ineq=router_input.n_ineq)
     require(entry.n_eq == offsets["eq"]+router.n_eq and
             entry.n_ineq == offsets["ineq"]+router.n_ineq, "router-to-entry row extents")
-    constraint_prefix(router, entry, offsets, "router_to_entry", work)
-    constraint_prefix(entry, base, dict(eq=0, ineq=0), "entry_to_joint", work)
-    constraint_prefix(base, encoding.output_hz, dict(eq=0, ineq=0), "joint_to_f0", work)
+    if checked_prefix:
+        constraint_prefix(router, entry, offsets, "router_to_entry", work)
+        constraint_prefix(entry, base, dict(eq=0, ineq=0), "entry_to_joint", work)
+        constraint_prefix(base, encoding.output_hz, dict(eq=0, ineq=0), "joint_to_f0", work)
     bounds = encoding.bounds
     ranges = dict(margin=list(encoding.margin_bounds),
                   gate=[bounds.lambda_lower, bounds.lambda_upper],
@@ -143,8 +149,137 @@ def source_context(*, encoding, entry, router, joint, router_input, work):
         ranges=ranges, margin_support=_support_status(encoding.margin_support),
         difference_support=_support_status(encoding.difference_support),
         margin_relax_binaries=False, difference_relax_binaries=True,
-        guarantee="STORED_PREFIX_CHECK_NOT_NETWORK_OR_GUARD_PROOF")
+        guarantee=("STORED_PREFIX_CHECK_NOT_NETWORK_OR_GUARD_PROOF" if checked_prefix else
+                   "NUMERICAL_SOURCE_OBSERVATION_NOT_CHECKED_LOWERING"))
     return {"guarded_entry": entry, "conditioned_router": router, "expert_joint": base}, metadata
+
+
+def finite_number(value):
+    """JSON has no NaN/Inf; missingness is not a zero bound."""
+    return None if value is None or not math.isfinite(float(value)) else float(value)
+
+
+def compact_ranges(encoding):
+    from act.pipeline.moe.experiment1f0 import _support_status
+    bounds = encoding.bounds
+    return dict(pair=list(encoding.pair), margin=list(encoding.margin_bounds),
+        gate=[bounds.lambda_lower, bounds.lambda_upper],
+        difference=[bounds.difference_lower, bounds.difference_upper],
+        product=[bounds.product_lower, bounds.product_upper],
+        margin_support=_support_status(encoding.margin_support),
+        difference_support=_support_status(encoding.difference_support),
+        margin_relax_binaries=False, difference_relax_binaries=True)
+
+
+def compact_observation(holder, decision, replay, work):
+    """Scalar observations of this solve only; no solve, replay or feasibility claim.
+
+    In particular accepted_minimum is a LOWER bound. A raw candidate objective
+    is not an upper bound without a separate feasibility check. Nonunit
+    monolithic selectors are not silently rounded or divided out.
+    """
+    import numpy as np
+    work.tick()
+    record = dict(scope=holder.scope, grade="SAME_SOLVE_NUMERICAL_OBSERVATION_NOT_FEASIBILITY_PROOF",
+        decision={k: finite_number(getattr(decision, k, None)) for k in (
+            "minimum", "candidate_objective", "elapsed", "solver_certified_lower_bound",
+            "solver_primal_objective", "solver_dual_objective", "solver_gap")},
+        status=decision.status, reason=getattr(decision, "reason", None),
+        bound_kind=getattr(decision, "solver_bound_kind", None),
+        production_candidate_available=getattr(decision, "candidate_input", None) is not None,
+        replay=dict(replay) if replay is not None else None,
+        dual_residual_correction=None, dual_residual_reason="NATIVE_DUAL_MULTIPLIERS_NOT_RECORDED",
+        point=None, point_missing=None)
+    if holder.pending is None:
+        record.update(native_called=False, point_missing="NATIVE_HOOK_MISSING")
+        return record
+    method, kwargs = holder.pending
+    record["native_called"] = bool(kwargs.get("native_called", True))
+    if method == "failure":
+        record.update(native_event=kwargs["reason"], point_missing="NATIVE_FAILURE")
+        return record
+    model, result = kwargs["model"], kwargs["result"]
+    get = result.get if isinstance(result, dict) else lambda k: getattr(result, k, None)
+    offset = float(model.value_center[kwargs["row"]]) if method == "hz" else 0.
+    record.update(native_event="RETURNED", objective_offset=offset,
+        native_result={k: finite_number(get(k)) for k in ("status", "fun", "mip_dual_bound", "mip_gap", "mip_node_count")})
+    for field in ("fun", "mip_dual_bound"):
+        v = finite_number(get(field))
+        record[field+"_with_offset"] = finite_number(v+offset) if v is not None else None
+    x = get("x")
+    objective = kwargs["objective"] if method == "hz" else model.objective
+    record["variables"] = int(objective.size)
+    if x is None:
+        record["point_missing"] = "NO_NATIVE_CANDIDATE"
+        return record
+    if not isinstance(x, np.ndarray) or x.ndim != 1 or x.size != objective.size:
+        record["point_missing"] = "CANDIDATE_SHAPE_MISMATCH"
+        return record
+    work.visit("coefficient_visits", int(x.size))
+    if not np.isfinite(x).all():
+        record["point_missing"] = "NONFINITE_CANDIDATE"
+        return record
+    record["raw_candidate_objective"] = finite_number(float(objective @ x)+offset)
+    # Never mistake the accepted lower bound for this native candidate value.
+    if method == "hz":
+        j, local, nc = 0, x, model.n_cont
+        local_objective = record["raw_candidate_objective"]
+    else:
+        record["selectors"] = [float(v) for v in x[model.selector_offset:model.selector_offset+len(holder.encodings)]]
+        active = getattr(decision, "active_pair", None)
+        pairs = [tuple(e.pair) for e in holder.encodings]
+        if active is None or tuple(active) not in pairs:
+            record["point_missing"] = "NO_ACCEPTED_ACTIVE_BRANCH"
+            return record
+        j = pairs.index(tuple(active))
+        record["active_pair"] = list(active)
+        if record["selectors"][j] != 1.:
+            record["point_missing"] = "NONUNIT_SELECTOR_NOT_PROJECTED"
+            return record
+        lower = model.lowered[j]
+        start = model.local_offsets[j]
+        local, nc = x[start:start+lower.n_var], lower.n_cont
+        work.visit("coefficient_visits", int(lower.value_matrix.getrow(0).nnz))
+        local_objective = finite_number(float(lower.value_center[0]+(lower.value_matrix @ local)[0]))
+    encoding, context = holder.encodings[j], holder.contexts[j]
+    joint, router = context["joint"], context["router"]
+    hz = joint.output_hz
+    require(hz.frame_id == router.frame_id == encoding.output_hz.frame_id,
+            "compact same source frame")
+    require(nc == hz.n_cont+2 and local.size == nc+hz.n_bin
+            and router.n_cont <= hz.n_cont and router.n_bin <= hz.n_bin,
+            "compact source factor widths")
+    beta = 2*local[nc:nc+hz.n_bin]-1
+    def output(source):
+        work.visit("coefficient_visits", source.n_out+source.Gc.nnz+source.Gb.nnz)
+        return source.c + source.Gc @ local[:source.n_cont] + source.Gb @ beta[:source.n_bin]
+    y, r = output(hz), output(router)
+    q = np.asarray(encoding.property_row)
+    work.visit("coefficient_visits", 2*int(q.size))
+    a, b = encoding.pair
+    baseline = float(q @ y[list(joint.b_rows)])+encoding.property_constant
+    difference = float(q @ (y[list(joint.a_rows)]-y[list(joint.b_rows)]))
+    margin = float(r[a]-r[b])
+    bounds = encoding.bounds
+    lam = ((bounds.lambda_lower+bounds.lambda_upper)*.5
+           +(bounds.lambda_upper-bounds.lambda_lower)*.5*local[hz.n_cont])
+    product = ((bounds.product_lower+bounds.product_upper)*.5
+               +(bounds.product_upper-bounds.product_lower)*.5*local[hz.n_cont+1])
+    if not all(math.isfinite(v) for v in (baseline, difference, margin, lam, product)):
+        record["point_missing"] = "NONFINITE_SOURCE_POINT"
+        return record
+    sigma = 1/(1+math.exp(-margin)) if margin >= 0 else math.exp(margin)/(1+math.exp(margin))
+    record["point"] = dict(pair=list(encoding.pair), interpretation="RAW_NUMERICAL_FACTOR_ASSIGNMENT",
+        b=baseline, d=difference, m=margin, lambda_value=float(lam), w=float(product), sigma=sigma,
+        b_plus_w=finite_number(baseline+product), b_plus_lambda_d=finite_number(baseline+lam*difference),
+        b_plus_sigma_d=finite_number(baseline+sigma*difference),
+        gate_consistency=finite_number(lam-sigma), product_gap=finite_number(product-lam*difference),
+        gate_output_gap=finite_number((lam-sigma)*difference),
+        native_local_objective=local_objective,
+        f0_lowering_point_gap=(finite_number(baseline+product-local_objective)
+                               if local_objective is not None else None))
+    work.tick()
+    return record
 
 
 class RequestDiagnostics:
@@ -154,9 +289,19 @@ class RequestDiagnostics:
     artifact cap. It is optional for tests, mandatory for a frozen real worker.
     It must not request model/solver work. Hard-kill missingness stays censored.
     """
-    def __init__(self, *, work, byte_limit, publish=None):
+    def __init__(self, *, work, byte_limit, publish=None, numerical_all=False, full_capture_limit=1):
+        require(type(numerical_all) is bool and type(full_capture_limit) is int
+                and 0 <= full_capture_limit <= 10, "finite diagnostic selection")
+        require(numerical_all or full_capture_limit == 1, "legacy first-source contract")
         self.ledger = CaptureLedger(work, byte_limit)
         self.publish = publish
+        self.numerical_all = numerical_all
+        # The batch driver passes the remaining stage-wide first-ten allowance.
+        # Reserving an ordinal happens before capture; a missing record is not
+        # replaced by a later, easier obligation.
+        self.full_capture_limit = full_capture_limit
+        self.full_capture_events = []
+        self.observations = {}
         self.binding = None
         self.roster = None
         self.rows = {}
@@ -222,13 +367,18 @@ class RequestDiagnostics:
         require(path in ("pair", "monolithic") and (path == "monolithic" or len(pairs) == 1), "native path")
         scoped = dict(self.binding, roster=self.roster_hash, path=path, ordinal=ordinal,
                       property_index=index, pairs=[list(p) for p in pairs], **prop)
-        holder = DeferredCapture(self, scoped, encodings, contexts) if self.selected is None else None
+        holder = DeferredCapture(self, scoped, encodings, contexts) if self.numerical_all or self.selected is None else None
         self.pending = (pairs, index, holder)
+        if self.numerical_all:
+            digest = self.publish_compact("attempt", dict(scope=scoped,
+                ranges=[compact_ranges(e) for e in encodings]))
+            for pair in pairs:
+                self.rows[pair, index]["attempt_sha256"] = digest
         self.emit()
         return holder
 
     @observed
-    def returned(self, decision, *, replay_valid):
+    def returned(self, decision, *, replay_valid, replay=None):
         self.ledger.tick()
         require(self.pending is not None and type(replay_valid) is bool, "pending native return/replay")
         pairs, index, holder = self.pending
@@ -237,37 +387,82 @@ class RequestDiagnostics:
         try:
             for pair in pairs:
                 self.rows[pair, index].update(state="RETURNED", result=final)
-            if holder is not None and final == "UNKNOWN":
+            if self.numerical_all:
+                require(holder is not None and holder.pending is not None, "same-solve numerical hook")
+                if replay is not None:
+                    require(type(replay) is dict and replay.get("valid") is replay_valid,
+                            "same replay outcome")
+                observation = compact_observation(holder, decision, replay, self.ledger.work)
+                digest = self.publish_compact("observation", observation)
+                self.observations[holder.scope["ordinal"]] = observation
+                for pair in pairs:
+                    self.rows[pair, index]["observation_sha256"] = digest
+            if holder is not None and final == "UNKNOWN" and self.numerical_all:
+                remaining = self.full_capture_limit-len(self.full_capture_events)
+                for j in range(min(remaining, len(pairs))):
+                    event = dict(query=holder.scope["ordinal"], pair=list(pairs[j]), property_index=index,
+                                 status="RESERVED", sha256=None)
+                    self.full_capture_events.append(event)
+                    # Publish the reserved ordinal before copying a large source.
+                    self.emit()
+                    try:
+                        selected = self.capture_source(holder, pairs, index, j, checked_prefix=False)
+                    except CaptureCapacity as exc:
+                        event.update(status="MISSING_CAPTURE_CAPACITY", reason=str(exc))
+                    else:
+                        event.update(status="CAPTURED" if selected["source_available"] else "SOURCE_UNAVAILABLE",
+                                     sha256=selected["record"].sha256, receipt=selected["receipt"])
+                        if self.selected is None:
+                            self.selected = selected
+            elif holder is not None and final == "UNKNOWN":
                 require(holder.pending is not None, "native hook return required")
-                from act.back_end.solver.diagnostic_capture import NativeCapture
-                method, kwargs = holder.pending
-                if method == "failure":
-                    extra, metadata = {}, {"source_unavailable": True}
-                else:
-                    context = holder.contexts[0]
-                    extra, metadata = source_context(encoding=holder.encodings[0],
-                        **{k: context[k] for k in ("entry", "router", "joint", "router_input")},
-                        work=self.ledger.work)
-                    metadata["residual_pair_scope"] = "FIRST_ORDINAL_NOT_ACTIVE_BRANCH"
-                capture = NativeCapture(scope=holder.scope, ledger=self.ledger,
-                                        extra_hz=extra, metadata=metadata)
-                getattr(capture, method)(**kwargs)
-                rec = capture.record
-                receipt = receive(rec.payload, expected_sha256=rec.sha256,
-                                  expected_scope=holder.scope, work=self.ledger.work)
-                self.selected = dict(query=holder.scope["ordinal"], pair=list(pairs[0]), property_index=index,
-                    record=rec, receipt=receipt, source_available=method != "failure",
-                    other_residual_pairs_unseparated=[list(p) for p in pairs[1:]])
-                self.rows[pairs[0], index]["state"] = (
-                    "SELECTED" if method != "failure" else "SELECTED_SOURCE_UNAVAILABLE")
-                if self.publish is not None:
-                    self.publish("native", rec.payload, rec.sha256)
-                    self.ledger.tick()
+                self.selected = self.capture_source(holder, pairs, index, 0, checked_prefix=True)
         finally:
             if holder is not None:
                 holder.clear()
             self.pending = None
         self.emit()
+
+    def capture_source(self, holder, pairs, index, j, *, checked_prefix):
+        from act.back_end.solver.diagnostic_capture import NativeCapture
+        method, kwargs = holder.pending
+        if method == "failure":
+            extra, metadata = {}, {"source_unavailable": True}
+        else:
+            context = holder.contexts[j]
+            extra, metadata = source_context(encoding=holder.encodings[j],
+                **{k: context[k] for k in ("entry", "router", "joint", "router_input")},
+                work=self.ledger.work, checked_prefix=checked_prefix)
+            metadata["residual_pair_scope"] = "FIRST_ORDINAL_NOT_ACTIVE_BRANCH" if checked_prefix else "FIXED_OBLIGATION_ORDINAL"
+            metadata["source_branch_index"] = j
+        capture = NativeCapture(scope=holder.scope, ledger=self.ledger, extra_hz=extra, metadata=metadata)
+        getattr(capture, method)(**kwargs)
+        rec = capture.record
+        receipt = receive(rec.payload, expected_sha256=rec.sha256,
+                          expected_scope=holder.scope, work=self.ledger.work)
+        selected = dict(query=holder.scope["ordinal"], pair=list(pairs[j]), property_index=index,
+            record=rec, receipt=receipt, source_available=method != "failure",
+            other_residual_pairs_unseparated=[list(p) for i, p in enumerate(pairs) if i != j])
+        self.rows[pairs[j], index]["state"] = "SELECTED" if method != "failure" else "SELECTED_SOURCE_UNAVAILABLE"
+        if self.publish is not None:
+            self.publish("native", rec.payload, rec.sha256)
+            self.ledger.tick()
+        return selected
+
+    def publish_compact(self, kind, value):
+        # Each attempted/returned invocation is emitted once. Repeated progress
+        # inventories contain only hashes, not quadratic copies of observations.
+        upper = 16384+4096*len(value["scope"]["pairs"])
+        self.ledger.reserve(upper)
+        raw = canonical(value)
+        require(len(raw) <= upper, "compact observation bound")
+        self.ledger.visit((len(raw)+4095)//4096)
+        self.ledger.accept(len(raw))
+        digest = hashlib.sha256(raw).hexdigest()
+        if self.publish is not None:
+            self.publish(kind, raw, digest)
+        self.ledger.tick()
+        return digest
 
     def censor(self, reason):
         # Called while handling an existing failure: record in memory even if
@@ -307,8 +502,13 @@ class RequestDiagnostics:
             selected=None if self.selected is None else {k: v for k, v in self.selected.items() if k != "record"},
             registered_f0_calls=self.queries, terminal=self.terminal,
             guarantee="STRUCTURAL_DIAGNOSTIC_NOT_PROOF")
+        if self.numerical_all:
+            summary.update(numerical_all=True, full_capture_limit=self.full_capture_limit,
+                full_capture_events=self.full_capture_events,
+                observed_f0_calls=len(self.observations),
+                native_calls=sum(int(v["native_called"]) for v in self.observations.values()))
         # Fixed bounded inventory, check conservative allocation before encoding.
-        upper = self.inventory_upper
+        upper = self.inventory_upper + (65536 if self.numerical_all else 0)
         self.ledger.reserve(upper)
         raw = canonical(summary)
         require(len(raw) <= upper, "diagnostic inventory encoding bound")

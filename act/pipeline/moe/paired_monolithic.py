@@ -150,7 +150,7 @@ def _run_monolithic(*, model, center, clean_prediction, internal, config, reuse=
             upper=internal["upper"], clean_prediction=clean_prediction,
         )
         if diagnostics is not None:
-            diagnostics.returned(decision, replay_valid=bool(replay["valid"]))
+            diagnostics.returned(decision, replay_valid=bool(replay["valid"]), replay=replay)
         row = asdict(decision)
         row.pop("candidate_input", None)
         row.update(property_index=index, full_model_witness_valid=bool(replay["valid"]))

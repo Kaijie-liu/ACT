@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## B1 all-return numerical records integrated 2026-10-21
+
+[Observer](../act/pipeline/moe/request_diagnostics.py) now records all same-solve returns, ranges, primal/lower-bound distinctions and m/d/b/gate/product point values.
+Default legacy capture is unchanged; opt-in numerical mode takes a caller-supplied remaining first-ten obligation allowance, with unavailable ordinals retained.
+[Tests](../tests/test_b1_compact_diagnostics.py):12 fixed-array tests and two synthetic complete requests pass; no trained source, dataset, or extra observer solve.
+Both synthetic paths remain UNKNOWN; staged has2 F0 calls, monolithic1, each with2 retained source records—not extra native calls.
+Numerical source records do not require exact prefix reconstruction and explicitly do not prove upstream lowering; production acceptance is unchanged.
+Real request/obligation/attribution increment remains0/0/0. No real stage or diagnostic has started.
+Next: freeze the41-request driver and fixed diagnostic table, then execute B1 under the approved budget; no renewed permission or repeated old controls needed.
+
 ## Active revised goal and B2 smoke outcome, 2026-10-21
 
 [Goal](ALGORITHM_RESEARCH_GOAL_SUMMARY_20261021c.txt) is ACTIVE; G1–G6 OPEN.
