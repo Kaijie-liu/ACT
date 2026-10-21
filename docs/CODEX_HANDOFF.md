@@ -6,6 +6,7 @@ Real ledger18/41 complete, ordinal18 running, attribution0; prior UNKNOWN3/TIMEO
 Detached controller1857594 executes19cf25583 in`/data1/Kane/MOE/executions/b1_observed_20261021_19cf25583`; result root`b1_observed_20261021_r3`.
 Start receipt confirms18 retained,4823.979257s/151830125 bytes carried, first new launch18_seed1_4275 with0 capture allowance.
 Offline/B2 now reuse the tested timer finalizer;2 additional ordinary wiring tests pass, no new solver/model/control batch.
+Saved-query returns also retain existing primal/dual/gap/reason;1 no-solver test passes. Slice endpoint comparisons do not isolate gate-range width alone.
 After online completion use a frozen copy of this newer code for existing diagnostics then B2; old696669ade copy lacks retained-prefix resolution.
 Do not change live code, rerun prefix, or treat this repair as algorithm progress. G1–G6 OPEN.
 

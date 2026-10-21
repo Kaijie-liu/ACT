@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import tempfile
 import time
+from types import SimpleNamespace
 import unittest
 import numpy as np
 
@@ -33,6 +34,20 @@ def fixture():
 
 
 class SavedControls(unittest.TestCase):
+    def test_timeout_telemetry_is_preserved_without_bound_promotion(self):
+        raw=SimpleNamespace(status='timeout',solver_status=1,minimum=None,
+            candidate_objective=.4,solver_primal_objective=.4,solver_dual_objective=.2,
+            solver_gap=.5,elapsed=12.,reason='solver_limit',solver_bound_kind=None)
+        result=m.minimum_observation(raw)
+        self.assertIsNone(result['minimum'])
+        self.assertEqual(result['solver_dual_objective'],.2)
+        self.assertEqual(result['candidate_objective'],.4)
+        self.assertEqual(result['reason'],'solver_limit')
+        self.assertFalse(result['raw_dual_independently_checked'])
+        self.assertFalse(result['exact_feasibility_checked'])
+        raw.candidate_objective=float('inf')
+        self.assertIsNone(m.minimum_observation(raw)['candidate_objective'])
+
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory(dir='/data1/Kane/MOE')
         self.path=Path(self.tmp.name)/'source.json'

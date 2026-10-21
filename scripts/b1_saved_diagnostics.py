@@ -23,6 +23,18 @@ def number(x):
     return None if x is None or not math.isfinite(float(x)) else float(x)
 
 
+def minimum_observation(result):
+    """Keep already returned telemetry; raw duals never become accepted bounds."""
+    value={key:number(getattr(result,key,None)) for key in
+        ('minimum','candidate_objective','solver_primal_objective',
+         'solver_dual_objective','solver_gap','elapsed')}
+    value.update(status=result.status,solver_status=result.solver_status,
+        reason=result.reason,solver_bound_kind=getattr(result,'solver_bound_kind',None),
+        objective_scope='PRIMAL_DUAL_AND_CANDIDATE_INCLUDE_OUTPUT_CONSTANT',
+        exact_feasibility_checked=False,raw_dual_independently_checked=False)
+    return value
+
+
 class StoredProblem:
     def remaining(self, limit):
         tick(self.deadline)
@@ -154,7 +166,7 @@ class StoredProblem:
         return dict(source_sha256=self.digest, scope=self.value['scope'],
             mode='INTEGER_DIFFERENCE_UPPER' if upper else 'INTEGER_DIFFERENCE_LOWER',
             numerical_bound=None if bound is None else (-bound if upper else bound),
-            result={k:number(getattr(result,k)) for k in ('minimum','candidate_objective','solver_gap','elapsed')},
+            result=minimum_observation(result),result_objective='-d' if upper else 'd',
             status=result.status, solver_status=result.solver_status, native_calls=1,
             grade='OFFLINE_NUMERICAL_POLICY_NOT_CHECKED_RANGE', repairs_online=False)
 
@@ -199,6 +211,7 @@ class StoredProblem:
         return dict(source_sha256=self.digest, scope=self.value['scope'],
             mode='REPLACE_DIFFERENCE_RANGE', difference=[dlo,dhi],
             status=result.status, lower=number(result.minimum), solver_status=result.solver_status,
+            result=minimum_observation(result),
             native_calls=1, seconds=result.elapsed,
             grade='NEW_F0_INTEGER_DOMAIN_NUMERICAL_DIAGNOSTIC_NOT_SAME_NATIVE_LP', repairs_online=False)
 
@@ -238,6 +251,8 @@ class StoredProblem:
         return dict(source_sha256=self.digest,scope=self.value['scope'],
             mode='CLOSED_MARGIN_SLICE_ENDPOINT', slice_index=slice_index,endpoint=endpoint,
             interval=[a,b],gate=gate,lower=number(result.minimum),status=result.status,
+            result=minimum_observation(result),
             solver_status=result.solver_status,seconds=result.elapsed,native_calls=1,
             domain='same shared joint HZ with integer factors, margin slice only',
+            comparison_scope='SLICE_PLUS_ENDPOINT_SUPPORT_NOT_ONLY_A_NARROWER_F0_GATE_RANGE',
             grade='NUMERICAL_SIGMOID_NEXTAFTER_NOT_RATIONAL_ENCLOSURE',repairs_online=False)

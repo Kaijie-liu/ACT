@@ -75,6 +75,24 @@ explicitly not the original continuous LP. There are no extra routine MILP slots
 the captured online MILP is the baseline, and only the separately registered
 eight eligible extended calls can rerun it.
 
+The later saved-query review retains each existing HZ solver return's candidate,
+offset-inclusive primal and raw dual, gap, reason and policy minimum for range,
+replacement and slice queries. It adds no solver call. One ordinary no-solver
+test passes, checking that a positive raw dual at status1 remains recorded with
+`minimum=None`; it is not promoted to an accepted bound. Upper difference
+queries explicitly label their minimized objective as`-d`.
+
+The slice diagnostic compares margin slices plus endpoint support on the shared
+integer HZ, not merely a smaller gate interval in the original F0 matrix.
+An improvement over F0 therefore cannot uniquely identify slicing resolution:
+the endpoint encoding and query allocation also differ. The first two capture
+ordinals remain fixed, even if missing or from the same request. A complete
+slice conclusion requires every necessary endpoint, not just the best completed
+ones. Same-matrix LP changes only integrality; comparison to the earlier MILP
+still has different solve allocations. Internal elapsed fields cover different
+scopes, so full costs use query `receipt.seconds`. These diagnostics remain
+numerical; a negative lower bound alone does not establish a nonpositive optimum.
+
 The [offline queue](../scripts/b1_diagnostic_queue.py) now uses the existing
 owned-session supervisor and a separate frozen code copy. Its unchanged catalog
 has145 entries:41 candidate-replay/PGD,10 same-matrix LP,20 integer difference
