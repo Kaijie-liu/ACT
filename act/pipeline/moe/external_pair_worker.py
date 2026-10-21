@@ -9,6 +9,18 @@ import time
 from act.pipeline.moe.external_compatibility import TOOL,ENV,dump,sha
 
 
+def diagnostic_pairs(request,num_experts):
+    pairs=request.get('diagnostic_pairs')
+    if pairs is None:return None
+    if (request.get('scope')!='SELECTED_WHOLE_BOX_PAIR_DIAGNOSIS_NOT_COMPLETE_REQUEST'
+            or not isinstance(pairs,list) or len(pairs)!=1
+            or not isinstance(pairs[0],list) or len(pairs[0])!=2
+            or any(type(x) is not int for x in pairs[0])
+            or not 0<=pairs[0][0]<pairs[0][1]<num_experts):
+        raise ValueError('explicit single-pair diagnostic scope')
+    return pairs
+
+
 def load(request):
     from act.util.typing_compat import install_typing_override
     install_typing_override()
@@ -85,12 +97,17 @@ def external(root,started):
     if not Path(auto_LiRPA.__file__).resolve().is_relative_to(TOOL/'auto_LiRPA'):raise ValueError('wrong external source')
     if sys.version_info[:3]!=(3,11,16) or torch.__version__!='2.11.0+cu130':raise ValueError('frozen external environment drift')
     request=json.loads((root/'request.json').read_text());model,tensors=load(request)
-    routes=json.loads((root/'routes.json').read_text())['routes']
+    diagnostic=diagnostic_pairs(request,model.spec.num_experts)
+    if diagnostic is None:
+        pairs=json.loads((root/'routes.json').read_text())['routes']['feasible']
+        scope='ALL_REGISTERED_FEASIBLE_PAIRS'
+    else:
+        pairs=diagnostic;scope=request['scope']
     center,lo,hi=[tensors[k] for k in ('center','lower','upper')];pred=request['sample']['label']
     C=torch.tensor([property_row(10,pred,i) for i in range(9)],dtype=torch.float64).unsqueeze(0)
     mask=torch.arange(center.numel()).reshape(center.shape)%2==0
     points=[center,lo,hi,torch.where(mask,lo,hi),torch.where(mask,hi,lo)]
-    result={'status':'UNKNOWN','reason':'PAIRS_PENDING','pairs':[], 'C':C.tolist(),
+    result={'status':'UNKNOWN','reason':'PAIRS_PENDING','pairs':[], 'C':C.tolist(),'scope':scope,
             'tensor_identity':{k:_tensor_identity(t) for k,t in tensors.items()},'model_state':_model_state_identity(model),
             'environment':{'python':sys.version,'torch':torch.__version__,'auto_lirpa_file':auto_LiRPA.__file__,
                            'device':'cpu','dtype':'float64','threads':torch.get_num_threads()},
@@ -104,7 +121,7 @@ def external(root,started):
                 torch.save(point,root/'witness.pt')
                 result.update(status='UNSAFE',reason='DYNAMIC_CONFORMANCE_PROBE',witness_sha256=sha(root/'witness.pt'))
                 dump(root/'external.json',result);return
-    for pair in routes['feasible']:
+    for pair in pairs:
         start=time.monotonic();adapter=StaticSelectedSoftmaxPair(model,pair)
         with torch.no_grad():
             refs=[];errors=[]

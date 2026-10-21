@@ -186,7 +186,7 @@ def genbab(folder,query,deadline):
     return dict(status=status,aggregate=aggregate,receipts=receipts,pairs=results,
         witness_sha256=witness,expected_pairs=len(pairs),completed_pairs=len(results),
         evidence_grade='GENBAB_NUMERICAL_FILTER',formal_SAFE=False,
-        selection='B1_FAILURE_SELECTED_DEVELOPMENT_NOT_FAIR_POPULATION_COMPARISON')
+        selection=query.get('selection','B1_FAILURE_SELECTED_DEVELOPMENT_NOT_FAIR_POPULATION_COMPARISON'))
 
 
 def crown(folder,query,deadline):
@@ -196,10 +196,20 @@ def crown(folder,query,deadline):
     from act.pipeline.moe.external_pair_worker import frontend
     PerformanceOptions.set_debug_output_file(str(folder/'act_debug.log'))
     request=dict(query['item'],method='external_crown',head=query['code_commit'])
+    if 'diagnostic_pair' in query:
+        request.update(diagnostic_pairs=[query['diagnostic_pair']],
+                       scope='SELECTED_WHOLE_BOX_PAIR_DIAGNOSIS_NOT_COMPLETE_REQUEST')
     save(folder/'request.json',request)
     # Legacy frontend creates an independent child in the SAME owned session.
     # Its original 300-second clock starts at the outer launch, not here.
-    os.chdir(ROOT);frontend(folder,query['started_at'])
+    os.chdir(ROOT)
+    if 'diagnostic_pair' in query:
+        import subprocess
+        from act.pipeline.moe.external_compatibility import ENV
+        subprocess.run([ENV,'-m','act.pipeline.moe.external_pair_worker','--root',str(folder),
+                        '--external','--started',repr(query['started_at'])],check=True)
+    else:
+        frontend(folder,query['started_at'])
     tick(deadline)
     output=load(folder/'external.json',limit=2**20)
     if output['status']=='UNSAFE':

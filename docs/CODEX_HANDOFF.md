@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## Historical-success-region stage frozen 2026-10-21
+
+Real increment0; B2 complete. User authorizes51 multi-pair historical SAFE+9 fixed single-pair controls before selecting B3.
+[Freeze/results](advantage_region_results_20261021.md)/[records](advantage_region_records_20261021.json):60pairs/43inputs, noACT rerun, historicalbc0791976/source gaps retained.
+Reuse finalB2 GenBaB/config/all252 obligations and existing supervisor;7 ordinary controls+12B2 regressions pass, native smoke not repeated.
+Stage3≤60full/6h/128MiB; fixed first-unresolved-pair localCROWN diagnostics share remaining time, missing suffix retained.
+≥3 observed nonclosure-pattern requests permits guard-conditional research;≤2 stops mechanism selection; negative lower is not guard necessity/unsafety.
+Split historical-roster inside/outside; deficient coverage and replay conflicts remain explicit. LP/PGD alignment is default-off synthetic-only, not G1.
+Next execute immutable frozen copy; do not change GenBaB or ACT during this queue. G1–G6 OPEN.
+
 ## B2 completed strong paths and attribution 2026-10-21
 
 Since the prior committed prefix,4 GenBaB and19 CROWN calls finish; all60 full slots/10locals executed, controller4189850 exited.
