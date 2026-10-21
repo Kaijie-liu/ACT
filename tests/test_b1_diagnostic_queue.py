@@ -1,5 +1,7 @@
 """Ordinary queue, identity and numerical mapping tests; no real models/solves."""
 import hashlib
+import ast
+import inspect
 import importlib.util
 import json
 from pathlib import Path
@@ -21,6 +23,16 @@ def source_scope(ordinal=0):
 
 
 class QueueControls(unittest.TestCase):
+    def test_worker_reuses_timer_finalizer_after_all_outcomes(self):
+        from b1_observed_batch import finish_worker_io
+        self.assertIs(q.finish_worker_io,finish_worker_io)
+        tree=ast.parse(inspect.getsource(q.worker))
+        self.assertTrue(any(isinstance(node,ast.Try) and any(
+            isinstance(call,ast.Call) and isinstance(call.func,ast.Name)
+            and call.func.id=='finish_worker_io'
+            for statement in node.finalbody for call in ast.walk(statement))
+            for node in ast.walk(tree)))
+
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory(dir='/data1/Kane/MOE');self.root=Path(self.tmp.name)
 

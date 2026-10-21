@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## B1 retained suffix running 2026-10-21
+
+Real ledger18/41 complete, ordinal18 running, attribution0; prior UNKNOWN3/TIMEOUT14/ERROR1 unchanged.
+Detached controller1857594 executes19cf25583 in`/data1/Kane/MOE/executions/b1_observed_20261021_19cf25583`; result root`b1_observed_20261021_r3`.
+Start receipt confirms18 retained,4823.979257s/151830125 bytes carried, first new launch18_seed1_4275 with0 capture allowance.
+Offline/B2 now reuse the tested timer finalizer;2 additional ordinary wiring tests pass, no new solver/model/control batch.
+After online completion use a frozen copy of this newer code for existing diagnostics then B2; old696669ade copy lacks retained-prefix resolution.
+Do not change live code, rerun prefix, or treat this repair as algorithm progress. G1–G6 OPEN.
+
 ## B1 suffix continuation after worker teardown error 2026-10-21
 
 Real ledger18/41:UNKNOWN3/TIMEOUT14/ERROR1; attribution0. R2 controller has exited, old live entries are historical.

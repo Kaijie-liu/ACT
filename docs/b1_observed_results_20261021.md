@@ -32,6 +32,13 @@ times, is deducted. The complete catalog will still contain41 results and42
 attempts including the earlier log-path failure. No extra capture or query is
 authorized. The existing145-entry diagnostic catalog and B2 order are unchanged.
 
+R3 is launched from immutable commit`19cf25583416163bfd6be44450c22b8323e24903`,
+controller PID1857594 (detached, PPID1). Its first launch is ordinal18,
+seed1/4275, with full-capture allowance0. The active checkout is not its code.
+The future offline and B2 workers now reuse the same tested timer finalizer;
+two additional ordinary wiring tests pass in0.004s. They do not launch a native
+solver or change query deadlines, reception, sources or scientific settings.
+
 ## Running prefix
 
 The following observations are historical prefixes; the stopped result and

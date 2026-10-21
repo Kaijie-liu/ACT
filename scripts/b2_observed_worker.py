@@ -18,6 +18,7 @@ import traceback
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT),str(ROOT/'scripts')]
 from scoped_proof.io import load,save,sha,tick
+from b1_observed_batch import finish_worker_io
 import genbab_cpu_ready as backend
 from act.pipeline.moe.genbab_spec import make_request,clauses,receive,digest,ENGINE
 
@@ -240,7 +241,7 @@ def worker(folder):
             if time.monotonic()<deadline:save(folder/'error.json',dict(kind=type(exc).__name__,error=repr(exc)))
             if isinstance(exc,TimeoutError):os.write(2,b'B2_AUTHORIZED_CUTOFF\n');return 124
             return 1
-        finally:sys.stdout.flush();sys.stderr.flush()
+        finally:finish_worker_io()
     return 0
 
 

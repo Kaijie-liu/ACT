@@ -1,5 +1,7 @@
 """Ordinary B2 wiring tests, no model/checkpoint/solver or external imports."""
 import importlib.util
+import ast
+import inspect
 import json
 from pathlib import Path
 import tempfile
@@ -18,6 +20,16 @@ batch=module('b2_observed_batch');worker=module('b2_observed_worker')
 
 
 class B2WiringControls(unittest.TestCase):
+    def test_worker_reuses_timer_finalizer_after_all_outcomes(self):
+        from b1_observed_batch import finish_worker_io
+        self.assertIs(worker.finish_worker_io,finish_worker_io)
+        tree=ast.parse(inspect.getsource(worker.worker))
+        self.assertTrue(any(isinstance(node,ast.Try) and any(
+            isinstance(call,ast.Call) and isinstance(call.func,ast.Name)
+            and call.func.id=='finish_worker_io'
+            for statement in node.finalbody for call in ast.walk(statement))
+            for node in ast.walk(tree)))
+
     def test_helper_uses_executing_checkout(self):
         self.assertEqual(batch.backend.ROOT,ROOT)
         self.assertEqual(worker.backend.ROOT,ROOT)

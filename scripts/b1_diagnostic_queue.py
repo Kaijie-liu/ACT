@@ -23,7 +23,7 @@ sys.path[:0] = [str(ROOT),str(ROOT/'scripts')]
 from scoped_proof.io import load, save, sha, tick, PYTHON
 from scoped_proof.owned_session import execute
 from scoped_source.development_work import DevelopmentWork, POLICY
-from b1_observed_batch import sizes, online_sizes, resolve_request_folder, session_ok, require
+from b1_observed_batch import sizes, online_sizes, resolve_request_folder, session_ok, require, finish_worker_io
 
 PGD = dict(steps=20,restarts=3,step_size_fraction=.25,seed_base=20261021,
            objective='cross_entropy',projection='saved_lower_upper',dtype='float64',device='cpu')
@@ -460,7 +460,7 @@ def worker(folder):
             if isinstance(exc,TimeoutError):
                 os.write(2,b'B1_DIAGNOSTIC_AUTHORIZED_CUTOFF\n');return 124
             return 1
-        finally: sys.stdout.flush();sys.stderr.flush()
+        finally: finish_worker_io()
     return 0
 
 
