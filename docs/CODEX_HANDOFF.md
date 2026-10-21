@@ -1,5 +1,13 @@
 # MoE project handoff — current entry point
 
+## User corrected B2 gate and immediate B1 launch 2026-10-21
+
+R6's24,498 nonlinear domains satisfy the authorized smoke gate; the extra positive requirement is withdrawn, old FAIL/UNKNOWN preserved.
+[Two guard controls](genbab_cpu_ready_20261021.md) are frozen as one≤300s batch, input-split AND and nonlinear ReLU maximum; no overlap with B1.
+Rejection/UNKNOWN does not imply universal verifier limitations; full-AND attack replay and outer execution reception remain required.
+Then start41 B1 requests from an independent frozen-commit copy; implement offline diagnostic queries during the batch, not before launch.
+No renewed authorization is required for B1→B2. Real ledger remains0/0/0 before these synthetic controls.
+
 ## B1 all-return numerical records integrated 2026-10-21
 
 [Observer](../act/pipeline/moe/request_diagnostics.py) now records all same-solve returns, ranges, primal/lower-bound distinctions and m/d/b/gate/product point values.

@@ -1,5 +1,33 @@
 # B2 inventory reception and nonlinear CPU smoke
 
+## Current decision after user correction
+
+R6 **passes the authorized execution smoke gate**: nonlinear branching was
+enabled and24,498 nonlinear domains were visited. A numerical positive was an
+extra requirement introduced by the implementation, not by the registered goal.
+The original FAIL/UNKNOWN artifacts below remain unchanged; they do not block
+the approved B1→B2 sequence. R6's bound agrees numerically with the unguarded
+minimum `1/2-tanh(1)`. This motivates a guard/representation diagnosis, not a
+proof that the guard was ignored or that unlimited time could never help.
+
+The separately authorized [two-control script](../scripts/genbab_guard_semantics.py)
+retains the same input, experts, gate operation sequence, constants and tie semantics.
+One cumulative≤300s batch allocates≤140s per control including reception/cleanup:
+(i) the original AND specification with input splitting, naive branching and
+built-in PGD before verification; (ii) the equivalent ReLU maximum of the three
+unsafe atoms with the prior nonlinear BaB configuration. Strict maximum>0 is the
+safe property, including boundary ties. UNKNOWN is a result, not a readiness
+failure. Any claimed attack must violate the full original AND inside the box.
+Positive results require successful outer reception; a file surviving timeout
+does not replace the terminal. No B1 run overlaps these controls.
+
+The compatibility snapshot remains explicitly modified. Read-only comparison
+with upstream release commit`b58d83ccb32469fc7ae9304fa1d33568ea76b00e`
+still finds the three depth/ambiguous-ReLU all-split conditions; no directly
+applicable upstream fix was identified, so this batch does not upgrade versions.
+
+## Historical protocol and unchanged attempt records
+
 This is the user-authorized repair of the existing isolated installation, not a
 second deployment. The failed R1 inventory audit is preserved. Transitive
 distribution metadata is now a list of name/version/location records; actual
@@ -111,5 +139,5 @@ it does not claim all zombies or unrelated processes were reaped.
 queries; four synthetic verifier calls, zero positive smoke results. This
 closes the metadata ambiguity and establishes actual nonlinear execution,
 not successful guarded verification, an ACT gain or external superiority.
-The approved B1 attribution work remains necessary; this unsuccessful smoke
-must not be advertised as a passing gate for the B2 real comparison.
+The approved B1 attribution work remains necessary. The historical numerical
+positive criterion failed; the authorized execution gate is satisfied as corrected above.
