@@ -144,6 +144,32 @@ These are reasons to perform the already registered LP/integer-range/slice
 diagnostics, not to relax a gate, rerun the online queue, or declare one failure
 cause for all requests. This saved-only analysis adds zero attribution queries.
 
+## A complete obligation set with status limited returns
+
+The separately bound seed2/4223 case in the existing records has all27 obligations
+accounted for across pairs{0,2},{0,3},{0,6}:10 reused facts,11 accepted status0
+F0 rows and6 status1 UNKNOWN rows. All17 native calls returned; reception completed
+in286.187s. This is neither missing coverage nor an outer timeout.
+
+The six unresolved rows are pair{0,2}/properties0,2,3 and pair{0,6}/properties2,3,6.
+Their raw duals **after adding the objective offset** are1.299,2.985,3.775,
+3.400,4.271,6.726; their native grants range12.385–16.947s. None satisfies the
+unchanged status0 acceptance requirement. All17 candidates are positive, with
+minimum0.170906. In particular, the last row's native `fun` is−1.576630, but its
+offset is1.747537: the complete property objective is positive, not a new negative
+relaxation candidate. The six grant/elapsed pairs are retained in the record;
+elapsed includes construction and candidate handling, not just native solving.
+
+All six unresolved points have positive expert difference and a gate at its lower
+endpoint. Their saved product discrepancies are near floating-point roundoff;
+substituting sigmoid(saved margin) increases already-positive candidate values.
+This does not supply a third negative-to-positive example like4113/4140.
+Consequently, the observed blockers for this request are the limit/status-policy
+combination, not evidence of a nonpositive relaxation optimum. The raw duals lack
+independent residual certificates; neither SAFE nor success with extra time
+follows. The request remains UNKNOWN and no extra solve is added. This distinction
+must survive the final multi-label attribution before selecting a B3 mechanism.
+
 ## Retained tooling prefix
 
 The first invocation, seed1/input4113 at`49fea3658`, stopped after3.640219s:

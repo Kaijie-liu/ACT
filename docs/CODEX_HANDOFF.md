@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## B1 complete coverage but status limited case 2026-10-21
+
+Online14/41 at review:UNKNOWN3/TIMEOUT11; attribution0; controller1234759 remains live on88a705275.
+[Existing result](b1_observed_results_20261021.md) and [records](b1_observed_records_20261021.json) now bind seed2/4223 separately from the fixed11 prefix.
+All27 obligations are accounted for:10 reused,11 status0 SAFE,6 status1 UNKNOWN;17 native returns,286.187s through reception.
+All raw duals/candidates with offset are positive; this is not a third negative-candidate gate example or missing coverage.
+Independent read-only review confirms the six blockers and saved grants; raw positive duals remain unaccepted and unchecked independently.
+No solver, policy, live copy or diagnostic catalog changed. Finish B1 diagnostics, then B2; G1–G6 OPEN.
+
 ## B1 saved invocation cost analysis 2026-10-21
 
 Live online12/41 at this edit:UNKNOWN2/TIMEOUT10; attribution0. Controller1234759 remains active on88a705275.
