@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## B1 is running from frozen copy 2026-10-21
+
+Real ledger:2/41 online requests complete (UNKNOWN1/TIMEOUT1),45 registered obligations,28 returned F0 calls; extra attribution0. Earlier tooling ERROR1 retained.
+Controller1234759 runs88a705275 independently; results`/data1/Kane/MOE/results/b1_observed_20261021_r2` and live ledgers supersede this prefix.
+[Results](b1_observed_results_20261021.md): first10 full-source ordinals reserved; no missing/timeout denominator deletion or online upgrade.
+[Offline helpers](../scripts/b1_saved_diagnostics.py) cover same-matrix LP, integer difference, range-only replacement and closed slice endpoints;4 no-solver tests pass.
+Next connect the existing hard supervisor to the frozen diagnostic query list while online batch continues; do not rerun extra routine MILPs.
+B2 guard controls both positive numerically; use scalar-max guarded encoding after B1, with compatibility modifications disclosed.
+
 ## B1 first invocation and tooling continuation 2026-10-21
 
 Real increment1 request attempt/0 returned F0 obligations/0 attribution queries; first seed1/4113 failed before F0 on missing default debug-log directory.
