@@ -159,6 +159,42 @@ def should_stop(row):
             or row.get('session',{}).get('cleanup_status')!='LEADER_REAPED_NO_LIVE_SESSION')
 
 
+def retained_prefix(spec, parent):
+    """Retain all old attempts, including ERROR; execute only the untouched suffix."""
+    require(parent['status']=='PREFIX_TOOLING_OR_IDENTITY_STOP', 'stopped parent catalog')
+    rows=parent['rows'];queries=spec['queries']
+    require(len(rows)==len(queries) and all(r['query_id']==q['id'] and r['kind']==q['kind']
+            and r['full_slot']==q['full_slot'] for r,q in zip(rows,queries)), 'unchanged parent catalog')
+    count=next((i for i,r in enumerate(rows) if r['status']=='UNEXECUTED'),len(rows))
+    require(count>0 and all('session' in r for r in rows[:count])
+            and all(r['status']=='UNEXECUTED' and 'session' not in r for r in rows[count:]),
+            'contiguous attempted prefix and untouched suffix')
+    require(parent['full_attempts']==sum(r['full_slot'] for r in rows[:count])
+            and parent['local_attempts']==sum(not r['full_slot'] for r in rows[:count]),
+            'retained attempt accounting')
+    return list(rows[:count])
+
+
+def validate_suffix(spec, binding, check):
+    parent=load(binding['parent_complete'],binding['parent_complete_sha256'])
+    rows=retained_prefix(spec,parent)
+    require(binding['charged_seconds_upper_bound']>=parent['elapsed'], 'carry full failed-stage cost')
+    require(digest(backend.CONFIG)==digest(spec['genbab_configuration'])
+            and digest(backend.source_identity())==binding['repaired_backend_identity'],
+            'same configuration, explicitly versioned compatibility source')
+    expected=set(CONTROL_FILES)-{'scripts/genbab_cpu_ready.py'}
+    require(check['commit']==binding['original_control_commit'] and check['result']['accepted']
+            and check['result']['kind']=='synthetic_vector_control'
+            and set(binding['unchanged_controlled_files'])==expected
+            and all(sha(ROOT/p)==h for p,h in binding['unchanged_controlled_files'].items()),
+            'reuse original API control only for unchanged graph, worker, solver configuration and supervisor')
+    for p,h in binding['retained_files'].items():require(sha(p)==h,'retained terminal and control identity')
+    parent_root=Path(binding['parent_complete']).parent
+    require(all(not (parent_root/q['id']).exists() for q in spec['queries'][len(rows):]),
+            'suffix has no previous execution directory')
+    return rows
+
+
 def frozen_commit():
     require(ROOT!=Path('/data1/Kane/MOE/ACT') and (ROOT/'.frozen_commit').exists(),'independent code copy')
     return (ROOT/'.frozen_commit').read_text().strip()
@@ -178,27 +214,36 @@ def run(root,manifest,control_root,records=None):
     commit=frozen_commit();spec=load(manifest)
     require(spec['schema']=='B2_FAILURE_SELECTED_DIAGNOSIS_V1' and not root.exists(),'new frozen B2 stage')
     check=load(control_root/'complete.json')
-    continuation={} if records is None else load(records)['execution_continuation']
+    document={} if records is None else load(records)
+    continuation=document.get('execution_continuation',{})
+    suffix=document.get('suffix_continuation')
     if continuation:
         require(sha(manifest)==continuation['freeze_sha256']
                 and sha(control_root/'complete.json')==continuation['control_complete_sha256'],
                 'unchanged queue and original control receipt')
         for path,value in continuation['retained_artifacts'].items():
             require(sha(path)==value, 'retained failed-attempt artifact')
-    validate_control(check,commit,continuation.get('control_reuse'))
-    validate_backend_binding(spec,backend.CONFIG,backend.source_identity())
-    carried=continuation.get('charged_seconds_upper_bound',0)
+    if suffix:
+        rows=validate_suffix(spec,suffix,check)
+        carried=suffix['charged_seconds_upper_bound']
+    else:
+        validate_control(check,commit,continuation.get('control_reuse'))
+        validate_backend_binding(spec,backend.CONFIG,backend.source_identity())
+        carried=continuation.get('charged_seconds_upper_bound',0);rows=[]
     require(0<=carried<spec['stage_seconds'],'retained cost within original stage budget')
     deadline=ENTRY+spec['stage_seconds']-carried
     artifacts=[root,*map(Path,continuation.get('retained_artifacts',{}))]
     if continuation:artifacts.append(Path(continuation['controller_log']))
+    if suffix:artifacts.extend(map(Path,suffix['additional_artifacts']))
+    require(len(set(map(str,artifacts)))==len(artifacts),'no duplicate cost roots')
     resource.setrlimit(resource.RLIMIT_AS,(8*2**30,8*2**30))
     root.mkdir();save(root/'start.json',dict(commit=commit,freeze_sha256=sha(manifest),entry=ENTRY,
         control_sha256=sha(control_root/'complete.json'),deadline=deadline,
         carried_seconds_upper_bound=carried,continuation_identity=digest(continuation),
+        suffix_identity=None if suffix is None else digest(suffix),retained_count=len(rows),
         artifacts=[str(p) for p in artifacts]))
-    rows=[];stopped=False
-    for query in spec['queries']:
+    stopped=False
+    for query in spec['queries'][len(rows):]:
         if stopped or time.monotonic()+300>=deadline or sum(sizes(p) for p in artifacts)+2**20>=128*2**20:
             rows.append(dict(query_id=query['id'],kind=query['kind'],full_slot=query['full_slot'],
                              status='UNEXECUTED',accepted=False));continue

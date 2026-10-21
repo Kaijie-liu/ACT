@@ -29,7 +29,7 @@ from scoped_proof.owned_session import execute
 ACT = '/data1/Kane/miniconda3/envs/act-py312/bin/python'
 ENVIRONMENT = Path('/data1/Kane/MOE/envs/genbab-cpu-20261021-v1')
 TOOL = Path('/data1/Kane/MOE/baselines/alpha-beta-CROWN')
-COMPAT = Path('/data1/Kane/MOE/baselines/adaptations/genbab_cpu_20261021_r1')
+COMPAT = Path('/data1/Kane/MOE/baselines/adaptations/genbab_cpu_20261021_r2')
 COMPAT_EDITS = {
     'activation_split/stage_solve.py': (
         '    all_node_split_flag = torch.any(\n',
@@ -48,6 +48,14 @@ COMPAT_EDITS = {
         '        # ACT compatibility: nonlinear splitting does not yield a linear leaf\n'
         '        # merely by reaching the original unstable-neuron count.\n'
         '        if (all_node_split_LP and arguments.Config["bab"]["branching"]["method"] != "nonlinear") and torch.any(\n'),
+    'heuristics/nonlinear/bbps.py': (
+        '        A_before, bound_before, unstable_idx = self._fast_backward_propagation(\n',
+        '        # ACT compatibility: sparse/pruned specs can leave no lA contribution.\n'
+        '        # Zero is only a branching score, never an accepted lower bound.\n'
+        '        if not any(n.name in lAs for n in start_nodes):\n'
+        '            return {"points": points.flatten(1, -2),\n'
+        '                    "scores": torch.zeros_like(lb_ori)}\n'
+        '        A_before, bound_before, unstable_idx = self._fast_backward_propagation(\n'),
 }
 SOURCES = {str(TOOL): 'e5c7e17bf0488843acb77b7519f59876717a49f4',
            str(TOOL/'auto_LiRPA'): '5a098e8f9fb5786a428a024981d833d303921f2d'}

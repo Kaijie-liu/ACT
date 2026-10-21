@@ -20,6 +20,21 @@ batch=module('b2_observed_batch');worker=module('b2_observed_worker')
 
 
 class B2WiringControls(unittest.TestCase):
+    def test_suffix_keeps_error_and_does_not_rerun_old_rows(self):
+        queries=[dict(id=f'q{i}',kind='genbab_aggregate',full_slot=True) for i in range(4)]
+        rows=[dict(query_id=q['id'],kind=q['kind'],full_slot=True,status='UNEXECUTED') for q in queries]
+        rows[0].update(status='POSITIVE',session={},accepted=True)
+        rows[1].update(status='ERROR',session={},accepted=False)
+        parent=dict(status='PREFIX_TOOLING_OR_IDENTITY_STOP',rows=rows,full_attempts=2,local_attempts=0)
+        self.assertEqual(batch.retained_prefix({'queries':queries},parent),rows[:2])
+        for mutate in ('identity','gap','extra_session','count'):
+            bad=json.loads(json.dumps(parent))
+            if mutate=='identity':bad['rows'][1]['query_id']='other'
+            elif mutate=='gap':bad['rows'][0]['status']='UNEXECUTED'
+            elif mutate=='extra_session':bad['rows'][3]['session']={}
+            else:bad['full_attempts']=1
+            with self.assertRaises(ValueError):batch.retained_prefix({'queries':queries},bad)
+
     def test_explicit_unchanged_control_reuse_rejects_changed_identity(self):
         check=dict(commit='previous',result=dict(kind='synthetic_vector_control',accepted=True))
         binding=dict(control_commit='previous',control_identity=batch.digest(check),

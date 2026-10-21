@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## B2 stopped prefix and sparse heuristic repair 2026-10-21
+
+Real ledger16full=8POSITIVE/7UNKNOWN/1ERROR,10locals unchanged; this repair adds0 model or solver calls.
+[Results](b2_observed_results_20261021.md)/[records](b2_observed_records_20261021.json) retain26 terminals and44 unexecuted entries; PID916650 is gone.
+Seed2/4223 closes numerically externally;seed1/4212's legal pair closes but full coverage remains incomplete. No B1 result is upgraded.
+Error atseed0/4237 pair{5,6}:empty BBPS coefficient contribution; witness pair{6,7}/p5 was not attempted, no observed numerical conflict.
+Separate backend r2 adds only zero heuristic scores for absent lAs; actual bounds/guards/acceptance unchanged;24 ordinary controls pass.
+Next immutable suffix startsb2_026 only, retains ERROR/old backend, carries4393s and all artifacts in original6h/128MiB budget; no request rerun.
+Finish strong-path results before B3. This compatibility repair is not an algorithm contribution; G1–G6 OPEN.
+
 ## B1 request level proof acquisition diagnosis 2026-10-21
 
 Real increment0 new calls; saved41-request/720-obligation regrouping identifies10 requests with all returned unresolved raw duals positive.

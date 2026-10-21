@@ -6,13 +6,93 @@ development study, not an independent population comparison or a G4 win claim.
 The first controller stopped before creating its run directory or invoking a
 real source. A tuple/list difference in serialized compatibility metadata caused
 a false identity mismatch; actual source hashes were unchanged. The repaired
-controller is running from commit `2caeae501636bdc6237be89b9a4202f3451df1d2`
-in an independent code copy, PID916650. All ten local diagnoses are complete:
-eight positive numerical filters and two UNKNOWN. The first five complete
-all-pair attempts give three positive numerical filters and two UNKNOWN;
-the remainder is still running.
+controller ran from commit `2caeae501636bdc6237be89b9a4202f3451df1d2`
+in an independent code copy, PID916650. It stopped after a backend heuristic
+error: ten local diagnoses give eight positive numerical filters and two
+UNKNOWN; sixteen complete-request attempts give eight numerical POSITIVE,
+seven UNKNOWN and one ERROR. The remaining 25 GenBaB and 19 CROWN requests
+have not executed. The failed request and all earlier results are retained.
 [Records](b2_observed_records_20261021.json) retain that
 failure and will preserve every attempted and unexecuted entry and its cost.
+
+## Stopped prefix and compatibility repair
+
+The sixteen complete-request attempts cost 2,722.531 seconds. The eight
+POSITIVE results each cover all 252 registered obligations. Across the seven
+UNKNOWN requests, 972 properties have positive receipts, 54 belong to unresolved
+pair groups, and 738 have no receipt. Missing properties are not filled using
+local diagnoses or ACT route exclusions.
+
+| Request | Numerical result | Complete seconds | Positive / unresolved / missing |
+| --- | --- | ---: | ---: |
+| Seed1 / 4113 | POSITIVE | 187.611 | 252 / 0 / 0 |
+| Seed2 / 4113 | POSITIVE | 21.852 | 252 / 0 / 0 |
+| Seed0 / 4129 | POSITIVE | 132.992 | 252 / 0 / 0 |
+| Seed0 / 4140 | UNKNOWN | 293.256 | 180 / 9 / 63 |
+| Seed2 / 4141 | UNKNOWN | 294.727 | 189 / 9 / 54 |
+| Seed1 / 4142 | POSITIVE | 33.526 | 252 / 0 / 0 |
+| Seed0 / 4150 | POSITIVE | 31.133 | 252 / 0 / 0 |
+| Seed1 / 4150 | UNKNOWN | 293.626 | 243 / 9 / 0 |
+| Seed2 / 4150 | UNKNOWN | 294.857 | 99 / 9 / 144 |
+| Seed2 / 4179 | POSITIVE | 26.997 | 252 / 0 / 0 |
+| Seed0 / 4195 | UNKNOWN | 294.038 | 54 / 9 / 189 |
+| Seed1 / 4195 | UNKNOWN | 293.847 | 90 / 9 / 153 |
+| Seed1 / 4212 | UNKNOWN | 292.263 | 117 / 0 / 135 |
+| Seed2 / 4223 | POSITIVE | 155.405 | 252 / 0 / 0 |
+| Seed1 / 4232 | POSITIVE | 24.572 | 252 / 0 / 0 |
+| Seed0 / 4237 | ERROR | 51.830 | No accepted aggregate |
+
+Seed2/4223 is informative for proof acquisition: B1 returned UNKNOWN despite
+complete output-candidate coverage and six positive raw dual values that its
+policy did not accept. The external path closes all obligations numerically;
+27 pairs finish in initial bounds and {0,6} uses BaB, visiting 228 domains.
+This supports investigating evidence acquisition, without independently checking
+those raw duals or promoting B1's result. Seed1/4232 also closes numerically;
+27 pairs finish initially and {4,6} uses two BaB domains.
+
+Seed1/4212 instead shows incomplete coverage: all 13 returned pairs are positive,
+including ACT's only registered feasible pair {0,6}, but 15 external pairs are
+missing. Its full result stays UNKNOWN. This is distinct from an unresolved
+returned pair and does not establish that the extra routes are redundant under
+an independently checked source contract.
+
+Seed0/4237 stopped in `bbps._fast_backward_propagation` with
+`AttributeError: 'NoneType' object has no attribute 'ndim'`. The accumulated
+heuristic contribution was absent. The failure occurred at pair {5,6}, after
+25 pair results; its 225 partial positives are not an accepted aggregate.
+The saved B1 counterexample concerns {6,7}/property5, which was not attempted,
+so there is no observed same-obligation numerical conflict.
+
+All 26 calls total 3,520.917 seconds. The stage record reports 4,099.986 seconds
+including the retained 576-second startup charge and stage overhead, before
+its own final write. Final bound artifacts occupy 30,563,368 bytes; the earlier
+29,151,959-byte measurement excludes the 1,411,409-byte final record. The original
+backend snapshot and stopped directory remain unchanged.
+
+The repaired, separate backend snapshot adds only an empty-lA BBPS fallback:
+when none of a split node's consumer coefficients is present, return zero
+expected-improvement scores and the existing split points. These are not output
+bounds. Any active coefficient keeps the old path; missing required dictionaries
+still raise an error. The downstream masks and actual bound/acceptance computations
+are unchanged. Zero scores can affect search order and cost, so this is a disclosed
+compatibility version, not a performance-equivalent or algorithmic improvement.
+
+Twenty-four ordinary controls pass, including execution of the patched method's
+AST for empty, partial and active coefficient maps, shape preservation, missing
+metadata rejection, and retention of ERROR rows during suffix continuation.
+No checkpoint or solver call was used. Two outdated patch-scope test assertions
+were corrected; an unavailable pytest invocation was replaced by existing
+unittest without installing dependencies.
+
+The next execution uses a new directory and versioned code copy, starts only at
+`b2_026`, and retains all 26 earlier attempts. The existing API control applies
+to unchanged graph, worker and supervision files; the new heuristic has its own
+ordinary tests. Carry **4,393 seconds** against the same six-hour stage: 4,373
+is a conservative upper bound observed after PID916650 was confirmed absent,
+and 20 seconds covers ordinary test execution. This is not measured solver time.
+All old artifacts, controller logs and the new suffix remain charged to the same
+128MiB cap. The original 300-second requests, query order and numerical gates
+are unchanged. No failed or completed request is rerun.
 
 ## Complete local diagnosis results
 
@@ -161,7 +241,8 @@ the denominator. All pair graphs within a request share its remaining deadline.
 There are no free ACT route exclusions for the all-pair GenBaB aggregate.
 
 GenBaB uses the pinned CPU/float64 alpha-CROWN and nonlinear BaB configuration,
-with the three disclosed compatibility edits preserved. For each property,
+with the three original compatibility edits preserved; the suffix snapshot
+adds the disclosed empty-coefficient heuristic fallback. For each property,
 `max(qF+c, outsider-minus-selected guards)>0` is the sufficient condition;
 unsafe alternatives across properties form an OR. Equality remains tie-legal.
 An unresolved pair stops its complete-request attempt, with later obligations
