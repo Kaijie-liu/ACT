@@ -135,5 +135,27 @@ class QueueControls(unittest.TestCase):
         query['observation']['eligibility']['eligible']=False
         with self.assertRaises(ValueError):q.query_work(deadline,query)
 
+    def test_call_statistics_deduplicate_multipair_obligations(self):
+        value=dict(scope=dict(request='one',ordinal=0,path='monolithic',pairs=[[0,1],[0,2]]),
+                   native_called=True,native_result={'status':1.,'mip_gap':.5},
+                   decision={'elapsed':3.},mip_dual_bound_with_offset=2.)
+        result=q.call_statistics([value,value])
+        self.assertEqual(result['returned_native_calls'],1)
+        self.assertEqual(result['status1_positive_raw_dual']['calls'],1)
+        self.assertEqual(result['status1_positive_raw_dual']['elapsed']['sum'],3.)
+        self.assertTrue(result['status1_positive_raw_dual']['not_accepted_certificates'])
+        self.assertTrue(result['does_not_upgrade_terminals'])
+        other=dict(value,decision={'elapsed':4.})
+        with self.assertRaises(ValueError):q.call_statistics([value,other])
+
+    def test_call_statistics_missingness_is_not_zero_evidence(self):
+        value=dict(scope=dict(request='one',ordinal=0,path='pair'),native_called=False,
+                   native_result={},decision={'elapsed':None})
+        result=q.call_statistics([value])
+        self.assertEqual(result['unique_observations'],1)
+        self.assertEqual(result['returned_native_calls'],0)
+        self.assertIsNone(result['returned_elapsed']['median'])
+        self.assertIsNone(result['status1_positive_raw_dual']['raw_mip_gap']['minimum'])
+
 
 if __name__=='__main__':unittest.main()

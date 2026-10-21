@@ -105,6 +105,45 @@ extended-solve sign condition; the fixed first-eight rule and retained-matrix
 availability still apply. Attribution queries remain0. The live ledger
 supersedes this prefix.
 
+## Saved invocation costs and attribution limits
+
+The [fixed11-request record](b1_observed_records_20261021.json) binds its ledger,
+inventory hashes and summary implementation. It has171 model–input–pair–property
+obligations,130 registered calls and121 saved native returns. `SELECTED` means a
+returned obligation was selected for full capture, not another solve. General
+multi-pair monolithic calls can cover several obligations, so the summary now
+separately deduplicates invocation statistics by request and ordinal. Two new
+ordinary controls check duplicate-call and missing-value handling; all11 queue
+tests pass without native solves. The live frozen worker is unchanged.
+
+Of121 returns,35 have status0 and86 have status1. Seventy status1 calls, across
+all nine TIMEOUT requests in this prefix, retain positive raw dual telemetry.
+Their recorded elapsed sum is1467.399s, median20.891s, range9.805–32.551s.
+The raw dual values with objective offset range0.359715–7.313035; raw solver
+`mip_gap` ranges0.007241–3.275441. These values do not satisfy the original
+status0 acceptance policy and are not independently checked certificates.
+
+| Saved evidence | Attribution supported | Still unresolved |
+| --- | --- | --- |
+| Repeated status1 returns with positive raw dual telemetry | Investigate cost of per-property allocation and optimal-status requirement | No dual multipliers or independent residual certificate |
+| Five single-pair requests return8 properties; the9th is in flight at cutoff | The complete obligation set remains unfinished | Exact granted time and native termination messages are absent from timeout packages |
+| Two status0 negative candidates with nonviolating replay | Investigate gate/product/lowering contributions using the registered diagnostics | No exact candidate-feasibility or global network conclusion |
+
+`decision.elapsed` includes lowering/target construction, native solve and
+candidate validation/recovery; subsequent full capture/serialization is outside
+it. It is not pure HiGHS time or total request cost. The adaptive code divides
+remaining time across remaining unreused properties rather than applying a
+uniform10s limit. Exact per-call grants survive in complete package budget
+events, not in these nine timeout packages. The compact observations retain
+status/gap/node count but not the native message. PyTorch and BLAS environment
+settings are one-thread; actual HiGHS thread count was not measured. The raw
+`mip_gap` belongs to the native objective scale and is not recomputed after
+adding the HZ objective offset.
+
+These are reasons to perform the already registered LP/integer-range/slice
+diagnostics, not to relax a gate, rerun the online queue, or declare one failure
+cause for all requests. This saved-only analysis adds zero attribution queries.
+
 ## Retained tooling prefix
 
 The first invocation, seed1/input4113 at`49fea3658`, stopped after3.640219s:

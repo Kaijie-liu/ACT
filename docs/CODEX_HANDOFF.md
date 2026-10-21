@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## B1 saved invocation cost analysis 2026-10-21
+
+Live online12/41 at this edit:UNKNOWN2/TIMEOUT10; attribution0. Controller1234759 remains active on88a705275.
+[Fixed11-prefix analysis](b1_observed_records_20261021.json) has121 unique returned calls,70 status1 positive raw duals and1467.399s of their call-level elapsed.
+These are not accepted certificates; elapsed is not pure native time, and timeout packages lack exact per-call grants/messages/dual multipliers.
+SELECTED is a captured returned obligation, not another solve; summary invocation statistics now deduplicate multi-pair coverage.
+All11 queue tests pass, including2 new no-solver controls; no live code/configuration or acceptance change.
+The offline/B2 execution copy remains`/data1/Kane/MOE/executions/b1_b2_20261021_696669ade`; run after online completion, no new approval.
+Finish registered B1 diagnostics before B2; do not infer a unique relaxation cause or replace missing captures. G1–G6 OPEN.
+
 ## B1 ten request prefix and B2 queue wiring 2026-10-21
 
 Online10/41:UNKNOWN2/TIMEOUT8,102 returned F0 calls, attribution0; retained tooling ERROR1 is additional.

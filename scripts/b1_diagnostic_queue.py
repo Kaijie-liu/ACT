@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import resource
 import signal
+import statistics
 import subprocess
 import sys
 import traceback
@@ -71,13 +72,51 @@ def observation_tags(value):
     return tags
 
 
+def call_statistics(observations):
+    """One observation per native invocation, not per covered pair/property.
+
+    Selected full captures are still the same returned invocation. Elapsed is
+    the saved high-level solver-call duration, not exclusive native solver time.
+    """
+    from collections import Counter
+    finite=lambda x:type(x) in (int,float) and math.isfinite(x)
+    def distribution(values):
+        values=[v for v in values if finite(v)]
+        return dict(count=len(values),minimum=min(values) if values else None,
+            maximum=max(values) if values else None,
+            median=statistics.median(values) if values else None,sum=sum(values))
+    calls={}
+    for observation in observations:
+        key=(observation['scope']['request'],observation['scope']['ordinal'])
+        if key in calls:
+            require(calls[key]==observation,'one bound observation per call')
+        else:calls[key]=observation
+    native=[v for v in calls.values() if v.get('native_called')]
+    limited=[v for v in native if v.get('native_result',{}).get('status')==1]
+    positive=[v for v in limited if finite(v.get('mip_dual_bound_with_offset'))
+              and v['mip_dual_bound_with_offset']>0]
+    return dict(unique_observations=len(calls),returned_native_calls=len(native),
+        native_statuses=dict(Counter(str(v.get('native_result',{}).get('status')) for v in native)),
+        paths=dict(Counter(v['scope']['path'] for v in native)),
+        returned_elapsed=distribution(v.get('decision',{}).get('elapsed') for v in native),
+        status1_positive_raw_dual=dict(calls=len(positive),
+            not_accepted_certificates=True,
+            elapsed=distribution(v.get('decision',{}).get('elapsed') for v in positive),
+            raw_dual_with_offset=distribution(v['mip_dual_bound_with_offset'] for v in positive),
+            raw_mip_gap=distribution(v.get('native_result',{}).get('mip_gap') for v in positive)),
+        time_scope='LOWERING_SOLVE_AND_CANDIDATE_HANDLING_EXCLUDES_LATER_CAPTURE_NOT_PURE_NATIVE_TIME',
+        unavailable_fields=['raw_termination_message','exact_per_call_time_limit_in_timeout_requests',
+                            'native_dual_multipliers','measured_HiGHS_thread_count'],
+        partial_elapsed_is_not_total_request_cost=True,does_not_upgrade_terminals=True)
+
+
 def summarize(online,freeze):
     """Saved-only prefix report: preserve all requests and all obligation states."""
     from collections import Counter
     spec=load(freeze);start=load(online/'start.json')
     require(start['freeze_sha256']==sha(freeze),'same prefix request freeze')
     requests=[];status_counts=Counter();tags_count=Counter();states=Counter()
-    registered=returned=0
+    registered=returned=0;all_calls=[]
     for item in spec['requests']:
         folder=online/item['job_id'];reception=folder/'reception.json'
         if not reception.exists():
@@ -89,12 +128,14 @@ def summarize(online,freeze):
                  terminal_sha256=sha(folder/'terminal.json'),obligations=[])
         if inv is not None:
             observations={p.name.split('_')[-1][:-5]:p for p in (folder/'diagnostics').glob('*_observation_*.json')}
+            seen_calls={}
             returned+=inv.get('native_calls',0);registered+=inv['registered_f0_calls']
             for obligation in inv['obligations']:
                 entry=dict(obligation);states[entry['state']]+=1
                 digest=entry.get('observation_sha256');p=observations.get(digest)
                 if p is not None:
                     observed=load(p,digest=digest);entry['tags']=observation_tags(observed)
+                    seen_calls[digest]=observed
                     entry['observation_path']=str(p);entry['observation_sha256']=digest
                     for key in ('decision','native_result','raw_candidate_objective','point','point_missing','ranges'):
                         if key in observed:entry[key]=observed[key]
@@ -102,11 +143,16 @@ def summarize(online,freeze):
                 else:entry['tags']=['NO_SAVED_RETURN_OBSERVATION']
                 row['obligations'].append(entry)
             row['coverage_complete']=inv.get('roster',{}).get('coverage_complete',False)
+            row['native_call_statistics']=call_statistics(seen_calls.values())
+            row['unreferenced_observation_hashes']=sorted(set(observations)-set(seen_calls))
+            all_calls.extend(seen_calls.values())
         else:row['obligations']=None
         requests.append(row)
     return dict(online_root=str(online),completed=sum(status_counts.values()),expected=41,
         statuses=dict(status_counts),registered_f0_calls=registered,returned_native_f0_calls=returned,
         obligation_states=dict(states),descriptive_obligation_tags=dict(tags_count),requests=requests,
+        native_call_statistics=call_statistics(all_calls),
+        obligation_tags_unit='MODEL_INPUT_PAIR_PROPERTY_NOT_INDEPENDENT_NATIVE_CALL',
         grade='NUMERICAL_DEVELOPMENT_DIAGNOSIS_NOT_UNIQUE_CAUSES_OR_SOURCE_COMPLETE_CERTIFICATES',
         attribution_queries_added=0)
 
