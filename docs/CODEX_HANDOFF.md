@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## B1/B4 known-history union consolidated, 2026-10-21
+
+[Manifest](b1_candidate_history_20261021.json) and [audit](b1_history_inventory_20261021.md)
+bind1,855 known CIFAR10/test exclusions; prospective1256–1267 remain unforwarded.
+Includes full1000–1255 clean-selection exposure, not just40 selected identities.
+Named-source coverage is not global completeness; real ledger remains0/0/0.
+The reviewed historical44 contain3 explicitly sealed requests; even the other41
+require confirmation-cohort reopening. New accounting/2GiB/1,800s and B2 recheck
+are proposals awaiting approval, not automatically adopted. G1–G6 remain OPEN.
+
 ## B1 same-invocation complete-request capture passed, 2026-10-21
 
 [Results](b1_request_capture_results_20261021.md) and

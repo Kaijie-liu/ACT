@@ -6,6 +6,42 @@ or attack and selected no new inputs. [Source identities and counts](b1_history_
 bind the records below. This is **not** a final exclusion manifest or permission
 to launch selection. Existing full-test telemetry must continue to be disclosed.
 
+## Current bounded exclusion union
+
+The [reproducible manifest](b1_candidate_history_20261021.json) consolidates
+1,855 known CIFAR10/test exclusion identities from twelve named metadata sources.
+Its [stdlib-only generator](../scripts/b1_candidate_history.py) reads1,785,364 bytes,
+binds every source hash and keeps MNIST separate. Range/type checks and an
+independent dataset-qualified reconstruction pass; the sorted union digest is
+`83e0cbe69f444827054d73d90459522ebe4069d753ec891ddaf100675aa65d60`.
+
+The count is902 old exclusions +728 additional RT-ER cohort identities +216
+additional multiseed clean-selection identities +9 other registered endpoints
+or anomalies. The multiseed audit forwards the entire1000–1255 batch before
+selecting40 inputs; that source-derived exposure is not256 verification requests.
+All four RoME queue identities are included, including1917 and2890 absent from
+the old902. Explicitly sealed98/4088/4096/4098/4099 remain excluded.
+
+The old5,832-entry inventory reconstructs882 identities; the902-entry freeze
+declares20 additional exclusions, retained explicitly rather than pretending
+the inventory alone produced902. The union covers these named sources, not
+unrecorded inspections or global historical completeness. Full-test telemetry
+and Dual RS's8,719 fixed-recipe test evaluations remain disclosures, not fresh
+verification endpoints or evidence of clean correctness on these three models.
+
+Ascending identities outside this union yield prospective candidates1256–1267.
+They have **not** been forwarded, selected as clean-correct, or execution-frozen.
+Checkpoint/dataset hashes are carried from saved metadata, not revalidated by
+loading those objects. The manifest is reusable for future fresh-input work;
+it does not adopt the pending changes to call accounting,2GiB artifacts,
+1,800-second diagnostics or historical confirmation reopening.
+
+Reproduce without loading models, data or numerical libraries:
+
+```bash
+/data1/Kane/miniconda3/envs/act-py312/bin/python -I -S -B scripts/b1_candidate_history.py
+```
+
 **Follow-up:** the Dual RS identity and named synthetic-family gaps described
 in the first scan are now resolved below. The old scan's file sets were not
 saved, so their counts cannot be retroactively promoted into an exhaustive
