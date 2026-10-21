@@ -274,12 +274,11 @@
     ],
     "interpretation": "Different proof-acquisition, missing-coverage, and nonpositive-bound obstacles occur; no unique cause, independently checked dual, B1 promotion, or B3 selection follows."
   },
-  "suffix_execution": {"pid":290944,"execution_commit":"f8eb02e6a82b80298df4502212b71ad2c7de001e","code_copy":"/data1/Kane/MOE/executions/b2_observed_20261021_f8eb02e6a","run_root":"/data1/Kane/MOE/results/b2_observed_20261021_r3","start_sha256":"b2a97ebb628ac8a0a125671d164b2d9695873206406d30af36bf021476fcb4ea","retained_count":26,"first_query":"b2_026","carried_seconds_upper_bound":4393},
   "suffix_continuation": {
-    "parent_complete": "/data1/Kane/MOE/results/b2_observed_20261021_r2/complete.json",
-    "parent_complete_sha256": "1c4bd16a6e12fe96a8d0426e1a9791a7204da10faae7fc9983274e9f1fc1defb",
-    "charged_seconds_upper_bound": 4393,
-    "upper_bound_explanation": "4373s ceiling at confirmed-dead monotonic11425362.468299352, including retained576; plus20s conservative ordinary-test execution debit, not measured solver cost",
+    "parent_complete": "/data1/Kane/MOE/results/b2_observed_20261021_r3/complete.json",
+    "parent_complete_sha256": "373745a00606f0f2d1f467f14b1544deadde31b17a766aebf2b2b49e8b347a39",
+    "charged_seconds_upper_bound": 8812,
+    "upper_bound_explanation": "8808s ceiling of 4393 + confirmed-dead monotonic11430173.93501454 - r3 entry11425759.134485185; includes repair/control interval and prior failed costs; plus4s for 3.023s preflight, conservative not solver time",
     "repaired_backend_identity": "21bc12ea681b5693dc538fac2a645f296bcf3fd2ee147bcd96536f31909ed060",
     "original_control_commit": "47ce052face0c58701bad471e7d6413ab6864009",
     "unchanged_controlled_files": {
@@ -289,7 +288,6 @@
       "configs/genbab_cpu_20261021_requirements.txt": "e023e0df1e23c8dea28aa5702fc3f05858a6049f67ee9d48bec811146fd8c648",
       "scoped_proof/io.py": "ee080902b729bcc0ce50ead5696538b687302358f143b039a6f9bdee2256569d",
       "scoped_proof/owned_bounded.py": "f0f7c4b72b2ffc10fd3b2e20cf44374d42b5c0d4aaddb9f47263bf6a20fa79c3",
-      "scoped_proof/owned_session.py": "8b9e80e259679490a2f72e2d5011c5345e17d75c7cf2ad80952b00f651aed798",
       "scoped_proof/pidfd_compat.py": "8bbc9c51377221aee889d217613ecd9fc176a18cce956763f423f2faacdbf41e",
       "scoped_source/development_work.py": "2c3058be39f5fbb57ac74b623c262b9668cb823a6885b813fbac1a7177b22470",
       "scripts/b1_observed_batch.py": "b523d14140df5c2c6007925a6c0e774527c133be8c1d014f4e1bfd6b84528213",
@@ -378,28 +376,86 @@
       "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_024/reception.json": "1548e55f77546281a9491370e649993ff70f45fd78755cf43f783e640075b353",
       "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_025/launch.json": "71be0f457efa615875d170625c5a5076bd11042bfa538ba235b2c115f0cd2638",
       "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_025/terminal.json": "64e010d14851a28a48c09a6bc17f47bf84379fc29172cfc18b7ec0c87168aa6a",
-      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_025/reception.json": "af85332804e3880b6c45a95e5ca0c7d30014e8ee6634b94ca36333985d5d4c6f"
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_025/reception.json": "af85332804e3880b6c45a95e5ca0c7d30014e8ee6634b94ca36333985d5d4c6f",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/complete.json": "373745a00606f0f2d1f467f14b1544deadde31b17a766aebf2b2b49e8b347a39",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/start.json": "b2a97ebb628ac8a0a125671d164b2d9695873206406d30af36bf021476fcb4ea",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/ledger_047.json": "a85aa1fd696282b3f0b13f45d8793cb44f775c88699d2ab2611c290ed4cbfd0a",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_046/native.log": "381a71f76d8cef0a9a28b6409114956c244b48fcd3b43f35a901b80084cb5289",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_026/launch.json": "03a9f89b42091872a6e8e23a57216ae7ba4fc28aebd51936fc1a613b8a1278b1",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_026/terminal.json": "8c1b83bfffba99867793ef3600b7c2e165d08ad301e1a944c90951c6d034c804",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_026/reception.json": "3f92e7cd7a37848e278de396caacb335afd36c940d7a0cbafb7fb933a541ef84",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_027/launch.json": "9b96f82195e24a5aaec9299b4bf37ea90f1ba349ec46954703de1a5bc5294d53",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_027/terminal.json": "f4fe84306b249bab138da81f2f6ad159cbe12605acc5964603612b165c9010bd",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_027/reception.json": "ebf79907b1ee56cd48440246085f151ab828f7f82bb7b29c8b8903dbf550f535",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_028/launch.json": "033d64bf2ea727ce21cd37081e083bc142702dcdc2a0669cb5bd0fb1009eca23",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_028/terminal.json": "6ca0ebd667703fda0667ad39c2725d97a548a4f4d5b8ca39d7f6c0eb880d2aaf",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_028/reception.json": "5f2800b620d2360719a8bfbfddc23ca9940d0c13fe2fa321360cbebfb469d96f",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_029/launch.json": "b555c9c1ed2a20ad7081f8af56817655699ce3450779efb327e6e83f4d0bd4ef",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_029/terminal.json": "5ce2f7de62c8242f74e900896ae6c3397bd931b1a8ea069f340c04abe6af8e0e",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_029/reception.json": "11e1225a723289a25b28fc40c2084e68d8c4e8fd8690ee1e4749825ff7371c2a",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_030/launch.json": "246e1e081ee9728287fbb5f4a016fd9070e044575ac0b5ece7269c1a04d12f97",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_030/terminal.json": "6b08d49842a3ec78b8e46fbbf92c627dc9199b1deae2491caac9b6cb8ea0872f",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_030/reception.json": "c1483bbb032e9abc1d8e70fdbe91ad45e4954f87b299ce714f230b5dc78b186a",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_031/launch.json": "6c7c2f3efcd3500f7e87d4b61fd8d4a0dccbffba9d7b81506647958159d90649",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_031/terminal.json": "2bb18e3e4b64563e686e2b42b57500a9f2d75873cac49ea0fe6a6a7effb24e72",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_031/reception.json": "62910dab5493676d5372505ba070b4c054eac26a706b502d53cc6761b2a7e07b",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_032/launch.json": "93612faa4c1e1ef0e06b0622b308b5daba4c2a8374be5f679b79ac64f2a1ad22",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_032/terminal.json": "3e86ad620b20c3a1aa5f366653eabc7db67a6a980875b1a60df050f9776e18bf",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_032/reception.json": "1398451142ab0e15195844d5b93a0f3b423351bb8af99e8b6cf97ddb4ccae959",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_033/launch.json": "651d09568c3f32e61f014b68b0ff0f544e9ef8087381d86eb81eb2bf045e752d",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_033/terminal.json": "c6fd8badbbf06772fbd4ee2a5b493e01e3b9857a1b7a98e2a13f55a061aec8d1",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_033/reception.json": "f0c4a1b05791688e6ff745d00dc29b70654a64c810748e917a8f822701dc09de",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_034/launch.json": "a14f806ed9fd1b5f4587bcd2d89cba28bcccde969a031307216487ced8595234",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_034/terminal.json": "718518b91f96ef6cca62b9b9deb47afcf742d1c4265ad31100643f380bb4b146",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_034/reception.json": "351f96227a55916c8e9f3eecbda1479e51eca753e82926e04ab4157e2634abb3",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_035/launch.json": "f5f8b43a4ae1449f980d3b89c5564f1d3d187c7f76eb37d89405541541fe4729",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_035/terminal.json": "5bb03498539292e047852ad314f3b934cf9d8dd20623b673451a6f90a820a2f0",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_035/reception.json": "103ff110f45d801405d5f789e9b9c537713abf6ce822f1cdff2635e8dddc1ef1",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_036/launch.json": "036e215ef0a7d69c22993891bfb3b46c68fe34557a16c819ed001449369d97f0",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_036/terminal.json": "fc974f6ef460f629cc9a4b0b0656c47b463851e333821ae3b3a31e4612ecf8e2",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_036/reception.json": "f07590539536df4193cc119112c3da8bb20324e90aa6602d7693dbd17d0bed5a",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_037/launch.json": "ea9ac6a7655ac99c7454e40cf13248c692e6b44dc8f7a1c59eee562caf38ab1d",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_037/terminal.json": "1b9a5666a3a42001a3c2c9e2a6fafabb0c344ef1432007eaf7ff4e745ad255d1",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_037/reception.json": "5c7ebb161104d62a20f6e14e4abab23cea375818d50d2ac7768f4b27b9e7c8a2",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_038/launch.json": "2be72eaa88d8967e6c3846af957593b9abc3ce8f4f5e9cbab81c09db3ce8f611",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_038/terminal.json": "490972b512c4a2c8ca9e0f6077c27cd73cd85346c613591c470c52740bfb8aa1",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_038/reception.json": "867dc10eb1de0b9ad18a7abe7360bffe2ac33c0f6d876ec1f42c257b94db1578",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_039/launch.json": "d68ba119971fa4f675441b2b6ac6e4beb6c207f37e66171a9014441c8e60bf88",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_039/terminal.json": "1dc782bab1241e92ea90735d42ebcf0b9f6b4b067e28dfa82799227b107cd68d",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_039/reception.json": "6987d40b34abac8a9db07e621747317a5dd10e992286565f2233062f7c47d834",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_040/launch.json": "15d7c5a45152c4c656f54d5dd42ee60a5c29447fd549014fd6051989b43ea817",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_040/terminal.json": "da75dd97eaf8faee74254d6c9e9263903b40ee4a50dd9e4b6b4f1d0df55acf69",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_040/reception.json": "782348af8125a43835a407c7a4021b8c076f24854223f7bcdadfea6a42ae24c1",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_041/launch.json": "86de5bbd43883b12f1d4bf18f59ed14714fbdaf486ad68401b139c69c01ff7fb",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_041/terminal.json": "3ea733bb41151e5b1f28d0bee6903cae364153e3dc9812a5f82453839d7b4e98",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_041/reception.json": "55fc1eb73c8ff216fcbdf247b1f7fa295e613034e434d5253485acd8601ca083",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_042/launch.json": "71854d15c7cfaf726722c2d10320ca17fbea46f89494bbfa1de199a2a39f5309",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_042/terminal.json": "bb8e81ed50e8f2f3c855e6e5f0bf220303f698692cab7a12c7122d8a6d43bd21",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_042/reception.json": "ed54d4cf763aace1a8ba3b7a70e51ae9c671a0c3f2c426f60ca73668faf574c1",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_043/launch.json": "003394edc0ecfa9d6e6fbf595579b207ab21c8b9eb4b18e57121ab20be11f793",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_043/terminal.json": "65dfc69bc420dd617f5469d080321fed1afeda2d3b105d254737d8c800bee214",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_043/reception.json": "bf3c195e08ef95394f389dcab0e9f9caf5647037bfcac6f81a3e00d117ca108b",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_044/launch.json": "2e66769786c1280835bb6e2245ff869e110b442d62e4b2faecf139d28f37f943",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_044/terminal.json": "3beb467e7f0124112fd93f5429181b9adb0986d4918fd0c73d3a064222f5a666",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_044/reception.json": "5e3483d83752bf39a6988ecb4f0def7b9abffd4abd13a934ee9674c0a4788dcf",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_045/launch.json": "ab23affdb672a0e881c1543ef36693326e2487b247ba9892f377cf5644af3097",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_045/terminal.json": "bd25a086e16ca399d93be09087d36c22f5787751221031f5a04968c9d3473507",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_045/reception.json": "a1c9dfd8391291e278c04f72cdad7b841a3049e5c1e43b0d4f7d62af63cb9d59",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_046/launch.json": "29596a0aea92328d5d2f271e003241e3455a6c614008f1df721e7fca4c8408a4",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_046/terminal.json": "8c8bf5315af05e8384ab4b74f753373b056895bd391659e5da5748d808d4163c",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_046/reception.json": "f7bb17dab6098ab97d4ba9aedca75ad5ddec61124b8895dd5902ed694fe7cfd2"
     },
     "additional_artifacts": [
       "/data1/Kane/MOE/results/b2_observed_20261021_r2",
-      "/data1/Kane/MOE/results/b2_observed_20261021_r3_controller.log"
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3_controller.log",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r4_controller.log"
     ],
-    "repair_scope": "Only empty-lA BBPS heuristic score fallback in new r2 snapshot; graph/configuration/bounds/acceptance unchanged. Original r1 backend and ERROR retained. Execute b2_026..b2_069 only.",
-    "controls": {
-      "suite": "24 ordinary unittest controls; no model/checkpoint/solver calls",
-      "result": "PASS",
-      "test_seconds": 0.043,
-      "source_hashes": {
-        "tests/test_genbab_cpu_ready.py": "4bc41dfce21d358e66ff5834be8c93d1b8d6f4a9d5673e1f11ae61abd35763df",
-        "tests/test_b2_observed_batch.py": "306aef90dc4882a2bab1d93d2958b4289a0e65092e4a3f49c69e500cf85522b3",
-        "tests/test_genbab_guarded_properties.py": "f785dce7d95588df502eacb3695495c4c2e43dff7af5bd5e8f52d2dc59c43984",
-        "tests/test_genbab_guard_semantics.py": "47c04435eb4c6640a43e78ea142646c3dad50ad7a8d9be8027a0ae507cda2e99"
-      },
-      "retained_test_failures": [
-        "pytest unavailable; used existing unittest, no installation",
-        "two incremental scope-test expectation failures; fallback-control passed; fixed old assertion for fourth disclosed patch"
-      ],
-      "limitation": "Zero score means unknown expected improvement; search order/cost need not match old path. It is never an output bound."
+    "initial_identity_read_repair": {
+      "path": "scoped_proof/owned_session.py",
+      "previous_path": "/data1/Kane/MOE/executions/b2_observed_20261021_f8eb02e6a/scoped_proof/owned_session.py",
+      "previous_sha256": "8b9e80e259679490a2f72e2d5011c5345e17d75c7cf2ad80952b00f651aed798",
+      "current_sha256": "0ffd4c41bfc395a3597f9073d8ffd3ff1bdaf5bf16558f0d756cbe89f5132444"
     }
   },
   "stopped_prefix_26": {
@@ -773,7 +829,7 @@
   "historical_six_local_calls": 6,
   "historical_prefix_root": "/data1/Kane/MOE/results/b2_observed_20261021_r2",
   "schema": "B2_OBSERVED_DIAGNOSTIC_RECORDS_V1",
-  "status": "RUNNING_SUFFIX_SEE_SUFFIX_EXECUTION_AND_LIVE_LEDGERS",
+  "status": "STOPPED_PREFIX47_REPAIR_READY_FOR_UNTOUCHED_SUFFIX",
   "initial_controller_tests": {
     "passed": 10,
     "seconds": 0.008,
@@ -821,7 +877,7 @@
           [
             [
               0,
-              1e-7,
+              1e-07,
               364,
               164.73857975006104
             ]
@@ -989,7 +1045,7 @@
           [
             [
               0,
-              1e-7,
+              1e-07,
               6,
               1.0598082542419434
             ]
@@ -1492,5 +1548,383 @@
     },
     "domain": "Expert TOP2_MEMBERSHIP bounds restrict to the pair domain; input/network/guard lowering remains trusted.",
     "conclusion": "Current saved evidence does not supply the bounded strict-sign premises for this candidate at the unchanged threshold. No added epsilon, source recapture, query, sample, or acceptance change. Wait for complete B2 results before B3 selection."
+  },
+  "historical_r2_to_r3_continuation": {
+    "parent_complete": "/data1/Kane/MOE/results/b2_observed_20261021_r2/complete.json",
+    "parent_complete_sha256": "1c4bd16a6e12fe96a8d0426e1a9791a7204da10faae7fc9983274e9f1fc1defb",
+    "charged_seconds_upper_bound": 4393,
+    "upper_bound_explanation": "4373s ceiling at confirmed-dead monotonic11425362.468299352, including retained576; plus20s conservative ordinary-test execution debit, not measured solver cost",
+    "repaired_backend_identity": "21bc12ea681b5693dc538fac2a645f296bcf3fd2ee147bcd96536f31909ed060",
+    "original_control_commit": "47ce052face0c58701bad471e7d6413ab6864009",
+    "unchanged_controlled_files": {
+      "act/back_end/moe/genbab_pair.py": "891c70ceee206d30fe1128f8d841d8f88c6be019bb8c5be27082fcc715dab973",
+      "act/back_end/moe/static_pair.py": "653f08080a71fbdd12fa823d6974bc451bedb8984714b2b3c0ab31e19fd7c54e",
+      "act/pipeline/moe/genbab_spec.py": "27975c25045e7c46321ac7061bbdfd66c34e99f515a9502335aa28a82ea6c8c7",
+      "configs/genbab_cpu_20261021_requirements.txt": "e023e0df1e23c8dea28aa5702fc3f05858a6049f67ee9d48bec811146fd8c648",
+      "scoped_proof/io.py": "ee080902b729bcc0ce50ead5696538b687302358f143b039a6f9bdee2256569d",
+      "scoped_proof/owned_bounded.py": "f0f7c4b72b2ffc10fd3b2e20cf44374d42b5c0d4aaddb9f47263bf6a20fa79c3",
+      "scoped_proof/owned_session.py": "8b9e80e259679490a2f72e2d5011c5345e17d75c7cf2ad80952b00f651aed798",
+      "scoped_proof/pidfd_compat.py": "8bbc9c51377221aee889d217613ecd9fc176a18cce956763f423f2faacdbf41e",
+      "scoped_source/development_work.py": "2c3058be39f5fbb57ac74b623c262b9668cb823a6885b813fbac1a7177b22470",
+      "scripts/b1_observed_batch.py": "b523d14140df5c2c6007925a6c0e774527c133be8c1d014f4e1bfd6b84528213",
+      "scripts/b2_observed_worker.py": "cf783cd93733e5faeb8e25c0693801c3345e25f4cb82b2db77a2b649607d0df3"
+    },
+    "retained_files": {
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/complete.json": "1c4bd16a6e12fe96a8d0426e1a9791a7204da10faae7fc9983274e9f1fc1defb",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/start.json": "ae7b861748c0207a0f489e4f600e750c6f3fb96eac201de88f29223be2ce33f3",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/ledger_026.json": "941ffd1f554a693ec134914b9398b4dfec116ec1da36ff491efe9eac6eb135a2",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_025/error.json": "de400dcea8c6a6f14f644ea2418f5324a56d70e5257aa2793fcbc72c66c1a587",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_025/native.log": "c614d0417706df8fc4ab819b459c279a019d8ec3deee7715665ada8f1997eaf9",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_000/launch.json": "918604117145ac272463ab377b6e2b8c7523e89938be8aa34b61a9487c0e9e3e",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_000/terminal.json": "2032425673c37923f0e5b6de7f5137c401084b639ae6d6f5e00b01889aa55dfe",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_000/reception.json": "46fa19ff54a9aeab2e48429cf5915e0839cc5d9ca43d87e518432663f461d515",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_001/launch.json": "3e3e68f3ae1f94b74b28a21c3e113ab7bd6607f3de71f7f92b58d728a37df34a",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_001/terminal.json": "84556569791a03a3cb5bcd153535ad3aba58d108306bbcf728acc6e9163ccec4",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_001/reception.json": "c5a1a03a45db5392cf5804cf67ff77de659561c73983d843c44311a52e396f03",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_002/launch.json": "9a47eb59cfc62822a007ab99aa612d5911bb4b580d6a0d29113a4a6f18b6c214",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_002/terminal.json": "1fc7211d6edc66c1dc615978a4425727eb82f41ce36a58171f386e5ba46a14f5",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_002/reception.json": "cb54448180f30c9d8a63c36a9be35e3931369a5e92c2b3271bc2657d71c36ce1",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_003/launch.json": "82247207f3c4ca616eb3ece0e7e3cc8fb8873804b677144402d4c3b736675922",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_003/terminal.json": "21fe5035bf30af0fe935cf6d3a966ff6e2d4eb6e59d10f034048610b35c9076f",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_003/reception.json": "ccc9b22acf40b8b9abecf38961c29044cb29bc88453147c070d9c0efe4e7f427",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_004/launch.json": "ad6fc2309cccd21173a12bfbfe1f57455302a9fd341dd21d589d4794d63905f1",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_004/terminal.json": "8dd14749e716cc9d202d26cd8ce95c698c1173f6f53c423a63583e1fe3d2671b",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_004/reception.json": "10c3290da9adb04b08b52dea1b8da0ac105c01cff7a83b2bb5a1033aca7c942c",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_005/launch.json": "06c52bf1778074476e9a6e16ce829d0ec00b46eef67ad27aa9dd770183133079",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_005/terminal.json": "c0a2337d3dffe8a3a36207e8449f899d12cad2e38ba07a04678e24fadad23212",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_005/reception.json": "a69e1b65b100d59d0b7c9213a35c77b5b045060624e16cff45298d4de0be2a2e",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_006/launch.json": "052a2e0bb4b9b104dad838078494e0bc77f9c54b3c6ad3f2fcf58e6611aa2ab9",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_006/terminal.json": "bad0c4fea2b3b1afc44c78b3f26e1ea68e8f471299bc6cc6ddf5787f76d69a3d",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_006/reception.json": "ebc880c38a4a8bbec97d1f57e782e78a72fa7b1e5d90f9a040a607322bcf1e91",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_007/launch.json": "f4aa944006f3d6a8afa49337fcff2a67a296af9b60954cb06763042b2f9733c5",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_007/terminal.json": "dc8ab352f75d8ce47343dbe6115262a4730fe88fa971781da3c9ff64a1f44ecd",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_007/reception.json": "dd62211c1646d3773cc121067d8c168e1d1d0280c7a14aaea1d7a57e9b2e101a",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_008/launch.json": "ac61a5f9c675718da8d367910cad14c0a18c5cc7f147ce89c2be519144a4820d",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_008/terminal.json": "f0f0c29669dc32ec0da2659de9b9726b09d7f44e4faa54b7728a017cdb9576d7",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_008/reception.json": "c7aa31ba760ff681847199af05ae385fd541d1a56c90e022f54db5ba5e235881",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_009/launch.json": "583edad04fd1246e32d096799dcf016a28a2b4b86ad627b220c73dc5ebb53fbe",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_009/terminal.json": "dd550e1429de308f4ac19b1f0b1829687d55f7cbfcffd6ca9e4ad314ce76e9eb",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_009/reception.json": "47bc66d7d7e00685fe5c5c8d3fbd472ece17ebaa471f3a53fb7cd78556c248b0",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_010/launch.json": "3409ff8902b20d1b6b044c4369c4504c5e3398096b59e4c0c2615b8e039b225c",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_010/terminal.json": "e7e3d386edf2bc8cfedc88cee433d99a05f31218b488e7a764dddc6efd21ab01",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_010/reception.json": "0f6a6d3ba7399cb9b9b73d0061415f8c3262461708b2b0fc3480813b59422404",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_011/launch.json": "6aa0de367e8ddc6cd8efbb715301732bc8369b912a2822127314d59f0498327a",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_011/terminal.json": "d2f098e9fd4e554c84f9c5b3fb582fe4847df81aaa14e558a72a8d2b0b58a774",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_011/reception.json": "7ad398d1cdff26f9311a6227d01ef448e92b8b9a092e2916aa479fa7948e1ae2",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_012/launch.json": "e45f304bed975605e2a139942f6350129066f93d535eea57daa0391dc2d64811",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_012/terminal.json": "4fc137f109aa88e194c914b1e4fef8b3b0f0cade29ad151b1d2ea91ed9b65252",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_012/reception.json": "146b83b747530f9cf07c13465470838df6e74320e103e008a6aa35fea400fcbd",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_013/launch.json": "c28152a308216ba1b168f425485da0f259f3411d95bfe1fd1ffe9c772582cee7",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_013/terminal.json": "c57cc4f6edfbebc821e64514cbc40e6020ede0fa6a0f60136eae8a902bea3a94",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_013/reception.json": "00eee861ad0dd1547f8ae6f769435afea08cace56a66b8184d63d10313e4be75",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_014/launch.json": "4216d1eab28d251f91eac9dbe67f7e810e9a20159676a0d6d4a3c088df537f3d",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_014/terminal.json": "d2c6371ab5b22b6cb656bb1e62445432942827c1f5be407c9da94b64e03743a1",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_014/reception.json": "b6c8ea2c6066a679a5e8bd69ee557ac80051ae0599e2cd7638c375bd6a2aa4d6",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_015/launch.json": "7e6fc71d74ae735f05b77a46f0b555bf078c02abc737c3eb481cccb7b6123dc5",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_015/terminal.json": "77371f069b61b9509af6694d7f0af70c2369049229f86adc1c4428430accfd12",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_015/reception.json": "f28a9a452c391c65831f9db1df9fae7b836bb942be5f51ca636674572054eba0",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_016/launch.json": "59b17d7923a755fb7f3dca9ecb365dd94af8afb71ce8ac48cb5c574ae9e8a335",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_016/terminal.json": "202fb7c30e25a981d7c30bc28682762942deb35767108472c96e1b20cb49864c",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_016/reception.json": "a18b55c106d6991032901b9ee34b32c1594da5112bbe79fe58e59300d5ef8573",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_017/launch.json": "31814e9055130316aa63c6679ac80228d3365f278349b59b595fac8d9142bc63",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_017/terminal.json": "4457f7ba1c5aaca4776fb84e235e5eb6f74be7918514fa8ab092e202b8a361d8",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_017/reception.json": "0f9c155d3607091454f218667bc7f7a468ff462d98f9fdf3fc46d7572764e326",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_018/launch.json": "6c7b46a431bfd06a2dda138c68278f86b002b5615f3b27ebe92e549058a83d03",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_018/terminal.json": "d2061c443fcfb5e36d81a97729e822f76e2e639b2cc1e7c3b75d517a3f68f2ac",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_018/reception.json": "d017d1d87e78ceb766b06d5e14a4782d9e80bd32740dd20da410d54165a1e60d",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_019/launch.json": "18791bff1f304023da5e099e82620065c77b0cc5fc338a237476884e213ec2cd",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_019/terminal.json": "c5e40ff28f695239cfddd035844906de407ba893317af61854b75fcb7fd2be30",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_019/reception.json": "ad6c8674c9097dcaa9c7acd4929fcc9981a0231139cbf27f8b1b94230a4c8987",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_020/launch.json": "523b4037b7d6797bcab9870b08295ad597b54914f2c6e8f05756c308b97a646b",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_020/terminal.json": "49257420475c2bb2563a7a49157fcc0807a541222aa48e74520a7b6487f0005c",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_020/reception.json": "63fa5e7b9f5002715b9deb89000aa9ef6af5b589ee4de607063096d4b720cd20",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_021/launch.json": "ce1f70ab347618f89a1d722d5d952d4473a5f899053722e8ead46f62a86b096c",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_021/terminal.json": "8e7300dfd8d523c1ad2924af19f019ecb6c1e3ff11781a2e6333a5402648f55a",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_021/reception.json": "4f27e1ddf59022a4f42148a5be1f5bebc73e084b3551358f783ee45216f289a5",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_022/launch.json": "0f0af49c2b8a21ea92362f1b33bfd785584113d517f00c6ee403525e88d97baf",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_022/terminal.json": "0195530437491cb6810e2e8d7fa438231772c5795868adbc8d511bb7337f5331",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_022/reception.json": "f01a7e8e48c329a8aced1b35d869938341835fff63d9281525cec649d8174308",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_023/launch.json": "06b4ea85c84682bba69839982cb43eedd63fdde439229bd3458587b7f44ee018",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_023/terminal.json": "68463726060ea043a5cbf929bc938363ad2a4282cb6d99a10d1678ace5d7388b",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_023/reception.json": "078deae160fa100aac02a903b12e3c53f30745ea4d6f223bf3bd3f4e2c6ceb3e",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_024/launch.json": "d0017339a497a41dab395435b4e3038b2b8ac0f06ccb145626c5cccee6164b59",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_024/terminal.json": "99c093ca12ba8249527fc43739464d004a7153c694b8b71c4c36e0a84de555e2",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_024/reception.json": "1548e55f77546281a9491370e649993ff70f45fd78755cf43f783e640075b353",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_025/launch.json": "71be0f457efa615875d170625c5a5076bd11042bfa538ba235b2c115f0cd2638",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_025/terminal.json": "64e010d14851a28a48c09a6bc17f47bf84379fc29172cfc18b7ec0c87168aa6a",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_025/reception.json": "af85332804e3880b6c45a95e5ca0c7d30014e8ee6634b94ca36333985d5d4c6f"
+    },
+    "additional_artifacts": [
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3_controller.log"
+    ],
+    "repair_scope": "Only empty-lA BBPS heuristic score fallback in new r2 snapshot; graph/configuration/bounds/acceptance unchanged. Original r1 backend and ERROR retained. Execute b2_026..b2_069 only.",
+    "controls": {
+      "suite": "24 ordinary unittest controls; no model/checkpoint/solver calls",
+      "result": "PASS",
+      "test_seconds": 0.043,
+      "source_hashes": {
+        "tests/test_genbab_cpu_ready.py": "4bc41dfce21d358e66ff5834be8c93d1b8d6f4a9d5673e1f11ae61abd35763df",
+        "tests/test_b2_observed_batch.py": "306aef90dc4882a2bab1d93d2958b4289a0e65092e4a3f49c69e500cf85522b3",
+        "tests/test_genbab_guarded_properties.py": "f785dce7d95588df502eacb3695495c4c2e43dff7af5bd5e8f52d2dc59c43984",
+        "tests/test_genbab_guard_semantics.py": "47c04435eb4c6640a43e78ea142646c3dad50ad7a8d9be8027a0ae507cda2e99"
+      },
+      "retained_test_failures": [
+        "pytest unavailable; used existing unittest, no installation",
+        "two incremental scope-test expectation failures; fallback-control passed; fixed old assertion for fourth disclosed patch"
+      ],
+      "limitation": "Zero score means unknown expected improvement; search order/cost need not match old path. It is never an output bound."
+    }
+  },
+  "historical_suffix_execution_r3": {
+    "pid": 290944,
+    "execution_commit": "f8eb02e6a82b80298df4502212b71ad2c7de001e",
+    "code_copy": "/data1/Kane/MOE/executions/b2_observed_20261021_f8eb02e6a",
+    "run_root": "/data1/Kane/MOE/results/b2_observed_20261021_r3",
+    "start_sha256": "b2a97ebb628ac8a0a125671d164b2d9695873206406d30af36bf021476fcb4ea",
+    "retained_count": 26,
+    "first_query": "b2_026",
+    "carried_seconds_upper_bound": 4393
+  },
+  "stopped_prefix_47": {
+    "complete_sha256": "373745a00606f0f2d1f467f14b1544deadde31b17a766aebf2b2b49e8b347a39",
+    "ledger_sha256": "a85aa1fd696282b3f0b13f45d8793cb44f775c88699d2ab2611c290ed4cbfd0a",
+    "full_counts": {
+      "POSITIVE": 17,
+      "UNKNOWN": 18,
+      "ERROR": 2
+    },
+    "full_attempts": 37,
+    "local_attempts": 10,
+    "unexecuted": 23,
+    "calls_seconds": 7597.772210324183,
+    "reported_elapsed": 8473.849206522107,
+    "final_artifact_bytes_including_complete": 65558760,
+    "error_query": "b2_046",
+    "error_terminal_sha256": "8c8bf5315af05e8384ab4b74f753373b056895bd391659e5da5748d808d4163c",
+    "error_seconds": 290.6201844867319,
+    "cause": "initial stat semantic identity validation failed; original state/SID/start not saved; membership and unique cause unknown",
+    "repair": "one strict reread only before first identity binding in development mode; default/confirm/cleanup/signalling unchanged",
+    "ordinary_tests": {
+      "count": 27,
+      "seconds": 3.8919706530869007,
+      "files": {
+        "tests/test_development_identity_read.py": "d021bbe4e9787c0a059163666ce84f7e0bf0611f84a0998727c7fe6702d48f9f",
+        "tests/test_b2_observed_batch.py": "471bc508d2ba52e41aed7261d2493aa3692d9eb47fa4936249597aa0647c18bf",
+        "tests/test_genbab_cpu_ready.py": "4bc41dfce21d358e66ff5834be8c93d1b8d6f4a9d5673e1f11ae61abd35763df"
+      },
+      "model_calls": 0,
+      "solver_calls": 0,
+      "independent_read_only_review": "no material issue; frozen previous observer path verified"
+    }
+  },
+  "fixed_seventeen_positive_phase_analysis": {
+    "scope": "positive requests within b2_010..045",
+    "rows": [
+      {
+        "query_id": "b2_010",
+        "model": "seed1",
+        "dataset_index": 4113,
+        "counts": {
+          "initial_crown_without_alpha_or_bab": 24,
+          "nonlinear_bab": 1,
+          "alpha_without_bab": 3
+        }
+      },
+      {
+        "query_id": "b2_011",
+        "model": "seed2",
+        "dataset_index": 4113,
+        "counts": {
+          "initial_crown_without_alpha_or_bab": 27,
+          "alpha_without_bab": 1
+        }
+      },
+      {
+        "query_id": "b2_012",
+        "model": "seed0",
+        "dataset_index": 4129,
+        "counts": {
+          "initial_crown_without_alpha_or_bab": 22,
+          "nonlinear_bab": 2,
+          "alpha_without_bab": 4
+        }
+      },
+      {
+        "query_id": "b2_015",
+        "model": "seed1",
+        "dataset_index": 4142,
+        "counts": {
+          "initial_crown_without_alpha_or_bab": 24,
+          "alpha_without_bab": 4
+        }
+      },
+      {
+        "query_id": "b2_016",
+        "model": "seed0",
+        "dataset_index": 4150,
+        "counts": {
+          "initial_crown_without_alpha_or_bab": 27,
+          "alpha_without_bab": 1
+        }
+      },
+      {
+        "query_id": "b2_019",
+        "model": "seed2",
+        "dataset_index": 4179,
+        "counts": {
+          "initial_crown_without_alpha_or_bab": 28
+        }
+      },
+      {
+        "query_id": "b2_023",
+        "model": "seed2",
+        "dataset_index": 4223,
+        "counts": {
+          "initial_crown_without_alpha_or_bab": 22,
+          "nonlinear_bab": 1,
+          "alpha_without_bab": 5
+        }
+      },
+      {
+        "query_id": "b2_024",
+        "model": "seed1",
+        "dataset_index": 4232,
+        "counts": {
+          "initial_crown_without_alpha_or_bab": 24,
+          "alpha_without_bab": 3,
+          "nonlinear_bab": 1
+        }
+      },
+      {
+        "query_id": "b2_027",
+        "model": "seed0",
+        "dataset_index": 4275,
+        "counts": {
+          "initial_crown_without_alpha_or_bab": 27,
+          "nonlinear_bab": 1
+        }
+      },
+      {
+        "query_id": "b2_029",
+        "model": "seed2",
+        "dataset_index": 4275,
+        "counts": {
+          "alpha_without_bab": 2,
+          "initial_crown_without_alpha_or_bab": 26
+        }
+      },
+      {
+        "query_id": "b2_031",
+        "model": "seed1",
+        "dataset_index": 4279,
+        "counts": {
+          "initial_crown_without_alpha_or_bab": 25,
+          "nonlinear_bab": 1,
+          "alpha_without_bab": 2
+        }
+      },
+      {
+        "query_id": "b2_032",
+        "model": "seed1",
+        "dataset_index": 4288,
+        "counts": {
+          "initial_crown_without_alpha_or_bab": 9,
+          "alpha_without_bab": 19
+        }
+      },
+      {
+        "query_id": "b2_033",
+        "model": "seed2",
+        "dataset_index": 4288,
+        "counts": {
+          "initial_crown_without_alpha_or_bab": 21,
+          "alpha_without_bab": 7
+        }
+      },
+      {
+        "query_id": "b2_036",
+        "model": "seed0",
+        "dataset_index": 4311,
+        "counts": {
+          "initial_crown_without_alpha_or_bab": 26,
+          "alpha_without_bab": 2
+        }
+      },
+      {
+        "query_id": "b2_038",
+        "model": "seed1",
+        "dataset_index": 4326,
+        "counts": {
+          "initial_crown_without_alpha_or_bab": 17,
+          "alpha_without_bab": 10,
+          "nonlinear_bab": 1
+        }
+      },
+      {
+        "query_id": "b2_039",
+        "model": "seed2",
+        "dataset_index": 4326,
+        "counts": {
+          "initial_crown_without_alpha_or_bab": 13,
+          "alpha_without_bab": 14,
+          "nonlinear_bab": 1
+        }
+      },
+      {
+        "query_id": "b2_041",
+        "model": "seed0",
+        "dataset_index": 4339,
+        "counts": {
+          "initial_crown_without_alpha_or_bab": 27,
+          "alpha_without_bab": 1
+        }
+      }
+    ],
+    "source_files": {
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_010/native.log": "7cf868fb267acd70f2b46d44fdd9ee08d9d0c650e3dc28b45bb8a12a638f7306",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_010/outcome.json": "f165c802d9afe79c39b539496b30daf33bc6adc1c2d9d61cd184c79ae2f5cd50",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_011/native.log": "82917de4d3047f9ea4b85a488cf92736d0e085006cd4d37ca81f690cd14f050e",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_011/outcome.json": "2b7dfbf7e75131e32bf5fed1c091dc5b2b0cbd059198595be430d31e8d76dffb",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_012/native.log": "bdc61465343f57a31144ca1859dce03852ff898d7e22b097a552c2cd764120a5",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_012/outcome.json": "7a03e8b9ac9eac129c2e964facd9e3fcb56b17eb13d65376d6a63402aacaddb3",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_015/native.log": "25049314b83f3a213ca963aedfd6f7145af47993ae4a5d7c2dc6a8870e6921cc",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_015/outcome.json": "bdd29648de7cc0be9bd36437e5eb6dbcbe4e3c959f487283040cb94fafcb61ee",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_016/native.log": "dc232d97c690a2b68238105fde802e717cf9f91aafb3a51d2482dc3b20ec6aeb",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_016/outcome.json": "0daf9f8de1618c9822a4d85ad4d228c8a6ec8bf0d3ef6b6c28d41390754ac547",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_019/native.log": "19157937df009536b2f93d71b8a67501252462ec1db05bb3d8da0b4a32e65a68",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_019/outcome.json": "57131ab25145777e6d3d696e2efd5f64440df4c1ce03ba2c81b96dcf6513a426",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_023/native.log": "017bcd18bc5dd75da7fb3d16b264fc7b0043b25cea55c50072356ae62ecac0c1",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_023/outcome.json": "654fd6ba426379cf0b21cf7086eb42a2b31c2037c3198ead79e7a7b68fc0cd71",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_024/native.log": "bf688b7f192269966dc005feabe8ceaac03026edfba915ab39362970f7bc05d4",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_024/outcome.json": "12545dfd2fd1af09221c8b5d376894d52b0b05f8bdc8c1d173fee7a2a18a7ddb",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_027/native.log": "bf88bab61b0d16906e7967a2f1495a992d2518c92f8467df201146ad7aa441eb",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_027/outcome.json": "e5d7dd0c6dacb01dd75cdb8514fed0020ec6d003b239db264405b18594f80309",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_029/native.log": "c951320b33289588974a169f057f550b339b366f1664a9c21669136618f0de3b",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_029/outcome.json": "8ea888c527d988798dcd71d0f042dc7a11ea4d141e4340b2970fd169177d78eb",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_031/native.log": "f473abacf1a8670ecf14948efb7272b86c17318622dce5ab8c262e81d9605380",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_031/outcome.json": "20d450737ad740e4a8d4e414e5547aa565e1d1646ad88014752af7fc3cf55951",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_032/native.log": "ab35351ba6ac40ff0194b45e0c7f2f8153db735338b9d95edb98a638d75cdb4e",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_032/outcome.json": "b42dd6fdd0d995829600a6d7509aa0e065c47ebd7a5cf582a02aef60c9dbd08c",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_033/native.log": "69b7e6d2bf7985967e45d6a35f92c35c69e283cea1b53e98fa1c31abb4b22196",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_033/outcome.json": "455b9da2268ffb1b2058cb3de51251e7fc51f8c4874eb9276805da8b5c76b009",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_036/native.log": "68a1f17ba649330db6e2af9a4cf24497971fba448a84d1ab62079fe005e2f3b1",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_036/outcome.json": "77432fd9d496a137cfccd7b8e0a8da205233a5655556ddafb836941179ada2b7",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_038/native.log": "d3a80c8b978226b84f7b6b884325e760ebb8682acab4f23cdc5a40d4d36add59",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_038/outcome.json": "161dfd5d55bc1c797b0bed4323fcf6d85b762aa5233054e2e37ed08d33cfbfa5",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_039/native.log": "cfa56a21ff61d8cafba4cda0ec3dd63f21895f16105a5c5c17947edf88b62a0c",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_039/outcome.json": "a900e1eb91bc9731867d7015caddd29d4a4c820546ebb227803ca03eed46be3c",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_041/native.log": "f704d3938a600c6a00dfc67092ee861729b2f3543d48c85782a32d1d1ce6c914",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r3/b2_041/outcome.json": "3db4696672b869fbbf6c9aedd81810041494849e4ff1322b33d996f720c38180"
+    },
+    "totals": {
+      "initial_crown_without_alpha_or_bab": 389,
+      "alpha_without_bab": 78,
+      "nonlinear_bab": 9
+    },
+    "requests_without_bab": 9,
+    "requests_with_bab": 8,
+    "new_model_or_solver_calls": 0,
+    "interpretation": "actual paths, not necessity or isolated causality; incomplete_only can include alpha optimization; many pairs outside ACT roster"
   }
 }

@@ -183,11 +183,18 @@ def validate_suffix(spec, binding, check):
             and digest(backend.source_identity())==binding['repaired_backend_identity'],
             'same configuration, explicitly versioned compatibility source')
     expected=set(CONTROL_FILES)-{'scripts/genbab_cpu_ready.py'}
+    repair=binding.get('initial_identity_read_repair')
+    if repair is not None:
+        path='scoped_proof/owned_session.py'
+        require(repair['path']==path and sha(repair['previous_path'])==repair['previous_sha256']
+                and sha(ROOT/path)==repair['current_sha256'],
+                'explicit initial development identity-read compatibility version')
+        expected.remove(path)
     require(check['commit']==binding['original_control_commit'] and check['result']['accepted']
             and check['result']['kind']=='synthetic_vector_control'
             and set(binding['unchanged_controlled_files'])==expected
             and all(sha(ROOT/p)==h for p,h in binding['unchanged_controlled_files'].items()),
-            'reuse original API control only for unchanged graph, worker, solver configuration and supervisor')
+            'reuse API control for unchanged graph/worker/solver; explicit observer repair tested separately')
     for p,h in binding['retained_files'].items():require(sha(p)==h,'retained terminal and control identity')
     parent_root=Path(binding['parent_complete']).parent
     require(all(not (parent_root/q['id']).exists() for q in spec['queries'][len(rows):]),

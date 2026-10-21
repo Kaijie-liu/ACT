@@ -3,6 +3,12 @@
 The [frozen catalog](b2_observed_freeze_20261021.json) follows the completed
 [B1 diagnosis](b1_observed_results_20261021.md). It is a failure-selected
 development study, not an independent population comparison or a G4 win claim.
+The current retained prefix has **37 complete-request attempts: 17 numerical
+POSITIVE, 18 UNKNOWN and two ERROR**, plus ten local diagnoses (eight positive,
+two UNKNOWN). Four GenBaB and 19 CROWN requests remain unexecuted. The second
+ERROR is retained; only that untouched suffix will continue after the bounded
+compatibility repair below. Earlier prefix sections are historical snapshots.
+
 The first controller stopped before creating its run directory or invoking a
 real source. A tuple/list difference in serialized compatibility metadata caused
 a false identity mismatch; actual source hashes were unchanged. The repaired
@@ -13,7 +19,59 @@ UNKNOWN; sixteen complete-request attempts give eight numerical POSITIVE,
 seven UNKNOWN and one ERROR. The remaining 25 GenBaB and 19 CROWN requests
 have not executed. The failed request and all earlier results are retained.
 [Records](b2_observed_records_20261021.json) retain that
-failure and will preserve every attempted and unexecuted entry and its cost.
+failure and preserve every attempted and unexecuted entry and its cost.
+
+## Second stopped prefix and initial identity read repair
+
+Controller 290944 has exited. Request `b2_046`, seed2/4374, stopped after
+290.540 seconds because its initial process observation rejected an invalid
+state, session ID or start-time field. The original fields were not retained;
+the offending PID has disappeared. Its membership and unique cause are unknown.
+Two pair results were saved before the interruption, but there is no accepted
+full aggregate. This remains ERROR, not a bound failure or model counterexample.
+
+The compatibility change permits one immediate strict reread only for those
+parsed-but-invalid fields during the initial development observation. A complete
+valid reread is required within the same deadline. Persistent invalidity,
+malformed records, PID mismatches and permission errors still reject. Subsequent
+identity confirmation, cleanup and signalling remain strict; the proof-policy
+path is unchanged. Twenty-seven ordinary tests pass in 3.892 seconds, with no
+new model or solver call; independent read-only review found no material issue.
+The earlier graph/API control is reused only for unchanged files, with this
+observer version and its tests explicitly bound separately.
+
+The 47 retained calls cost 7,597.772 seconds. R3 records 8,473.849 cumulative
+seconds before its final write; all retained directories and logs, including
+that write, occupy 65,558,760 bytes. The next immutable suffix carries **8,812
+seconds**, a conservative confirmed-dead upper bound including the repair and
+ordinary-test interval, plus four seconds for preflight, not measured solver time. All prior logs, failures and
+new suffix artifacts remain inside the original six-hour/128MiB stage. Continue
+only `b2_047` through `b2_069`; do not rerun either ERROR or any completed query.
+
+## What produced the seventeen complete positives
+
+For the fixed positive requests within `b2_010` through `b2_045`, log segments
+and pair receipts distinguish three actual execution paths:
+
+| Pair completion path | Pair calls |
+| --- | ---: |
+| Initial CROWN without alpha optimization or BaB | 389 |
+| Alpha optimization without BaB | 78 |
+| Actual nonlinear BaB, also using alpha optimization | 9 |
+| Total, 17 requests times 28 pairs | 476 |
+
+Nine requests close without BaB and eight use it. Only seed2/4179 closes every
+pair directly with unoptimized initial CROWN. The `incomplete_only` receipt and
+the phrase "verified with init bound" include alpha-optimized completions; they
+must not be relabelled plain CROWN. The records bind each request and native log.
+
+This shows that external successes cannot all be attributed to nonlinear
+branching. It does not prove which steps are necessary under another
+configuration, or isolate graph representation, guard encoding and bound
+generation. Many of these pairs lie outside ACT's saved route roster, so the
+pair counts are neither causal contributions nor cost percentages. All results
+remain numerical filters, not source-complete proofs. Complete the remaining
+strong-path queue before selecting B3.
 
 ## Fixed first twenty complete requests
 

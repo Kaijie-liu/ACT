@@ -38,15 +38,23 @@ class _ProcReader:
             return f.read(cap+1)
 
 
-def _identity(pid,reader):
-    raw=reader.read(pid,'stat',8192)
-    if len(raw)>8192: raise ValueError('bounded process identity')
-    if int(raw.split(b' (',1)[0])!=pid: raise ValueError('process PID mismatch')
-    fields=raw.rsplit(b')',1)[1].split()
-    state=fields[0].decode('ascii'); sid=int(fields[3]); start=int(fields[19])
-    if len(state)!=1 or not 0<=sid<2**63 or not 0<=start<2**63:
-        raise ValueError('invalid process identity')
-    return state,sid,start
+def _identity(pid,reader,*,initial_development_deadline=None):
+    # Only the development scan's initial observation may reread once. No
+    # valid identity has been bound yet; confirm/cleanup/signal reads remain
+    # strict. Never combine fields from two observations or skip bad syntax.
+    attempts=1 if initial_development_deadline is None else 2
+    for attempt in range(attempts):
+        if initial_development_deadline is not None: gate(initial_development_deadline)
+        raw=reader.read(pid,'stat',8192)
+        if len(raw)>8192: raise ValueError('bounded process identity')
+        if int(raw.split(b' (',1)[0])!=pid: raise ValueError('process PID mismatch')
+        fields=raw.rsplit(b')',1)[1].split()
+        state=fields[0].decode('ascii'); sid=int(fields[3]); start=int(fields[19])
+        if initial_development_deadline is not None: gate(initial_development_deadline)
+        if len(state)==1 and 0<=sid<2**63 and 0<=start<2**63:
+            return state,sid,start
+        if attempt+1==attempts:
+            raise ValueError(f'invalid process identity: state={state[:8]!r}, sid={sid}, start={start}')
 
 
 def process(pid):
@@ -121,7 +129,8 @@ def _observe(sid,deadline,reader,*,terminal_confirmation=False,_pidfd=None,_poll
             context=dict(first_identity=None,last_identity=None,status_read='NOT_ATTEMPTED',
                          status_bytes=None,rss_present=None)
             phase='initial_stat'; gate(deadline)
-            try: first=_identity(pid,reader)
+            try: first=_identity(pid,reader,initial_development_deadline=(
+                deadline if development_policy else None))
             except (FileNotFoundError,ProcessLookupError): continue
             context['first_identity']=_identity_record(first)
             if first[1]!=sid: continue

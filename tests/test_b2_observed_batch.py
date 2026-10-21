@@ -20,6 +20,31 @@ batch=module('b2_observed_batch');worker=module('b2_observed_worker')
 
 
 class B2WiringControls(unittest.TestCase):
+    def test_initial_identity_repair_is_explicit_and_hash_bound(self):
+        with tempfile.TemporaryDirectory(dir='/data1/Kane/MOE') as temporary:
+            root=Path(temporary);parent_path=root/'complete.json'
+            queries=[dict(id=f'q{i}',kind='genbab_aggregate',full_slot=True) for i in range(2)]
+            rows=[dict(query_id='q0',kind='genbab_aggregate',full_slot=True,status='ERROR',session={}),
+                  dict(query_id='q1',kind='genbab_aggregate',full_slot=True,status='UNEXECUTED')]
+            parent=dict(status='PREFIX_TOOLING_OR_IDENTITY_STOP',rows=rows,full_attempts=1,
+                        local_attempts=0,elapsed=12)
+            parent_path.write_text(json.dumps(parent));previous=root/'previous.py';previous.write_text('old')
+            repair=dict(path='scoped_proof/owned_session.py',previous_path=str(previous),
+                previous_sha256=batch.sha(previous),current_sha256=batch.sha(ROOT/'scoped_proof/owned_session.py'))
+            files=set(batch.CONTROL_FILES)-{'scripts/genbab_cpu_ready.py',repair['path']}
+            binding=dict(parent_complete=str(parent_path),parent_complete_sha256=batch.sha(parent_path),
+                charged_seconds_upper_bound=13,repaired_backend_identity=batch.digest(batch.backend.source_identity()),
+                original_control_commit='control',unchanged_controlled_files={p:batch.sha(ROOT/p) for p in files},
+                retained_files={},initial_identity_read_repair=repair)
+            spec=dict(queries=queries,genbab_configuration=batch.backend.CONFIG)
+            check=dict(commit='control',result=dict(accepted=True,kind='synthetic_vector_control'))
+            self.assertEqual(batch.validate_suffix(spec,binding,check),rows[:1])
+            for key in ('path','previous_sha256','current_sha256'):
+                bad={**binding,'initial_identity_read_repair':{**repair,key:'wrong'}}
+                with self.assertRaises(ValueError):batch.validate_suffix(spec,bad,check)
+            omitted={k:v for k,v in binding.items() if k!='initial_identity_read_repair'}
+            with self.assertRaises(ValueError):batch.validate_suffix(spec,omitted,check)
+
     def test_suffix_keeps_error_and_does_not_rerun_old_rows(self):
         queries=[dict(id=f'q{i}',kind='genbab_aggregate',full_slot=True) for i in range(4)]
         rows=[dict(query_id=q['id'],kind=q['kind'],full_slot=True,status='UNEXECUTED') for q in queries]
