@@ -28,6 +28,25 @@ PGD = dict(steps=20,restarts=3,step_size_fraction=.25,seed_base=20261021,
            objective='cross_entropy',projection='saved_lower_upper',dtype='float64',device='cpu')
 
 
+class ExtendedDiagnosticWork(DevelopmentWork):
+    """Only the separately authorized offline1800s query; no online gate change."""
+    def __init__(self,deadline):
+        require(type(deadline) in (int,float) and math.isfinite(deadline)
+                and 0<deadline-time.monotonic()<=1800,'one authorized extended deadline')
+        self.deadline=deadline
+        self.counts=dict(row_visits=0,coefficient_visits=0,arithmetic=0)
+        self._continued=False
+        self.tick()
+
+
+def query_work(deadline,query):
+    if query['kind']=='extended_milp':
+        require(query['seconds']==1800 and query['observation']['eligibility']['eligible'],
+                'registered offline extension only')
+        return ExtendedDiagnosticWork(deadline)
+    return DevelopmentWork(deadline,policy=POLICY)
+
+
 def observation_tags(value):
     """Descriptive, overlapping labels; never turn a negative bound into UNSAFE."""
     tags=[];native=value.get('native_result',{});decision=value.get('decision',{})
@@ -358,7 +377,7 @@ def worker(folder):
         os.write(2,b'B1_DIAGNOSTIC_AUTHORIZED_CUTOFF\n');os._exit(124)
     signal.signal(signal.SIGALRM,cutoff)
     signal.setitimer(signal.ITIMER_REAL,max(.001,deadline-time.monotonic()))
-    work=DevelopmentWork(deadline,policy=POLICY)
+    work=query_work(deadline,query)
     with (folder/'native.log').open('xb',buffering=0) as log:
         os.dup2(log.fileno(),1);os.dup2(log.fileno(),2)
         try:
@@ -450,7 +469,7 @@ def run(root,online,freeze):
                     outcome=load(folder/'outcome.json',limit=2**20)
                     require(outcome['query_id']==q['id'] and outcome['query_sha256']==digest
                             and outcome['worker_deadline']==end-5,'same diagnostic output identity')
-                    work=DevelopmentWork(end,policy=POLICY);work.continue_from(outcome['work'])
+                    work=query_work(end,q);work.continue_from(outcome['work'])
                     work.visit('coefficient_visits',((folder/'outcome.json').stat().st_size+4095)//4096)
                     row.update(outcome_sha256=sha(folder/'outcome.json'),received_work=work.counts,
                         accepted=session_ok(session) and time.monotonic()<end and outcome['clock']<end-5,

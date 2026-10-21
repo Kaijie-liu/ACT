@@ -23,7 +23,10 @@ def load(request):
     if _model_state_identity(model)!=subject['model_state']:raise ValueError('model-state mismatch')
     path=Path(request['tensors']['path'])
     if sha(path)!=request['tensors']['sha256']:raise ValueError('materialized tensor file changed')
-    tensors=torch.load(path,map_location='cpu',weights_only=True)
+    saved=torch.load(path,map_location='cpu',weights_only=True)
+    # Evidence packages may also contain request_id and other metadata. They
+    # are not tensor coordinates; bind the three represented box tensors only.
+    tensors={name:saved[name] for name in ('center','lower','upper')}
     for name,value in tensors.items():
         if value.dtype!=torch.float64 or value.device.type!='cpu' or _tensor_identity(value)!=sample[name]:
             raise ValueError('represented input mismatch')

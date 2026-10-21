@@ -38,6 +38,51 @@ the earlier one-output guard controls do not establish that compatibility.
 No B2 real request runs before B1 completion. The old single-output path remains
 available; ordinary adapter preparation does not reinstate a positive smoke gate.
 
+The finite B2 execution wiring is now in
+[`b2_observed_worker.py`](../scripts/b2_observed_worker.py) and
+[`b2_observed_batch.py`](../scripts/b2_observed_batch.py). Six ordinary tests
+cover the fixed request order, all ten output coordinates, same-code control
+binding, UNKNOWN continuation, falsified-static versus replayed-full outcomes,
+and immutable-copy helper imports. B1's separate extended-deadline control and
+the existing metadata regressions pass too:21 ordinary tests,0 native solves.
+
+After B1, one new native API-shape control uses the existing analytic scalar-max
+example with two property outputs, `F` and`F+1/4`, as two unsafe OR alternatives.
+The source and five concrete test points remain fixed. It performs one verifier
+call inside the existing≤300s owned-session supervisor. Ordinary UNKNOWN is
+accepted as API completion; verified is not required. A falsified result on this
+known-positive fixture must be investigated rather than accepted silently. This
+does not repeat the earlier two smoke arms and will not overlap the B1 batch.
+
+The real catalog is instantiated only after B1's41 requests and registered
+diagnostics finish: first10 fixed-order unresolved request/pair groups, then41
+complete GenBaB requests, then the original queue's first19 plain CROWN requests.
+Each local group contains all of that pair's recorded unresolved properties.
+Only the latter60 entries consume full-request slots; all70 calls cost at most
+300s each within one six-hour stage. A budget-exhausted suffix remains UNEXECUTED.
+UNKNOWN/TIMEOUT do not stop the catalog. Tooling or evidence-reception failures
+retain their prefix and cause a review, not a new scientific success criterion.
+
+GenBaB covers all28 unordered pairs and all nine classification properties
+without borrowing ACT route exclusions. A property graph shares its router,
+experts and variable gate across the unsafe OR alternatives. Only
+`result.status == verified` can discharge those obligations;`success` also
+includes falsified. A returned BaB bound is generally an aggregate, not nine
+independent property certificates. Actual nonlinear splitting still requires
+the saved node/log evidence, not merely a nonempty BaB result. The plain CROWN
+path separately pays for its own ACT route analysis and external-environment
+handoff. Both paths use the saved model and materialized input identities, and
+UNSAFE requires an in-box dynamic full-model replay.
+
+Every pair shares the original request's remaining deadline. Startup, source
+checks, graph construction, solving, serialization, reception and owned cleanup
+are charged. Cumulative stage artifacts are checked before launch and at
+reception against128MiB; native per-file limits use the remaining allowance
+with a terminal reserve. This is fail-closed cumulative reception, not a
+filesystem-wide quota: an overrun is rejected and its failed prefix retained.
+The real batch has not been frozen or executed yet. Its failure-selected results
+will be diagnostics, not an independent population win-rate comparison.
+
 ## Historical protocol and unchanged attempt records
 
 ### Authorized guard control outcome

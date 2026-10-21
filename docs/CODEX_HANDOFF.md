@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## B1 ten request prefix and B2 queue wiring 2026-10-21
+
+Online10/41:UNKNOWN2/TIMEOUT8,102 returned F0 calls, attribution0; retained tooling ERROR1 is additional.
+The live88a705275 copy remains unchanged; [results](b1_observed_results_20261021.md) distinguish raw positive dual telemetry from accepted proofs.
+Offline1800s accounting is restricted to registered eligible extended queries; ordinary deadlines and acceptance stay unchanged.
+[B2 wiring](genbab_cpu_ready_20261021.md) has6 new ordinary tests;21 relevant tests pass, no model/solver calls added.
+After B1, freeze one vector-OR API control and the fixed10 local→41 GenBaB→19 CROWN catalog; no positive smoke gate or renewed approval.
+The worker uses the executing immutable copy, full pair/property coverage and dynamic replay; local results remain diagnostics.
+G1–G6 OPEN. Do not rerun old smoke, alter the live batch, substitute missing captures or upgrade offline results into online success.
+
 ## B1 six request prefix and offline API controls 2026-10-21
 
 Online6/41:UNKNOWN2/TIMEOUT4,99 obligations,66 returned native F0 calls; attribution0. Retained tooling ERROR1 is additional.

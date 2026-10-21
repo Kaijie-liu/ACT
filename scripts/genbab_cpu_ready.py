@@ -19,7 +19,9 @@ import signal
 import subprocess
 import sys
 
-ROOT = Path('/data1/Kane/MOE/ACT')
+# Resolve ACT helpers/requirements in the executing immutable checkout. The
+# author repository and isolated compatibility snapshot remain separately pinned.
+ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from scoped_proof.io import load, save, sha
 from scoped_proof.owned_session import execute

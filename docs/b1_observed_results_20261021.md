@@ -67,6 +67,13 @@ primal−0.75 and the policy's outward-adjusted lower bound. Test-suite time was
 0.038s. No real diagnostic slot was used. These unit tests do not replace the
 actual queue's per-process address-space limit, hard deadline and owned cleanup.
 
+The later ordinary queue controls distinguish the separately authorized1800s
+extended diagnostic from ordinary≤300s queries. Worker and receiver use the same
+accounting factory; extension eligibility, source binding and exact arithmetic
+bit limits are unchanged. This repairs an accounting-constructor mismatch,
+not the online deadline or numerical acceptance policy. No extended solve has
+yet run.
+
 At six completed online requests,99 pair/property records are retained:
 29 reused,66 returned and4 in flight at cutoff. There are70 registered F0 calls
 and66 returned native calls. Of the returned observations,47 have native status1;
@@ -87,6 +94,16 @@ dynamic-model replays are nonviolating. This is not a feasible global upper
 bound, a proof of safety or a unique-cause attribution. The registered slice
 diagnostic tests the first retained source; the second request has no retained
 full matrix and will not be substituted into the fixed capture catalog.
+
+At ten completed requests the saved-only report counts UNKNOWN2/TIMEOUT8,
+110 registered F0 calls and102 returned native calls. There are144 property
+records:34 reused,93 returned,8 in flight and9 selected. Of the saved return
+observations,78 have solver status1 and62 of those have positive raw dual
+telemetry rejected by the unchanged status0 policy. These are overlapping
+diagnostic categories, not62 certificates. Fourteen observations meet the
+extended-solve sign condition; the fixed first-eight rule and retained-matrix
+availability still apply. Attribution queries remain0. The live ledger
+supersedes this prefix.
 
 ## Retained tooling prefix
 

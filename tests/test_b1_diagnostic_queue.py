@@ -4,6 +4,7 @@ import importlib.util
 import json
 from pathlib import Path
 import tempfile
+import time
 from types import SimpleNamespace as NS
 import unittest
 import numpy as np
@@ -124,6 +125,15 @@ class QueueControls(unittest.TestCase):
         self.assertIn('RAW_POSITIVE_DUAL_NOT_ACCEPTED_BY_STATUS_POLICY',tags)
         self.assertNotIn('NEGATIVE_CANDIDATE_NOT_CHECKED_FEASIBLE',tags)
         self.assertFalse(any('UNSAFE' in t or 'UNIQUE' in t for t in tags))
+
+    def test_extended_accounting_cannot_extend_online_work(self):
+        deadline=time.monotonic()+1700
+        with self.assertRaises(ValueError):q.query_work(deadline,{'kind':'same_lp'})
+        query=dict(kind='extended_milp',seconds=1800,observation={'eligibility':{'eligible':True}})
+        work=q.query_work(deadline,query);work.visit('coefficient_visits',9)
+        self.assertEqual(work.counts['coefficient_visits'],9)
+        query['observation']['eligibility']['eligible']=False
+        with self.assertRaises(ValueError):q.query_work(deadline,query)
 
 
 if __name__=='__main__':unittest.main()
