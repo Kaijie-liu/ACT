@@ -7,10 +7,40 @@ The first controller stopped before creating its run directory or invoking a
 real source. A tuple/list difference in serialized compatibility metadata caused
 a false identity mismatch; actual source hashes were unchanged. The repaired
 controller is running from commit `2caeae501636bdc6237be89b9a4202f3451df1d2`
-in an independent code copy, PID916650. The first real local diagnosis is
-seed1/4113, pair {2,5}, property0; nonlinear BaB is active. Full-request results
+in an independent code copy, PID916650. Six local diagnoses have received
+positive numerical filters; the seventh is running. Full-request results
 are not yet available. [Records](b2_observed_records_20261021.json) retain that
 failure and will preserve every attempted and unexecuted entry and its cost.
+
+## First six local results
+
+These are selected guarded-pair diagnoses, not six complete MoE requests.
+Their 34 selected properties have matching source, clause, reception and
+deadline records. The remaining catalog continues without changing configuration.
+
+| Model and input | Pair | Selected properties | Numerical result | Complete call seconds |
+| --- | --- | ---: | --- | ---: |
+| Seed1 / 4113 | {2,5} | 1 | POSITIVE | 171.978 |
+| Seed2 / 4113 | {2,7} | 4 | POSITIVE | 5.251 |
+| Seed2 / 4113 | {3,7} | 3 | POSITIVE | 5.184 |
+| Seed2 / 4113 | {4,7} | 9 | POSITIVE | 5.261 |
+| Seed0 / 4129 | {1,4} | 9 | POSITIVE | 8.654 |
+| Seed0 / 4129 | {4,5} | 8 | POSITIVE | 5.256 |
+
+The first result resolves the same seed1/4113 property that ACT's original F0
+left unresolved and its offline closed-slice endpoints made positive. GenBaB
+visited 364 nonlinear domains. This case therefore no longer supports an
+ACT-exclusive capability claim. The other source that was expensive to slice,
+seed2/4113 pair{2,7}, is positive for all four selected properties in the initial
+bound phase, without BaB.
+
+ACT's saved-HZ support and the external scalar-max graph are not the same
+objective or source lowering: their reported bound magnitudes cannot be compared
+as safety margins. Both results remain numerical-policy evidence. The 169.112s
+offline ACT slice receipts are not a complete online ACT timing baseline; the
+171.978s external call includes loading, graph construction and reception. No
+population win-rate, full-request victory or strict source-complete certificate
+follows from this prefix. Continue the fixed aggregate queue before selecting B3.
 
 ## Fixed order and semantics
 

@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## B2 first six local diagnoses positive 2026-10-21
+
+Real increment6 completed local calls/34 selected properties, all numerical POSITIVE; seventh running, complete requests0.
+[Existing B2 results](b2_observed_results_20261021.md)/[records](b2_observed_records_20261021.json) bind source, clauses, receipts and costs.
+Seed1/4113 pair{2,5}/property0 closes in171.978s with364 nonlinear domains: the ACT offline-slice case is not ACT-exclusive.
+Seed2/4113 pair{2,7}'s four selected properties close in5.251s without BaB; no full-request or exact-proof claim.
+Scalar-max bounds are not ACT guarded-output margins; offline ACT slices are not an end-to-end timing baseline.
+Controller916650/immutable2caeae501 continues the original queue; live ledgers supersede this prefix. G1–G6 OPEN.
+
 ## B2 real diagnostic queue running 2026-10-21
 
 Real increment1 local diagnosis launched/0 finished; full requests0. B1 remains41 requests/720 obligations/141 attribution calls.
