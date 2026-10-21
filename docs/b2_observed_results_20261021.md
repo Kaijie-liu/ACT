@@ -8,8 +8,8 @@ real source. A tuple/list difference in serialized compatibility metadata caused
 a false identity mismatch; actual source hashes were unchanged. The repaired
 controller is running from commit `2caeae501636bdc6237be89b9a4202f3451df1d2`
 in an independent code copy, PID916650. All ten local diagnoses are complete:
-eight positive numerical filters and two UNKNOWN. The 41-request all-pair
-aggregate queue has started; its results are not yet complete.
+eight positive numerical filters and two UNKNOWN. The first two complete
+all-pair requests are positive numerical filters; the remainder is still running.
 [Records](b2_observed_records_20261021.json) retain that
 failure and will preserve every attempted and unexecuted entry and its cost.
 
@@ -66,6 +66,30 @@ therefore do not support one common gate-relaxation or stagnation explanation.
 Neither unresolved result changes this frozen configuration. Independent
 read-only review checks all ten identities, guards, coverage and receptions;
 it is not a bound reproof.
+
+## First complete request results
+
+Each result below covers all 28 unordered pairs and nine output properties:
+252 unique positive receipts per request, with zero missing obligations. Each
+request independently loads its frozen model and materialized input and
+constructs all pair graphs; it borrows neither ACT route exclusions nor earlier
+local diagnosis conclusions. Read-only review checks identities, complete
+coverage, deadlines, cleanup and reception, not the numerical bounds themselves.
+
+| Request | B1 online result | B1 complete seconds | GenBaB complete result | GenBaB complete seconds |
+| --- | --- | ---: | --- | ---: |
+| Seed1 / 4113 | UNKNOWN | 55.467 | Numerical POSITIVE | 187.611 |
+| Seed2 / 4113 | TIMEOUT | 296.096 | Numerical POSITIVE | 21.852 |
+
+For seed1, 27 pairs close in the incomplete bound phase and one uses nonlinear
+BaB. For seed2, all 28 close before BaB. The path is configured for alpha-CROWN
+and GenBaB, but early completions do not establish that alpha optimization or
+nonlinear search was needed.
+The two complete external calls cost 209.463 seconds in total, each under its
+own 300-second budget. They establish complete numerical positives unavailable
+to the B1 online execution on these objects, not an ACT-exclusive advantage.
+This failure-selected prefix is not a fair population win-rate estimate, and
+neither external result is an independently checked source-complete proof.
 
 ## Fixed order and semantics
 

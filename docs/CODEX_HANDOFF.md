@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## B2 first complete requests positive 2026-10-21
+
+Real increment2 complete requests POSITIVE,504 unique obligations closed numerically;10 local diagnoses remain8POSITIVE/2UNKNOWN.
+[B2 results](b2_observed_results_20261021.md)/[records](b2_observed_records_20261021.json) bind all28pair×9property coverage per request and independent read-only review.
+Seed1/4113:GenBaB187.611s POSITIVE versus B1 UNKNOWN55.467s;seed2/4113:21.852s POSITIVE versus B1 TIMEOUT296.096s.
+No ACT route exclusions or local answers reused. Seed1 has1 BaB pair;seed2 all incomplete-bound completions,not BaB gains.
+These are failure-selected full numerical filters, not strict source proofs or population win rates; they challenge ACT competitiveness.
+Controller916650/immutable2caeae501 continues the unchanged aggregate queue and CROWN suffix; current third full request running. G1–G6 OPEN.
+
 ## B2 local cohort complete and aggregate running 2026-10-21
 
 Real increment10/10 local diagnoses complete:8 numerical POSITIVE/2UNKNOWN,61 selected properties,51 in positive groups; first full request running.

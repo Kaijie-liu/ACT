@@ -70,7 +70,7 @@
     "request_seconds": 300,
     "stage_seconds": 21600
   },
-  "real_calls": 1,
+  "real_calls": 3,
   "root": "/data1/Kane/MOE/results/b2_observed_20261021_r2",
   "schema": "B2_OBSERVED_DIAGNOSTIC_RECORDS_V1",
   "status": "RUNNING",
@@ -82,7 +82,7 @@
   "controller_pid": 916650,
   "start_receipt_sha256": "ae7b861748c0207a0f489e4f600e750c6f3fb96eac201de88f29223be2ce33f3",
   "completed_local_calls": 10,
-  "completed_full_calls": 0,
+  "completed_full_calls": 2,
   "local_diagnosis": {
     "count": 10,
     "properties": 61,
@@ -525,5 +525,100 @@
       }
     ],
     "interpretation": "Complete frozen local cohort, not full MoE requests or a fair population comparison. No per-property bound inference within UNKNOWN groups."
+  },
+  "full_request_prefix": {
+    "count": 2,
+    "positive": 2,
+    "closed_obligations": 504,
+    "seconds": 209.46343402191997,
+    "rows": [
+      {
+        "id": "b2_010",
+        "model": "seed1",
+        "dataset_index": 4113,
+        "status": "POSITIVE",
+        "accepted": true,
+        "seconds": 187.6111677736044,
+        "aggregate": {
+          "counts": {
+            "ERROR": 0,
+            "SAT": 0,
+            "TIMEOUT": 0,
+            "UNKNOWN": 0,
+            "UNSAT": 252
+          },
+          "evidence_grade": "GENBAB_NUMERICAL_FILTER",
+          "expected": 252,
+          "formal_SAFE": false,
+          "missing": [],
+          "received": 252,
+          "request_sha256": "0fb3f96c8c87799202182011842aecfd89c9b3ee93fe248c9de48a2f1d53acd5",
+          "scope": "ALL_TIE_LEGAL_GUARDED_OBLIGATIONS",
+          "stages": {
+            "incomplete_only": 243,
+            "nonlinear_bab": 9,
+            "not_started": 0
+          },
+          "status": "POSITIVE"
+        },
+        "pair_count": 28,
+        "pair_stages": {
+          "incomplete_only": 27,
+          "nonlinear_bab": 1
+        },
+        "files": {
+          "launch.json": "3409ff8902b20d1b6b044c4369c4504c5e3398096b59e4c0c2615b8e039b225c",
+          "spec.json": "de1475bcf39b1dd73a2abe709c64690032ef14caa77bae82d9aafe3db04de597",
+          "outcome.json": "f165c802d9afe79c39b539496b30daf33bc6adc1c2d9d61cd184c79ae2f5cd50",
+          "terminal.json": "e7e3d386edf2bc8cfedc88cee433d99a05f31218b488e7a764dddc6efd21ab01",
+          "reception.json": "0f6a6d3ba7399cb9b9b73d0061415f8c3262461708b2b0fc3480813b59422404"
+        },
+        "ledger_sha256": "9acb4a825ee32dacfacb65ba6667a5ee805734b917686996683fc4a8ad32b187"
+      },
+      {
+        "id": "b2_011",
+        "model": "seed2",
+        "dataset_index": 4113,
+        "status": "POSITIVE",
+        "accepted": true,
+        "seconds": 21.852266248315573,
+        "aggregate": {
+          "counts": {
+            "ERROR": 0,
+            "SAT": 0,
+            "TIMEOUT": 0,
+            "UNKNOWN": 0,
+            "UNSAT": 252
+          },
+          "evidence_grade": "GENBAB_NUMERICAL_FILTER",
+          "expected": 252,
+          "formal_SAFE": false,
+          "missing": [],
+          "received": 252,
+          "request_sha256": "4b2c646c2bbb7810a14567e3e2d6e8f12ea63687b2d65e0f95a203c296db734c",
+          "scope": "ALL_TIE_LEGAL_GUARDED_OBLIGATIONS",
+          "stages": {
+            "incomplete_only": 252,
+            "nonlinear_bab": 0,
+            "not_started": 0
+          },
+          "status": "POSITIVE"
+        },
+        "pair_count": 28,
+        "pair_stages": {
+          "incomplete_only": 28,
+          "nonlinear_bab": 0
+        },
+        "files": {
+          "launch.json": "6aa0de367e8ddc6cd8efbb715301732bc8369b912a2822127314d59f0498327a",
+          "spec.json": "9c208fe22dd5f3e29a21a88700c9397d20650fd8358021a12670205c7370364e",
+          "outcome.json": "2b7dfbf7e75131e32bf5fed1c091dc5b2b0cbd059198595be430d31e8d76dffb",
+          "terminal.json": "d2f098e9fd4e554c84f9c5b3fb582fe4847df81aaa14e558a72a8d2b0b58a774",
+          "reception.json": "7ad398d1cdff26f9311a6227d01ef448e92b8b9a092e2916aa479fa7948e1ae2"
+        },
+        "ledger_sha256": "52a579e4d1ad9e7487c3a32d83a857eda6c39386d85d343edab265098c1ef856"
+      }
+    ],
+    "interpretation": "Complete numerical filters on two ACT-failure-selected requests, not a population comparison or source-complete proof."
   }
 }
