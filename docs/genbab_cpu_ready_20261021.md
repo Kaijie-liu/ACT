@@ -38,8 +38,12 @@ ACT algorithm, benchmark win or independently checked network certificate.
 branched nonlinear domains. At the second BaB round, the pinned backend's fused
 decision-precompute extraction attempted to mask a `[1,1]` intermediate tensor
 with a length-2 mask. The 6.783214s attempt and original log remain unchanged.
-Its public `bab.branching_decision_precompute.enable=false` configuration selects
-the ordinary decision/extraction path. The model, specification, nonlinear
-branching method, dtype and numerical acceptance stay unchanged. This is an
-explicit compatibility configuration, not a performance-tuned baseline. The
-retry uses the remaining control budget, not an additional 300 seconds.
+The first attempted configuration repair (`branching_decision_precompute=false`)
+did not help: R3 failed after 5.509465s at the same line. Further source inspection
+shows `stage_solve.py` hardcodes precompute on, ignoring that public switch.
+R2 and R3 remain failures. The directly implicated pruning path is instead
+disabled via `bab.pruning_in_iteration=false`: optimization retains the full
+batch before the extractor applies its mask. No domain or check is discarded.
+The model, specification, nonlinear branching method, dtype and acceptance stay
+unchanged. This is an explicit compatibility configuration, not a performance
+search. Each retry uses the remaining control budget, not another 300 seconds.

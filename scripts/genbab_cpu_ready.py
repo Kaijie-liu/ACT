@@ -44,9 +44,9 @@ CONFIG = {
     'bab.branching.nonlinear_split.method': 'bbps',
     'bab.branching.nonlinear_split.branching_point_method': 'uniform',
     'bab.branching.nonlinear_split.num_branches': 2, 'bab.interm_transfer': True,
-    # Pinned backend's fused precompute extraction mis-masks pruned AND batches.
-    # Use its supported ordinary decision path; no relaxation/check is removed.
-    'bab.branching_decision_precompute.enable': False,
+    # Retain the full batch through optimization. The pinned extractor otherwise
+    # applies an unpruned mask to an already pruned intermediate tensor.
+    'bab.pruning_in_iteration': False,
     'bab.attack.enabled': False, 'attack.pgd_order': 'skip',
     'debug.print_verbose_decisions': True,
 }
