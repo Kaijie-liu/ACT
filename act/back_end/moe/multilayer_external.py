@@ -184,4 +184,8 @@ def verify_histories(model, *, center, lower, upper, rows, thresholds, pruning, 
     result['unclosed_histories'] = expected-result['pruned_histories']-result['verified_histories']
     if time.monotonic() >= deadline:
         result.update(status='TIMEOUT', complete=False)
+    if result['status'] == 'UNSAFE_REPLAYED':
+        result['evidence_grade'] = 'FULL_MODEL_REPLAY'
+    elif result['status'] != 'POSITIVE':
+        result['evidence_grade'] = 'NONE'
     return result

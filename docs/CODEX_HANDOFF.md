@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## Multilayer semantic gate passed 2026-10-22
+
+Real increment0, training0; fixed synthetic9/9 correct across ACTv1/naiveGenBaB/prunedGenBaB.
+[Freeze/results](multilayer_stage0_20261022.md)/[hash records](multilayer_stage0_records_20261022.json):72.692720s including retained tooling prefix,2,215,084B; independent read-only audit passed.
+SAFE ACT3accepted+6excluded; GenBaB9verified versus3verified+6pruned; tie all9 retained; UNSAFE all center full-model replay.
+Default-off weighted MATMUL reuses existing HZ transfer; local lowering fixes compatibility, not new union mechanism. No source-complete claim.
+External raw UNSAFE label was numerical-filter; derived archive labels replay and next source fixes label without rerun.
+Stage0 passes; next freeze12-model CPU recipe/control, then train. Fourth-revision user budgets and common-PGD/n' definitions apply; no extra approval gate.
+
 ## Fourth revision: multilayer routing research authorized 2026-10-22
 
 Real increment0; user replaces single-layer mechanism selection with multilayer bottleneck elimination, then conditional union mechanism only if registered gate passes.

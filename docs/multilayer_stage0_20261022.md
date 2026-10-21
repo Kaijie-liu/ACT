@@ -91,3 +91,26 @@ The prefix cost6.696300382s and all artifacts are retained under
 R2 changes only worker-local debug output and cumulative carry-in accounting;
 it uses the same objects, order and thresholds and subtracts this spent time
 from the same300-second batch. No model, relaxation or case changed.
+
+## Final audited result
+
+R2 at immutable3e52486b5 completes9/9 correctly in65.996418139s; including R1,
+cumulative time72.692720164s, total stored artifacts2,215,084bytes. No separate
+controller log was created. [File identities](multilayer_stage0_records_20261022.json)
+retain both prefixes. Independent read-only review verified frozen source and
+request hashes, all receipts/cleanup/deadlines, disjoint coverage and concrete
+center witnesses without additional solver calls.
+
+| Case | ACT v1 | GenBaB naive | GenBaB pruned |
+|---|---|---|---|
+| SAFE | POSITIVE:3 accepted+6 infeasible | POSITIVE:9 verified | POSITIVE:3 verified+6 pruned |
+| UNSAFE | full-model replay x=0 | full-model replay x=0 | full-model replay x=0 |
+| Tie | POSITIVE:9 accepted | POSITIVE:9 verified | POSITIVE:9 verified,0 pruned |
+
+All arms preserve tie-legal coverage and actual variable weights. ACT is HZ
+policy accepted; external positives are numerical filters. External UNSAFE
+records inherited a generic numerical-filter label even though the concrete
+witness was replayed: the derived table correctly labels FULL_MODEL_REPLAY;
+original JSON remains unchanged. The next source revision fixes that label,
+without rerunning the completed control. The stage0 gate passes; this says
+nothing yet about multilayer real-model bottlenecks, G1 novelty or G3 closure.
