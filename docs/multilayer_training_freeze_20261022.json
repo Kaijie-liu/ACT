@@ -1,0 +1,246 @@
+{
+  "schema": "multilayer-training-20261022-r1",
+  "dataset_root": "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw",
+  "threads": 4,
+  "split_seed": 0,
+  "epochs": 50,
+  "source_files": {
+    "scripts/multilayer_train.py": "6bd3cee21b4ba5bd5f6e0db41737ab576c5c2c7d17599e598a834b8a7f35d6cf",
+    "act/pipeline/moe/multilayer_training.py": "99618300330bcd9d80bbbfc8d70e14f3598a0ae55e35d6b2138b38db9717e188",
+    "act/pipeline/moe/train.py": "bac0e9a50d98f316d577128909ac5c81bf41454debccbc0be54b14a2b1360dd5",
+    "act/back_end/moe/multilayer.py": "6590164b513e81a2b6374e47a287b58abc2ebbcd29824c5af1dc408ce6af959c",
+    "act/back_end/moe/multilayer_external.py": "1cba09dab3cbb08faf616bf8b0ba51735f61ba79a31ae5105e1465ecc2573f4c",
+    "act/back_end/moe/factory.py": "da472b2bbb3d8f684cb9c9916a735fd7105ceaab925911e1cbc983785a4c7d2d"
+  },
+  "data_files": {
+    "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py/data_batch_1": "54636561a3ce25bd3e19253c6b0d8538147b0ae398331ac4a2d86c6d987368cd",
+    "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py/data_batch_2": "766b2cef9fbc745cf056b3152224f7cf77163b330ea9a15f9392beb8b89bc5a8",
+    "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py/data_batch_3": "0f00d98ebfb30b3ec0ad19f9756dc2630b89003e10525f5e148445e82aa6a1f9",
+    "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py/data_batch_4": "3f7bb240661948b8f4d53e36ec720d8306f5668bd0071dcb4e6c947f78e9682b",
+    "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py/data_batch_5": "d91802434d8376bbaeeadf58a737e3a1b12ac839077e931237e0dcd43adcb154",
+    "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py/test_batch": "f53d8d457504f7cff4ea9e021afcf0e0ad8e24a91f3fc42091b8adef61157831",
+    "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py/batches.meta": "f962466ef690d46b226450fb9aadc74ba4bc64a76aa526b5827fe4bc5c7125cb"
+  },
+  "control_result": "/data1/Kane/MOE/results/multilayer_training_control_20261022_r1/complete.json",
+  "control_sha256": "1e63f9e803348a1bcd880e5bd85aa1e787b53ed371df41e6fc376f915107b459",
+  "control_receipt": "/data1/Kane/MOE/results/multilayer_training_control_20261022_r1/session.json",
+  "control_receipt_sha256": "a3aabe0b09b25bab34a868ce400ae7fbf067131a7e0cd6152ff2ae343c4e10a5",
+  "models": [
+    {
+      "id": "L1E8_seed0",
+      "seed": 0,
+      "architecture": {
+        "input_dim": 3072,
+        "classes": 10,
+        "hidden_output": 128,
+        "router_hidden": [
+          128
+        ],
+        "expert_hidden": [
+          256,
+          128
+        ],
+        "layers": 1,
+        "experts": 8
+      }
+    },
+    {
+      "id": "L1E8_seed1",
+      "seed": 1,
+      "architecture": {
+        "input_dim": 3072,
+        "classes": 10,
+        "hidden_output": 128,
+        "router_hidden": [
+          128
+        ],
+        "expert_hidden": [
+          256,
+          128
+        ],
+        "layers": 1,
+        "experts": 8
+      }
+    },
+    {
+      "id": "L1E8_seed2",
+      "seed": 2,
+      "architecture": {
+        "input_dim": 3072,
+        "classes": 10,
+        "hidden_output": 128,
+        "router_hidden": [
+          128
+        ],
+        "expert_hidden": [
+          256,
+          128
+        ],
+        "layers": 1,
+        "experts": 8
+      }
+    },
+    {
+      "id": "L2E8_seed0",
+      "seed": 0,
+      "architecture": {
+        "input_dim": 3072,
+        "classes": 10,
+        "hidden_output": 128,
+        "router_hidden": [
+          128
+        ],
+        "expert_hidden": [
+          256,
+          128
+        ],
+        "layers": 2,
+        "experts": 8
+      }
+    },
+    {
+      "id": "L2E8_seed1",
+      "seed": 1,
+      "architecture": {
+        "input_dim": 3072,
+        "classes": 10,
+        "hidden_output": 128,
+        "router_hidden": [
+          128
+        ],
+        "expert_hidden": [
+          256,
+          128
+        ],
+        "layers": 2,
+        "experts": 8
+      }
+    },
+    {
+      "id": "L2E8_seed2",
+      "seed": 2,
+      "architecture": {
+        "input_dim": 3072,
+        "classes": 10,
+        "hidden_output": 128,
+        "router_hidden": [
+          128
+        ],
+        "expert_hidden": [
+          256,
+          128
+        ],
+        "layers": 2,
+        "experts": 8
+      }
+    },
+    {
+      "id": "L3E8_seed0",
+      "seed": 0,
+      "architecture": {
+        "input_dim": 3072,
+        "classes": 10,
+        "hidden_output": 128,
+        "router_hidden": [
+          128
+        ],
+        "expert_hidden": [
+          256,
+          128
+        ],
+        "layers": 3,
+        "experts": 8
+      }
+    },
+    {
+      "id": "L3E8_seed1",
+      "seed": 1,
+      "architecture": {
+        "input_dim": 3072,
+        "classes": 10,
+        "hidden_output": 128,
+        "router_hidden": [
+          128
+        ],
+        "expert_hidden": [
+          256,
+          128
+        ],
+        "layers": 3,
+        "experts": 8
+      }
+    },
+    {
+      "id": "L3E8_seed2",
+      "seed": 2,
+      "architecture": {
+        "input_dim": 3072,
+        "classes": 10,
+        "hidden_output": 128,
+        "router_hidden": [
+          128
+        ],
+        "expert_hidden": [
+          256,
+          128
+        ],
+        "layers": 3,
+        "experts": 8
+      }
+    },
+    {
+      "id": "L2E16_seed0",
+      "seed": 0,
+      "architecture": {
+        "input_dim": 3072,
+        "classes": 10,
+        "hidden_output": 128,
+        "router_hidden": [
+          128
+        ],
+        "expert_hidden": [
+          256,
+          128
+        ],
+        "layers": 2,
+        "experts": 16
+      }
+    },
+    {
+      "id": "L2E16_seed1",
+      "seed": 1,
+      "architecture": {
+        "input_dim": 3072,
+        "classes": 10,
+        "hidden_output": 128,
+        "router_hidden": [
+          128
+        ],
+        "expert_hidden": [
+          256,
+          128
+        ],
+        "layers": 2,
+        "experts": 16
+      }
+    },
+    {
+      "id": "L2E16_seed2",
+      "seed": 2,
+      "architecture": {
+        "input_dim": 3072,
+        "classes": 10,
+        "hidden_output": 128,
+        "router_hidden": [
+          128
+        ],
+        "expert_hidden": [
+          256,
+          128
+        ],
+        "layers": 2,
+        "experts": 16
+      }
+    }
+  ]
+}

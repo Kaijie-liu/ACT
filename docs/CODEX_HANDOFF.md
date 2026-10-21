@@ -1,5 +1,13 @@
 # MoE project handoff — current entry point
 
+## Twelve-model CPU recipe frozen 2026-10-22
+
+Real verification0/training0 at freeze; synthetic optimizer/save/reload4/4 pass under3.307s owned session.
+[Recipe](multilayer_training_20261022.md)/[manifest](multilayer_training_freeze_20261022.json):L1/2/3E8,L2E16×seeds0/1/2,common45k/5k seed0,50epochs,val-only earliest-tie selection.
+Sequential CPU4threads/1interop/0workers,nice10;8GiBAS,ToTensor-only,AdamW.001/.0001,batch256,layer-mean switch balance×.1.
+Immutable queue starts next; all epochs/checkpoints/time separately recorded, no verification-dependent selection. Stage1 remains unexecuted pending trained models and its freeze.
+CPU backward emitted a retained CUDA-built-library device-count warning; no CUDA tensor/GPU computation, no environment change.
+
 ## Multilayer semantic gate passed 2026-10-22
 
 Real increment0, training0; fixed synthetic9/9 correct across ACTv1/naiveGenBaB/prunedGenBaB.

@@ -41,3 +41,17 @@ resume differential. This is an implementation control, not new model evidence.
 The manifest then binds control result, code and original CIFAR batch hashes.
 The twelve-model run uses an immutable git snapshot and survives terminal close;
 the controller stops on failure and saves a traceback, never substitutes seeds.
+
+## Pre-training control
+
+Frozen d4e793c49 synthetic control passed all four depth/expert configurations.
+Model and optimizer states were actually serialized and reloaded; the second
+update and shuffle sequence matched exactly. Business control2.655328s,
+existing owned-session total3.307s, exit0 and no live owned children.
+`/data1/Kane/MOE/results/multilayer_training_control_20261022_r1` retains files;
+[training manifest](multilayer_training_freeze_20261022.json) binds receipt and
+outcome hashes. No real data or model training occurred in this control.
+The CUDA-built ACT torch emitted an internal cudaGetDeviceCount warning during
+CPU backward under RLIMIT_AS; all tensors/operations remained CPU and the
+launcher exposes no CUDA devices. The warning is retained, not hidden or
+reported as an actual GPU experiment. No dependency/environment was changed.
