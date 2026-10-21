@@ -1,11 +1,68 @@
 # B1 observed-request attribution results
 
-Status: the second execution stopped after18/41 requests: UNKNOWN3, TIMEOUT14,
-ERROR1. No scientific outcome is inferred from the tooling error. The
-[frozen queue](b1_observed_freeze_20261021.json) retains all41 identities and
-the unchanged adaptive configuration.
+Status: all 41 online requests have finished: **12 UNKNOWN, 28 TIMEOUT,
+1 ERROR, no SAFE or UNSAFE**. The registered offline attribution is running;
+its results cannot replace these online terminals. This is a failure-selected,
+already observed development cohort, not an independent performance comparison.
 
-## Retained prefix and suffix execution
+## Complete online denominator and cost
+
+The [records](b1_observed_records_20261021.json), under `online_complete`, bind
+every terminal, reception and obligation inventory. R3 finished the 23 untouched
+suffix requests and retained the original 18 R2 results by reference. There are
+41 catalog results and 42 attempts including the earlier log-path tooling error.
+The rejected R2 SIGALRM result remains ERROR; no request was reclassified offline.
+
+| Recorded quantity | Count |
+| --- | ---: |
+| Pair and property obligations | 720 |
+| Reused obligations | 159 |
+| Returned obligations without full capture | 520 |
+| Returned obligations selected for full capture | 9 |
+| Attempted with no saved return | 28 |
+| Not reached | 4 |
+| Registered F0 calls | 557 |
+| Distinct returned native F0 calls | 529 |
+
+All 41 route rosters are complete under the existing numerical policy. Roster
+completeness is not an independently checked proof of route exclusion or source
+lowering. The 529 returned calls comprise 161 status0 and 368 status1 returns.
+Selected captures refer to the same calls, not extra solves.
+
+Of the status1 returns, 271 retain a positive raw dual value including the
+objective offset. They remain unaccepted and lack independently checked dual
+evidence. Their recorded call durations sum to 4,793.014 seconds, including
+lowering and candidate handling but excluding subsequent capture; this is not
+exclusive solver time or an achievable saving. These observations motivate
+investigating proof acquisition and query allocation, not relaxing status gates.
+
+Fourteen status0 negative candidates were replayed without a full-model violation.
+Replacing only lambda by sigmoid(m) at those saved factor assignments makes
+eight property values positive and leaves six negative. These are pointwise
+diagnostics, not globally feasible witnesses, lower bounds or eight new SAFE
+obligations. Three show material product gaps as well; several replayed top-k
+sets differ from the encoded pair. No unique gate, product, guard or lowering
+cause follows from these substitutions. The records preserve each signed value.
+
+The complete online execution, including the retained tooling prefix and
+controller overhead, cost **10,460.354 seconds**. The R1/R2/R3 directories total
+176,741,085 bytes after the final receipt; separately stored controller logs add
+3,474 bytes. Ten full-source ordinals were consumed: nine captured matrices and
+one missing due to capture capacity. No substitute was selected. Read-only
+review checks execution identity, deadlines, reception and owned cleanup; it is
+not independent bound reproof.
+
+## Registered offline diagnosis running
+
+The frozen diagnostic copy is commit `47ce052face0c58701bad471e7d6413ab6864009`,
+running in `b1_observed_diagnostics_20261021_r1`. It instantiates the existing
+145-entry regular catalog, with 11,139.646 seconds remaining after online cost.
+The first eight sign-eligible extended queries lack retained full matrices and
+will remain unexecuted, without recapture or replacement. Their separate allowance
+does not repair the original requests. Final multi-label attribution and B2
+follow the terminal diagnostic catalog, without a positive-result gate.
+
+## Historical prefix and suffix execution
 
 The second controller has exited. Its final request, seed0/4275, wrote an
 UNKNOWN package at293.436246s but exited with SIGALRM at294.185604s. Reception

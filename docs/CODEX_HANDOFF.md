@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## B1 online complete and attribution running 2026-10-21
+
+Real ledger41/41:UNKNOWN12/TIMEOUT28/ERROR1;42 attempts with the retained tooling error;529 returned F0 calls.
+[Results](b1_observed_results_20261021.md)/[records](b1_observed_records_20261021.json) preserve720 obligations and every terminal/inventory hash.
+Online total10460.354s;10 capture ordinals consumed,9 matrices and1 missing;271 positive raw status1 duals remain unaccepted.
+Frozen47ce052fa diagnostics run under detached PID2759661 in`b1_observed_diagnostics_20261021_r1`; live ledgers supersede this launch note.
+Regular145-entry catalog has11139.646s left;8 eligible extended entries lack matrices and cannot be replaced.
+Finish multi-label attribution then the existing B2 vector-OR API control and queue; no added positive gate or renewed approval.
+Historical prefixes/failures remain unchanged; offline findings do not repair online results. G1–G6 OPEN.
+
 ## B1 retained suffix running 2026-10-21
 
 Real ledger18/41 complete, ordinal18 running, attribution0; prior UNKNOWN3/TIMEOUT14/ERROR1 unchanged.
