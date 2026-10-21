@@ -1,5 +1,27 @@
 # MoE project handoff — current entry point
 
+## B2 guarded specification implementation frozen, 2026-10-21
+
+The independent strong-baseline path now has a default-off, stdlib specification
+builder/receiver plus a separate same-input sigmoid pair graph. The old
+softmax/CROWN path is unchanged. [Protocol](genbab_spec_control_20261021.md) and
+[freeze](genbab_spec_freeze_20261021.json) register one25-test synthetic batch,
+zero native solver/model calls, using the existing owned-session supervisor and
+development policy. Static AST checks and a separate read-only semantic review
+precede execution; graph/runtime compatibility is not yet established.
+
+The exact clauses preserve ties, property constants, AND-inside/OR-outside and
+all-pair coverage. Missing obligations cannot report POSITIVE; SAT requires
+full-model replay; configured nonlinear engine and observed stage are separate.
+This closes an external-comparison interface gap, not G1 algorithm innovation.
+
+**Next:** after clean commit/push, execute this frozen stdlib batch once and
+audit/archive. Then finish the schema-aware B1/B2 history exclusion inventory,
+charged input materialization and native environment/worker freeze. The old
+selector misses later diagnostic schemas and the old external runner excludes
+input preparation from request time; neither can be copied unchanged.
+Real-stage ledger remains0/0/0; no environment has been installed.
+
 ## Current decision: attribution first, independent strong baseline, 2026-10-21 revision 2
 
 The user deleted the blocked goal and supplied new guidance requesting a reset.
