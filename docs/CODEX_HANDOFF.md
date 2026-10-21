@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## Historical-success queue and alignment controls 2026-10-21
+
+Real increment27 full requests,27 numerical POSITIVE at fixed snapshot; live frozen queue continues, noACT rerun.
+[Results](advantage_region_results_20261021.md)/[records](advantage_region_records_20261021.json):controller2125324, immutable d965ee76e, newroot advantage_region_20261021_r1.
+Do not alter the60-request catalog/config; finish it then fixed localCROWN diagnoses, within same6h/128MiB;≤2hits stops B3 selection.
+Default-off same-matrix LP-first and fixed PGD-first are wired;16 synthetic/stub cases covered in13.262s, initial2 fixture errors retained.
+No native optimizer/trained-model/GPU alignment test or real off/on result; these are computational alignment, not G1 novelty.
+LP retains status0/outward/tolerance gates and remaining call budget; fractional candidates are not witnesses; PGD final reception rechecks original deadline.
+Original binary NativeCapture is not repurposed as LP proof; accepted LP diagnostics explicitly label continuous relaxation. G1–G6 OPEN.
+
 ## Historical-success-region stage frozen 2026-10-21
 
 Real increment0; B2 complete. User authorizes51 multi-pair historical SAFE+9 fixed single-pair controls before selecting B3.

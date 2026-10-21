@@ -125,6 +125,7 @@ class WeightedTop2F0Decision:
     solver_bound_kind: str | None = None
     solver_primal_objective: float | None = None
     solver_dual_objective: float | None = None
+    native_solve_attempts: tuple = ()
 
 
 def _remap_columns(matrix, mapping: np.ndarray, width: int):
@@ -710,6 +711,7 @@ def solve_weighted_top2_f0(
     time_limit: float,
     tolerance: float = HZ_NUMERICAL_POLICY.safe_positive_margin,
     diagnostic_capture=None,
+    lp_first_seconds: float = 0.0,
 ) -> WeightedTop2F0Decision:
     """Solve F0 without ever treating a relaxation witness as unsafe."""
     if diagnostic_capture is not None:
@@ -721,6 +723,7 @@ def solve_weighted_top2_f0(
         input_shape=input_shape,
         time_limit=float(time_limit),
         **({"diagnostic_capture": diagnostic_capture} if diagnostic_capture is not None else {}),
+        **({"lp_first_seconds":lp_first_seconds,"tolerance":tolerance} if lp_first_seconds else {}),
     )
     if (
         result.status == "optimal"
@@ -747,4 +750,5 @@ def solve_weighted_top2_f0(
         solver_bound_kind=result.solver_bound_kind,
         solver_primal_objective=result.solver_primal_objective,
         solver_dual_objective=result.solver_dual_objective,
+        native_solve_attempts=result.native_solve_attempts,
     )

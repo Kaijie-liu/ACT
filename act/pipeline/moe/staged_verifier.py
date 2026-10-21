@@ -13,6 +13,7 @@ import argparse
 from dataclasses import dataclass
 import hashlib
 import json
+import math
 from pathlib import Path
 import time
 from typing import Any, Callable, Mapping, Sequence
@@ -141,6 +142,14 @@ def _validate_config(config: Mapping[str, Any]) -> None:
     validate_schedule(config)
     from act.pipeline.moe.gate_weighted_facts import validate_config as validate_gate_facts
     validate_gate_facts(config)
+    from act.pipeline.moe.pgd_first import validate as validate_pgd_first
+    validate_pgd_first(config)
+    lp_seconds=config.get('f0',{}).get('solver',{}).get('lp_first_seconds',0.)
+    if (isinstance(lp_seconds,bool) or not isinstance(lp_seconds,(int,float))
+            or not math.isfinite(lp_seconds) or lp_seconds<0):
+        raise ValueError('LP-first sub-budget must be finite and nonnegative')
+    if lp_seconds and config.get('route_complexity_schedule',{}).get('total_seconds')!=300:
+        raise ValueError('LP-first requires the existing shared 300-second request budget')
     if type(config.get("scoped_proof_reuse", False)) is not bool:
         raise ValueError("scoped_proof_reuse must be boolean")
     if config.get("comparison_method", "staged") not in {
@@ -366,6 +375,7 @@ def _run_f0_impl(
                     time_limit=solve_limit,
                     tolerance=float(solver["safety_tolerance"]),
                     **({"diagnostic_capture": capture} if capture is not None else {}),
+                    **({"lp_first_seconds":solver['lp_first_seconds']} if solver.get('lp_first_seconds',0.) else {}),
                 )
                 if gate_facts is not None:
                     gate_facts.stats["f0_solve_returned"] += 1
@@ -386,7 +396,7 @@ def _run_f0_impl(
                     diagnostics.returned(decision, replay_valid=valid, replay=replay)
                 if valid:
                     witness = decision.candidate_input.detach().cpu()
-                if budget and (not valid or calls is not None):
+                if budget and (not valid or calls is not None or solver.get('lp_first_seconds',0.)):
                     budget.check("f0_property_complete")
                 property_rows.append(
                     {
@@ -403,6 +413,8 @@ def _run_f0_impl(
                         ),
                         "solver_status": decision.solver_status,
                         "solver_gap": decision.solver_gap,
+                        **({"native_solve_attempts":list(decision.native_solve_attempts)}
+                           if solver.get('lp_first_seconds',0.) else {}),
                         "accepted_minimum": decision.minimum,
                         "candidate_objective": decision.candidate_objective,
                         "certified_lower_bound": (
@@ -587,6 +599,13 @@ def verify_staged_linf(
             "elapsed_seconds": time.monotonic() - started,
         }
     ]
+    pgd_record=None;pgd_witness=None
+    if (config.get('pgd_first') or {}).get('enabled',False):
+        from act.pipeline.moe.pgd_first import attack
+        record_progress('PGD_FIRST_RUNNING')
+        pgd_record,pgd_witness=attack(model,center,lower,upper,label=clean_prediction,
+            epsilon=epsilon,cfg=config['pgd_first'],budget=budget)
+        transitions.append(dict(stage='PGD_FIRST_COMPLETE',**pgd_record))
     tier1_config = {
         "collect_property_facts": config.get("scoped_proof_reuse", False),
         "candidate_query_timeout": config["candidate_query_timeout"],
@@ -600,9 +619,17 @@ def verify_staged_linf(
         "route_analysis_only": method == "monolithic_f0",
     }
     tier1_started = time.monotonic()
-    record_progress("TIER1_RUNNING")
+    record_progress('TIER1_SKIPPED' if pgd_witness is not None or
+                    (pgd_record is not None and budget.remaining()<=0) else 'TIER1_RUNNING')
     scheduled_reuse = None
-    if schedule is not None:
+    if pgd_witness is not None or (pgd_record is not None and budget.remaining()<=0):
+        expired=budget.remaining()<=0
+        tier1=dict(invoked=False,status='TIMEOUT' if expired else 'UNSAFE',
+            reason='REQUEST_BUDGET_EXHAUSTED' if expired else 'UNSAFE_FULL_FORWARD',branches=[],
+            full_model_witness_valid=not expired,
+            schedule=dict(selected_path='PGD_FIRST_NO_PROPAGATION',exact_pair_count=None))
+        internal=None;witness=None if expired else pgd_witness
+    elif schedule is not None:
         from act.pipeline.moe.route_complexity_schedule import prepare
         tier1, internal, scheduled_reuse, witness = prepare(
             model=model, center=center, lower=lower, upper=upper,
@@ -637,6 +664,7 @@ def verify_staged_linf(
     }
     status, reason = tier1["status"], tier1["reason"]
     decision_tier = "TIER1_GATE_ELIMINATION"
+    if pgd_witness is not None:decision_tier='PGD_FIRST_FULL_FORWARD'
     reuse = None
     reuse_frame = None
     reuse_started = time.monotonic()
@@ -715,7 +743,7 @@ def verify_staged_linf(
                             "reason": reason, "elapsed_seconds": tier2["elapsed_seconds"]})
     budget_record = budget.record() if budget is not None else None
     if (budget_record is not None and budget_record["remaining_seconds"] <= 0
-            and (status != "UNSAFE" or native_gate)):
+            and (status != "UNSAFE" or native_gate or pgd_record is not None)):
         status, reason = "TIMEOUT", "REQUEST_BUDGET_EXHAUSTED"
     diagnostic_record = diagnostics.finish(status, decision_tier) if diagnostics is not None else None
     if diagnostics is not None:
@@ -729,6 +757,7 @@ def verify_staged_linf(
     elapsed = time.monotonic() - started
     evidence = {
         "schema_version": 1,
+        **({'pgd_first':pgd_record} if pgd_record is not None else {}),
         **({"diagnostics": diagnostic_record} if diagnostic_record is not None else {}),
         "verifier": "ACT_HYBRIDZ_STAGED_WEIGHTED_TOP2",
         "request_id": request_id,
@@ -796,6 +825,7 @@ def verify_staged_linf(
             ),
         },
         "timing": {
+            **({'pgd_first_seconds':pgd_record['elapsed_seconds']} if pgd_record is not None else {}),
             "tier1_seconds": tier1_elapsed,
             "tier2_seconds": float(tier2["elapsed_seconds"]),
             "total_seconds": elapsed,
@@ -803,7 +833,7 @@ def verify_staged_linf(
         },
     }
     record_progress("VERDICT_COMPLETE", status=status, reason=reason)
-    return StagedVerificationReport(
+    report = StagedVerificationReport(
         status=status,
         reason=reason,
         evidence=evidence,
@@ -814,6 +844,9 @@ def verify_staged_linf(
             "upper": upper.detach().cpu(),
         },
     )
+    if pgd_record is not None or config['f0']['solver'].get('lp_first_seconds',0.):
+        budget.check('computation_alignment_final_reception')
+    return report
 
 
 def write_evidence_package(

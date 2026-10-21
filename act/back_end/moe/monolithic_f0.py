@@ -59,6 +59,7 @@ class MonolithicF0Decision:
     constraint_rows: int
     solver_certified_lower_bound: float | None
     solver_bound_kind: str | None
+    native_solve_attempts: tuple = ()
 
 
 @dataclass(frozen=True)
@@ -294,9 +295,12 @@ def solve_monolithic_weighted_top2_f0(
     time_limit: float,
     tolerance: float = HZ_NUMERICAL_POLICY.safe_positive_margin,
     diagnostic_capture=None,
+    lp_first_seconds: float = 0.0,
 ) -> MonolithicF0Decision:
     """Minimize one safety row over the union of all supplied pair branches."""
     started = time.monotonic()
+    if lp_first_seconds and diagnostic_capture is not None and not hasattr(diagnostic_capture,'lp_relaxation'):
+        raise ValueError('LP-first requires a relaxation-labelled diagnostic receiver')
     if diagnostic_capture is not None:
         diagnostic_capture.validate_encodings(encodings)
     if diagnostic_capture is None:
@@ -308,19 +312,36 @@ def solve_monolithic_weighted_top2_f0(
             diagnostic_capture.failure("LOWERING_FAILED:" + type(exc).__name__, native_called=False)
             raise
     solver_error = None
+    attempts=[];actual_integrality=model.integrality
     try:
-        result = milp(
-            c=model.objective,
-            integrality=model.integrality,
-            bounds=SciPyBounds(model.var_lb, model.var_ub),
-            constraints=LinearConstraint(model.A, model.row_lb, model.row_ub),
-            options={
-                "presolve": True,
-                "time_limit": max(1e-3, float(time_limit)),
-                "mip_rel_gap": HZ_NUMERICAL_POLICY.mip_relative_gap,
-            },
-        )
+        if lp_first_seconds:
+            from act.back_end.solver.lp_first import solve
+            result,actual_integrality=solve(solver=milp,objective=model.objective,
+                integrality=model.integrality,bounds=SciPyBounds(model.var_lb,model.var_ub),
+                constraints=LinearConstraint(model.A,model.row_lb,model.row_ub),offset=0.,
+                tolerance=float(tolerance),lp_seconds=float(lp_first_seconds),
+                deadline=started+float(time_limit),attempts=attempts)
+        else:
+            result = milp(
+                c=model.objective,
+                integrality=model.integrality,
+                bounds=SciPyBounds(model.var_lb, model.var_ub),
+                constraints=LinearConstraint(model.A, model.row_lb, model.row_ub),
+                options={
+                    "presolve": True,
+                    "time_limit": max(1e-3, float(time_limit)),
+                    "mip_rel_gap": HZ_NUMERICAL_POLICY.mip_relative_gap,
+                },
+            )
     except Exception as exc:
+        if lp_first_seconds and isinstance(exc,TimeoutError):
+            from act.back_end.solver.lp_first import LPFirstDeadline
+            if not isinstance(exc,LPFirstDeadline):raise
+            if diagnostic_capture is not None:
+                diagnostic_capture.failure('LP_FIRST_OBLIGATION_LIMIT',native_called=bool(attempts))
+            return MonolithicF0Decision('UNKNOWN',UNKNOWN_MONOLITHIC_SOLVER_LIMIT,None,None,None,None,
+                1,None,0,time.monotonic()-started,len(encodings),model.objective.size,
+                int(model.integrality.sum()),model.A.shape[0],None,None,tuple(attempts))
         solver_error = type(exc).__name__
     if solver_error is not None:
         if diagnostic_capture is not None:
@@ -329,16 +350,20 @@ def solve_monolithic_weighted_top2_f0(
             "UNKNOWN", UNKNOWN_MONOLITHIC_NUMERICAL, None, None, None, None,
             None, None, 0, time.monotonic() - started, len(encodings),
             model.objective.size, int(model.integrality.sum()), model.A.shape[0],
-            None, None,
+            None, None, tuple(attempts),
         )
     if diagnostic_capture is not None:
-        diagnostic_capture.monolithic(encodings=encodings, model=model, result=result)
+        if attempts and attempts[-1]['accepted_positive']:
+            diagnostic_capture.lp_relaxation(model=model,objective=model.objective,result=result,
+                                             attempts=tuple(attempts))
+        else:
+            diagnostic_capture.monolithic(encodings=encodings, model=model, result=result)
     solver_status = int(getattr(result, "status", -1))
     raw_gap = getattr(result, "mip_gap", None)
     gap = float(raw_gap) if raw_gap is not None and np.isfinite(raw_gap) else None
     nodes = int(getattr(result, "mip_node_count", 0) or 0)
     point = getattr(result, "x", None)
-    valid = point is not None and _valid_point(model, point)
+    valid = actual_integrality is model.integrality and point is not None and _valid_point(model, point)
     candidate_objective = None
     candidate_input = None
     active_pair = None
@@ -355,7 +380,7 @@ def solve_monolithic_weighted_top2_f0(
             ]
             candidate_input = _recover_input(encoding, local, input_shape)
             active_pair = tuple(int(value) for value in encoding.pair)
-    certified = _certified_solver_lower_bound(result, model.integrality)
+    certified = _certified_solver_lower_bound(result, actual_integrality)
     minimum = None
     bound_value = None
     bound_kind = None
@@ -392,4 +417,5 @@ def solve_monolithic_weighted_top2_f0(
         constraint_rows=model.A.shape[0],
         solver_certified_lower_bound=bound_value,
         solver_bound_kind=bound_kind,
+        native_solve_attempts=tuple(attempts),
     )

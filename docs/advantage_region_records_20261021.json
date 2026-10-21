@@ -3,9 +3,29 @@
   "authorization_sha256": "f1d29e649766e6eb92c6a5232bce299ca9a690495d42d851cc7ed9eef07f2793",
   "freeze_sha256": "7b4922d57d34fa05c2be3284acd52d8ef15e2ebdf4c72f3db4e7e8b9f00ae2c1",
   "stage_number": 3,
-  "complete_request_attempts": 0,
+  "complete_request_attempts_at_snapshot": 27,
+  "snapshot_statuses": {"POSITIVE": 27},
+  "execution": {
+    "commit": "d965ee76ed2891ce906ba1697fbef00d0a245905",
+    "root": "/data1/Kane/MOE/results/advantage_region_20261021_r1",
+    "controller": 2125324,
+    "start_sha256": "0c1df6fddbc4ee286a86d13ffe28abb8fd1162e4a54df06395f9e3159d53aba2",
+    "scope": "live ledgers supersede fixed 27-request snapshot; running immutable copy"
+  },
   "controls": {"advantage_region": 7, "b2_regressions": 12, "native_smoke_repeated": false},
   "independent_review": "read-only selection, cost, scope and decision audit; fixes preserve missingness, conflict classification and compact final record",
-  "status": "FROZEN_NOT_LAUNCHED",
+  "alignment_controls": {
+    "r1": {"path": "/data1/Kane/MOE/results/computation_alignment_controls_20261021_r1/complete.json", "sha256": "d6488271c138da0b57c678c287c9ea23d5ea2dc382a2c3c6c4228f8293e1aed8", "passed": 10, "fixture_errors": 2, "seconds": 4.510898854583502},
+    "r2": {"path": "/data1/Kane/MOE/results/computation_alignment_controls_20261021_r2/complete.json", "sha256": "3f77ebad190e29d0268aee3fb475cab0e89fab3b46d815b82f469a8b5a0e8342", "passed": 4, "scope": "two corrected fixture cases plus two deadline controls"},
+    "r3": {"path": "/data1/Kane/MOE/results/computation_alignment_controls_20261021_r3/complete.json", "sha256": "329c8a3c5c0b95d32ffab4232a511298a82f1ff2a887af8b899795a97a6badfb", "passed": 8, "scope": "changed replay path and two added integration boundaries"},
+    "cumulative_seconds": 13.261732967570424,
+    "distinct_cases_covered": 16,
+    "native_optimizer_calls": 0,
+    "trained_model_calls": 0,
+    "real_off_on_comparison": false,
+    "independent_review": "read-only LP/PGD review; local solver-limit classification and final reception/null-config edges corrected",
+    "cuda_note": "CPU tensors only with CUDA_VISIBLE_DEVICES empty; torch autograd emitted a cudaGetDeviceCount initialization warning; no GPU computation or evidence"
+  },
+  "status": "RUNNING_PREFIX_27",
   "formal_SAFE": false
 }

@@ -2982,6 +2982,7 @@ class HZMinimumResult:
     solver_bound_kind: str | None = None
     solver_primal_objective: float | None = None
     solver_dual_objective: float | None = None
+    native_solve_attempts: tuple = ()
 
 
 def hz_minimize_output(
@@ -2992,6 +2993,8 @@ def hz_minimize_output(
     input_shape: tuple[int, ...] | None,
     time_limit: float,
     diagnostic_capture=None,
+    lp_first_seconds: float = 0.0,
+    tolerance: float = HZ_NUMERICAL_POLICY.safe_positive_margin,
 ) -> HZMinimumResult:
     """Minimize one represented output row and recover a concrete input.
 
@@ -3002,6 +3005,8 @@ def hz_minimize_output(
     untrusted result. Capture failures propagate; they are not solver UNKNOWN.
     """
     started = time.monotonic()
+    if lp_first_seconds and diagnostic_capture is not None and not hasattr(diagnostic_capture,'lp_relaxation'):
+        raise ValueError('LP-first requires a relaxation-labelled diagnostic receiver')
     if not _HAS_SCIPY:
         if diagnostic_capture is not None:
             diagnostic_capture.failure("SCIPY_UNAVAILABLE", native_called=False)
@@ -3079,19 +3084,34 @@ def hz_minimize_output(
         else None
     )
     solver_error = None
+    attempts=[];actual_integrality=model.integrality
     try:
-        result = milp(
-            c=objective,
-            integrality=model.integrality,
-            bounds=SciPyBounds(model.var_lb, model.var_ub),
-            constraints=constraints,
-            options={
-                "presolve": True,
-                "time_limit": max(1e-3, float(time_limit)),
-                "mip_rel_gap": HZ_NUMERICAL_POLICY.mip_relative_gap,
-            },
-        )
+        if lp_first_seconds:
+            from act.back_end.solver.lp_first import solve
+            result,actual_integrality=solve(solver=milp,objective=objective,
+                integrality=model.integrality,bounds=SciPyBounds(model.var_lb,model.var_ub),
+                constraints=constraints,offset=float(model.value_center[row]),tolerance=float(tolerance),
+                lp_seconds=float(lp_first_seconds),deadline=started+float(time_limit),attempts=attempts)
+        else:
+            result = milp(
+                c=objective,
+                integrality=model.integrality,
+                bounds=SciPyBounds(model.var_lb, model.var_ub),
+                constraints=constraints,
+                options={
+                    "presolve": True,
+                    "time_limit": max(1e-3, float(time_limit)),
+                    "mip_rel_gap": HZ_NUMERICAL_POLICY.mip_relative_gap,
+                },
+            )
     except Exception as exc:
+        if lp_first_seconds and isinstance(exc,TimeoutError):
+            from act.back_end.solver.lp_first import LPFirstDeadline
+            if not isinstance(exc,LPFirstDeadline):raise
+            if diagnostic_capture is not None:
+                diagnostic_capture.failure('LP_FIRST_OBLIGATION_LIMIT',native_called=bool(attempts))
+            return HZMinimumResult('timeout',None,None,None,1,None,time.monotonic()-started,
+                'solver_limit_lp_first',native_solve_attempts=tuple(attempts))
         solver_error = type(exc).__name__
     if solver_error is not None:
         if diagnostic_capture is not None:
@@ -3105,9 +3125,14 @@ def hz_minimize_output(
             None,
             time.monotonic() - started,
             f"solver_failed:{solver_error}",
+            native_solve_attempts=tuple(attempts),
         )
     if diagnostic_capture is not None:
-        diagnostic_capture.hz(hz=hz, input_hz=input_hz, model=model, row=row,
+        if attempts and attempts[-1]['accepted_positive']:
+            diagnostic_capture.lp_relaxation(model=model,row=row,objective=objective,result=result,
+                                             attempts=tuple(attempts))
+        else:
+            diagnostic_capture.hz(hz=hz, input_hz=input_hz, model=model, row=row,
                               objective=objective, result=result)
     solver_status = int(getattr(result, "status", -1))
     gap_value = getattr(result, "mip_gap", None)
@@ -3117,7 +3142,7 @@ def hz_minimize_output(
         else None
     )
     point = getattr(result, "x", None)
-    valid_point = point is not None and _valid_milp_point(
+    valid_point = actual_integrality is model.integrality and point is not None and _valid_milp_point(
         model,
         point,
         model.A,
@@ -3153,7 +3178,7 @@ def hz_minimize_output(
         if raw_dual is not None and np.isfinite(raw_dual)
         else None
     )
-    certified = _certified_solver_lower_bound(result, model.integrality)
+    certified = _certified_solver_lower_bound(result, actual_integrality)
     if certified is not None:
         solver_bound, solver_bound_kind = certified
         raw_lower = model.value_center[row] + solver_bound
@@ -3179,6 +3204,7 @@ def hz_minimize_output(
             solver_bound_kind,
             solver_primal_objective,
             solver_dual_objective,
+            tuple(attempts),
         )
     if solver_status == 2:
         status, reason = "infeasible", "empty_hz"
@@ -3197,4 +3223,5 @@ def hz_minimize_output(
         reason,
         solver_primal_objective=solver_primal_objective,
         solver_dual_objective=solver_dual_objective,
+        native_solve_attempts=tuple(attempts),
     )

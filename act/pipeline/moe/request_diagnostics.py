@@ -60,6 +60,9 @@ class DeferredCapture:
     def monolithic(self, **kwargs):
         self.store("monolithic", kwargs)
 
+    def lp_relaxation(self, **kwargs):
+        self.store("lp_relaxation", kwargs)
+
     def failure(self, reason, *, native_called):
         self.store("failure", dict(reason=reason, native_called=native_called))
 
@@ -195,6 +198,15 @@ def compact_observation(holder, decision, replay, work):
         return record
     method, kwargs = holder.pending
     record["native_called"] = bool(kwargs.get("native_called", True))
+    record["native_solve_attempts"] = list(getattr(decision,"native_solve_attempts",()))
+    if method == "lp_relaxation":
+        result=kwargs['result'];model=kwargs['model']
+        offset=float(model.value_center[kwargs['row']]) if 'row' in kwargs else 0.
+        record.update(native_event="LP_CONTINUOUS_RELAXATION_ACCEPTED",objective_offset=offset,
+            native_result={k:finite_number(getattr(result,k,None)) for k in ('status','fun','mip_dual_bound')},
+            point_missing="CONTINUOUS_FACTOR_POINT_NOT_RECOVERED",actual_integrality="ALL_CONTINUOUS",
+            full_native_capture="NOT_EMITTED_FOR_ACCEPTED_LP; ORIGINAL_MILP_SCHEMA_NOT_REUSED")
+        return record
     if method == "failure":
         record.update(native_event=kwargs["reason"], point_missing="NATIVE_FAILURE")
         return record
@@ -506,7 +518,8 @@ class RequestDiagnostics:
             summary.update(numerical_all=True, full_capture_limit=self.full_capture_limit,
                 full_capture_events=self.full_capture_events,
                 observed_f0_calls=len(self.observations),
-                native_calls=sum(int(v["native_called"]) for v in self.observations.values()))
+                native_calls=sum(len(v['native_solve_attempts']) if v.get('native_solve_attempts')
+                                 else int(v['native_called']) for v in self.observations.values()))
         # Fixed bounded inventory, check conservative allocation before encoding.
         upper = self.inventory_upper + (65536 if self.numerical_all else 0)
         self.ledger.reserve(upper)

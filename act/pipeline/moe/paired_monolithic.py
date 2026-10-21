@@ -139,6 +139,7 @@ def _run_monolithic(*, model, center, clean_prediction, internal, config, reuse=
             time_limit=solve_limit,
             tolerance=float(solver["safety_tolerance"]),
             **({"diagnostic_capture": capture} if capture is not None else {}),
+            **({"lp_first_seconds":solver['lp_first_seconds']} if solver.get('lp_first_seconds',0.) else {}),
         )
         if gate_facts is not None:
             gate_facts.stats["f0_solve_returned"] += 1
@@ -153,6 +154,7 @@ def _run_monolithic(*, model, center, clean_prediction, internal, config, reuse=
             diagnostics.returned(decision, replay_valid=bool(replay["valid"]), replay=replay)
         row = asdict(decision)
         row.pop("candidate_input", None)
+        if not solver.get('lp_first_seconds',0.):row.pop('native_solve_attempts',None)
         row.update(property_index=index, full_model_witness_valid=bool(replay["valid"]))
         if "expert_relation" in config:
             row["expert_relation"] = config["expert_relation"]
@@ -165,7 +167,7 @@ def _run_monolithic(*, model, center, clean_prediction, internal, config, reuse=
         if replay["valid"]:
             witness = decision.candidate_input.detach().cpu()
             row.update(status="UNSAFE", reason="UNSAFE_FULL_FORWARD_FALLBACK")
-        if budget and (not replay["valid"] or calls is not None):
+        if budget and (not replay["valid"] or calls is not None or solver.get('lp_first_seconds',0.)):
             budget.check("monolithic_property_complete")
         if reuse is not None:
             row["coverage_partition"] = {"reused": proofs, "solved_pairs": [list(p) for p in residual]}
