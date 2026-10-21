@@ -115,5 +115,15 @@ class QueueControls(unittest.TestCase):
         self.assertTrue(q.cutoff_terminal({'status':'ERROR','returncode':124},folder))
         self.assertFalse(q.cutoff_terminal({'status':'ERROR','returncode':1},folder))
 
+    def test_descriptive_tags_do_not_claim_unsafe_or_unique_relaxation_cause(self):
+        value=dict(native_result={'status':1},decision={'minimum':None},
+                   mip_dual_bound_with_offset=1.,raw_candidate_objective=2.,
+                   point={'gate_consistency':1e-16,'product_gap':-.01},replay={'valid':False})
+        tags=q.observation_tags(value)
+        self.assertIn('SOLVER_LIMIT',tags)
+        self.assertIn('RAW_POSITIVE_DUAL_NOT_ACCEPTED_BY_STATUS_POLICY',tags)
+        self.assertNotIn('NEGATIVE_CANDIDATE_NOT_CHECKED_FEASIBLE',tags)
+        self.assertFalse(any('UNSAFE' in t or 'UNIQUE' in t for t in tags))
+
 
 if __name__=='__main__':unittest.main()

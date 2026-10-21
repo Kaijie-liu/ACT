@@ -61,6 +61,33 @@ of the same two-variable matrix, objective offset1/4, expected optimum−3/4),
 each solver limit2s, within one300s control budget. No trained source is loaded.
 This is an API control, not a comparison or repeated algorithm experiment.
 
+The native API unit control at`cfd1ed3ec` passed: both calls returned status0,
+primal−0.75 and the policy's outward-adjusted lower bound. Test-suite time was
+1.172s; this is not end-to-end supervisor timing. The seven queue tests passed in
+0.038s. No real diagnostic slot was used. These unit tests do not replace the
+actual queue's per-process address-space limit, hard deadline and owned cleanup.
+
+At six completed online requests,99 pair/property records are retained:
+29 reused,66 returned and4 in flight at cutoff. There are70 registered F0 calls
+and66 returned native calls. Of the returned observations,47 have native status1;
+43 of those contain a positive raw dual telemetry value that the unchanged
+status0 policy does not accept. Two status0 returns have negative candidate
+objectives. These are descriptive observations, not checked optimality or a
+unique explanation of failure. Three additional observations meet the registered
+extended-solve sign condition but may lack retained matrices; missingness will
+not cause substitute capture or propagation.
+
+The two status0 negative candidate observations provide a specific gate-coupling
+hypothesis. Seed1/4113,pair{2,5},property0 has candidate−0.069105366,
+product gap0 and gate-output gap−0.710506384; replacing only the saved point's
+gate by sigmoid(saved margin) gives0.641401018. Seed0/4140,pair{3,6},property3
+has candidate−0.028358019,product gap about−4.44e−16 and gate-output gap
+−0.035915644; the same pointwise substitution gives0.007557625. Both saved
+dynamic-model replays are nonviolating. This is not a feasible global upper
+bound, a proof of safety or a unique-cause attribution. The registered slice
+diagnostic tests the first retained source; the second request has no retained
+full matrix and will not be substituted into the fixed capture catalog.
+
 ## Retained tooling prefix
 
 The first invocation, seed1/input4113 at`49fea3658`, stopped after3.640219s:

@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## B1 six request prefix and offline API controls 2026-10-21
+
+Online6/41:UNKNOWN2/TIMEOUT4,99 obligations,66 returned native F0 calls; attribution0. Retained tooling ERROR1 is additional.
+Two status0 negative candidates have near-zero product gap but material gate discrepancy; [point values](b1_observed_results_20261021.md) are not global bounds or unique causes.
+The fixed two-call LP/MILP API unit test passes atcfd1ed3ec; no real source/diagnostic slot used.
+Offline queue and saved-only summary are connected; run from a frozen copy after online completion, retaining145 catalog entries/missing ordinals and cumulative costs.
+B2 multi-property scalar guard graph has3 ordinary semantics controls; native batch compatibility remains to test after B1, no concurrent B2 run.
+Live r2 ledger supersedes this prefix. G1–G6 OPEN; no changed acceptance gate, source or extra online request.
+
 ## B1 offline query reception connected 2026-10-21
 
 Online5/41 complete at this edit:UNKNOWN2/TIMEOUT3; local/extended diagnostics0. Live r2 ledgers supersede this prefix.

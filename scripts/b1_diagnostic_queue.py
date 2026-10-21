@@ -28,6 +28,70 @@ PGD = dict(steps=20,restarts=3,step_size_fraction=.25,seed_base=20261021,
            objective='cross_entropy',projection='saved_lower_upper',dtype='float64',device='cpu')
 
 
+def observation_tags(value):
+    """Descriptive, overlapping labels; never turn a negative bound into UNSAFE."""
+    tags=[];native=value.get('native_result',{});decision=value.get('decision',{})
+    finite=lambda x:isinstance(x,(int,float)) and math.isfinite(x)
+    lower=decision.get('minimum');raw=value.get('mip_dual_bound_with_offset')
+    candidate=value.get('raw_candidate_objective');point=value.get('point')
+    if native.get('status')==1:tags.append('SOLVER_LIMIT')
+    if native.get('status')==1 and finite(raw) and raw>0:
+        tags.append('RAW_POSITIVE_DUAL_NOT_ACCEPTED_BY_STATUS_POLICY')
+    if finite(lower) and lower<=0:tags.append('NONPOSITIVE_POLICY_LOWER')
+    if finite(candidate) and candidate<0:
+        tags.append('NEGATIVE_CANDIDATE_NOT_CHECKED_FEASIBLE')
+        if native.get('status')==0:tags.append('STATUS0_NEGATIVE_CANDIDATE')
+    if extension_eligibility(value)['eligible']:tags.append('EXTENDED_SOLVE_SIGN_CONDITION')
+    if point is None:tags.append('MISSING_JOINT_POINT')
+    else:
+        # Magnitudes are retained, not thresholded into unique causal claims.
+        if point.get('gate_consistency') not in (None,0.):tags.append('POINT_GATE_DISCREPANCY')
+        if point.get('product_gap') not in (None,0.):tags.append('POINT_PRODUCT_DISCREPANCY')
+    if value.get('replay',{}):
+        if value['replay'].get('valid'):tags.append('SAVED_FULL_MODEL_REPLAY_VALID')
+    return tags
+
+
+def summarize(online,freeze):
+    """Saved-only prefix report: preserve all requests and all obligation states."""
+    from collections import Counter
+    spec=load(freeze);start=load(online/'start.json')
+    require(start['freeze_sha256']==sha(freeze),'same prefix request freeze')
+    requests=[];status_counts=Counter();tags_count=Counter();states=Counter()
+    registered=returned=0
+    for item in spec['requests']:
+        folder=online/item['job_id'];reception=folder/'reception.json'
+        if not reception.exists():
+            requests.append(dict(job_id=item['job_id'],status='RUNNING_OR_NOT_STARTED',obligations=None));continue
+        terminal=load(folder/'terminal.json');receipt=load(reception);inv=last_inventory(folder)
+        status=receipt['status'];status_counts[status]+=1
+        row=dict(job_id=item['job_id'],status=status,accepted=receipt['accepted'],
+                 seconds=receipt['through_terminal_ledger_seconds'],
+                 terminal_sha256=sha(folder/'terminal.json'),obligations=[])
+        if inv is not None:
+            observations={p.name.split('_')[-1][:-5]:p for p in (folder/'diagnostics').glob('*_observation_*.json')}
+            returned+=inv.get('native_calls',0);registered+=inv['registered_f0_calls']
+            for obligation in inv['obligations']:
+                entry=dict(obligation);states[entry['state']]+=1
+                digest=entry.get('observation_sha256');p=observations.get(digest)
+                if p is not None:
+                    observed=load(p,digest=digest);entry['tags']=observation_tags(observed)
+                    entry['observation_path']=str(p);entry['observation_sha256']=digest
+                    for key in ('decision','native_result','raw_candidate_objective','point','point_missing','ranges'):
+                        if key in observed:entry[key]=observed[key]
+                    tags_count.update(entry['tags'])
+                else:entry['tags']=['NO_SAVED_RETURN_OBSERVATION']
+                row['obligations'].append(entry)
+            row['coverage_complete']=inv.get('roster',{}).get('coverage_complete',False)
+        else:row['obligations']=None
+        requests.append(row)
+    return dict(online_root=str(online),completed=sum(status_counts.values()),expected=41,
+        statuses=dict(status_counts),registered_f0_calls=registered,returned_native_f0_calls=returned,
+        obligation_states=dict(states),descriptive_obligation_tags=dict(tags_count),requests=requests,
+        grade='NUMERICAL_DEVELOPMENT_DIAGNOSIS_NOT_UNIQUE_CAUSES_OR_SOURCE_COMPLETE_CERTIFICATES',
+        attribution_queries_added=0)
+
+
 def last_inventory(folder):
     paths = sorted((folder/'diagnostics').glob('*_inventory_*.json'))
     return None if not paths else load(paths[-1],limit=2**20)
@@ -429,7 +493,10 @@ def run(root,online,freeze):
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('--worker',type=Path)
     parser.add_argument('--run',type=Path);parser.add_argument('--online',type=Path)
-    parser.add_argument('--freeze',type=Path);args=parser.parse_args()
+    parser.add_argument('--freeze',type=Path);parser.add_argument('--summary',action='store_true');args=parser.parse_args()
+    if args.summary:
+        result=summarize(args.online,args.freeze)
+        print(json.dumps({k:v for k,v in result.items() if k!='requests'},sort_keys=True));raise SystemExit(0)
     if args.worker:raise SystemExit(worker(args.worker))
     if args.run:raise SystemExit(run(args.run,args.online,args.freeze))
     parser.error('explicit operation required')

@@ -26,6 +26,18 @@ with upstream release commit`b58d83ccb32469fc7ae9304fa1d33568ea76b00e`
 still finds the three depth/ambiguous-ReLU all-split conditions; no directly
 applicable upstream fix was identified, so this batch does not upgrade versions.
 
+### Real request adapter preparation
+
+`GenBaBGuardedProperties` keeps all outsider-minus-selected guards and shares
+one router/two-expert graph across property outputs. Each scalar output is
+`max(qF+c, all guards)`. Several output properties are an OR of single-row unsafe
+clauses, not one AND of their violations. Three ordinary forward/logic controls
+pass for all guards, ties, nonzero property constants and whole-box variable
+weights. This has not yet been exercised through the native multi-output API;
+the earlier one-output guard controls do not establish that compatibility.
+No B2 real request runs before B1 completion. The old single-output path remains
+available; ordinary adapter preparation does not reinstate a positive smoke gate.
+
 ## Historical protocol and unchanged attempt records
 
 ### Authorized guard control outcome
