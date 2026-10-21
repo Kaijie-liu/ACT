@@ -1,0 +1,903 @@
+{
+  "attempts": [
+    {
+      "artifact_bytes": 59529,
+      "directory": "/data1/Kane/MOE/results/genbab_cpu_ready_20261021_r2",
+      "probe": {
+        "distribution_count": 61,
+        "duplicates": [
+          {
+            "location": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/setuptools/_vendor",
+            "metadata_path": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/setuptools/_vendor/packaging-26.0.dist-info",
+            "name": "packaging",
+            "version": "26.0"
+          },
+          {
+            "location": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages",
+            "metadata_path": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/packaging-26.3.dist-info",
+            "name": "packaging",
+            "version": "26.3"
+          },
+          {
+            "location": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/setuptools/_vendor",
+            "metadata_path": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/setuptools/_vendor/wheel-0.46.3.dist-info",
+            "name": "wheel",
+            "version": "0.46.3"
+          },
+          {
+            "location": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages",
+            "metadata_path": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/wheel-0.48.0.dist-info",
+            "name": "wheel",
+            "version": "0.48.0"
+          }
+        ],
+        "modules": {
+          "auto_LiRPA": {
+            "path": "/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA/auto_LiRPA/__init__.py",
+            "sha256": "33f5aada383469090dce633e189729422959ccc7e5c28fda74b3a62efb939e56",
+            "version": "0.7.2"
+          },
+          "complete_verifier.api": {
+            "path": "/data1/Kane/MOE/baselines/alpha-beta-CROWN/complete_verifier/api.py",
+            "sha256": "40ce7bcdb77dfacf82409891b71b3ad3b2c511e823bb8f522d8b6e4a27ae673f",
+            "version": null
+          },
+          "packaging": {
+            "path": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/packaging/__init__.py",
+            "sha256": "6e758cdd0028b2cad74c739b9adc9c9f06f054932306280b878bfe59d39219b5",
+            "version": "26.3"
+          },
+          "torch": {
+            "path": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/torch/__init__.py",
+            "sha256": "0387d8b811b289287479c8bfdf4e1dac3a71b246f938d82da1331cf2dc8bf001",
+            "version": "2.11.0+cpu"
+          },
+          "wheel": {
+            "path": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/wheel/__init__.py",
+            "sha256": "486f49117612245c2a2d8e9f4b9686a6e8451c5aa8bd0d7a63c9ee6d0e446bd4",
+            "version": "0.48.0"
+          }
+        }
+      },
+      "result": {
+        "controller_sha256": "9ee9a53c06b025c79d29dcdec662757852175df11f34e791004e57d467d9161f",
+        "deadline": 11405227.485224832,
+        "entry": 11404927.485224832,
+        "error": "ValueError('native import/smoke failed; preserve log')",
+        "execution_head": "ba28754c7a826744f8159d5908a84e379efd8945",
+        "files": {
+          "native.log": "b14a746279b609b0e141c1b921f342e15891b50b6f1bfa9b9473dcfea13c03ef",
+          "probe.json": "252c9b9bff4379d9013962f6b4c93cddf54874aa8f21d7813271cb3f7308ef8f",
+          "spec.json": "7a5071cc84970113d82d71235503ea0b75e550f2937e22afc82f35cad4924524"
+        },
+        "full_cold_start_seconds": null,
+        "gpu_calls": 0,
+        "policy": "DEV_MARGIN_20261021_V1",
+        "real_request_slots": 0,
+        "record_bytes_before_terminal_export": 57331,
+        "seconds_before_terminal_export": 6.783214278519154,
+        "session": {
+          "cleanup_contract": "IDENTITY_ONLY_V1",
+          "cleanup_deadline": 11405225.485224832,
+          "cleanup_error": null,
+          "cleanup_seconds": 0.047777529805898666,
+          "cleanup_status": "LEADER_REAPED_NO_LIVE_SESSION",
+          "complete_rss_sample_peak": 563425280,
+          "development_policy": "DEV_MARGIN_20261021_V1",
+          "error": null,
+          "escaped_sessions_checked": false,
+          "execution_error": null,
+          "execution_seconds": 6.6246224120259285,
+          "exit_observed_at": 11404934.22026531,
+          "finished_at": 11404934.268046856,
+          "kill_signals": 1,
+          "known_rss_subtotal_peak": 563425280,
+          "log_base64": "",
+          "log_bytes": 0,
+          "log_complete": true,
+          "observation_contract": "IDENTITY_AND_RSS_TELEMETRY_DEV_V1",
+          "pidfd_backend": "LIBC_PIDFD",
+          "remaining_session": {
+            "identities": [],
+            "live": [],
+            "observation_scope": "IDENTITY_ONLY_CLEANUP",
+            "rss": null,
+            "rss_known": false,
+            "zombies": [
+              2852673
+            ]
+          },
+          "remaining_session_known": true,
+          "returncode": 1,
+          "rss_acceptance_gate": false,
+          "rss_incomplete_samples": 1,
+          "rss_samples": 141,
+          "run_deadline": 11405219.485224832,
+          "sampled_session_plus_caller_rss": null,
+          "schema": "OWNED_ENDPOINT_SESSION_V1",
+          "session": 2852673,
+          "started_at": 11404927.595646914,
+          "status": "ERROR",
+          "wait4_usage": {
+            "ru_maxrss_bytes": 534781952,
+            "ru_maxrss_kib": 522248,
+            "scope": "LINUX_WAIT4_DIRECT_CHILD_USAGE_NOT_SESSION_PEAK"
+          },
+          "zombie_reaping_complete": false
+        },
+        "sources": {
+          "/data1/Kane/MOE/baselines/alpha-beta-CROWN": "e5c7e17bf0488843acb77b7519f59876717a49f4",
+          "/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA": "5a098e8f9fb5786a428a024981d833d303921f2d"
+        },
+        "status": "FAIL",
+        "trained_model_calls": 0
+      },
+      "result_sha256": "a189e45f2b052b3525ffaad1dd2bc23a8f5a61730fc56a0e3275a947517aea53",
+      "saved_only_audit": "PASS_PRESERVES_FAIL",
+      "smoke": null
+    },
+    {
+      "artifact_bytes": 59565,
+      "directory": "/data1/Kane/MOE/results/genbab_cpu_ready_20261021_r3",
+      "probe": {
+        "distribution_count": 61,
+        "duplicates": [
+          {
+            "location": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/setuptools/_vendor",
+            "metadata_path": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/setuptools/_vendor/packaging-26.0.dist-info",
+            "name": "packaging",
+            "version": "26.0"
+          },
+          {
+            "location": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages",
+            "metadata_path": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/packaging-26.3.dist-info",
+            "name": "packaging",
+            "version": "26.3"
+          },
+          {
+            "location": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/setuptools/_vendor",
+            "metadata_path": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/setuptools/_vendor/wheel-0.46.3.dist-info",
+            "name": "wheel",
+            "version": "0.46.3"
+          },
+          {
+            "location": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages",
+            "metadata_path": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/wheel-0.48.0.dist-info",
+            "name": "wheel",
+            "version": "0.48.0"
+          }
+        ],
+        "modules": {
+          "auto_LiRPA": {
+            "path": "/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA/auto_LiRPA/__init__.py",
+            "sha256": "33f5aada383469090dce633e189729422959ccc7e5c28fda74b3a62efb939e56",
+            "version": "0.7.2"
+          },
+          "complete_verifier.api": {
+            "path": "/data1/Kane/MOE/baselines/alpha-beta-CROWN/complete_verifier/api.py",
+            "sha256": "40ce7bcdb77dfacf82409891b71b3ad3b2c511e823bb8f522d8b6e4a27ae673f",
+            "version": null
+          },
+          "packaging": {
+            "path": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/packaging/__init__.py",
+            "sha256": "6e758cdd0028b2cad74c739b9adc9c9f06f054932306280b878bfe59d39219b5",
+            "version": "26.3"
+          },
+          "torch": {
+            "path": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/torch/__init__.py",
+            "sha256": "0387d8b811b289287479c8bfdf4e1dac3a71b246f938d82da1331cf2dc8bf001",
+            "version": "2.11.0+cpu"
+          },
+          "wheel": {
+            "path": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/wheel/__init__.py",
+            "sha256": "486f49117612245c2a2d8e9f4b9686a6e8451c5aa8bd0d7a63c9ee6d0e446bd4",
+            "version": "0.48.0"
+          }
+        }
+      },
+      "result": {
+        "control_seconds": 293.21678572148085,
+        "controller_sha256": "9da65f76d66450078a9bbfbee4d267349109e405fbdc208d0001b5e155a17f9a",
+        "deadline": 11405285.916419372,
+        "entry": 11404992.69963365,
+        "error": "ValueError('native import/smoke failed; preserve log')",
+        "execution_head": "b86758c4d899edd7fe6fec04c9c6210f3ccd2d73",
+        "files": {
+          "native.log": "79eb5ede12640e5e641f1be93188ac7c4a09e96eff5d364e48879ae056cb8557",
+          "probe.json": "252c9b9bff4379d9013962f6b4c93cddf54874aa8f21d7813271cb3f7308ef8f",
+          "spec.json": "41f2bfe53b01309a58800b2fc2295ff6dc9476e2ef70a75210fc73777fbdb700"
+        },
+        "full_cold_start_seconds": null,
+        "gpu_calls": 0,
+        "policy": "DEV_MARGIN_20261021_V1",
+        "real_request_slots": 0,
+        "record_bytes_before_terminal_export": 57332,
+        "seconds_before_terminal_export": 5.509464921429753,
+        "session": {
+          "cleanup_contract": "IDENTITY_ONLY_V1",
+          "cleanup_deadline": 11405283.916419372,
+          "cleanup_error": null,
+          "cleanup_seconds": 0.026043307036161423,
+          "cleanup_status": "LEADER_REAPED_NO_LIVE_SESSION",
+          "complete_rss_sample_peak": 562999296,
+          "development_policy": "DEV_MARGIN_20261021_V1",
+          "error": null,
+          "escaped_sessions_checked": false,
+          "execution_error": null,
+          "execution_seconds": 5.392025945708156,
+          "exit_observed_at": 11404998.182755793,
+          "finished_at": 11404998.208802512,
+          "kill_signals": 1,
+          "known_rss_subtotal_peak": 562999296,
+          "log_base64": "",
+          "log_bytes": 0,
+          "log_complete": true,
+          "observation_contract": "IDENTITY_AND_RSS_TELEMETRY_DEV_V1",
+          "pidfd_backend": "LIBC_PIDFD",
+          "remaining_session": {
+            "identities": [],
+            "live": [],
+            "observation_scope": "IDENTITY_ONLY_CLEANUP",
+            "rss": null,
+            "rss_known": false,
+            "zombies": [
+              2919570
+            ]
+          },
+          "remaining_session_known": true,
+          "returncode": 1,
+          "rss_acceptance_gate": false,
+          "rss_incomplete_samples": 0,
+          "rss_samples": 112,
+          "run_deadline": 11405277.916419372,
+          "sampled_session_plus_caller_rss": null,
+          "schema": "OWNED_ENDPOINT_SESSION_V1",
+          "session": 2919570,
+          "started_at": 11404992.79073326,
+          "status": "ERROR",
+          "wait4_usage": {
+            "ru_maxrss_bytes": 535011328,
+            "ru_maxrss_kib": 522472,
+            "scope": "LINUX_WAIT4_DIRECT_CHILD_USAGE_NOT_SESSION_PEAK"
+          },
+          "zombie_reaping_complete": false
+        },
+        "sources": {
+          "/data1/Kane/MOE/baselines/alpha-beta-CROWN": "e5c7e17bf0488843acb77b7519f59876717a49f4",
+          "/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA": "5a098e8f9fb5786a428a024981d833d303921f2d"
+        },
+        "status": "FAIL",
+        "trained_model_calls": 0
+      },
+      "result_sha256": "0b62148ccb1554eb88e6124e8199f902d852021ee81039ca3600ef246c6d014c",
+      "saved_only_audit": "PASS_PRESERVES_FAIL",
+      "smoke": null
+    },
+    {
+      "artifact_bytes": 59099,
+      "directory": "/data1/Kane/MOE/results/genbab_cpu_ready_20261021_r4",
+      "probe": {
+        "distribution_count": 61,
+        "duplicates": [
+          {
+            "location": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/setuptools/_vendor",
+            "metadata_path": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/setuptools/_vendor/packaging-26.0.dist-info",
+            "name": "packaging",
+            "version": "26.0"
+          },
+          {
+            "location": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages",
+            "metadata_path": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/packaging-26.3.dist-info",
+            "name": "packaging",
+            "version": "26.3"
+          },
+          {
+            "location": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/setuptools/_vendor",
+            "metadata_path": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/setuptools/_vendor/wheel-0.46.3.dist-info",
+            "name": "wheel",
+            "version": "0.46.3"
+          },
+          {
+            "location": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages",
+            "metadata_path": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/wheel-0.48.0.dist-info",
+            "name": "wheel",
+            "version": "0.48.0"
+          }
+        ],
+        "modules": {
+          "auto_LiRPA": {
+            "path": "/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA/auto_LiRPA/__init__.py",
+            "sha256": "33f5aada383469090dce633e189729422959ccc7e5c28fda74b3a62efb939e56",
+            "version": "0.7.2"
+          },
+          "complete_verifier.api": {
+            "path": "/data1/Kane/MOE/baselines/alpha-beta-CROWN/complete_verifier/api.py",
+            "sha256": "40ce7bcdb77dfacf82409891b71b3ad3b2c511e823bb8f522d8b6e4a27ae673f",
+            "version": null
+          },
+          "packaging": {
+            "path": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/packaging/__init__.py",
+            "sha256": "6e758cdd0028b2cad74c739b9adc9c9f06f054932306280b878bfe59d39219b5",
+            "version": "26.3"
+          },
+          "torch": {
+            "path": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/torch/__init__.py",
+            "sha256": "0387d8b811b289287479c8bfdf4e1dac3a71b246f938d82da1331cf2dc8bf001",
+            "version": "2.11.0+cpu"
+          },
+          "wheel": {
+            "path": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/wheel/__init__.py",
+            "sha256": "486f49117612245c2a2d8e9f4b9686a6e8451c5aa8bd0d7a63c9ee6d0e446bd4",
+            "version": "0.48.0"
+          }
+        }
+      },
+      "result": {
+        "control_seconds": 287.7073208000511,
+        "controller_sha256": "68d420937e7241313a103ff01bda65f861784a03d148e44febbd03b83ee0c623",
+        "deadline": 11405329.917906204,
+        "entry": 11405042.210585404,
+        "error": "ValueError('expected guarded numerical positive')",
+        "execution_head": "5195ec7cea170c4615d991bfc14b92c3d647e113",
+        "files": {
+          "native.log": "44c4f5da1777c687be40decc425290f50e018c22360bdb7e156a0d522d7fb937",
+          "probe.json": "252c9b9bff4379d9013962f6b4c93cddf54874aa8f21d7813271cb3f7308ef8f",
+          "smoke.json": "493cae6d0d20c2c4ec7c7ce708d832ced8d1aa14b39638917c2cc27cc7835b07",
+          "spec.json": "396ca9de3540f4fa738d566cba0e6f4c5488e47d7885b19b8d5650d895c7153f"
+        },
+        "full_cold_start_seconds": null,
+        "gpu_calls": 0,
+        "policy": "DEV_MARGIN_20261021_V1",
+        "real_request_slots": 0,
+        "record_bytes_before_terminal_export": 56785,
+        "seconds_before_terminal_export": 6.807639844715595,
+        "session": {
+          "cleanup_contract": "IDENTITY_ONLY_V1",
+          "cleanup_deadline": 11405327.917906204,
+          "cleanup_error": null,
+          "cleanup_seconds": 0.024024521932005882,
+          "cleanup_status": "LEADER_REAPED_NO_LIVE_SESSION",
+          "complete_rss_sample_peak": 560156672,
+          "development_policy": "DEV_MARGIN_20261021_V1",
+          "error": null,
+          "escaped_sessions_checked": false,
+          "execution_error": null,
+          "execution_seconds": 6.6856135576963425,
+          "exit_observed_at": 11405048.993759196,
+          "finished_at": 11405049.017787527,
+          "kill_signals": 1,
+          "known_rss_subtotal_peak": 560156672,
+          "log_base64": "",
+          "log_bytes": 0,
+          "log_complete": true,
+          "observation_contract": "IDENTITY_AND_RSS_TELEMETRY_DEV_V1",
+          "pidfd_backend": "LIBC_PIDFD",
+          "remaining_session": {
+            "identities": [],
+            "live": [],
+            "observation_scope": "IDENTITY_ONLY_CLEANUP",
+            "rss": null,
+            "rss_known": false,
+            "zombies": [
+              2970321
+            ]
+          },
+          "remaining_session_known": true,
+          "returncode": 0,
+          "rss_acceptance_gate": false,
+          "rss_incomplete_samples": 1,
+          "rss_samples": 148,
+          "run_deadline": 11405321.917906204,
+          "sampled_session_plus_caller_rss": null,
+          "schema": "OWNED_ENDPOINT_SESSION_V1",
+          "session": 2970321,
+          "started_at": 11405042.308149448,
+          "status": "COMPLETED",
+          "wait4_usage": {
+            "ru_maxrss_bytes": 532062208,
+            "ru_maxrss_kib": 519592,
+            "scope": "LINUX_WAIT4_DIRECT_CHILD_USAGE_NOT_SESSION_PEAK"
+          },
+          "zombie_reaping_complete": false
+        },
+        "sources": {
+          "/data1/Kane/MOE/baselines/alpha-beta-CROWN": "e5c7e17bf0488843acb77b7519f59876717a49f4",
+          "/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA": "5a098e8f9fb5786a428a024981d833d303921f2d"
+        },
+        "status": "FAIL",
+        "trained_model_calls": 0
+      },
+      "result_sha256": "dba7b3067835b635fc1f8fb52e3c84d15423ecc7abb9f48aac9d0a4449aa0c2a",
+      "saved_only_audit": "PASS_PRESERVES_FAIL",
+      "smoke": {
+        "evidence_grade": "EXTERNAL_NUMERICAL_FILTER_SYNTHETIC_COMPATIBILITY_ONLY",
+        "gpu_calls": 0,
+        "graph": [
+          {
+            "inputs": [],
+            "kind": "BoundInput",
+            "name": "/0"
+          },
+          {
+            "inputs": [],
+            "kind": "BoundConstant",
+            "name": "/1"
+          },
+          {
+            "inputs": [
+              "/1",
+              "/0"
+            ],
+            "kind": "BoundSub",
+            "name": "/2"
+          },
+          {
+            "inputs": [],
+            "kind": "BoundConstant",
+            "name": "/3"
+          },
+          {
+            "inputs": [
+              "/0",
+              "/3"
+            ],
+            "kind": "BoundAdd",
+            "name": "/4"
+          },
+          {
+            "inputs": [],
+            "kind": "BoundConstant",
+            "name": "/5"
+          },
+          {
+            "inputs": [
+              "/0",
+              "/5"
+            ],
+            "kind": "BoundMul",
+            "name": "/6"
+          },
+          {
+            "inputs": [
+              "/6"
+            ],
+            "kind": "BoundSigmoid",
+            "name": "/7"
+          },
+          {
+            "inputs": [
+              "/2",
+              "/4"
+            ],
+            "kind": "BoundSub",
+            "name": "/8"
+          },
+          {
+            "inputs": [
+              "/7",
+              "/8"
+            ],
+            "kind": "BoundMul",
+            "name": "/9"
+          },
+          {
+            "inputs": [
+              "/4",
+              "/9"
+            ],
+            "kind": "BoundAdd",
+            "name": "/10"
+          },
+          {
+            "inputs": [
+              "/0"
+            ],
+            "kind": "BoundNeg",
+            "name": "/11"
+          },
+          {
+            "inputs": [],
+            "kind": "BoundConstant",
+            "name": "/12"
+          },
+          {
+            "inputs": [
+              "/0",
+              "/12"
+            ],
+            "kind": "BoundMul",
+            "name": "/13"
+          },
+          {
+            "inputs": [],
+            "kind": "BoundConstant",
+            "name": "/14"
+          },
+          {
+            "inputs": [
+              "/13",
+              "/14"
+            ],
+            "kind": "BoundSub",
+            "name": "/15"
+          },
+          {
+            "inputs": [
+              "/10",
+              "/0",
+              "/11",
+              "/15"
+            ],
+            "kind": "BoundConcat",
+            "name": "/16"
+          }
+        ],
+        "split_activations": {
+          "/6": [
+            {
+              "input_index": 0,
+              "kind": "BoundSigmoid",
+              "name": "/7"
+            }
+          ],
+          "/7": [
+            {
+              "input_index": 0,
+              "kind": "BoundMul",
+              "name": "/9"
+            }
+          ],
+          "/8": [
+            {
+              "input_index": 1,
+              "kind": "BoundMul",
+              "name": "/9"
+            }
+          ]
+        },
+        "stats": {
+          "all_adv_candidates": null,
+          "attack_examples": null,
+          "attack_margins": null,
+          "bab": [
+            [
+              0,
+              -0.2615941559557649,
+              6,
+              0.43854832649230957
+            ]
+          ],
+          "elapsed": 1.2757127285003662,
+          "pgd": null
+        },
+        "status": "unknown",
+        "success": false,
+        "synthetic_verifier_calls": 1,
+        "trained_model_calls": 0,
+        "verifier_seconds": 1.2833957429975271
+      }
+    },
+    {
+      "artifact_bytes": 16766225,
+      "directory": "/data1/Kane/MOE/results/genbab_cpu_ready_20261021_r6",
+      "probe": {
+        "distribution_count": 61,
+        "duplicates": [
+          {
+            "location": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/setuptools/_vendor",
+            "metadata_path": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/setuptools/_vendor/packaging-26.0.dist-info",
+            "name": "packaging",
+            "version": "26.0"
+          },
+          {
+            "location": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages",
+            "metadata_path": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/packaging-26.3.dist-info",
+            "name": "packaging",
+            "version": "26.3"
+          },
+          {
+            "location": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/setuptools/_vendor",
+            "metadata_path": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/setuptools/_vendor/wheel-0.46.3.dist-info",
+            "name": "wheel",
+            "version": "0.46.3"
+          },
+          {
+            "location": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages",
+            "metadata_path": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/wheel-0.48.0.dist-info",
+            "name": "wheel",
+            "version": "0.48.0"
+          }
+        ],
+        "modules": {
+          "auto_LiRPA": {
+            "path": "/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA/auto_LiRPA/__init__.py",
+            "sha256": "33f5aada383469090dce633e189729422959ccc7e5c28fda74b3a62efb939e56",
+            "version": "0.7.2"
+          },
+          "complete_verifier.api": {
+            "path": "/data1/Kane/MOE/baselines/adaptations/genbab_cpu_20261021_r1/complete_verifier/api.py",
+            "sha256": "40ce7bcdb77dfacf82409891b71b3ad3b2c511e823bb8f522d8b6e4a27ae673f",
+            "version": null
+          },
+          "packaging": {
+            "path": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/packaging/__init__.py",
+            "sha256": "6e758cdd0028b2cad74c739b9adc9c9f06f054932306280b878bfe59d39219b5",
+            "version": "26.3"
+          },
+          "torch": {
+            "path": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/torch/__init__.py",
+            "sha256": "0387d8b811b289287479c8bfdf4e1dac3a71b246f938d82da1331cf2dc8bf001",
+            "version": "2.11.0+cpu"
+          },
+          "wheel": {
+            "path": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/lib/python3.11/site-packages/wheel/__init__.py",
+            "sha256": "486f49117612245c2a2d8e9f4b9686a6e8451c5aa8bd0d7a63c9ee6d0e446bd4",
+            "version": "0.48.0"
+          }
+        }
+      },
+      "result": {
+        "control_seconds": 280.8849360333355,
+        "controller_sha256": "5bd0f841e7769e22a0e58e33e509615fa5682f21e5136543a129f4e2b55f641e",
+        "deadline": 11405582.49276654,
+        "entry": 11405301.607830508,
+        "error": "ValueError('expected guarded numerical positive')",
+        "execution_head": "92a92d96dab8d46fb33e009e5c4ea36de9bc05bb",
+        "files": {
+          "native.log": "a60d3cc197e3dbe531de10540161bb897d368fecbe0d75838e0bef57c7124111",
+          "probe.json": "6869023efac4e174da1420b9fcdfe530253d936a4483065e323d95e84ed468e0",
+          "smoke.json": "34cc0cb12916f6cdb913262252f039b5761632f74a818198dccb055bee8247e1",
+          "spec.json": "54a7c0477816f3965d680abb454aaffa9631eb901f2e15a467bd481f96ce7138"
+        },
+        "full_cold_start_seconds": null,
+        "gpu_calls": 0,
+        "policy": "DEV_MARGIN_20261021_V1",
+        "real_request_slots": 0,
+        "record_bytes_before_terminal_export": 16763908,
+        "seconds_before_terminal_export": 271.1598644722253,
+        "session": {
+          "cleanup_contract": "IDENTITY_ONLY_V1",
+          "cleanup_deadline": 11405580.49276654,
+          "cleanup_error": null,
+          "cleanup_seconds": 0.04138326644897461,
+          "cleanup_status": "LEADER_REAPED_NO_LIVE_SESSION",
+          "complete_rss_sample_peak": 4785143808,
+          "development_policy": "DEV_MARGIN_20261021_V1",
+          "error": null,
+          "escaped_sessions_checked": false,
+          "execution_error": null,
+          "execution_seconds": 270.73349973745644,
+          "exit_observed_at": 11405572.702848025,
+          "finished_at": 11405572.74423588,
+          "kill_signals": 1,
+          "known_rss_subtotal_peak": 4785143808,
+          "log_base64": "",
+          "log_bytes": 0,
+          "log_complete": true,
+          "observation_contract": "IDENTITY_AND_RSS_TELEMETRY_DEV_V1",
+          "pidfd_backend": "LIBC_PIDFD",
+          "remaining_session": {
+            "identities": [],
+            "live": [],
+            "observation_scope": "IDENTITY_ONLY_CLEANUP",
+            "rss": null,
+            "rss_known": false,
+            "zombies": [
+              3205558
+            ]
+          },
+          "remaining_session_known": true,
+          "returncode": 0,
+          "rss_acceptance_gate": false,
+          "rss_incomplete_samples": 5,
+          "rss_samples": 5210,
+          "run_deadline": 11405574.49276654,
+          "sampled_session_plus_caller_rss": null,
+          "schema": "OWNED_ENDPOINT_SESSION_V1",
+          "session": 3205558,
+          "started_at": 11405301.969352877,
+          "status": "COMPLETED",
+          "wait4_usage": {
+            "ru_maxrss_bytes": 4728172544,
+            "ru_maxrss_kib": 4617356,
+            "scope": "LINUX_WAIT4_DIRECT_CHILD_USAGE_NOT_SESSION_PEAK"
+          },
+          "zombie_reaping_complete": false
+        },
+        "sources": {
+          "/data1/Kane/MOE/baselines/alpha-beta-CROWN": "e5c7e17bf0488843acb77b7519f59876717a49f4",
+          "/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA": "5a098e8f9fb5786a428a024981d833d303921f2d"
+        },
+        "status": "FAIL",
+        "trained_model_calls": 0
+      },
+      "result_sha256": "cf0213c2133eceac9cfa91364bda85b5005aae2e0234714674fe2952831801ba",
+      "saved_only_audit": "PASS_PRESERVES_FAIL",
+      "smoke": {
+        "evidence_grade": "EXTERNAL_NUMERICAL_FILTER_SYNTHETIC_COMPATIBILITY_ONLY",
+        "gpu_calls": 0,
+        "graph": [
+          {
+            "inputs": [],
+            "kind": "BoundInput",
+            "name": "/0"
+          },
+          {
+            "inputs": [],
+            "kind": "BoundConstant",
+            "name": "/1"
+          },
+          {
+            "inputs": [
+              "/1",
+              "/0"
+            ],
+            "kind": "BoundSub",
+            "name": "/2"
+          },
+          {
+            "inputs": [],
+            "kind": "BoundConstant",
+            "name": "/3"
+          },
+          {
+            "inputs": [
+              "/0",
+              "/3"
+            ],
+            "kind": "BoundAdd",
+            "name": "/4"
+          },
+          {
+            "inputs": [],
+            "kind": "BoundConstant",
+            "name": "/5"
+          },
+          {
+            "inputs": [
+              "/0",
+              "/5"
+            ],
+            "kind": "BoundMul",
+            "name": "/6"
+          },
+          {
+            "inputs": [
+              "/6"
+            ],
+            "kind": "BoundSigmoid",
+            "name": "/7"
+          },
+          {
+            "inputs": [
+              "/2",
+              "/4"
+            ],
+            "kind": "BoundSub",
+            "name": "/8"
+          },
+          {
+            "inputs": [
+              "/7",
+              "/8"
+            ],
+            "kind": "BoundMul",
+            "name": "/9"
+          },
+          {
+            "inputs": [
+              "/4",
+              "/9"
+            ],
+            "kind": "BoundAdd",
+            "name": "/10"
+          },
+          {
+            "inputs": [
+              "/0"
+            ],
+            "kind": "BoundNeg",
+            "name": "/11"
+          },
+          {
+            "inputs": [],
+            "kind": "BoundConstant",
+            "name": "/12"
+          },
+          {
+            "inputs": [
+              "/0",
+              "/12"
+            ],
+            "kind": "BoundMul",
+            "name": "/13"
+          },
+          {
+            "inputs": [],
+            "kind": "BoundConstant",
+            "name": "/14"
+          },
+          {
+            "inputs": [
+              "/13",
+              "/14"
+            ],
+            "kind": "BoundSub",
+            "name": "/15"
+          },
+          {
+            "inputs": [
+              "/10",
+              "/0",
+              "/11",
+              "/15"
+            ],
+            "kind": "BoundConcat",
+            "name": "/16"
+          }
+        ],
+        "split_activations": {
+          "/6": [
+            {
+              "input_index": 0,
+              "kind": "BoundSigmoid",
+              "name": "/7"
+            }
+          ],
+          "/7": [
+            {
+              "input_index": 0,
+              "kind": "BoundMul",
+              "name": "/9"
+            }
+          ],
+          "/8": [
+            {
+              "input_index": 1,
+              "kind": "BoundMul",
+              "name": "/9"
+            }
+          ]
+        },
+        "stats": {
+          "all_adv_candidates": null,
+          "attack_examples": null,
+          "attack_margins": null,
+          "bab": [
+            [
+              0,
+              -0.2615941559557649,
+              24498,
+              265.9863955974579
+            ]
+          ],
+          "elapsed": 266.4623317718506,
+          "pgd": null
+        },
+        "status": "unknown",
+        "success": false,
+        "synthetic_verifier_calls": 1,
+        "trained_model_calls": 0,
+        "verifier_seconds": 266.47013419121504
+      }
+    }
+  ],
+  "calendar_span_including_repairs_seconds": 645.2824701480567,
+  "cumulative_controlled_execution_seconds": 290.2749284388898,
+  "offline_saved_audit_shell_seconds": 0.753172068,
+  "old_deployment_fail_preserved": true,
+  "positive_smoke_count": 0,
+  "real_attribution_increment": 0,
+  "real_obligation_increment": 0,
+  "real_request_increment": 0,
+  "schema": "B2_CPU_READY_RESULTS_20261021",
+  "scope": "compatibility trials; no strict network certificate, algorithm gain or real-model comparison",
+  "snapshot_precheck": {
+    "directory_created": false,
+    "error": "tracked directory symlink read as regular file",
+    "requested_directory": "genbab_cpu_ready_20261021_r5",
+    "shell_wall_seconds": 0.014744922,
+    "status": "TOOLING_ERROR_BEFORE_NATIVE_CALL"
+  },
+  "synthetic_verifier_calls": 4
+}

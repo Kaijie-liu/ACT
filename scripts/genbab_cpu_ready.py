@@ -266,21 +266,41 @@ def accepted_smoke(record, log):
 
 def audit(run):
     value = load(run/'result.json', limit=2**20)
+    historical_code = subprocess.check_output(['git', '-C', str(ROOT), 'show',
+        value['execution_head']+':scripts/genbab_cpu_ready.py'], timeout=10)
+    require(hashlib.sha256(historical_code).hexdigest() == value['controller_sha256'],
+            'execution source/result binding')
     for name, digest in value['files'].items():
         require(sha(run/name) == digest, 'saved record: '+name)
     p = load(run/'probe.json', limit=CAP)
     check_inventory(p['distributions'], ENVIRONMENT/'lib/python3.11/site-packages', required_packages())
     for module in p['modules'].values():
         require(sha(module['path']) == module['sha256'], 'actual loaded source identity')
-    source_identity()
+    if 'files' in p['sources']:
+        require(p['sources']['files'] == source_identity()['files'], 'loaded compatibility snapshot')
     receipt = value['session']
-    require(receipt['status'] == 'COMPLETED' and receipt['returncode'] == 0
-            and receipt['execution_error'] is None and receipt['cleanup_error'] is None
-            and receipt['cleanup_status'] == 'LEADER_REAPED_NO_LIVE_SESSION', 'owned terminal')
+    require(receipt['cleanup_error'] is None
+            and receipt['cleanup_status'] == 'LEADER_REAPED_NO_LIVE_SESSION', 'owned cleanup')
     require(value['seconds_before_terminal_export'] < 300, 'same budget')
-    visited = accepted_smoke(load(run/'smoke.json', limit=CAP), (run/'native.log').read_text())
+    log = (run/'native.log').read_text()
+    record = load(run/'smoke.json', limit=CAP) if (run/'smoke.json').exists() else None
+    visited_log = [int(n) for n in re.findall(r'(?m)^(\d+) domains visited$', log)]
+    visited = max(visited_log, default=0)
+    outcome = record['status'] if record else 'NO_VERIFIER_TERMINAL'
+    positive = False
+    try:
+        require(receipt['status'] == 'COMPLETED' and receipt['returncode'] == 0
+                and receipt['execution_error'] is None and record is not None, 'native terminal')
+        accepted_smoke(record, log)
+        positive = True
+    except ValueError:
+        pass
+    require((value['status'] == 'PASS') == positive, 'preserve original smoke acceptance')
     require(sum(p.stat().st_size for p in run.rglob('*') if p.is_file()) <= CAP, 'artifact cap')
-    return dict(status='PASS', visited=visited, result_sha256=sha(run/'result.json'))
+    return dict(audit='PASS', execution_status=value['status'], verifier_status=outcome,
+                positive_smoke=positive, visited=visited, import_reception='PASS',
+                actual_branch_log=visited > 0 and 'Branching points' in log,
+                result_sha256=sha(run/'result.json'))
 
 
 def main(run, seconds=300.):

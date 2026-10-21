@@ -68,3 +68,48 @@ It exited before any native call (shell-reported wall time 0.014745s). The
 inventory now compares symbolic-link text separately; imported auto_LiRPA still
 resolves to the original pinned checkout. This is tooling metadata, not a failed
 network obligation or a second deployment.
+
+## Saved results and decision
+
+[Records](genbab_cpu_ready_records_20261021.json) bind all four native attempts.
+The installed-distribution and actual-import checks pass. The numerical smoke
+does **not** pass its fixed positive-example criterion; all original FAIL
+terminals remain FAIL. Saved-only structural audits pass for the failure records.
+
+| Attempt | Outer measured seconds | Verifier outcome | Actual domains visited |
+| --- | ---: | --- | ---: |
+| R2 | 6.783214 | extractor shape exception | 2 |
+| R3 | 5.509465 | same exception; switch ignored upstream | 2 |
+| R4 | 6.807640 | UNKNOWN at depth-count stop | 6 |
+| R6, isolated depth compatibility | 271.159864 | UNKNOWN at remaining budget | 24,498 |
+
+R6 returned normally, with no execution/cleanup error, and retained the analytic
+guarded source unchanged. Its last global numerical lower bound is
+`-0.2615941559557649`; this is not a feasible upper bound or a counterexample.
+The log also repeats effectively zero-width branching intervals with no global
+bound improvement. That observation is not proof of a unique root cause or of
+the original model being unsafe. Do not tune this case or extend its budget.
+
+Cumulative measured controlled execution, including the failed symlink precheck,
+is **290.274928s**; the calendar span including source repairs/commits is
+**645.282470s**, not a contiguous 300-second end-to-end batch. Each native attempt
+uses its remaining share of the control allowance. Offline saved-only audit
+commands took another 0.753172s and do not repair an online verdict. Source
+snapshot extraction took a separately observed 0.791677s. Interpreter startup
+before each first timestamp remains outside the measured scope as disclosed.
+The four run directories contain 16,944,418 bytes; the compact archive is charged
+additionally and the total remains below 128MiB. The 111MiB source snapshot is
+deployment/compatibility storage, not request evidence.
+
+R6 complete-sample session-plus-controller RSS reached 4,785,143,808 bytes;
+wait4 direct-child maximum was 4,728,172,544 bytes. Neither is an aggregate hard
+memory limit. Per-process 8GiB address-space limits remained in force under the
+approved development policy. Cleanup confirmed no live owned session members;
+it does not claim all zombies or unrelated processes were reaped.
+
+**Research ledger:** zero real requests, real obligations or real attribution
+queries; four synthetic verifier calls, zero positive smoke results. This
+closes the metadata ambiguity and establishes actual nonlinear execution,
+not successful guarded verification, an ACT gain or external superiority.
+The approved B1 attribution work remains necessary; this unsuccessful smoke
+must not be advertised as a passing gate for the B2 real comparison.

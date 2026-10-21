@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## Active revised goal and B2 smoke outcome, 2026-10-21
+
+[Goal](ALGORITHM_RESEARCH_GOAL_SUMMARY_20261021c.txt) is ACTIVE; G1–G6 OPEN.
+[B2 results](genbab_cpu_ready_20261021.md)/[records](genbab_cpu_ready_records_20261021.json): import audit passes;
+four synthetic calls, all original FAIL retained. R6 actually visits24,498 nonlinear domains but returns UNKNOWN.
+Two backend compatibility defects are isolated; no author checkout/environment change, no new installation.
+Controlled execution290.274928s; calendar including repairs645.282470s; no real request/obligation/attribution increment.
+Stop this fixed smoke without tuning/retry; saved-log analysis and approved B1 preparation can continue.
+B1's41 requests remain pending, not a new permission request; B2 real execution has not passed its smoke gate.
+
 ## Approved execution correction and active goal, 2026-10-21
 
 [Current contract](ALGORITHM_RESEARCH_GOAL.md) and [registered goal](ALGORITHM_RESEARCH_GOAL_SUMMARY_20261021c.txt)
