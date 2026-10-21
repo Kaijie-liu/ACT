@@ -5,7 +5,7 @@
 Real increment1 full ERROR; retained37full=17POSITIVE/18UNKNOWN/2ERROR,10locals unchanged; PID290944 exited.
 [Results](b2_observed_results_20261021.md)/[records](b2_observed_records_20261021.json) retain seed2/4374's initial-stat rejection; raw fields and unique cause unknown.
 Only initial DEV observation gets one strict bounded reread; confirm/cleanup/signalling/default remain strict.27 ordinary tests and read-only review pass.
-Frozen continuation retains47 attempts and carries8812s/all artifacts in original6h/128MiB; next b2_047,4GenBaB+19CROWN untouched, no reruns.
+Controller4189850 runs immutable7af2c5ff2 in R4; start retains47 attempts, carries8812s/all artifacts in original6h/128MiB; first b2_047, no reruns.
 Seventeen positives use389 initial/78alpha-only/9BaB pair calls;9requests noBaB,8withBaB. This is execution attribution, not isolated algorithm causality.
 Finish B2 before selecting B3; compatibility work is not innovation, all G1–G6 remain OPEN.
 

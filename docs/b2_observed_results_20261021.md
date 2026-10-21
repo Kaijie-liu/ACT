@@ -6,7 +6,7 @@ development study, not an independent population comparison or a G4 win claim.
 The current retained prefix has **37 complete-request attempts: 17 numerical
 POSITIVE, 18 UNKNOWN and two ERROR**, plus ten local diagnoses (eight positive,
 two UNKNOWN). Four GenBaB and 19 CROWN requests remain unexecuted. The second
-ERROR is retained; only that untouched suffix will continue after the bounded
+ERROR is retained; only that untouched suffix continues after the bounded
 compatibility repair below. Earlier prefix sections are historical snapshots.
 
 The first controller stopped before creating its run directory or invoking a
@@ -42,11 +42,14 @@ observer version and its tests explicitly bound separately.
 
 The 47 retained calls cost 7,597.772 seconds. R3 records 8,473.849 cumulative
 seconds before its final write; all retained directories and logs, including
-that write, occupy 65,558,760 bytes. The next immutable suffix carries **8,812
+that write, occupy 65,558,760 bytes. The immutable suffix carries **8,812
 seconds**, a conservative confirmed-dead upper bound including the repair and
 ordinary-test interval, plus four seconds for preflight, not measured solver time. All prior logs, failures and
 new suffix artifacts remain inside the original six-hour/128MiB stage. Continue
 only `b2_047` through `b2_069`; do not rerun either ERROR or any completed query.
+Controller 4189850 runs immutable commit `7af2c5ff2` in new R4. Its start receipt
+confirms 47 retained attempts, the unchanged freeze, all seven charged artifact
+roots and `b2_047` as its first request. Live ledgers supersede this launch count.
 
 ## What produced the seventeen complete positives
 
