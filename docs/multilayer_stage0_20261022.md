@@ -80,3 +80,14 @@ full-model replay are independent of arms and separately charged; replay-valid
 UNSAFE from any source is excluded from primary n', with raw60 denominator,
 source overlap and both cost versions also reported. Those later decisions do
 not change this synthetic batch.
+
+## Retained tooling prefix R1
+
+Immutable1784b059a launched only SAFE/ACT, then failed before solver acceptance:
+the inherited debug path under the git-archive copy had no parent directory.
+The owned child was reaped; all nine calls remain scientifically uncompleted.
+The prefix cost6.696300382s and all artifacts are retained under
+`/data1/Kane/MOE/results/multilayer_stage0_20261022_r1`.
+R2 changes only worker-local debug output and cumulative carry-in accounting;
+it uses the same objects, order and thresholds and subtracts this spent time
+from the same300-second batch. No model, relaxation or case changed.

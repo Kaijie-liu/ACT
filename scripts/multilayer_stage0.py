@@ -151,6 +151,7 @@ def worker(folder):
     from act.util.typing_compat import install_typing_override
     install_typing_override()
     from act.util.device_manager import initialize_device
+    from act.util.options import PerformanceOptions
     from act.back_end.moe.multilayer import verify_multilayer_box
     from act.back_end.moe.multilayer_audit import audit_multilayer_result
     from act.back_end.moe.multilayer_external import verify_histories
@@ -158,6 +159,7 @@ def worker(folder):
     torch.set_num_threads(1);torch.set_num_interop_threads(1)
     torch.set_default_dtype(torch.float64)
     initialize_device('cpu','float64')
+    PerformanceOptions.set_debug_output_file(str(folder/'act_debug.log'))
     model,tensors=fixture(request['case'])
     def fingerprint(t):
         t=t.detach().cpu().contiguous()
@@ -207,9 +209,15 @@ def main_batch(folder,manifest):
     if any(sha(ROOT/p)!=h for p,h in spec['source_files'].items()):raise ValueError('frozen source mismatch')
     if backend.CONFIG!=spec['genbab_config']:raise ValueError('fixed backend configuration')
     resource.setrlimit(resource.RLIMIT_AS,(8*2**30,8*2**30))
-    folder.mkdir();deadline=ENTRY+300
+    prior=spec.get('retained_tooling_failure')
+    prior_seconds=0.;prior_bytes=0
+    if prior:
+        previous=load(prior['complete'],prior['sha256'])
+        prior_seconds=previous['cumulative_seconds']
+        prior_bytes=sizes(Path(prior['complete']).parent)
+    folder.mkdir();deadline=ENTRY+300-prior_seconds
     save(folder/'start.json',dict(commit=(ROOT/'.frozen_commit').read_text().strip(),
-        manifest_sha256=sha(manifest),entry=ENTRY,deadline=deadline))
+        manifest_sha256=sha(manifest),entry=ENTRY,deadline=deadline,prior_seconds=prior_seconds,prior_bytes=prior_bytes))
     rows=[]
     for query in spec['queries']:
         target=folder/query['id'];target.mkdir();(target/'tmp').mkdir();(target/'cache').mkdir()
@@ -234,9 +242,10 @@ def main_batch(folder,manifest):
         row['passed']=accepted and actual==query['expected']
         rows.append(row);save(target/'terminal.json',row)
         print(json.dumps({k:row[k] for k in ('id','actual','passed','seconds')}),flush=True)
-        if not row['passed'] or sizes(folder)>128*2**20-2**20:break
+        if not row['passed'] or sizes(folder)+prior_bytes>128*2**20-2**20:break
     save(folder/'complete.json',dict(status='PASS' if len(rows)==len(spec['queries']) and all(r['passed'] for r in rows) else 'STOP',
-        rows=rows,seconds=time.monotonic()-ENTRY,real_requests=0,training_calls=0,
+        rows=rows,seconds=time.monotonic()-ENTRY,cumulative_seconds=prior_seconds+time.monotonic()-ENTRY,
+        real_requests=0,training_calls=0,prior_bytes=prior_bytes,
         artifact_bytes_before_final=sizes(folder),unexecuted=[q for q in spec['queries'][len(rows):]],
         guarantee='NUMERICAL_SEMANTICS_CONTROL_NOT_SOURCE_COMPLETE_PROOF'))
 
