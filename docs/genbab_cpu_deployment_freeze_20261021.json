@@ -1,0 +1,102 @@
+{
+  "schema": "GENBAB_CPU_DEPLOYMENT_V1",
+  "run": "/data1/Kane/MOE/results/genbab_cpu_deployment_20261021_r1",
+  "environment": "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1",
+  "build_directory": "/data1/Kane/MOE/baselines/deployments/genbab_cpu_20261021_r1",
+  "attempts": 1,
+  "total_seconds": 900,
+  "phase_seconds": [
+    60,
+    300,
+    300,
+    120
+  ],
+  "deployment_bytes": 8589934592,
+  "evidence_bytes": 134217728,
+  "address_space_bytes": 8589934592,
+  "install_file_bytes": 1073741824,
+  "storage_gate": "PHASE_BOUNDARY_NOT_HARD_PEAK",
+  "real_request_calls": 0,
+  "files": {
+    "scripts/deploy_genbab_cpu.py": "366acdf42eac04ffd7ba0fda3b932c9481744d31e3e24b40385fbdc4ee29066a",
+    "configs/genbab_cpu_20261021_requirements.txt": "e023e0df1e23c8dea28aa5702fc3f05858a6049f67ee9d48bec811146fd8c648",
+    "docs/genbab_cpu_deployment_20261021.md": "f38b939cc6138432f3940a9485efe3d05f7737812e1986e5076585e1490ed5b5",
+    "scoped_proof/io.py": "ee080902b729bcc0ce50ead5696538b687302358f143b039a6f9bdee2256569d",
+    "scoped_proof/owned_session.py": "8b9e80e259679490a2f72e2d5011c5345e17d75c7cf2ad80952b00f651aed798",
+    "scoped_proof/owned_bounded.py": "f0f7c4b72b2ffc10fd3b2e20cf44374d42b5c0d4aaddb9f47263bf6a20fa79c3",
+    "scoped_proof/pidfd_compat.py": "8bbc9c51377221aee889d217613ecd9fc176a18cce956763f423f2faacdbf41e"
+  },
+  "interpreters": {
+    "/data1/Kane/miniconda3/envs/act-py312/bin/python": "3662f23758ced1fbeefff88a4f73dd8107f290f784dc13a1311ee6e7202cef21",
+    "/data1/Kane/MOE/envs/alpha-beta-crown/bin/python": "d39300d58019b4cfdbe80226f7c0d532bba14c3cddd3643ee12957b371d7782b"
+  },
+  "sources": {
+    "/data1/Kane/MOE/baselines/alpha-beta-CROWN": "e5c7e17bf0488843acb77b7519f59876717a49f4",
+    "/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA": "5a098e8f9fb5786a428a024981d833d303921f2d"
+  },
+  "commands": [
+    [
+      "/data1/Kane/MOE/envs/alpha-beta-crown/bin/python",
+      "-I",
+      "-m",
+      "venv",
+      "--copies",
+      "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1"
+    ],
+    [
+      "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/bin/python",
+      "-I",
+      "-m",
+      "pip",
+      "--disable-pip-version-check",
+      "--quiet",
+      "install",
+      "--no-cache-dir",
+      "--retries",
+      "0",
+      "--timeout",
+      "30",
+      "--progress-bar",
+      "off",
+      "--index-url",
+      "https://pypi.org/simple",
+      "--only-binary=:all:",
+      "--extra-index-url",
+      "https://download.pytorch.org/whl/cpu",
+      "--report",
+      "/data1/Kane/MOE/results/genbab_cpu_deployment_20261021_r1/packages.json",
+      "-r",
+      "/data1/Kane/MOE/ACT/configs/genbab_cpu_20261021_requirements.txt"
+    ],
+    [
+      "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/bin/python",
+      "-I",
+      "-m",
+      "pip",
+      "--disable-pip-version-check",
+      "--quiet",
+      "install",
+      "--no-cache-dir",
+      "--retries",
+      "0",
+      "--timeout",
+      "30",
+      "--progress-bar",
+      "off",
+      "--index-url",
+      "https://pypi.org/simple",
+      "--no-deps",
+      "--no-build-isolation",
+      "--report",
+      "/data1/Kane/MOE/results/genbab_cpu_deployment_20261021_r1/converter.json",
+      "git+https://github.com/Verified-Intelligence/onnx2pytorch@0826948e0d50cd09d909b7f26b2ee9ca2d3d71b3"
+    ],
+    [
+      "/data1/Kane/MOE/envs/genbab-cpu-20261021-v1/bin/python",
+      "-I",
+      "-B",
+      "/data1/Kane/MOE/ACT/scripts/deploy_genbab_cpu.py",
+      "--probe"
+    ]
+  ]
+}

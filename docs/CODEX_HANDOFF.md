@@ -1,5 +1,31 @@
 # MoE project handoff — current entry point
 
+## B2 isolated CPU deployment frozen, 2026-10-21
+
+[Deployment protocol](genbab_cpu_deployment_20261021.md) and
+[manifest](genbab_cpu_deployment_freeze_20261021.json) register one isolated
+Python3.11/torch2.11 CPU installation plus import-only check. The author source
+is fixed; act-py312 and the old CUDA environment remain unchanged. Direct pins
+match the current pinned pyproject, not the older torch2.8 recipe. Transitive
+resolution is recorded once, not claimed pre-locked. No model/solve/GPU runs.
+
+The existing owned-session supervisor enforces four phases, each <=300s including
+cleanup, within a900s deployment envelope. Installation cost is separate and
+charged to B2; real-request ledger remains0/0/0. New deployment storage has an8GiB
+phase-boundary stop threshold (not hard peak disk guarantee), separate from
+128MiB receipts/evidence. Per-process8GiB AS and the current RSS telemetry policy
+apply. One attempt; unexpected failure preserves prefix and stops, without
+dependency repair/retry or changing limits.
+
+Static AST/manifest checks and read-only review precede execution. The review
+corrected the old recipe, inherited-stdlib isolation false rejection, console
+capacity, cleanup accounting and dependency-report audit semantics before freeze.
+**Next:** commit/push clean, fresh resource check, execute the frozen installation
+once and saved-only audit/archive. Passing imports is not actual GenBaB branching
+or a full-request comparison. B1 selection must also close the schema-aware
+historical exclusions; known missing diagnostics include3444 and several
+cross-conversion differences above the old maximum used index.
+
 ## B2 guarded specification controls passed, 2026-10-21
 
 [Results](genbab_spec_results_20261021.md) and
