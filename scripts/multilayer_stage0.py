@@ -213,8 +213,8 @@ def main_batch(folder,manifest):
     prior_seconds=0.;prior_bytes=0
     if prior:
         previous=load(prior['complete'],prior['sha256'])
-        prior_seconds=previous['cumulative_seconds']
-        prior_bytes=sizes(Path(prior['complete']).parent)
+        prior_seconds=previous.get('cumulative_seconds',previous['seconds'])
+        prior_bytes=sizes(Path(prior['complete']).parent)+previous.get('prior_bytes',0)
     folder.mkdir();deadline=ENTRY+300-prior_seconds
     save(folder/'start.json',dict(commit=(ROOT/'.frozen_commit').read_text().strip(),
         manifest_sha256=sha(manifest),entry=ENTRY,deadline=deadline,prior_seconds=prior_seconds,prior_bytes=prior_bytes))
