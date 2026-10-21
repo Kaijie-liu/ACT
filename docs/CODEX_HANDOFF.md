@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## Twelve-model training started 2026-10-22
+
+Real verification0; training queue12models launched, first L1E8_seed0 completed epoch1/50 (validation.3214,13.941s epoch), not a selected final model.
+Detached PID1168828,immutable8eb995c22,root`/data1/Kane/MOE/results/multilayer_training_20261022_r1`; adjacent`.controller.log`records live progress.
+Frozen[manifest](multilayer_training_freeze_20261022.json)SHA25652e58d3c6c495ded4285a6e75118d34410fb5d610230d51e3dcb24483473c196; split92a4da411c6d6c731da72203665b2533b0fb91b37f7d7f0c82e82d8ace0f1e5d.
+SerialCPU,nice10,4threads,0workers,8GiBAS; start resource check81GiB available memory/155GiB disk; noGPU or other jobs modified.
+Live epochs supersede this snapshot; do not modify the execution copy, choose checkpoints by verification, or start an overlapping training queue.
+After12 fixed50-epoch runs, audit and freeze stage1 common PGD/selection/census/600-call catalog before verification. G1–G6 remain OPEN.
+
 ## Twelve-model CPU recipe frozen 2026-10-22
 
 Real verification0/training0 at freeze; synthetic optimizer/save/reload4/4 pass under3.307s owned session.

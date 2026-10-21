@@ -55,3 +55,17 @@ The CUDA-built ACT torch emitted an internal cudaGetDeviceCount warning during
 CPU backward under RLIMIT_AS; all tensors/operations remained CPU and the
 launcher exposes no CUDA devices. The warning is retained, not hidden or
 reported as an actual GPU experiment. No dependency/environment was changed.
+
+## Execution start
+
+Immutable8eb995c224cadd8f7d267fe65bffadaf1f3ca2a7 runs from
+`/data1/Kane/MOE/executions/multilayer_training_20261022_r1`, detached PID1168828,
+at nice10. Results are `/data1/Kane/MOE/results/multilayer_training_20261022_r1`;
+the adjacent `.controller.log` retains console output. The manifest SHA256 is
+`52e58d3c6c495ded4285a6e75118d34410fb5d610230d51e3dcb24483473c196` and the
+materialized common split SHA256 is
+`92a4da411c6d6c731da72203665b2533b0fb91b37f7d7f0c82e82d8ace0f1e5d`.
+First L1E8_seed0 epoch took13.941s with validation accuracy.3214; this is a live
+prefix, not a finished model or a total-training forecast. Training is ongoing;
+no stage1 verification has launched. Initial resources:81GiB available memory,
+155GiB disk,20logicalCPU,load8.10. No other user's task was signalled or changed.
