@@ -35,8 +35,31 @@ acceptance policy; candidate residuals are numerical checks, not exact feasible
 certificates. A reconstructed F0 with new integer-domain difference bounds is
 explicitly not the original continuous LP. There are no extra routine MILP slots:
 the captured online MILP is the baseline, and only the separately registered
-eight eligible extended calls can rerun it. The query supervisor and fixed queue
-reception remain to be connected before executing these helpers.
+eight eligible extended calls can rerun it.
+
+The [offline queue](../scripts/b1_diagnostic_queue.py) now uses the existing
+owned-session supervisor and a separate frozen code copy. Its unchanged catalog
+has145 entries:41 candidate-replay/PGD,10 same-matrix LP,20 integer difference
+extrema,10 range-only replacements, and64 closed-slice endpoint queries for the
+first two source ordinals. Missing ordinals are not replaced. The cumulative
+online clock, including the retained tooling prefix, is deducted from six hours;
+the separately authorized eligible extended calls retain their own four-hour cap.
+
+PGD is fixed before execution:20 steps,3 restarts,step size epsilon/4,cross-entropy,
+saved-box projection,CPU/float64,seed20261021 plus request ordinal. Each replay
+query has60s including loading and reception. Only a finite, in-domain, dynamic
+full-model misclassification is a replayed counterexample. Source/network point
+differences, native LP residuals and static-pair guard violations are diagnostic
+fields, not exact feasible certificates or unique-cause proofs.
+
+Seven queue/mapping controls pass without native solving, covering the missing
+second source, unchanged145-entry ordering, prior costs, wrong request binding,
+offset-aware extension eligibility, binary mapping and authorized cutoff handling.
+The saved-source decoder regressions also pass. Before real diagnostics, one
+fixed tiny native control executes two calls (continuous and integral versions
+of the same two-variable matrix, objective offset1/4, expected optimum−3/4),
+each solver limit2s, within one300s control budget. No trained source is loaded.
+This is an API control, not a comparison or repeated algorithm experiment.
 
 ## Retained tooling prefix
 

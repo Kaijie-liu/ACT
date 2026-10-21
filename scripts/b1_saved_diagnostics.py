@@ -31,8 +31,8 @@ class StoredProblem:
             raise TimeoutError('no diagnostic solve after construction cutoff')
         return remaining
 
-    def __init__(self, path, digest, deadline):
-        self.deadline = deadline
+    def __init__(self, path, digest, deadline, *, work=None):
+        self.deadline, self.work = deadline, work
         tick(deadline)
         self.value = load(path, digest=digest, limit=128*2**20)
         if self.value.get('schema') != 'NATIVE_F0_DIAGNOSTIC_CAPTURE_V1':
@@ -66,10 +66,12 @@ class StoredProblem:
             arr = np.frombuffer(raw, dtype=item['dtype'])
             arr.setflags(write=False)
             self.cache[name] = arr
+            if self.work is not None: self.work.visit('coefficient_visits',int(arr.size))
         return self.cache[name]
 
     def matrix(self, name):
         spec = self.value['matrices'][name]
+        if self.work is not None: self.work.visit('row_visits',int(spec['shape'][0]))
         return sp.csr_matrix((self.array(spec['data']), self.array(spec['indices']),
                               self.array(spec['indptr'])), shape=tuple(spec['shape']))
 

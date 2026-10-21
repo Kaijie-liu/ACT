@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## B1 offline query reception connected 2026-10-21
+
+Online5/41 complete at this edit:UNKNOWN2/TIMEOUT3; local/extended diagnostics0. Live r2 ledgers supersede this prefix.
+[Queue](../scripts/b1_diagnostic_queue.py) instantiates the frozen145-entry catalog after online completion, with no missing-source replacement.
+Same-source identity, received Work, complete clocks, retained prefix and authorized cutoff are connected to the existing supervisor.
+Seven new no-solver controls pass; the [result entry](b1_observed_results_20261021.md) freezes one tiny two-call native API test.
+Run diagnostics from its own frozen commit copy; online88a705275 is unchanged. Offline results never upgrade online terminals.
+B2 guard smoke is passed; execute its scalar-max guarded path after B1, without a new success gate or renewed approval.
+
 ## B1 is running from frozen copy 2026-10-21
 
 Real ledger:2/41 online requests complete (UNKNOWN1/TIMEOUT1),45 registered obligations,28 returned F0 calls; extra attribution0. Earlier tooling ERROR1 retained.

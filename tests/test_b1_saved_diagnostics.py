@@ -3,6 +3,7 @@ import base64
 import hashlib
 import importlib.util
 import json
+import os
 from pathlib import Path
 import tempfile
 import time
@@ -69,6 +70,19 @@ class SavedControls(unittest.TestCase):
         self.source.deadline=time.monotonic()+.5
         with self.assertRaises(TimeoutError):
             self.source.remaining(120)
+
+    @unittest.skipUnless(os.environ.get('B1_NATIVE_CONTROL')=='1','explicit tiny native control')
+    def test_native_lp_and_milp_same_matrix_with_offset(self):
+        # Exactly two fixed synthetic calls; no checkpoint/dataset/propagation.
+        for relaxed in (True,False):
+            result=self.source.solve_same_matrix(relaxed=relaxed,time_limit=2.)
+            self.assertEqual(result['status'],0)
+            self.assertAlmostEqual(result['primal'],-.75)
+            self.assertLess(result['numerical_lower'],-.75)
+            self.assertGreater(result['numerical_lower'],-.751)
+            self.assertTrue(result['candidate']['numerical_feasible_1e7'])
+            self.assertEqual(result['native_calls'],1)
+            self.assertFalse(result['repairs_online'])
 
 
 if __name__ == '__main__': unittest.main()
