@@ -1,5 +1,16 @@
 # MoE project handoff — current entry point
 
+## Fourth revision: multilayer routing research authorized 2026-10-22
+
+Real increment0; user replaces single-layer mechanism selection with multilayer bottleneck elimination, then conditional union mechanism only if registered gate passes.
+[Current contract](ALGORITHM_RESEARCH_GOAL.md) preservesG2–G6/history: stage0 three-arm analytic SAFE/UNSAFE/tie; stage1≤600/52h; stage2≤540/45h; stage3 confirmation/convolution each≤540/45h preauthorized afterB4.
+CPU training12MLPs(L1/2/3E8,L2E16×3seeds),45k/5k fixed split,old recipe,val-checkpoint selection is authorized after freeze; noGPU.
+Existingv1 fully enumerates history then applies shared-HZ guards; sequential variable selected-softmax compatibility needs control, not an invented new algorithm.
+GenBaB generic prefix pruning must compute its own router margin bounds, preserve ties/unknowns, and pay all prefix/full-history work.
+User clarified same-new-input three-arm B4: on/off and on/pruned both positive paired gain with95%lower>0; strong-baseline+5pp and≤2×median cost; positive estimate/CI touching0 gray. Stage1 common fixed PGD/replay separately charged; primary denominator excludes any replay-valid UNSAFE, original60 and source overlaps also reported.
+Goal service still has old unfinished blocked entry and refuses create; repository contract updated, no false completion used to clear it. New explicit authorization governs work now.
+Next implement/freeze stage0 and CPU training recipe; stop only on registered scientific failure, preserve/repair tooling failures. G1–G6 OPEN.
+
 ## Historical-success diagnosis complete; B3 stops 2026-10-21
 
 Real increment33 full calls since committed27 prefix; final60/60 numerical POSITIVE:51multi+9single,15,120 obligations,0missing/0locals.

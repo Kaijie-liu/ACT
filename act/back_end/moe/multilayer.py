@@ -108,12 +108,15 @@ class _Tracer(fx.Tracer):
 
 
 class _Branch(nn.Module):
-    def __init__(self, module, site, selected, source_hashes):
+    def __init__(self, module, site, selected, source_hashes, weighted_matmul=False):
         super().__init__()
         router, experts, *_ = _semantics(module, source_hashes)
         self.router = router
         self.experts = nn.ModuleList([experts[i] for i in selected])
         self.selected, self.site = tuple(selected), site
+        self.weighted_matmul = weighted_matmul
+        if weighted_matmul and (site.mode != 'selected_softmax' or site.rank != 2):
+            raise NotImplementedError('weighted matmul adapter requires vector selected-softmax')
         self.softmax = nn.Softmax(dim=1)
         with torch.random.fork_rng(devices=[]):
             self.select = nn.Linear(site.experts, len(selected), bias=False, dtype=torch.float64)
@@ -138,6 +141,14 @@ class _Branch(nn.Module):
             weights = selected_scores / self.denominator(selected_scores)
         else:
             weights = selected_scores
+        if self.weighted_matmul:
+            # Same real weighted sum, through the existing shared-factor
+            # softmax/value MATMUL transfer. No new abstract relaxation here.
+            values = torch.cat([expert(x) for expert in self.experts], dim=1).reshape(1, len(self.selected), -1)
+            out = torch.matmul(weights.reshape(1, 1, len(self.selected)), values).reshape(1, -1)
+            if self.site.residual:
+                out = x + out
+            return out, scores
         out = None
         for j, expert in enumerate(self.experts):
             value = expert(x)
@@ -153,8 +164,11 @@ class _Branch(nn.Module):
 
 
 class HistoryPlan:
-    def __init__(self, model, sample, *, source_hashes=None):
+    def __init__(self, model, sample, *, source_hashes=None, weighted_matmul=False):
         self.model, self.source_hashes = model, dict(source_hashes or {})
+        if type(weighted_matmul) is not bool:
+            raise ValueError('explicit weighted_matmul flag')
+        self.weighted_matmul = weighted_matmul
         if any(m.training for m in model.modules()):
             raise ValueError('eval required; mode is never changed implicitly')
         for path, value in self.source_hashes.items():
@@ -232,7 +246,7 @@ class HistoryPlan:
             elif node.name in by_name:
                 i, site = by_name[node.name]
                 module = self.graph.get_submodule(site.target)
-                root.add_module('branch'+str(i), _Branch(module, site, history[i], self.source_hashes))
+                root.add_module('branch'+str(i), _Branch(module, site, history[i], self.source_hashes, self.weighted_matmul))
                 pair = graph.call_module('branch'+str(i), args=fx.map_arg(node.args, lambda n: env[n]))
                 env[node] = graph.call_function(operator.getitem, (pair, 0))
                 score_nodes.append(graph.call_function(operator.getitem, (pair, 1)))
@@ -265,6 +279,21 @@ def _lower(compiled, center, lower, upper, width):
     # Local additions: do not alter frozen production or author execution paths.
     class HistoryBuilder(_LayerGraphBuilder):
         def _handle_call_function(self, node):
+            if node.target is torch.matmul:
+                a, b = node.args
+                av, bv = self.node_outputs[a.name], self.node_outputs[b.name]
+                ashape, bshape = self.node_shapes[a.name], self.node_shapes[b.name]
+                if (len(ashape) != 3 or len(bshape) != 3 or ashape[0] != 1
+                        or bshape[0] != 1 or ashape[2] != bshape[1]):
+                    raise NotImplementedError('history matmul requires batch-one matrix operands')
+                shape = (1, ashape[1], bshape[2])
+                out = self._alloc_ids(math.prod(shape))
+                layer_id = self._add_layer('MATMUL', {'x_vars': av, 'y_vars': bv,
+                    'x_shape': ashape, 'y_shape': bshape, 'input_shape': ashape,
+                    'output_shape': shape}, av+bv, out)
+                self.prev_out, self.shape = out, shape
+                self._register_node(node.name, layer_id)
+                return
             if node.target in {operator.add, torch.add} and len(node.args) == 2:
                 a, b = node.args
                 if isinstance(a, (int, float)):
@@ -313,7 +342,8 @@ def _lower(compiled, center, lower, upper, width):
 
 
 def verify_multilayer_box(model, *, center, lower, upper, rows, thresholds,
-                          total_seconds=300., max_histories=4096, source_hashes=None, progress=None):
+                          total_seconds=300., max_histories=4096, source_hashes=None, progress=None,
+                          weighted_matmul=False):
     """All-history HZ-policy certificate; use a process supervisor for hard limits.
 
     No clean-route restriction, no incomplete-enumeration positives, no expert-
@@ -349,6 +379,7 @@ def verify_multilayer_box(model, *, center, lower, upper, rows, thresholds,
         'trusted': ['FX/static_history_lowering', 'network_input_guard_to_HZ', 'HZ_solver_numerical_policy'],
         'identity': {'state': state_id, 'sources': dict(source_hashes or {}),
             'properties': len(rows), 'budget_seconds': total_seconds, 'history_cap': max_histories,
+            'weighted_matmul': weighted_matmul,
             'model_structure': repr(model), 'implementation': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
             'policy': hz_numerical_policy_manifest(),
             'tensors': {k: _hash_tensor(v) for k, v in [('center',center),('lower',lower),('upper',upper),('rows',rows),('thresholds',thresholds)]}}}
@@ -373,7 +404,7 @@ def verify_multilayer_box(model, *, center, lower, upper, rows, thresholds,
         if progress:
             progress(copy.deepcopy(result))
     try:
-        plan = HistoryPlan(model, center, source_hashes=source_hashes)
+        plan = HistoryPlan(model, center, source_hashes=source_hashes, weighted_matmul=weighted_matmul)
         if rows.shape[1] != plan.output_width:
             raise ValueError('property dimension mismatch')
         result.update(sites=[asdict(s) for s in plan.sites], expected_histories=plan.total_histories)

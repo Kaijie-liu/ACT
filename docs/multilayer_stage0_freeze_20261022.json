@@ -1,0 +1,95 @@
+{
+  "genbab_config": {
+    "general.device": "cpu",
+    "general.double_fp": true,
+    "general.complete_verifier": "bab",
+    "general.enable_incomplete_verification": true,
+    "general.precompile_jit": false,
+    "solver.batch_size": 1,
+    "solver.auto_enlarge_batch_size": false,
+    "solver.bound_prop_method": "alpha-crown",
+    "bab.branching.input_split.enable": false,
+    "bab.branching.method": "nonlinear",
+    "bab.branching.nonlinear_split.disable": false,
+    "bab.branching.nonlinear_split.relu_only": false,
+    "bab.branching.nonlinear_split.method": "bbps",
+    "bab.branching.nonlinear_split.branching_point_method": "uniform",
+    "bab.branching.nonlinear_split.num_branches": 2,
+    "bab.interm_transfer": true,
+    "bab.pruning_in_iteration": false,
+    "bab.attack.enabled": false,
+    "attack.pgd_order": "skip",
+    "debug.print_verbose_decisions": true
+  },
+  "source_files": {
+    "scripts/multilayer_stage0.py": "10964ea62bbf743a0c88fe598670823f44e4b034bf67e94c4088b0ddb2b08677",
+    "act/back_end/moe/multilayer.py": "6590164b513e81a2b6374e47a287b58abc2ebbcd29824c5af1dc408ce6af959c",
+    "act/back_end/moe/multilayer_external.py": "f286195f88421243765905f0e645fc3a98bae95806d33aa2d775850d30dd1acb",
+    "act/back_end/moe/multilayer_audit.py": "1298997379910c0eb8df81ae68f2dc5bd442ad6947ed3e2b8c8613319e521108",
+    "scripts/b2_observed_worker.py": "546b6964d69151453c4d83546e70db85237b02bb5e60d59b1e24f42520bc8895",
+    "scripts/genbab_cpu_ready.py": "e87f758e5a73f13390ba4798360a5be5b5a803d3a5b01b73bf241ed86054581b",
+    "scoped_proof/owned_session.py": "0ffd4c41bfc395a3597f9073d8ffd3ff1bdaf5bf16558f0d756cbe89f5132444",
+    "scoped_source/development_work.py": "2c3058be39f5fbb57ac74b623c262b9668cb823a6885b813fbac1a7177b22470"
+  },
+  "schema": "multilayer-stage0-20261022-r1",
+  "policy": "DEV_MARGIN_20261021_V1",
+  "seconds": 300,
+  "artifact_bytes": 134217728,
+  "real_requests": 0,
+  "queries": [
+    {
+      "id": "00_safe_act",
+      "case": "safe",
+      "arm": "act",
+      "expected": "POSITIVE"
+    },
+    {
+      "id": "01_safe_genbab_naive",
+      "case": "safe",
+      "arm": "genbab_naive",
+      "expected": "POSITIVE"
+    },
+    {
+      "id": "02_safe_genbab_pruned",
+      "case": "safe",
+      "arm": "genbab_pruned",
+      "expected": "POSITIVE"
+    },
+    {
+      "id": "03_unsafe_act",
+      "case": "unsafe",
+      "arm": "act",
+      "expected": "UNSAFE_REPLAYED"
+    },
+    {
+      "id": "04_unsafe_genbab_naive",
+      "case": "unsafe",
+      "arm": "genbab_naive",
+      "expected": "UNSAFE_REPLAYED"
+    },
+    {
+      "id": "05_unsafe_genbab_pruned",
+      "case": "unsafe",
+      "arm": "genbab_pruned",
+      "expected": "UNSAFE_REPLAYED"
+    },
+    {
+      "id": "06_tie_act",
+      "case": "tie",
+      "arm": "act",
+      "expected": "POSITIVE"
+    },
+    {
+      "id": "07_tie_genbab_naive",
+      "case": "tie",
+      "arm": "genbab_naive",
+      "expected": "POSITIVE"
+    },
+    {
+      "id": "08_tie_genbab_pruned",
+      "case": "tie",
+      "arm": "genbab_pruned",
+      "expected": "POSITIVE"
+    }
+  ]
+}
