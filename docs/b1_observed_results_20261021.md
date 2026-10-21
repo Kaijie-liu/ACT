@@ -1,10 +1,41 @@
 # B1 observed-request attribution results
 
-Status: online execution in progress; no scientific outcome is inferred from
-the tooling prefix. The [frozen queue](b1_observed_freeze_20261021.json) retains
-all41 identities and the unchanged adaptive configuration.
+Status: the second execution stopped after18/41 requests: UNKNOWN3, TIMEOUT14,
+ERROR1. No scientific outcome is inferred from the tooling error. The
+[frozen queue](b1_observed_freeze_20261021.json) retains all41 identities and
+the unchanged adaptive configuration.
+
+## Retained prefix and suffix execution
+
+The second controller has exited. Its final request, seed0/4275, wrote an
+UNKNOWN package at293.436246s but exited with SIGALRM at294.185604s. Reception
+rejected it; its original ERROR remains unchanged. The worker had left its
+294s timer armed after completing business work. The timing supports a teardown
+race, but does not identify the native handler transition. No generic signal
+exit is reclassified as TIMEOUT, and the saved package is not accepted offline.
+
+The minimal repair cancels this timer after business work and stream flushing;
+the existing296/298/300s outer execution, cleanup and reception limits remain.
+Twenty-five ordinary tests pass in0.484s, including standard-library child
+controls for delayed teardown, authorized in-work cutoff, rejected abnormal
+exits, prefix identity, capture allowance and cumulative cost. They invoke no
+trained model or solver. Independent read-only review found no suffix blocker.
+
+Execution is fixed to the remaining23 requests, ordinals18–40, beginning with
+seed1/4275, in a new `b1_observed_20261021_r3` directory and immutable code copy.
+The18 original request directories are hash-bound references, not copied or
+rerun. All10 full-source ordinals are already consumed. R1 and R2 contribute
+4823.979257s of full execution time and151830125 stored bytes before this
+continuation; R3 and later diagnostics carry both forward against the same
+six-hour and2GiB caps. Full execution time, rather than only the sum of request
+times, is deducted. The complete catalog will still contain41 results and42
+attempts including the earlier log-path failure. No extra capture or query is
+authorized. The existing145-entry diagnostic catalog and B2 order are unchanged.
 
 ## Running prefix
+
+The following observations are historical prefixes; the stopped result and
+suffix execution above supersede the former live-controller description.
 
 The immutable execution copy is`/data1/Kane/MOE/executions/b1_observed_20261021_88a705275`;
 the detached controller is PID1234759 and writes

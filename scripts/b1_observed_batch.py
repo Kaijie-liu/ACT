@@ -41,6 +41,70 @@ def sizes(root):
     return sum(p.stat().st_size for p in root.rglob('*') if p.is_file())
 
 
+def resolve_request_folder(root, item):
+    """A continued request points to its original files, never a copied verdict."""
+    start = load(root/'start.json')
+    ref = start.get('retained_requests', {}).get(item['job_id'])
+    if ref is None:
+        return root/item['job_id']
+    folder = Path(ref['folder'])
+    for name, digest in ref['files'].items():
+        require(sha(folder/name) == digest, 'unchanged retained request '+name)
+    launch = load(folder/'launch.json')
+    require(launch['item'] == item and launch['commit'] == ref['commit']
+            and launch['freeze_sha256'] == start['freeze_sha256'], 'retained request identity')
+    return folder
+
+
+def online_sizes(root):
+    """Current and retained online roots once each; R1 is charged separately."""
+    start = load(root/'start.json')
+    roots = {root.resolve()}
+    roots.update(Path(p).resolve() for p in start.get('retained_online_roots', []))
+    return sum(sizes(p) for p in roots)
+
+
+def expired_alarm_observation(receipt, started):
+    # Read-only description of the stopped prefix, not a future acceptance or
+    # generic -SIGALRM-to-TIMEOUT rule. It does not identify the handler's cause.
+    return (receipt.get('returncode') == -signal.SIGALRM
+            and receipt.get('exit_observed_at', float('-inf')) >= started+294
+            and receipt.get('execution_error') is None)
+
+
+def retained_prefix(prefix, spec, anchor):
+    """Keep the finished prefix and resume only its untouched catalog suffix."""
+    start = load(prefix/'start.json'); done = load(prefix/'online_complete.json')
+    count = done['completed_calls']
+    require(start['freeze_sha256'] == anchor and done['status'] == 'PREFIX_STOP'
+            and 0 < count < len(spec['requests']) and not start.get('retained_requests'),
+            'one bound stopped online prefix')
+    rows = []; refs = {}; reserved = 0
+    for item in spec['requests'][:count]:
+        folder = prefix/item['job_id']; launch = load(folder/'launch.json')
+        terminal = load(folder/'terminal.json'); reception = load(folder/'reception.json')
+        require(launch['item'] == item and launch['freeze_sha256'] == anchor
+                and launch['commit'] == start['commit'], 'retained source and code identity')
+        require(terminal['ordinal'] == item['ordinal']
+                and terminal['session']['cleanup_status'] == 'LEADER_REAPED_NO_LIVE_SESSION',
+                'retained terminal and completed cleanup')
+        row = dict(terminal, status=reception['status'], online_accepted=reception['accepted'],
+                   elapsed_seconds=reception['through_terminal_ledger_seconds'])
+        rows.append(row)
+        refs[item['job_id']] = dict(folder=str(folder), commit=launch['commit'],
+            files={name: sha(folder/name) for name in ('launch.json','terminal.json','reception.json')})
+        inventories = sorted((folder/'diagnostics').glob('*_inventory_*.json'))
+        if inventories:
+            inventory = load(inventories[-1], limit=2**20)
+            reserved += len(inventory.get('full_capture_events', []))
+            refs[item['job_id']]['files'][str(inventories[-1].relative_to(folder))] = sha(inventories[-1])
+    require(rows[-1]['status'] == 'ERROR' and expired_alarm_observation(rows[-1]['session'], launch['started_at']),
+            'registered cutoff-classification failure, not a new scientific retry')
+    require(reserved == done['reserved_full_ordinals'] and reserved <= 10, 'retained capture allowance')
+    return dict(rows=rows, refs=refs, reserved=reserved, stage_elapsed=done['stage_elapsed'],
+                binding={name: sha(prefix/name) for name in ('start.json','online_complete.json')})
+
+
 def select(rows):
     return sorted((r for r in rows if r['method'] == 'adaptive'
                    and r['status'] in ('UNKNOWN', 'TIMEOUT') and r['dataset_index'] not in SEALED),
@@ -105,16 +169,26 @@ def publish_raw(path, raw, digest):
     os.link(partial, path); partial.unlink()
 
 
+def worker_cutoff(*_):
+    # The parent distinguishes this authorized cutoff from arbitrary exit124.
+    os.write(2, b'B1_AUTHORIZED_WORKER_CUTOFF\n')
+    os._exit(124)
+
+
+def finish_worker_io():
+    try:
+        sys.stdout.flush(); sys.stderr.flush()
+    finally:
+        # Only business work has ended; outer296/298/300s still bounds teardown.
+        signal.setitimer(signal.ITIMER_REAL, 0.)
+
+
 def worker(folder):
     request = load(folder/'launch.json')
     start, deadline = request['started_at'], request['deadline']
     resource.setrlimit(resource.RLIMIT_AS, (8*2**30, 8*2**30))
     resource.setrlimit(resource.RLIMIT_FSIZE, (128*2**20, 128*2**20))
-    def alarm(*_):
-        # The parent distinguishes this authorized cutoff from arbitrary exit124.
-        os.write(2, b'B1_AUTHORIZED_WORKER_CUTOFF\n')
-        os._exit(124)
-    signal.signal(signal.SIGALRM, alarm)
+    signal.signal(signal.SIGALRM, worker_cutoff)
     signal.setitimer(signal.ITIMER_REAL, max(.001, start+294-time.monotonic()))
     work = DevelopmentWork(deadline, policy=POLICY)
     with (folder/'native.log').open('xb', buffering=0) as log:
@@ -185,7 +259,7 @@ def worker(folder):
                     clock=time.monotonic(), counts=work.counts, freeze_sha256=request['freeze_sha256']))
             return 1
         finally:
-            sys.stdout.flush(); sys.stderr.flush()
+            finish_worker_io()
     return 0
 
 
@@ -194,7 +268,7 @@ def session_ok(r):
             and r['cleanup_error'] is None and r['cleanup_status'] == 'LEADER_REAPED_NO_LIVE_SESSION')
 
 
-def run(root, freeze_path, commit, prior=None):
+def run(root, freeze_path, commit, prior=None, continue_prefix=None):
     resource.setrlimit(resource.RLIMIT_AS, (8*2**30, 8*2**30))
     spec = load(freeze_path); anchor = sha(freeze_path)
     require(not root.exists() and root.parent == Path('/data1/Kane/MOE/results'), 'new result root')
@@ -207,6 +281,7 @@ def run(root, freeze_path, commit, prior=None):
     prior_seconds = 0. if previous is None else previous['online_seconds']
     prior_bytes = 0 if prior is None else sizes(prior)
     prior_calls = 0 if previous is None else previous['completed_calls']
+    prior_execution_seconds = 0. if previous is None else previous['stage_elapsed']
     if prior is not None:
         require(prior == Path('/data1/Kane/MOE/results/b1_observed_20261021_r1')
                 and previous['status'] == 'PREFIX_STOP' and prior_calls == 1
@@ -214,14 +289,27 @@ def run(root, freeze_path, commit, prior=None):
         failure = load(prior/'00_seed1_4113/worker_error.json')
         require(failure['kind'] == 'FileNotFoundError' and not any(failure['counts'].values()),
                 'log-directory failure before diagnostic work')
-    root.mkdir(); stage_deadline = ENTRY+21600-prior_seconds
+    retained = None
+    if continue_prefix is not None:
+        require(continue_prefix == Path('/data1/Kane/MOE/results/b1_observed_20261021_r2')
+                and prior is not None, 'registered R2 suffix continuation with R1 costs')
+        retained = retained_prefix(continue_prefix, spec, anchor)
+        prior_execution_seconds += retained['stage_elapsed']
+        prior_bytes += sizes(continue_prefix)
+    root.mkdir(); stage_deadline = ENTRY+21600-prior_execution_seconds
     save(root/'start.json', dict(commit=commit, freeze_sha256=anchor, entry=ENTRY,
          stage_deadline=stage_deadline, code=str(CODE), policy=POLICY,
          stage_call_slots=41, historical_real_calls_before=prior_calls,
          tooling_prefix=None if prior is None else str(prior), prior_seconds=prior_seconds,
-         prior_bytes=prior_bytes))
-    reserved = 0; rows = []
-    for item in spec['requests']:
+         prior_bytes=prior_bytes, prior_execution_seconds=prior_execution_seconds,
+         retained_catalog_slots=0 if retained is None else len(retained['rows']),
+         retained_requests={} if retained is None else retained['refs'],
+         retained_online_roots=[] if retained is None else [str(continue_prefix)],
+         retained_prefix_binding=None if retained is None else retained['binding']))
+    reserved = 0 if retained is None else retained['reserved']
+    rows = [] if retained is None else retained['rows']
+    retained_count = len(rows)
+    for item in spec['requests'][retained_count:]:
         if time.monotonic()+300 >= stage_deadline or sizes(root)+prior_bytes+2**20 >= STAGE_BYTES:
             break
         folder = root/item['job_id']; folder.mkdir(); (folder/'tmp').mkdir()
@@ -278,6 +366,8 @@ def run(root, freeze_path, commit, prior=None):
             prior_tooling_calls=prior_calls, cumulative_attempts=len(rows)+prior_calls,
             prior_seconds=prior_seconds, prior_bytes=prior_bytes,
             reserved_full_ordinals=reserved, stage_elapsed=time.monotonic()-ENTRY,
+            retained_catalog_slots=retained_count, current_execution_calls=len(rows)-retained_count,
+            total_execution_seconds=prior_execution_seconds+time.monotonic()-ENTRY,
             local_calls=0, extended_calls=0))
         # Include terminal and ledger publication, not only solver/worker time.
         # This final compact clock receipt records its own explicit measurement
@@ -304,6 +394,8 @@ def run(root, freeze_path, commit, prior=None):
         prior_tooling_calls=prior_calls, cumulative_attempts=len(rows)+prior_calls,
         cumulative_online_seconds=prior_seconds+sum(r['elapsed_seconds'] for r in rows),
         cumulative_bytes=prior_bytes+sizes(root),
+        retained_catalog_slots=retained_count, current_execution_calls=len(rows)-retained_count,
+        total_execution_seconds=prior_execution_seconds+time.monotonic()-ENTRY,
         reserved_full_ordinals=reserved, next='offline diagnostics; no online verdict replacement'))
     return 0 if len(rows)==41 else 1
 
@@ -313,8 +405,9 @@ if __name__ == '__main__':
     p.add_argument('--worker', type=Path); p.add_argument('--run', type=Path)
     p.add_argument('--manifest', type=Path); p.add_argument('--commit')
     p.add_argument('--prior', type=Path)
+    p.add_argument('--continue-prefix', type=Path)
     args = p.parse_args()
     if args.freeze: freeze(args.freeze)
     elif args.worker: raise SystemExit(worker(args.worker))
-    elif args.run: raise SystemExit(run(args.run, args.manifest, args.commit, args.prior))
+    elif args.run: raise SystemExit(run(args.run, args.manifest, args.commit, args.prior, args.continue_prefix))
     else: p.error('explicit operation required')

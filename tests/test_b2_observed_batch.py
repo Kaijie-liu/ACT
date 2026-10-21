@@ -25,6 +25,7 @@ class B2WiringControls(unittest.TestCase):
     def test_fixed_local_groups_then_41_and_19_full_requests(self):
         with tempfile.TemporaryDirectory(dir='/data1/Kane/MOE') as temporary:
             root=Path(temporary);items=[dict(job_id=f'{i:02d}') for i in range(41)]
+            (root/'start.json').write_text('{}')
             for i in range(6):
                 folder=root/items[i]['job_id']/'diagnostics';folder.mkdir(parents=True)
                 obligations=[dict(state='RETURNED',result='UNKNOWN',pair=pair,property_index=k)

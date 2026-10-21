@@ -19,7 +19,7 @@ sys.path[:0]=[str(ROOT),str(ROOT/'scripts')]
 from scoped_proof.io import load,save,sha,tick,PYTHON
 from scoped_proof.owned_session import execute
 from scoped_source.development_work import POLICY
-from b1_observed_batch import sizes,session_ok,require
+from b1_observed_batch import sizes,resolve_request_folder,session_ok,require
 from b1_diagnostic_queue import last_inventory
 from act.pipeline.moe.genbab_spec import digest
 import genbab_cpu_ready as backend
@@ -28,7 +28,7 @@ import genbab_cpu_ready as backend
 def local_selection(spec,online):
     selected=[]
     for item in spec['requests']:
-        inventory=last_inventory(online/item['job_id'])
+        inventory=last_inventory(resolve_request_folder(online,item))
         if inventory is None:continue
         by_pair=defaultdict(set)
         for row in inventory['obligations']:

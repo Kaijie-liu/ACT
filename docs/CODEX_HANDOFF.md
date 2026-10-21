@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## B1 suffix continuation after worker teardown error 2026-10-21
+
+Real ledger18/41:UNKNOWN3/TIMEOUT14/ERROR1; attribution0. R2 controller has exited, old live entries are historical.
+[Results](b1_observed_results_20261021.md)/[records](b1_observed_records_20261021.json) bind the294s SIGALRM error; original ERROR and rejected package remain.
+Cancel the business-work timer before interpreter teardown; outer296/298/300s and all acceptance rules unchanged.25 ordinary controls pass.
+Run only23 untouched ordinals18–40 in newr3 from this frozen commit; retain18 original directories by hash, not rerun/copied verdicts.
+Carry4823.979257s and151830125 bytes fromR1/R2; all10 capture ordinals consumed; final41 catalog entries/42 attempts, same6h/2GiB caps.
+Independent read-only review passes suffix mapping/accounting. Offline and B2 read retained sources; cancel their analogous exit timers before execution.
+Finish existing B1 diagnostics then B2; no new mechanism, acceptance relaxation or algorithm gain. G1–G6 OPEN.
+
 ## B1 complete coverage but status limited case 2026-10-21
 
 Online14/41 at review:UNKNOWN3/TIMEOUT11; attribution0; controller1234759 remains live on88a705275.

@@ -72,6 +72,14 @@ class QueueControls(unittest.TestCase):
         value=json.loads(freeze.read_text());value['changed']=True;self.save(freeze,value)
         with self.assertRaises(ValueError):q.make_plan(online,freeze)
 
+    def test_continuation_uses_total_execution_cost_not_only_latest_process(self):
+        online,freeze=self.online_fixture()
+        path=online/'online_complete.json';value=json.loads(path.read_text())
+        value['total_execution_seconds']=789.;self.save(path,value)
+        plan=q.make_plan(online,freeze)
+        self.assertEqual(plan['local_seconds_cap'],21600-789.)
+        self.assertEqual(plan['prior_online_seconds'],789.)
+
     def test_extended_eligibility_not_unshifted_objective(self):
         value=dict(decision={'minimum':None},mip_dual_bound_with_offset=-.2,
                    raw_candidate_objective=.1,native_result={'mip_dual_bound':5.})

@@ -23,7 +23,7 @@ sys.path[:0] = [str(ROOT),str(ROOT/'scripts')]
 from scoped_proof.io import load, save, sha, tick, PYTHON
 from scoped_proof.owned_session import execute
 from scoped_source.development_work import DevelopmentWork, POLICY
-from b1_observed_batch import sizes, session_ok, require
+from b1_observed_batch import sizes, online_sizes, resolve_request_folder, session_ok, require
 
 PGD = dict(steps=20,restarts=3,step_size_fraction=.25,seed_base=20261021,
            objective='cross_entropy',projection='saved_lower_upper',dtype='float64',device='cpu')
@@ -118,7 +118,7 @@ def summarize(online,freeze):
     requests=[];status_counts=Counter();tags_count=Counter();states=Counter()
     registered=returned=0;all_calls=[]
     for item in spec['requests']:
-        folder=online/item['job_id'];reception=folder/'reception.json'
+        folder=resolve_request_folder(online,item);reception=folder/'reception.json'
         if not reception.exists():
             requests.append(dict(job_id=item['job_id'],status='RUNNING_OR_NOT_STARTED',obligations=None));continue
         terminal=load(folder/'terminal.json');receipt=load(reception);inv=last_inventory(folder)
@@ -188,7 +188,7 @@ def make_plan(online, freeze):
             'finish registered online queue before offline execution')
     sources=[]; observations=[]; full_jobs=[]
     for item in spec['requests']:
-        folder=online/item['job_id']; terminal=load(folder/'terminal.json')
+        folder=resolve_request_folder(online,item); terminal=load(folder/'terminal.json')
         launch=load(folder/'launch.json')
         require(launch['item']==item and launch['freeze_sha256']==sha(freeze),
                 'same materialized online request')
@@ -245,11 +245,12 @@ def make_plan(online, freeze):
         extended.append(dict(id=f'e{len(extended):02d}',kind='extended_milp',seconds=1800,
                              source=source,observation=observation))
         if len(extended)==8: break
+    prior_execution_seconds=complete.get('total_execution_seconds',complete['stage_elapsed']+prior_seconds)
     return dict(schema='B1_FIXED_OFFLINE_QUEUE_V1',freeze_sha256=sha(freeze),
         online_root=str(online),online_complete_sha256=sha(online/'online_complete.json'),
         sources=sources,queries=queries,extended=extended,pgd=PGD,
-        local_seconds_cap=21600-complete['stage_elapsed']-prior_seconds,
-        prior_online_seconds=complete['stage_elapsed']+prior_seconds,
+        local_seconds_cap=21600-prior_execution_seconds,
+        prior_online_seconds=prior_execution_seconds,
         extended_seconds_cap=14400,repairs_online=False)
 
 
@@ -489,7 +490,7 @@ def run(root,online,freeze):
         missing=None;deps=[]
         if remaining<q['seconds']:missing='UNEXECUTED_STAGE_BUDGET'
         elif q['kind']!='replay_pgd' and not q['source'].get('path'):missing='UNEXECUTED_SOURCE_'+q['source']['event']['status']
-        elif sizes(root)+sizes(online)+sizes(prefix)+2**20>2*2**30:missing='UNEXECUTED_ARTIFACT_BUDGET'
+        elif sizes(root)+online_sizes(online)+sizes(prefix)+2**20>2*2**30:missing='UNEXECUTED_ARTIFACT_BUDGET'
         if q['kind']=='replace_difference' and missing is None:
             for key in q['dependencies']:
                 receipt_path=root/key/'receipt.json';outcome_path=root/key/'outcome.json'
@@ -533,7 +534,7 @@ def run(root,online,freeze):
             catalog_entries=len(results),last=row,repairs_online=False))
         # The final compact receipt is the acceptance boundary; its own write
         # tail is charged to the stage, not claimed as measured inside itself.
-        total_bytes=sizes(root)+sizes(online)+sizes(prefix)
+        total_bytes=sizes(root)+online_sizes(online)+sizes(prefix)
         within=time.monotonic()<end and total_bytes+2**16<=2*2**30
         row['accepted']=row['accepted'] and within
         if not within:row['status']='RECEPTION_LIMIT'
