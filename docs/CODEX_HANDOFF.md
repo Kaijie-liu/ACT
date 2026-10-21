@@ -1,5 +1,30 @@
 # MoE project handoff — current entry point
 
+## B2 guarded specification controls passed, 2026-10-21
+
+[Results](genbab_spec_results_20261021.md) and
+[lossless records](genbab_spec_records_20261021.json) archive25/25 fixed stdlib
+controls, outer exit0 and saved-only structural audit PASS. Execution revision
+`9b1d0790f4a39bc5f2a5070d97e132c0c172981c`; script-entry to pre-terminal-export
+0.393038s, not full cold-start/performance evidence. Both original and archive
+fit the128MiB cap. No trained source, native solve, external environment or GPU
+ran; real-stage ledger remains0/0/0. The sigmoid graph is only statically reviewed.
+
+The complete all-pair/property receiver rejects missing/misbound results and
+does not turn SAT into UNSAFE or a numerical POSITIVE into formal SAFE. This
+unblocks the specification side of the strong baseline, not G1 innovation or
+runtime GenBaB compatibility. Do not rerun this consumed successful control.
+
+**Next:** close the actual B1/B2 source/selection/query ledger and native bridge.
+The old selector lacks later diagnostic schemas; the saved same-semantics
+clean-only scans have no unused common-correct endpoints. Freeze/count fresh
+selection forwards rather than hiding128×3 forwards in free preparation slots.
+Each comparison request must pay materialization/loading; the old external
+runner's free-input setup cannot be reused. Native B2 must set/check actual
+float64 specs before conversion, distinguish verified/falsified from `success`,
+and record incomplete-only versus actual nonlinear BaB. Use the already approved
+isolated CPU environment scope with bounded deployment storage and a new freeze.
+
 ## B2 guarded specification implementation frozen, 2026-10-21
 
 The independent strong-baseline path now has a default-off, stdlib specification
