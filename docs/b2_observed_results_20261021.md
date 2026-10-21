@@ -6,7 +6,10 @@ development study, not an independent population comparison or a G4 win claim.
 The first controller stopped before creating its run directory or invoking a
 real source. A tuple/list difference in serialized compatibility metadata caused
 a false identity mismatch; actual source hashes were unchanged. The repaired
-controller is ready. [Records](b2_observed_records_20261021.json) retain that
+controller is running from commit `2caeae501636bdc6237be89b9a4202f3451df1d2`
+in an independent code copy, PID916650. The first real local diagnosis is
+seed1/4113, pair {2,5}, property0; nonlinear BaB is active. Full-request results
+are not yet available. [Records](b2_observed_records_20261021.json) retain that
 failure and will preserve every attempted and unexecuted entry and its cost.
 
 ## Fixed order and semantics
@@ -45,7 +48,7 @@ The [control archive](genbab_cpu_ready_20261021.md) preserves the actual OR
 specification, nonlinear split metadata, output and reception. Read-only review
 found no guard direction, tie, missing-property or shared-deadline blocker.
 
-The new immutable execution copy will use `b2_observed_20261021_r2`, preserving
+The new immutable execution copy uses `b2_observed_20261021_r2`, preserving
 the original R1 log. Canonical JSON comparison now treats tuple/list metadata
 equally while checking all source hashes and configuration values. The passed
 native control is reused by binding its original receipt, unchanged invocation

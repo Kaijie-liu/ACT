@@ -1,5 +1,13 @@
 # MoE project handoff — current entry point
 
+## B2 real diagnostic queue running 2026-10-21
+
+Real increment1 local diagnosis launched/0 finished; full requests0. B1 remains41 requests/720 obligations/141 attribution calls.
+Controller916650 runs immutable2caeae501 in`b2_observed_20261021_r2`; start receipt and source are bound in existing[B2 records](b2_observed_records_20261021.json).
+First local source seed1/4113 pair{2,5}/property0 is in nonlinear BaB; no conclusion yet. Live ledgers supersede this launch note.
+Unchanged10 local→41 GenBaB aggregate→19 CROWN queue;576s failed-start upper bound and all logs charged to the same stage.
+No repeat control or new positive gate. Finish strong-path results before choosing B3; do not modify running code. G1–G6 OPEN.
+
 ## B2 startup metadata repair ready 2026-10-21
 
 Real increment0: B1 remains41 requests/720 obligations/141 attribution calls; B2 real calls0.
