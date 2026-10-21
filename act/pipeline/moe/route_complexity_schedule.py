@@ -33,7 +33,7 @@ def validate_schedule(config):
 
 
 def prepare(*, model, center, lower, upper, clean_prediction, config, budget,
-            request_id, request_identity, common_fact_callback=None):
+            request_id, request_identity, common_fact_callback=None, diagnostics=None):
     """Return Tier-1-compatible record, exact context and immutable fact scope."""
     record = {"status": "UNKNOWN", "reason": "SCHEDULE_PENDING", "branches": [],
               "full_model_witness_valid": False, "candidate_experts": [],
@@ -59,6 +59,10 @@ def prepare(*, model, center, lower, upper, clean_prediction, config, budget,
         record.update(candidate_seconds=time.monotonic()-start,
                       candidate_experts=list(candidates.candidates),
                       feasible_route_sets=[list(p) for p in routes.feasible])
+        if diagnostics is not None:
+            from act.back_end.moe import linear_safety_rows
+            diagnostics.routes(routes.feasible, linear_safety_rows(output_spec, program.output_width),
+                               complete=bool(candidates.minimal and routes.exact and routes.feasible))
         budget.check("route_analysis_complete")
         if not candidates.minimal or not routes.exact or not routes.feasible:
             record.update(reason="UNKNOWN_SOLVER_LIMIT", phase="candidate_feasibility")

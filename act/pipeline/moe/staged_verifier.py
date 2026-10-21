@@ -205,12 +205,14 @@ def _pair_reason(properties: Sequence[dict[str, Any]]) -> tuple[str, str]:
     return "UNKNOWN", UNKNOWN_WEIGHTED_NUMERICAL
 
 
-def _run_f0(*, model, center, clean_prediction, internal, config, reuse=None, budget=None):
+def _run_f0(*, model, center, clean_prediction, internal, config, reuse=None, budget=None, diagnostics=None):
     started = time.monotonic()
     try:
         return _run_f0_impl(model=model, center=center, clean_prediction=clean_prediction,
-                            internal=internal, config=config, reuse=reuse, budget=budget)
+                            internal=internal, config=config, reuse=reuse, budget=budget, diagnostics=diagnostics)
     except (BudgetExhausted, GateCapacity) as exc:
+        if diagnostics is not None:
+            diagnostics.censor(type(exc).__name__)
         return {"invoked": True, **gate_terminal(exc),
                 "stopped_at": str(exc), "pairs": [], "partial_rows_censored": True,
                 "feasible_route_sets": [list(p) for p in internal["route_sets"].feasible],
@@ -227,6 +229,7 @@ def _run_f0_impl(
     config: Mapping[str, Any],
     reuse=None,
     budget=None,
+    diagnostics=None,
 ) -> tuple[dict[str, Any], torch.Tensor | None]:
     started = time.monotonic()
     program = internal["program"]
@@ -278,6 +281,9 @@ def _run_f0_impl(
                     if row is not None:
                         reused[index] = row
             if len(reused) == len(properties) and reused:
+                if diagnostics is not None:
+                    for i in reused:
+                        diagnostics.reuse(pair, i, "TIER1_FACT")
                 reused_count += len(reused)
                 pair_rows.append({"pair": list(pair), "status": "SAFE",
                                   "reason": SAFE_WEIGHTED_RANGE,
@@ -319,6 +325,8 @@ def _run_f0_impl(
                 if budget:
                     budget.check("f0_property_start")
                 if property_index in reused:
+                    if diagnostics is not None:
+                        diagnostics.reuse(pair, property_index, "TIER1_FACT")
                     property_rows.append(reused[property_index])
                     reused_count += 1
                     continue
@@ -326,6 +334,8 @@ def _run_f0_impl(
                 if gate_facts is not None:
                     gate_row = source_call(gate_facts.attempt, pair, property_index, q, constant)
                     if gate_row is not None:
+                        if diagnostics is not None:
+                            diagnostics.reuse(pair, property_index, "GATE_FACT")
                         property_rows.append(gate_row)
                         continue
                 encoding = build_weighted_top2_f0(
@@ -346,11 +356,16 @@ def _run_f0_impl(
                     gate_facts.stats["f0_solve_attempted"] += 1
                 if calls is not None:
                     calls.attempted()
+                capture = (diagnostics.attempt(pairs=[pair], index=property_index, encodings=[encoding],
+                    contexts=[dict(path="pair", entry=guarded_entry, router=conditioned_router,
+                                   joint=propagated.joint, router_input=router.input_hz)])
+                    if diagnostics is not None else None)
                 decision = solve_weighted_top2_f0(
                     encoding,
                     input_shape=tuple(center.shape),
                     time_limit=solve_limit,
                     tolerance=float(solver["safety_tolerance"]),
+                    **({"diagnostic_capture": capture} if capture is not None else {}),
                 )
                 if gate_facts is not None:
                     gate_facts.stats["f0_solve_returned"] += 1
@@ -367,6 +382,8 @@ def _run_f0_impl(
                     clean_prediction=clean_prediction,
                 )
                 valid = bool(replay["valid"])
+                if diagnostics is not None:
+                    diagnostics.returned(decision, replay_valid=valid)
                 if valid:
                     witness = decision.candidate_input.detach().cpu()
                 if budget and (not valid or calls is not None):
@@ -435,9 +452,13 @@ def _run_f0_impl(
                     "elapsed_seconds": time.monotonic() - pair_started,
                 }
             )
-        except (BudgetExhausted, GateCapacity, GateSourceError, CaptureError):
+        except (BudgetExhausted, GateCapacity, GateSourceError, CaptureError) as exc:
+            if diagnostics is not None:
+                diagnostics.censor(type(exc).__name__)
             raise
         except Exception as exc:
+            if diagnostics is not None:
+                diagnostics.censor(type(exc).__name__)
             pair_rows.append(
                 {
                     "pair": list(pair),
@@ -480,6 +501,7 @@ def verify_staged_linf(
     budget_started_at: float | None = None,
     common_fact_callback: Callable[[dict[str, Any]], None] | None = None,
     gate_work=None,
+    diagnostics=None,
 ) -> StagedVerificationReport:
     """Verify top-1 prediction robustness without experiment-only controls."""
     _validate_config(config)
@@ -500,6 +522,8 @@ def verify_staged_linf(
         raise ValueError("common fact snapshot requires the registered schedule prelude")
     budget = (RequestBudget(schedule["total_seconds"], started=(started if budget_started_at is None else budget_started_at))
               if schedule is not None else None)
+    if diagnostics is not None and (budget is None or config["f0"].get("expert_relation", "shared_input") != "shared_input"):
+        raise CaptureError("B1 diagnostics require the budgeted shared-input path")
     calls = F0Calls() if native_gate else None
     if native_gate:
         if gate_work is None:
@@ -541,6 +565,8 @@ def verify_staged_linf(
         "config_sha256": _canonical_sha256(config),
     }
     request_id = _canonical_sha256(request_identity)
+    if diagnostics is not None:
+        diagnostics.bind(request_id, request_identity, budget)
 
     def record_progress(stage: str, **values: Any) -> None:
         if progress_callback is not None:
@@ -582,7 +608,8 @@ def verify_staged_linf(
             model=model, center=center, lower=lower, upper=upper,
             clean_prediction=clean_prediction, config=config, budget=budget,
             request_id=request_id, request_identity=request_identity,
-            common_fact_callback=common_fact_callback)
+            common_fact_callback=common_fact_callback,
+            **({"diagnostics": diagnostics} if diagnostics is not None else {}))
     else:
         tier1 = diagnose_radius(
             model=model, x=center, label=clean_prediction, clean_prediction=clean_prediction,
@@ -656,6 +683,7 @@ def verify_staged_linf(
             config=config["f0"],
             reuse=reuse,
             budget=budget,
+            **({"diagnostics": diagnostics} if diagnostics is not None else {}),
         )
         status, reason = tier2["status"], tier2["reason"]
         decision_tier = "TIER2_F0"
@@ -679,6 +707,7 @@ def verify_staged_linf(
         tier2, witness = run_monolithic(
             model=model, center=center, clean_prediction=clean_prediction,
             internal=internal, config=config["f0"], reuse=reuse, budget=budget,
+            **({"diagnostics": diagnostics} if diagnostics is not None else {}),
         )
         status, reason = tier2["status"], tier2["reason"]
         decision_tier = "MONOLITHIC_F0"
@@ -688,9 +717,19 @@ def verify_staged_linf(
     if (budget_record is not None and budget_record["remaining_seconds"] <= 0
             and (status != "UNSAFE" or native_gate)):
         status, reason = "TIMEOUT", "REQUEST_BUDGET_EXHAUSTED"
+    diagnostic_record = diagnostics.finish(status, decision_tier) if diagnostics is not None else None
+    if diagnostics is not None:
+        # Reception consumes the original deadline. Never return an accepted
+        # diagnostic terminal after the final request budget has expired.
+        diagnostics.ledger.tick()
+        budget_record = budget.record()
+        if budget_record["remaining_seconds"] <= 0:
+            from scoped_source.native_capture import CaptureDeadline
+            raise CaptureDeadline("request expired during diagnostic terminal reception")
     elapsed = time.monotonic() - started
     evidence = {
         "schema_version": 1,
+        **({"diagnostics": diagnostic_record} if diagnostic_record is not None else {}),
         "verifier": "ACT_HYBRIDZ_STAGED_WEIGHTED_TOP2",
         "request_id": request_id,
         "identity": request_identity,

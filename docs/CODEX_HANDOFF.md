@@ -1,5 +1,26 @@
 # MoE project handoff — current entry point
 
+## B1 complete-request source capture ready to freeze, 2026-10-21
+
+The [fixed protocol](b1_request_capture_protocol_20261021.md) connects actual
+guarded entry/router/joint sources and the complete route/property denominator
+to the prior native-return hook. Default-off; first unresolved ordinal only,
+including an explicit missing-source lock, no additional query or replay.
+Stored-prefix checks are exact column sums, not propagation/network proofs.
+Margin support retains binaries while difference support relaxes them; future
+attribution must preserve this distinction. Registered F0 slots are not asserted
+to be confirmed native calls.
+
+Before freezing, static review corrected terminal-budget ordering, CSR-order
+false rejection, the joint→F0 prefix, missing-source selection and final
+publication binding. The new once-only batch contains four full **synthetic**
+requests and17 fixed controls, ≤300s under the existing supervisor and resource
+policy; no trained model/data/GPU. Freeze, run once, audit and archive; unexpected
+failure preserves the prefix and stops. This is diagnostic infrastructure, not
+algorithm novelty, a certificate or a speedup. Real-stage ledger remains0/0/0.
+Passing does not launch real B1: candidate/history and query freeze remain next.
+B2's failed deployment and A2 STOP are unchanged; no automatic repair/retry.
+
 ## B1 native capture integration passed, 2026-10-21
 
 [Results](b1_native_capture_results_20261021.md) and

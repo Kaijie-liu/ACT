@@ -1,0 +1,64 @@
+{
+  "attempts": 1,
+  "caps": {
+    "artifact_bytes": 134217728,
+    "as_bytes": 8589934592,
+    "rss_gate": false,
+    "seconds": 300,
+    "work_gate": false
+  },
+  "controls": [
+    "different_deadline",
+    "duplicate_inventory",
+    "incomplete_coverage",
+    "partial_and_censored",
+    "duplicate_reuse",
+    "wrong_property",
+    "deferred_missing_native",
+    "unselected_release",
+    "first_ordinal",
+    "tampered_guard_prefix",
+    "expired_acceptance",
+    "publication_error",
+    "post_capture_alias",
+    "noncanonical_prefix",
+    "nonzero_padding",
+    "terminal_skip_reason",
+    "deadline_during_publication"
+  ],
+  "files": {
+    "act/pipeline/moe/configs/route_complexity_reuse_v1.json": "208e9ea19ada608ec72498a1768b5c56a2c5f3c3f745c89ecc99289ea37c39c0",
+    "docs/b1_request_capture_protocol_20261021.md": "4b08f2594b5c95ffd8a8b60b18020621eb14a64a426b882942af0b5a122cfd71",
+    "scripts/audit_b1_request_capture.py": "bf594b4bd59d1a34094f7c7e51dd0ea65cbb15916a8c9041ec2c3139ea0d6bd0",
+    "scripts/b1_native_capture_cases.py": "31d1381ac7d0edc209f8360ff1a8fbd0d53915e6c3a226ca2061b7fbb54fe303",
+    "scripts/b1_request_capture_cases.py": "a6084060edd37e07f3e3b1033e2124744fd720c36c898e4648782081ed958b21",
+    "scripts/b1_request_capture_control.py": "3513dfa00301a133bb415ef3ad1103a0a65ef3035661db270cc72bdfb0f8ceab",
+    "scripts/margin_native_control.py": "30e814f5bd07ff5e59e463fb2e70b5e157bf528cfae65590b3c008d3ed2aa252"
+  },
+  "phase_seconds": {
+    "native_cleanup": 230,
+    "native_run": 210,
+    "total": 300,
+    "worker": 200
+  },
+  "policy": "DEV_MARGIN_20261021_V1",
+  "real_stage_usage": [
+    0,
+    0,
+    0
+  ],
+  "requests": [
+    "staged_off",
+    "staged_on",
+    "monolithic_f0_off",
+    "monolithic_f0_on"
+  ],
+  "result_directory": "/data1/Kane/MOE/results/b1_request_capture_20261021_r1",
+  "schema": "B1_REQUEST_CAPTURE_FREEZE_V1",
+  "scope": "synthetic full-request diagnostics; not algorithm performance or network proof",
+  "trees": {
+    "act": "7cdc9a413b61329c7c722d48b986915c469b5434d77a0da31d83df1b7221b35b",
+    "scoped_proof": "6b6a09915a064a012f9b687dd3d5ece946c672eef4c5bef59051e5275e6e9694",
+    "scoped_source": "e440f4e5863c87d7f1c11960cf75204f7efcb9b490b65b6ada9e87d9b462f16b"
+  }
+}

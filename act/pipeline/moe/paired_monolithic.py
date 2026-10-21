@@ -18,21 +18,27 @@ from act.pipeline.moe.scoped_f0_proofs import reuse_property
 from act.pipeline.moe.experiment1f0 import _support_status
 
 
-def run_monolithic(*, model, center, clean_prediction, internal, config, reuse=None, budget=None):
+def run_monolithic(*, model, center, clean_prediction, internal, config, reuse=None, budget=None, diagnostics=None):
     started = time.monotonic()
     try:
         return _run_monolithic(model=model, center=center, clean_prediction=clean_prediction,
-                               internal=internal, config=config, reuse=reuse, budget=budget)
+                               internal=internal, config=config, reuse=reuse, budget=budget, diagnostics=diagnostics)
     except (BudgetExhausted, GateCapacity) as exc:
+        if diagnostics is not None:
+            diagnostics.censor(type(exc).__name__)
         # No partial property list may establish SAFE. Source facts remain in
         # the caller's Tier-1 record; this terminal explicitly marks censoring.
         return {"invoked": True, **gate_terminal(exc),
                 "stopped_at": str(exc), "property_rows": [], "partial_rows_censored": True,
                 "feasible_route_sets": [list(p) for p in internal["route_sets"].feasible],
                 "full_model_witness_valid": False, "elapsed_seconds": time.monotonic()-started}, None
+    except Exception as exc:
+        if diagnostics is not None:
+            diagnostics.censor(type(exc).__name__)
+        raise
 
 
-def _run_monolithic(*, model, center, clean_prediction, internal, config, reuse=None, budget=None):
+def _run_monolithic(*, model, center, clean_prediction, internal, config, reuse=None, budget=None, diagnostics=None):
     started = time.monotonic()
     support, solver = config["support"], config["solver"]
     hz_config = HybridZConfig(
@@ -56,7 +62,10 @@ def _run_monolithic(*, model, center, clean_prediction, internal, config, reuse=
                 proof = reuse_property(reuse["facts"], reuse["scope"], pair, index)
                 if proof is not None:
                     reused[pair, index] = proof
+                    if diagnostics is not None:
+                        diagnostics.reuse(pair, index, "TIER1_FACT")
     pairs = []
+    diagnostic_entries = {} if diagnostics is not None else None
     for pair in all_pairs:
         if all((pair, i) in reused for i in range(len(properties))):
             continue
@@ -66,6 +75,8 @@ def _run_monolithic(*, model, center, clean_prediction, internal, config, reuse=
             hz_config.guarded_support_milp_time_limit = budget.limit("monolithic_mip_support", float(support["milp_time_limit"]))
         conditioned = condition_topk_set(router.output_hz, pair).hz
         entry = guarded_input_topk_set(router.input_hz, router.output_hz, pair).hz
+        if diagnostic_entries is not None:
+            diagnostic_entries[pair] = entry
         propagated = shared_input_pair_propagation(
             program.experts[pair[0]], program.experts[pair[1]],
             entry_hz=entry, hybridz_config=hz_config,
@@ -84,6 +95,8 @@ def _run_monolithic(*, model, center, clean_prediction, internal, config, reuse=
                     proof = gate_facts.attempt(pair, index, q, constant)
                     if proof is not None:
                         reused[pair, index] = proof
+                        if diagnostics is not None:
+                            diagnostics.reuse(pair, index, "GATE_FACT")
         pairs.append((pair, conditioned, propagated, gates))
     rows, witness = [], None
     for index, (q, constant) in enumerate(properties):
@@ -116,10 +129,16 @@ def _run_monolithic(*, model, center, clean_prediction, internal, config, reuse=
             gate_facts.stats["f0_solve_attempted"] += 1
         if calls is not None:
             calls.attempted()
+        capture = (diagnostics.attempt(pairs=residual, index=index, encodings=encodings,
+            contexts=[dict(path="monolithic", entry=diagnostic_entries[pair], router=conditioned,
+                           joint=propagated.joint, router_input=router.input_hz)
+                      for pair, conditioned, propagated, _ in pairs if pair in residual])
+                   if diagnostics is not None else None)
         decision = solve_monolithic_weighted_top2_f0(
             encodings, input_shape=tuple(center.shape),
             time_limit=solve_limit,
             tolerance=float(solver["safety_tolerance"]),
+            **({"diagnostic_capture": capture} if capture is not None else {}),
         )
         if gate_facts is not None:
             gate_facts.stats["f0_solve_returned"] += 1
@@ -130,6 +149,8 @@ def _run_monolithic(*, model, center, clean_prediction, internal, config, reuse=
             model, decision.candidate_input, lower=internal["lower"],
             upper=internal["upper"], clean_prediction=clean_prediction,
         )
+        if diagnostics is not None:
+            diagnostics.returned(decision, replay_valid=bool(replay["valid"]))
         row = asdict(decision)
         row.pop("candidate_input", None)
         row.update(property_index=index, full_model_witness_valid=bool(replay["valid"]))
