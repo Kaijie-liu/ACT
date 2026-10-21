@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## Twelve frozen models complete and audited 2026-10-22
+
+Training12/12,600epochs complete; realverification0. PID1168828 exited, total13,669.503s; no errors/partials.
+[Results](multilayer_training_20261022.md)/[records](multilayer_training_records_20261022.json): independent read-only+stdlib audits pass identities, common split and earliest validation-best selection.
+Mean testL1E8/L2E8/L3E8/L2E16=48.553/46.653/35.440/37.520%; all seeds retained, no post-hoc retraining.
+L3E8seed2 andL2E16seed2 first-layer clean routes concentrate99.995%/100% in2experts; not proof of perturbation route stability.
+Training artifacts2.270GB plus218KB console retained; checkpoints are the fixed stage1 subjects, not high-accuracy/G5 completion.
+Next freeze stage1 common new-input cohort/PGD/census/600calls, distinguish traversal from property closure and legal-count bounds from exact counts.
+
 ## Twelve-model training started 2026-10-22
 
 Real verification0; training queue12models launched, first L1E8_seed0 completed epoch1/50 (validation.3214,13.941s epoch), not a selected final model.

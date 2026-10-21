@@ -69,3 +69,27 @@ First L1E8_seed0 epoch took13.941s with validation accuracy.3214; this is a live
 prefix, not a finished model or a total-training forecast. Training is ongoing;
 no stage1 verification has launched. Initial resources:81GiB available memory,
 155GiB disk,20logicalCPU,load8.10. No other user's task was signalled or changed.
+
+## Completed training and independent record audit
+
+All12 models completed50epochs, total13,669.503s (3.797h). The process exited;
+there are no error or partial files. Both independent read-only review and
+`python -I -S -B scripts/multilayer_training_audit.py` checked source/data/weight
+identities, the shared split,600 epoch records and earliest validation maxima.
+[Compact records](multilayer_training_records_20261022.json) bind this audit;
+accuracy was not independently rerun and this is not a verification certificate.
+
+| Family | Seed0 test | Seed1 test | Seed2 test | Mean |
+|---|---:|---:|---:|---:|
+| L1E8 |48.54%|48.40%|48.72%|48.553%|
+| L2E8 |45.83%|47.16%|46.97%|46.653%|
+| L3E8 |38.48%|40.19%|27.65%|35.440%|
+| L2E16 |39.85%|39.94%|32.77%|37.520%|
+
+L3E8_seed2's first layer puts99.995% of test selections in experts1/5;
+L2E16_seed2 puts100% in experts9/10. L2E16 seeds0/1 have8/6 first-layer experts
+unused on the clean test set. These observations challenge an assumption of
+many effective routes, but do not establish perturbation-domain stability.
+All frozen seeds/checkpoints remain; no post-hoc accuracy gate or retraining.
+Result bytes2,270,235,418 plus217,696 console bytes, including453,851,076 selected
+weight bytes and1,815,900,810 resumable-state bytes. Nothing was deleted.
