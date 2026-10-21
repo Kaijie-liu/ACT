@@ -61,3 +61,10 @@ coverage, bound acceptance and hard timeout are unchanged; no leaf is declared
 SAFE by the patch. All three exact textual edits and every snapshot file are
 checked against the pinned author commit. The author checkout and environment
 remain untouched. This must be called a compatibility-adapted GenBaB path.
+
+The first snapshot precheck (requested R5 directory, not created) encountered a
+tracked directory symlink and incorrectly tried to read it as a regular file.
+It exited before any native call (shell-reported wall time 0.014745s). The
+inventory now compares symbolic-link text separately; imported auto_LiRPA still
+resolves to the original pinned checkout. This is tooling metadata, not a failed
+network obligation or a second deployment.

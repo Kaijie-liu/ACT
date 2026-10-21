@@ -90,6 +90,12 @@ def source_identity():
     files = git(TOOL, 'ls-files', 'complete_verifier').splitlines()
     hashes = {}
     for name in files:
+        if (TOOL/name).is_symlink():
+            expected = os.readlink(TOOL/name)
+            require((COMPAT/name).is_symlink() and os.readlink(COMPAT/name) == expected,
+                    'snapshot symbolic-link metadata: '+name)
+            hashes[name] = hashlib.sha256(('symlink:'+expected).encode()).hexdigest()
+            continue
         original = (TOOL/name).read_bytes()
         relative = str(Path(name).relative_to('complete_verifier'))
         if relative in COMPAT_EDITS:
