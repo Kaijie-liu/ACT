@@ -1,5 +1,34 @@
 # MoE project handoff — current entry point
 
+## B2 deployment executed; saved dependency audit failed, 2026-10-21
+
+[Results](genbab_cpu_deployment_results_20261021.md) and
+[lossless records](genbab_cpu_deployment_records_20261021.json) preserve the
+once-only deployment at `6d025afb4ef4abee4eeb10c179d02b6e65d016be`. Four phases
+exited0 with owned cleanup; CPU torch2.11 and pinned API imports passed in the
+new isolated environment. Cost77.363190s before terminal export, environment
+1,534,524,711 bytes. No model/solve/GPU, no old environment changes.
+
+**Stage acceptance: NOT_ACCEPTED_SAVED_AUDIT_FAILED.** The frozen audit rejected
+the probe's packaging version. Read-only diagnosis also found wheel: the probe's
+name-only metadata map overwrote top-level26.3/0.48.0 with setuptools-vendored
+26.0/0.46.3. Pip reports and top-level files agree with the frozen pins, but actual
+loaded module paths were not saved. Do not rewrite R1 as accepted using offline
+disk state. Preserve the original failure, stopped before any native control.
+
+**Next decision:** a minimal location-preserving dependency inventory and bounded
+new import reception would resolve this evidence gap without reinstalling;
+the consumed installation/import attempt must not be automatically rerun or
+silently repaired. The read-only B1 exclusion audit can proceed independently.
+No GenBaB numerical compatibility/performance or algorithm gain is claimed.
+Real-request ledger stays0/0/0; deployment overhead is separately chargeable to B2.
+The separate [bounded historical inventory](b1_history_inventory_20261021.md)
+and [source hashes](b1_history_inventory_20261021.json) establish concrete old
+selector omissions, including RoME6044/9399, router3444 and conversion anomalies.
+Large paired/Lagrangian row identities were checked against their small rosters;
+remaining baseline schemas/eligible-test identities are explicit. Do not claim
+the old902 exclusions are complete or launch new selection from an index cutoff.
+
 ## B2 isolated CPU deployment frozen, 2026-10-21
 
 [Deployment protocol](genbab_cpu_deployment_20261021.md) and
