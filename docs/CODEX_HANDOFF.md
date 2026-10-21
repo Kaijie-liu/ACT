@@ -1,5 +1,31 @@
 # MoE project handoff — current entry point
 
+## A2 saved-only diagnosis closes its attribution gap, 2026-10-21
+
+[Exact diagnosis](margin_a2_saved_diagnosis_20261021.md) and
+[saved output](margin_a2_saved_diagnosis_20261021.json) add no solve or model run.
+From the original augmented CSR and full ten-class property, a piecewise
+affine feasible path attains the exact conditional value function. An explicit
+negative point satisfies all factor boxes, original rows and binary integrality;
+its synthetic pair is legal. This is a given-HZ property, not a real-model
+UNSAFE, classification counterexample, route-change witness or upstream proof.
+
+The four distinct global support objectives (six originally executed queries)
+now have matching exact primal/dual values. The earlier optimality-unknown
+statement is superseded only for these supports; no such conclusion is made
+for all78 queries. The stopped tilts improve only the two non-bottleneck cells.
+The ideal pointwise interpolation already in the original contract cannot
+create finite-versus-zero gain here; its possible shared scalar-only improvement
+is below1/1024. The source-specific stdlib audit passed, with no online status
+rewritten. Original results and policy remain preserved.
+
+**Next:** retain A2 STOP. The bounded diagnosis is complete; no distinct,
+evidence-backed new mechanism was identified. Ask for focused scientific
+guidance before new algorithm execution rather than tuning this source or
+renaming existing slicing/support-cut/scalar machinery. A3/A5 remain gated off;
+real-development ledger0/0/0 and G1–G6 OPEN. This is a scientific stopping
+decision, not another RSS/permission failure or completion of the research goal.
+
 ## A2 completes and stops the fixed tilt mechanism, 2026-10-21
 
 The once-only strong comparison at `c5544fa6b94bfd33c563c13970b171128164649d`
