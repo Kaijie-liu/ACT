@@ -44,6 +44,9 @@ CONFIG = {
     'bab.branching.nonlinear_split.method': 'bbps',
     'bab.branching.nonlinear_split.branching_point_method': 'uniform',
     'bab.branching.nonlinear_split.num_branches': 2, 'bab.interm_transfer': True,
+    # Pinned backend's fused precompute extraction mis-masks pruned AND batches.
+    # Use its supported ordinary decision path; no relaxation/check is removed.
+    'bab.branching_decision_precompute.enable': False,
     'bab.attack.enabled': False, 'attack.pgd_order': 'skip',
     'debug.print_verbose_decisions': True,
 }
@@ -235,8 +238,9 @@ def audit(run):
     return dict(status='PASS', visited=visited, result_sha256=sha(run/'result.json'))
 
 
-def main(run):
-    deadline = ENTRY+300
+def main(run, seconds=300.):
+    require(10 < seconds <= 300, 'remaining control budget')
+    deadline = ENTRY+seconds
     limits(deadline)
     require(sys.executable == ACT, 'ACT controller')
     require(git(ROOT, 'branch', '--show-current') == 'feat/moe-route-verification'
@@ -250,7 +254,7 @@ def main(run):
                TORCH_HOME=str(run/'cache'))
     value = dict(status='FAIL', execution_head=git(ROOT, 'rev-parse', 'HEAD'),
                  controller_sha256=sha(__file__), sources=SOURCES, entry=ENTRY, deadline=deadline,
-                 policy=POLICY, real_request_slots=0, trained_model_calls=0, gpu_calls=0,
+                 policy=POLICY, control_seconds=seconds, real_request_slots=0, trained_model_calls=0, gpu_calls=0,
                  full_cold_start_seconds=None)
     try:
         value['session'] = execute([str(ENVIRONMENT/'bin/python'), '-I', '-B', __file__,
@@ -281,6 +285,8 @@ if __name__ == '__main__':
         raise SystemExit(worker(Path(sys.argv[2]), float(sys.argv[3])))
     if len(sys.argv) == 3 and sys.argv[1] == '--execute':
         raise SystemExit(main(Path(sys.argv[2])))
+    if len(sys.argv) == 4 and sys.argv[1] == '--execute':
+        raise SystemExit(main(Path(sys.argv[2]), float(sys.argv[3])))
     if len(sys.argv) == 3 and sys.argv[1] == '--audit':
         print(json.dumps(audit(Path(sys.argv[2])))); raise SystemExit(0)
     raise SystemExit('use --execute NEW_DIRECTORY or --audit SAVED_DIRECTORY')

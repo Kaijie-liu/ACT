@@ -31,3 +31,15 @@ claimed as measured full cold start. No real request, model checkpoint or GPU.
 Implementation: `scripts/genbab_cpu_ready.py`; ordinary controls:
 `tests/test_genbab_cpu_ready.py`. This is baseline compatibility work, not a new
 ACT algorithm, benchmark win or independently checked network certificate.
+
+## Compatibility repair observed before the completed smoke
+
+`genbab_cpu_ready_20261021_r2` imported and checked the installation, then actually
+branched nonlinear domains. At the second BaB round, the pinned backend's fused
+decision-precompute extraction attempted to mask a `[1,1]` intermediate tensor
+with a length-2 mask. The 6.783214s attempt and original log remain unchanged.
+Its public `bab.branching_decision_precompute.enable=false` configuration selects
+the ordinary decision/extraction path. The model, specification, nonlinear
+branching method, dtype and numerical acceptance stay unchanged. This is an
+explicit compatibility configuration, not a performance-tuned baseline. The
+retry uses the remaining control budget, not an additional 300 seconds.
