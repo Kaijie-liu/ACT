@@ -128,6 +128,8 @@ def worker(folder):
             from act.pipeline.moe.staged_verifier import (verify_staged_linf, write_evidence_package,
                 _tensor_identity, _model_state_identity)
             from act.pipeline.moe.request_diagnostics import RequestDiagnostics
+            from act.util.options import PerformanceOptions
+            PerformanceOptions.set_debug_output_file(str(folder/'act_debug.log'))
             torch.set_num_threads(1); initialize_device('cpu', 'float64')
             subject, sample = request['item']['subject'], request['item']['sample']
             require(sha(subject['checkpoint']) == subject['checkpoint_sha256'], 'checkpoint identity')
@@ -192,7 +194,7 @@ def session_ok(r):
             and r['cleanup_error'] is None and r['cleanup_status'] == 'LEADER_REAPED_NO_LIVE_SESSION')
 
 
-def run(root, freeze_path, commit):
+def run(root, freeze_path, commit, prior=None):
     resource.setrlimit(resource.RLIMIT_AS, (8*2**30, 8*2**30))
     spec = load(freeze_path); anchor = sha(freeze_path)
     require(not root.exists() and root.parent == Path('/data1/Kane/MOE/results'), 'new result root')
@@ -201,20 +203,33 @@ def run(root, freeze_path, commit):
     require(spec['policy'] == POLICY and len(spec['requests']) == 41, 'frozen B1 queue')
     for path, digest in spec['sources'].items():
         require(sha(path) == digest, 'unchanged historical input/config binding')
-    root.mkdir(); stage_deadline = ENTRY+21600
+    previous = None if prior is None else load(prior/'online_complete.json')
+    prior_seconds = 0. if previous is None else previous['online_seconds']
+    prior_bytes = 0 if prior is None else sizes(prior)
+    prior_calls = 0 if previous is None else previous['completed_calls']
+    if prior is not None:
+        require(prior == Path('/data1/Kane/MOE/results/b1_observed_20261021_r1')
+                and previous['status'] == 'PREFIX_STOP' and prior_calls == 1
+                and previous['reserved_full_ordinals'] == 0, 'registered one-call tooling prefix')
+        failure = load(prior/'00_seed1_4113/worker_error.json')
+        require(failure['kind'] == 'FileNotFoundError' and not any(failure['counts'].values()),
+                'log-directory failure before diagnostic work')
+    root.mkdir(); stage_deadline = ENTRY+21600-prior_seconds
     save(root/'start.json', dict(commit=commit, freeze_sha256=anchor, entry=ENTRY,
          stage_deadline=stage_deadline, code=str(CODE), policy=POLICY,
-         stage_call_slots=41, historical_real_calls_before=0))
+         stage_call_slots=41, historical_real_calls_before=prior_calls,
+         tooling_prefix=None if prior is None else str(prior), prior_seconds=prior_seconds,
+         prior_bytes=prior_bytes))
     reserved = 0; rows = []
     for item in spec['requests']:
-        if time.monotonic()+300 >= stage_deadline or sizes(root)+2**20 >= STAGE_BYTES:
+        if time.monotonic()+300 >= stage_deadline or sizes(root)+prior_bytes+2**20 >= STAGE_BYTES:
             break
         folder = root/item['job_id']; folder.mkdir(); (folder/'tmp').mkdir()
         started = time.monotonic(); deadline = started+300
         launch = dict(item=item, started_at=started, deadline=deadline, commit=commit,
                       freeze_sha256=anchor, config=spec['config'],
                       full_capture_remaining=max(0, 10-reserved),
-                      remaining_artifact_bytes=STAGE_BYTES-sizes(root)-2**20)
+                      remaining_artifact_bytes=STAGE_BYTES-sizes(root)-prior_bytes-2**20)
         save(folder/'launch.json', launch)
         env = dict(PATH='/usr/bin:/bin', PYTHONDONTWRITEBYTECODE='1', PYTHONNOUSERSITE='1',
                    OMP_NUM_THREADS='1', OPENBLAS_NUM_THREADS='1', MKL_NUM_THREADS='1',
@@ -239,7 +254,7 @@ def run(root, freeze_path, commit):
                 work.visit('coefficient_visits', (Path(manifest['evidence_path']).stat().st_size+4095)//4096)
                 outcome['received_counts'] = work.counts
             tick(deadline)
-            require(sizes(root) <= STAGE_BYTES, 'complete stage artifacts before reception')
+            require(sizes(root)+prior_bytes <= STAGE_BYTES, 'complete stage artifacts before reception')
         except BaseException as exc:
             reception_error = repr(exc)
             if 'receipt' not in locals():
@@ -260,12 +275,14 @@ def run(root, freeze_path, commit):
         save(folder/'terminal.json', row); rows.append(row)
         save(root/f'ledger_{len(rows):02d}.json', dict(completed_calls=len(rows), full_slots=len(rows),
             online_seconds=sum(r['elapsed_seconds'] for r in rows), rows=rows,
+            prior_tooling_calls=prior_calls, cumulative_attempts=len(rows)+prior_calls,
+            prior_seconds=prior_seconds, prior_bytes=prior_bytes,
             reserved_full_ordinals=reserved, stage_elapsed=time.monotonic()-ENTRY,
             local_calls=0, extended_calls=0))
         # Include terminal and ledger publication, not only solver/worker time.
         # This final compact clock receipt records its own explicit measurement
         # boundary; its subsequent write tail remains in stage elapsed time.
-        received_at = time.monotonic(); artifact_bytes = sizes(root)
+        received_at = time.monotonic(); artifact_bytes = sizes(root)+prior_bytes
         final_ok = received_at < deadline and artifact_bytes+2**16 <= STAGE_BYTES
         row['elapsed_seconds'] = time.monotonic()-started
         save(folder/'reception.json', dict(accepted=accepted and final_ok,
@@ -284,6 +301,9 @@ def run(root, freeze_path, commit):
     save(root/'online_complete.json', dict(completed_calls=len(rows), expected=41,
         status='COMPLETE' if len(rows)==41 else 'PREFIX_STOP', stage_elapsed=time.monotonic()-ENTRY,
         online_seconds=sum(r['elapsed_seconds'] for r in rows), bytes=sizes(root),
+        prior_tooling_calls=prior_calls, cumulative_attempts=len(rows)+prior_calls,
+        cumulative_online_seconds=prior_seconds+sum(r['elapsed_seconds'] for r in rows),
+        cumulative_bytes=prior_bytes+sizes(root),
         reserved_full_ordinals=reserved, next='offline diagnostics; no online verdict replacement'))
     return 0 if len(rows)==41 else 1
 
@@ -292,8 +312,9 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser(); p.add_argument('--freeze', type=Path)
     p.add_argument('--worker', type=Path); p.add_argument('--run', type=Path)
     p.add_argument('--manifest', type=Path); p.add_argument('--commit')
+    p.add_argument('--prior', type=Path)
     args = p.parse_args()
     if args.freeze: freeze(args.freeze)
     elif args.worker: raise SystemExit(worker(args.worker))
-    elif args.run: raise SystemExit(run(args.run, args.manifest, args.commit))
+    elif args.run: raise SystemExit(run(args.run, args.manifest, args.commit, args.prior))
     else: p.error('explicit operation required')

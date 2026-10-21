@@ -1,5 +1,12 @@
 # MoE project handoff — current entry point
 
+## B1 first invocation and tooling continuation 2026-10-21
+
+Real increment1 request attempt/0 returned F0 obligations/0 attribution queries; first seed1/4113 failed before F0 on missing default debug-log directory.
+[Results](b1_observed_results_20261021.md) preserve ERROR3.640219s at49fea3658; scientific configuration and41-request denominator unchanged.
+Use supported per-request debug log path, new frozen copy/result directory, carry prior bytes/time/call into the same stage; no new approval required.
+B2 two guard controls both positive numerically; scalar max selected for subsequent guarded execution. All G goals remain OPEN.
+
 ## Guard controls passed and B1 online queue frozen 2026-10-21
 
 [B2 controls](genbab_cpu_ready_20261021.md): input-split AND and nonlinear scalar maximum both verified numerically;14.202344s batch,0 real calls.
