@@ -3,8 +3,11 @@
 The [frozen catalog](b2_observed_freeze_20261021.json) follows the completed
 [B1 diagnosis](b1_observed_results_20261021.md). It is a failure-selected
 development study, not an independent population comparison or a G4 win claim.
-Execution has not started at this freeze. [Records](b2_observed_records_20261021.json)
-will preserve every attempted and unexecuted entry, intersections and costs.
+The first controller stopped before creating its run directory or invoking a
+real source. A tuple/list difference in serialized compatibility metadata caused
+a false identity mismatch; actual source hashes were unchanged. The repaired
+controller is ready. [Records](b2_observed_records_20261021.json) retain that
+failure and will preserve every attempted and unexecuted entry and its cost.
 
 ## Fixed order and semantics
 
@@ -42,8 +45,18 @@ The [control archive](genbab_cpu_ready_20261021.md) preserves the actual OR
 specification, nonlinear split metadata, output and reception. Read-only review
 found no guard direction, tie, missing-property or shared-deadline blocker.
 
-Run the immutable `b1_b2_20261021_47ce052fa` copy in the new
-`b2_observed_20261021_r1` directory. Record full cost, missing obligations and
-terminal intersections before drawing mechanism conclusions. Tooling errors
-retain their attempts and costs; ordinary UNKNOWN and TIMEOUT continue the
-catalog without a new positive-result gate.
+The new immutable execution copy will use `b2_observed_20261021_r2`, preserving
+the original R1 log. Canonical JSON comparison now treats tuple/list metadata
+equally while checking all source hashes and configuration values. The passed
+native control is reused by binding its original receipt, unchanged invocation
+body and twelve worker, graph, backend, configuration and supervision files;
+the repaired controller itself has a separate bound hash. Ten ordinary tests
+pass in 0.008 seconds without further native calls.
+
+The failed startup has no saved precise timer. Its log was created at epoch
+1792572548, and the process and run directory were confirmed absent at
+1792573123.2984083. We charge a conservative **576 seconds** against the same
+six-hour stage, not zero and not a claimed measured runtime. The retained
+931-byte log and new controller log count towards the unchanged artifact cap.
+The frozen query catalog, configuration and per-request budget are unchanged;
+ordinary UNKNOWN and TIMEOUT continue without a positive-result gate.

@@ -20,6 +20,38 @@ batch=module('b2_observed_batch');worker=module('b2_observed_worker')
 
 
 class B2WiringControls(unittest.TestCase):
+    def test_explicit_unchanged_control_reuse_rejects_changed_identity(self):
+        check=dict(commit='previous',result=dict(kind='synthetic_vector_control',accepted=True))
+        binding=dict(control_commit='previous',control_identity=batch.digest(check),
+            repaired_batch_sha256=batch.sha(batch.__file__),
+            invoke_source_identity=batch.digest(inspect.getsource(batch.invoke)),
+            unchanged_files={p:batch.sha(ROOT/p) for p in batch.CONTROL_FILES})
+        batch.validate_control(check,'new',binding)
+        for key in ('control_commit','control_identity','repaired_batch_sha256','invoke_source_identity'):
+            changed={**binding,key:'wrong'}
+            with self.assertRaises(ValueError):batch.validate_control(check,'new',changed)
+        for changed_files in ({},{**binding['unchanged_files'],batch.CONTROL_FILES[0]:'wrong'}):
+            with self.assertRaises(ValueError):
+                batch.validate_control(check,'new',{**binding,'unchanged_files':changed_files})
+
+    def test_cost_includes_external_failed_and_controller_logs(self):
+        with tempfile.TemporaryDirectory(dir='/data1/Kane/MOE') as temporary:
+            root=Path(temporary);folder=root/'run';folder.mkdir()
+            (folder/'receipt').write_bytes(b'12345');log=root/'failed.log';log.write_bytes(b'123')
+            self.assertEqual(sum(batch.sizes(p) for p in (folder,log)),8)
+
+    def test_backend_binding_json_roundtrip_keeps_all_identity_checks(self):
+        config={'cpu': True, 'seconds': 300}
+        source={'files': {'worker.py': 'bound-hash'},
+                'compatibility_edits': {'file.py': ('before', 'after')}}
+        spec=json.loads(json.dumps(dict(genbab_configuration=config,source_binding=source)))
+        batch.validate_backend_binding(spec,config,source)
+        for changed in (
+                {**source,'files':{'worker.py':'wrong-hash'}},
+                {**source,'compatibility_edits':{'file.py':('before','different')}}):
+            with self.assertRaises(ValueError):batch.validate_backend_binding(spec,config,changed)
+        with self.assertRaises(ValueError):batch.validate_backend_binding(spec,{'cpu':False,'seconds':300},source)
+
     def test_worker_reuses_timer_finalizer_after_all_outcomes(self):
         from b1_observed_batch import finish_worker_io
         self.assertIs(worker.finish_worker_io,finish_worker_io)

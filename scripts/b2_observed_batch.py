@@ -7,6 +7,7 @@ population win-rate experiment. Missing/late obligations are never positive.
 import time
 ENTRY=time.monotonic()
 import argparse
+import inspect
 from collections import defaultdict
 import json
 import os
@@ -19,10 +20,20 @@ sys.path[:0]=[str(ROOT),str(ROOT/'scripts')]
 from scoped_proof.io import load,save,sha,tick,PYTHON
 from scoped_proof.owned_session import execute
 from scoped_source.development_work import POLICY
-from b1_observed_batch import sizes,resolve_request_folder,session_ok,require
+from b1_observed_batch import sizes as directory_sizes,resolve_request_folder,session_ok,require
 from b1_diagnostic_queue import last_inventory
 from act.pipeline.moe.genbab_spec import digest
 import genbab_cpu_ready as backend
+
+CONTROL_FILES=('scripts/b2_observed_worker.py','scripts/genbab_cpu_ready.py',
+    'scripts/b1_observed_batch.py','act/back_end/moe/genbab_pair.py','act/back_end/moe/static_pair.py',
+    'act/pipeline/moe/genbab_spec.py','scoped_proof/io.py','scoped_proof/owned_session.py',
+    'scoped_proof/owned_bounded.py','scoped_proof/pidfd_compat.py','scoped_source/development_work.py',
+    'configs/genbab_cpu_20261021_requirements.txt')
+
+
+def sizes(root):
+    return root.stat().st_size if root.is_file() else directory_sizes(root)
 
 
 def local_selection(spec,online):
@@ -122,10 +133,25 @@ def invoke(folder,query,commit,deadline,*,all_artifacts):
     return row
 
 
-def validate_control(check,commit):
-    require(check['commit']==commit and check['result']['kind']=='synthetic_vector_control'
-            and check['result']['accepted'],
-            'same-code ordinary multi-output API compatibility, no positivity gate')
+def validate_control(check,commit,binding=None):
+    require(check['result']['kind']=='synthetic_vector_control' and check['result']['accepted'],
+            'ordinary multi-output API compatibility, no positivity gate')
+    if check['commit']==commit:return
+    require(binding is not None and check['commit']==binding['control_commit']
+            and digest(check)==binding['control_identity'], 'explicit previous control identity')
+    require(sha(__file__)==binding['repaired_batch_sha256']
+            and digest(inspect.getsource(invoke))==binding['invoke_source_identity']
+            and set(binding['unchanged_files'])==set(CONTROL_FILES)
+            and all(sha(ROOT/path)==value for path,value in binding['unchanged_files'].items()),
+            'unchanged controlled worker, graph, backend and supervision')
+
+
+def validate_backend_binding(spec, configuration, source):
+    # Frozen JSON arrays and in-memory tuples denote the same patch text.
+    # Keep every source hash and configuration value in the comparison.
+    require(digest(spec['genbab_configuration'])==digest(configuration)
+            and digest(spec['source_binding'])==digest(source),
+            'frozen external source and configuration')
 
 
 def should_stop(row):
@@ -148,32 +174,46 @@ def control(root):
     return 0 if row['accepted'] else 1
 
 
-def run(root,manifest,control_root):
+def run(root,manifest,control_root,records=None):
     commit=frozen_commit();spec=load(manifest)
     require(spec['schema']=='B2_FAILURE_SELECTED_DIAGNOSIS_V1' and not root.exists(),'new frozen B2 stage')
     check=load(control_root/'complete.json')
-    validate_control(check,commit)
-    require(spec['genbab_configuration']==backend.CONFIG
-            and spec['source_binding']==backend.source_identity(), 'frozen external source and configuration')
+    continuation={} if records is None else load(records)['execution_continuation']
+    if continuation:
+        require(sha(manifest)==continuation['freeze_sha256']
+                and sha(control_root/'complete.json')==continuation['control_complete_sha256'],
+                'unchanged queue and original control receipt')
+        for path,value in continuation['retained_artifacts'].items():
+            require(sha(path)==value, 'retained failed-attempt artifact')
+    validate_control(check,commit,continuation.get('control_reuse'))
+    validate_backend_binding(spec,backend.CONFIG,backend.source_identity())
+    carried=continuation.get('charged_seconds_upper_bound',0)
+    require(0<=carried<spec['stage_seconds'],'retained cost within original stage budget')
+    deadline=ENTRY+spec['stage_seconds']-carried
+    artifacts=[root,*map(Path,continuation.get('retained_artifacts',{}))]
+    if continuation:artifacts.append(Path(continuation['controller_log']))
     resource.setrlimit(resource.RLIMIT_AS,(8*2**30,8*2**30))
     root.mkdir();save(root/'start.json',dict(commit=commit,freeze_sha256=sha(manifest),entry=ENTRY,
-        control_sha256=sha(control_root/'complete.json'),deadline=ENTRY+21600))
+        control_sha256=sha(control_root/'complete.json'),deadline=deadline,
+        carried_seconds_upper_bound=carried,continuation_identity=digest(continuation),
+        artifacts=[str(p) for p in artifacts]))
     rows=[];stopped=False
     for query in spec['queries']:
-        if stopped or time.monotonic()+300>=ENTRY+21600 or sizes(root)+2**20>=128*2**20:
+        if stopped or time.monotonic()+300>=deadline or sum(sizes(p) for p in artifacts)+2**20>=128*2**20:
             rows.append(dict(query_id=query['id'],kind=query['kind'],full_slot=query['full_slot'],
                              status='UNEXECUTED',accepted=False));continue
-        row=invoke(root/query['id'],query,commit,time.monotonic()+300,all_artifacts=[root])
+        row=invoke(root/query['id'],query,commit,time.monotonic()+300,all_artifacts=artifacts)
         rows.append(row)
         save(root/f'ledger_{len(rows):03d}.json',dict(completed=len(rows),last=row,
             full_attempts=sum(r['full_slot'] for r in rows if 'session' in r),
             local_attempts=sum(not r['full_slot'] for r in rows if 'session' in r),
-            seconds=time.monotonic()-ENTRY,bytes=sizes(root)))
+            seconds=carried+time.monotonic()-ENTRY,bytes=sum(sizes(p) for p in artifacts)))
         print(json.dumps(dict(completed=len(rows),kind=query['kind'],status=row['status'],accepted=row['accepted'])),flush=True)
         if should_stop(row):
             stopped=True
     save(root/'complete.json',dict(status='PREFIX_TOOLING_OR_IDENTITY_STOP' if stopped else 'CATALOG_FINISHED',
-        rows=rows,elapsed=time.monotonic()-ENTRY,bytes=sizes(root),
+        rows=rows,elapsed=carried+time.monotonic()-ENTRY,bytes=sum(sizes(p) for p in artifacts),
+        carried_seconds_upper_bound=carried,
         full_attempts=sum(r['full_slot'] for r in rows if 'session' in r),
         local_attempts=sum(not r['full_slot'] for r in rows if 'session' in r),
         guarantee='NUMERICAL_FILTERS_WITH_ALL_MISSING_OBLIGATIONS_RETAINED'))
@@ -184,8 +224,9 @@ if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('--freeze',type=Path);parser.add_argument('--online',type=Path)
     parser.add_argument('--offline',type=Path);parser.add_argument('--b1-freeze',type=Path)
     parser.add_argument('--control',type=Path);parser.add_argument('--run',type=Path)
-    parser.add_argument('--manifest',type=Path);parser.add_argument('--control-root',type=Path);args=parser.parse_args()
+    parser.add_argument('--manifest',type=Path);parser.add_argument('--control-root',type=Path)
+    parser.add_argument('--records',type=Path);args=parser.parse_args()
     if args.freeze:freeze(args.freeze,args.online,args.offline,args.b1_freeze)
     elif args.control:raise SystemExit(control(args.control))
-    elif args.run:raise SystemExit(run(args.run,args.manifest,args.control_root))
+    elif args.run:raise SystemExit(run(args.run,args.manifest,args.control_root,args.records))
     else:parser.error('explicit operation required')

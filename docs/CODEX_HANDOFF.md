@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## B2 startup metadata repair ready 2026-10-21
+
+Real increment0: B1 remains41 requests/720 obligations/141 attribution calls; B2 real calls0.
+R1 stopped before its run directory: tuple/list metadata mismatch, not changed source hashes or a scientific failure.
+[Existing records](b2_observed_records_20261021.json) bind the failure,576s conservative cost debit and931-byte log; exact runtime unknown.
+Canonical comparison and explicit unchanged-control reuse pass10 ordinary tests; no native control repeated or new positive gate.
+Run the unchanged10 local→41 aggregate→19 CROWN catalog from this repaired immutable copy in newR2; all failures and logs stay charged.
+Same300s requests/six-hour stage, original numerical gates; compare strong-path results before selecting B3. G1–G6 OPEN.
+
 ## B1 attribution complete and B2 API control passed 2026-10-21
 
 Real ledger41 requests/720 obligations;141 attribution calls (100 native),153 dispositions; online12UNKNOWN/28TIMEOUT/1ERROR unchanged.

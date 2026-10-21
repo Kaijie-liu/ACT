@@ -1,22 +1,55 @@
 {
-  "schema": "B2_OBSERVED_DIAGNOSTIC_RECORDS_V1",
-  "status": "FROZEN_NOT_LAUNCHED",
-  "execution_commit": "47ce052face0c58701bad471e7d6413ab6864009",
-  "freeze_sha256": "f153f950413bd478149c2a4715b19a86db0af4cff201c139e856abfaf75c9598",
-  "planned": {
-    "full_requests": 60,
-    "local_diagnostics": 10,
-    "stage_seconds": 21600,
-    "request_seconds": 300,
-    "artifact_bytes": 134217728
-  },
-  "root": "/data1/Kane/MOE/results/b2_observed_20261021_r1",
-  "code_copy": "/data1/Kane/MOE/executions/b1_b2_20261021_47ce052fa",
+  "claim": "FAILURE_SELECTED_NUMERICAL_DIAGNOSTIC_NOT_POPULATION_WIN_RATE",
+  "code_copy": "NEW_IMMUTABLE_COPY_RECORDED_IN_START",
   "control_root": "/data1/Kane/MOE/results/b2_vector_or_20261021_r1",
   "control_seconds": 11.42099430412054,
-  "real_calls": 0,
-  "local_calls": 0,
-  "claim": "FAILURE_SELECTED_NUMERICAL_DIAGNOSTIC_NOT_POPULATION_WIN_RATE",
+  "execution_commit": "NEXT_FROZEN_COMMIT_RECORDED_IN_START",
+  "execution_continuation": {
+    "charged_seconds_upper_bound": 576,
+    "control_complete_sha256": "fce14ae77c8fd3ff278b0bd8fff3c1ac1760e8c98d50a78688a271a393b33783",
+    "control_reuse": {
+      "control_commit": "47ce052face0c58701bad471e7d6413ab6864009",
+      "control_identity": "fce14ae77c8fd3ff278b0bd8fff3c1ac1760e8c98d50a78688a271a393b33783",
+      "invoke_source_identity": "ecb78d1c0817cb7783ea07507da118f2d49b3d0947967b8ba93187c83c6a67e8",
+      "repaired_batch_sha256": "792287f2101b90ee0ca1866298158831854a0df8c7a5d5ae465f25512bd7edb0",
+      "unchanged_files": {
+        "act/back_end/moe/genbab_pair.py": "891c70ceee206d30fe1128f8d841d8f88c6be019bb8c5be27082fcc715dab973",
+        "act/back_end/moe/static_pair.py": "653f08080a71fbdd12fa823d6974bc451bedb8984714b2b3c0ab31e19fd7c54e",
+        "act/pipeline/moe/genbab_spec.py": "27975c25045e7c46321ac7061bbdfd66c34e99f515a9502335aa28a82ea6c8c7",
+        "configs/genbab_cpu_20261021_requirements.txt": "e023e0df1e23c8dea28aa5702fc3f05858a6049f67ee9d48bec811146fd8c648",
+        "scoped_proof/io.py": "ee080902b729bcc0ce50ead5696538b687302358f143b039a6f9bdee2256569d",
+        "scoped_proof/owned_bounded.py": "f0f7c4b72b2ffc10fd3b2e20cf44374d42b5c0d4aaddb9f47263bf6a20fa79c3",
+        "scoped_proof/owned_session.py": "8b9e80e259679490a2f72e2d5011c5345e17d75c7cf2ad80952b00f651aed798",
+        "scoped_proof/pidfd_compat.py": "8bbc9c51377221aee889d217613ecd9fc176a18cce956763f423f2faacdbf41e",
+        "scoped_source/development_work.py": "2c3058be39f5fbb57ac74b623c262b9668cb823a6885b813fbac1a7177b22470",
+        "scripts/b1_observed_batch.py": "b523d14140df5c2c6007925a6c0e774527c133be8c1d014f4e1bfd6b84528213",
+        "scripts/b2_observed_worker.py": "cf783cd93733e5faeb8e25c0693801c3345e25f4cb82b2db77a2b649607d0df3",
+        "scripts/genbab_cpu_ready.py": "4cb50ecd9fa01622f94e3ce5b22103d1d64a486d68068c14284bfec26abf3d55"
+      }
+    },
+    "controller_log": "/data1/Kane/MOE/results/b2_observed_20261021_r2_controller.log",
+    "freeze_sha256": "f153f950413bd478149c2a4715b19a86db0af4cff201c139e856abfaf75c9598",
+    "retained_artifacts": {
+      "/data1/Kane/MOE/results/b2_observed_20261021_r1_controller.log": "6c6d7570d7723054091711a1a0d7f7ea8793a4c0a927614275eaa20a6b9578b7"
+    }
+  },
+  "failed_startup": {
+    "charged_seconds_upper_bound": 576,
+    "commit": "47ce052face0c58701bad471e7d6413ab6864009",
+    "cost": "conservative log-creation to verified-terminal observation upper bound, not measured execution",
+    "exact_elapsed_seconds": null,
+    "local_calls": 0,
+    "log": "/data1/Kane/MOE/results/b2_observed_20261021_r1_controller.log",
+    "log_bytes": 931,
+    "log_creation_epoch_lower_bound": 1792572548,
+    "log_sha256": "6c6d7570d7723054091711a1a0d7f7ea8793a4c0a927614275eaa20a6b9578b7",
+    "pid": 268960,
+    "real_calls": 0,
+    "reason": "tuple/list mismatch in compatibility metadata; file hashes unchanged",
+    "root_created": false,
+    "terminal_observed_epoch": 1792573123.2984083,
+    "terminal_observed_utc": "2026-10-21T08:58:43.298408+00:00"
+  },
   "first_query": {
     "id": "b2_000",
     "kind": "guarded_local",
@@ -27,5 +60,23 @@
     "property_indices": [
       0
     ]
+  },
+  "freeze_sha256": "f153f950413bd478149c2a4715b19a86db0af4cff201c139e856abfaf75c9598",
+  "local_calls": 0,
+  "planned": {
+    "artifact_bytes": 134217728,
+    "full_requests": 60,
+    "local_diagnostics": 10,
+    "request_seconds": 300,
+    "stage_seconds": 21600
+  },
+  "real_calls": 0,
+  "root": "/data1/Kane/MOE/results/b2_observed_20261021_r2",
+  "schema": "B2_OBSERVED_DIAGNOSTIC_RECORDS_V1",
+  "status": "TOOLING_REPAIRED_READY",
+  "ordinary_tests": {
+    "passed": 10,
+    "seconds": 0.008,
+    "native_solver_calls": 0
   }
 }
