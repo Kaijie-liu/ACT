@@ -45,6 +45,20 @@ class ReadyControls(unittest.TestCase):
         self.assertFalse(mod.CONFIG['bab.branching.input_split.enable'])
         self.assertEqual(mod.CONFIG['general.complete_verifier'], 'bab')
 
+    def test_compatibility_scope_is_depth_exhaustion_only(self):
+        self.assertEqual(set(mod.COMPAT_EDITS), {
+            'activation_split/stage_solve.py', 'activation_split/decision_precompute.py',
+            'activation_split/update_bounds_phases.py'})
+        for before, after in mod.COMPAT_EDITS.values():
+            self.assertIn('tot_ambi_nodes' if 'mask_' in before else 'all_node_split', before)
+            self.assertIn('nonlinear', after)
+            self.assertNotIn('decision_thresh', after)
+        # Nonlinear depth is not an exhaustion bound; ReLU mode stays unchanged.
+        for mode in ('nonlinear', 'babsr'):
+            for depth in (2, 3, 4):
+                exhausted = mode != 'nonlinear' and depth == 3
+                self.assertEqual(exhausted, mode == 'babsr' and depth == 3)
+
 
 if __name__ == '__main__':
     unittest.main()

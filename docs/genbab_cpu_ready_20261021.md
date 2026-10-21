@@ -4,7 +4,8 @@ This is the user-authorized repair of the existing isolated installation, not a
 second deployment. The failed R1 inventory audit is preserved. Transitive
 distribution metadata is now a list of name/version/location records; actual
 torch, auto_LiRPA, verifier API, packaging and wheel paths are recorded separately.
-No dependencies or external source files are changed.
+No dependencies or files in the pinned author checkout are changed; the later
+explicit compatibility snapshot is separate and fully bound below.
 
 The fixed synthetic source is `x in [-1,1]`, router `(x,-x,-1/2)`, pair `{0,1}`,
 experts `E0=1/2-x`, `E1=1/2+x`. The graph retains `sigmoid(2x)` and the product.
@@ -47,3 +48,16 @@ batch before the extractor applies its mask. No domain or check is discarded.
 The model, specification, nonlinear branching method, dtype and acceptance stay
 unchanged. This is an explicit compatibility configuration, not a performance
 search. Each retry uses the remaining control budget, not another 300 seconds.
+
+R4 removed that shape exception and reached six visited domains, but returned
+UNKNOWN after 6.807640s. Its original FAIL is retained. Source inspection locates
+a separate ReLU-style `depth == tot_ambi_nodes` exhaustion rule in `stage_solve`
+and the corresponding decision mask in `decision_precompute`; a third location
+would initialize a leaf LP. A sigmoid/product interval is not made exactly
+linear merely by reaching that depth; the log already repeats the same split
+node. The isolated compatibility snapshot disables these depth-count shortcuts
+only for the configured nonlinear method. Ordinary ReLU behavior, domain
+coverage, bound acceptance and hard timeout are unchanged; no leaf is declared
+SAFE by the patch. All three exact textual edits and every snapshot file are
+checked against the pinned author commit. The author checkout and environment
+remain untouched. This must be called a compatibility-adapted GenBaB path.

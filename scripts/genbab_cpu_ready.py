@@ -8,6 +8,7 @@ not an ACT comparison or a checked real-network certificate.
 import time
 ENTRY = time.monotonic()
 import importlib.metadata
+import hashlib
 import json
 import math
 import os
@@ -26,6 +27,26 @@ from scoped_proof.owned_session import execute
 ACT = '/data1/Kane/miniconda3/envs/act-py312/bin/python'
 ENVIRONMENT = Path('/data1/Kane/MOE/envs/genbab-cpu-20261021-v1')
 TOOL = Path('/data1/Kane/MOE/baselines/alpha-beta-CROWN')
+COMPAT = Path('/data1/Kane/MOE/baselines/adaptations/genbab_cpu_20261021_r1')
+COMPAT_EDITS = {
+    'activation_split/stage_solve.py': (
+        '    all_node_split_flag = torch.any(\n',
+        '    # ACT compatibility: a nonlinear interval may need repeated splitting.\n'
+        '    # Depth == number of neurons is not exhaustion for sigmoid/products.\n'
+        '    nonlinear = bab_args["branching"]["method"] == "nonlinear"\n'
+        '    all_node_split_flag = not nonlinear and torch.any(\n'),
+    'activation_split/decision_precompute.py': (
+        '    mask_not_all_split = torch.Tensor(depths).to(device=device) < net.tot_ambi_nodes\n',
+        '    # ACT compatibility: retain nonlinear domains beyond the ReLU depth count.\n'
+        '    mask_not_all_split = (torch.ones(len(depths), dtype=torch.bool, device=device)\n'
+        '                         if branch_args["method"] == "nonlinear" else\n'
+        '                         torch.Tensor(depths).to(device=device) < net.tot_ambi_nodes)\n'),
+    'activation_split/update_bounds_phases.py': (
+        '        if all_node_split_LP and torch.any(\n',
+        '        # ACT compatibility: nonlinear splitting does not yield a linear leaf\n'
+        '        # merely by reaching the original unstable-neuron count.\n'
+        '        if (all_node_split_LP and arguments.Config["bab"]["branching"]["method"] != "nonlinear") and torch.any(\n'),
+}
 SOURCES = {str(TOOL): 'e5c7e17bf0488843acb77b7519f59876717a49f4',
            str(TOOL/'auto_LiRPA'): '5a098e8f9fb5786a428a024981d833d303921f2d'}
 OLD = Path('/data1/Kane/MOE/results/genbab_cpu_deployment_20261021_r1')
@@ -65,7 +86,25 @@ def source_identity():
     for path, revision in SOURCES.items():
         require(git(path, 'rev-parse', 'HEAD') == revision
                 and not git(path, 'status', '--porcelain'), 'external verifier source identity')
-    return SOURCES
+    # Isolated source snapshot, not a mutated author checkout or runtime patch.
+    files = git(TOOL, 'ls-files', 'complete_verifier').splitlines()
+    hashes = {}
+    for name in files:
+        original = (TOOL/name).read_bytes()
+        relative = str(Path(name).relative_to('complete_verifier'))
+        if relative in COMPAT_EDITS:
+            before, after = (s.encode() for s in COMPAT_EDITS[relative])
+            require(original.count(before) == 1, 'exact compatibility patch context')
+            expected = original.replace(before, after, 1)
+        else:
+            expected = original
+        actual = (COMPAT/name).read_bytes()
+        require(actual == expected, 'isolated compatibility source: '+name)
+        hashes[name] = hashlib.sha256(actual).hexdigest()
+    require({str(p.relative_to(COMPAT)) for p in (COMPAT/'complete_verifier').rglob('*.py')}
+            == {name for name in files if name.endswith('.py')}, 'no additional executable source')
+    return dict(author_commits=SOURCES, compatibility_directory=str(COMPAT),
+                compatibility_edits=COMPAT_EDITS, files=hashes)
 
 
 def normalized(name):
@@ -130,8 +169,8 @@ def limits(deadline):
 
 def probe():
     require(sys.prefix == str(ENVIRONMENT), 'isolated CPU interpreter')
-    source_identity()
-    sys.path[:0] = [str(TOOL/'auto_LiRPA'), str(TOOL/'complete_verifier')]
+    source = source_identity()
+    sys.path[:0] = [str(TOOL/'auto_LiRPA'), str(COMPAT/'complete_verifier')]
     import torch
     import auto_LiRPA
     import api
@@ -142,13 +181,13 @@ def probe():
     for name, module in (('torch', torch), ('auto_LiRPA', auto_LiRPA),
                          ('complete_verifier.api', api), ('packaging', packaging), ('wheel', wheel)):
         path = Path(module.__file__).resolve()
-        expected = TOOL if name in ('auto_LiRPA', 'complete_verifier.api') else ENVIRONMENT
+        expected = COMPAT if name == 'complete_verifier.api' else (TOOL if name == 'auto_LiRPA' else ENVIRONMENT)
         require(path.is_relative_to(expected), 'loaded module origin: '+name)
         modules[name] = dict(path=str(path), sha256=sha(path), version=getattr(module, '__version__', None))
     rows = distributions()
     site_packages = ENVIRONMENT/'lib/python3.11/site-packages'
     check_inventory(rows, site_packages, required_packages())
-    return dict(status='PASS', modules=modules, distributions=rows, sources=SOURCES,
+    return dict(status='PASS', modules=modules, distributions=rows, sources=source,
                 python=sys.version, prefix=sys.prefix, torch=torch.__version__, cuda_build=None,
                 old_install_reports={n: sha(OLD/n) for n in ('packages.json', 'converter.json')})
 
