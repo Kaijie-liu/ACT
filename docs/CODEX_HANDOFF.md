@@ -1,5 +1,16 @@
 # MoE project handoff — current entry point
 
+## Stage1 three-arm bottleneck test frozen 2026-10-22
+
+Training12/12 audited; real verification0/600, new integration9/9 in5.170s; one additional offline-ledger control passes, no repeated native semantic solves.
+[Protocol](multilayer_stage1_20261022.md)/[freezeR2](multilayer_stage1_freeze_20261022_r2.json) bind all12 weights,1855-index exclusion,common ascending30 clean-correct inputs,first20 forverification.
+PublicPGD240 domains and interval census1080 domains separately charged; no arm borrows answers. Census lower/upper counts are not exact legal counts.
+600calls/52h,300s each,1CPUthread/8GiBAS/128MiB stage; unchanged GenBaB strong config, all ACT histories admitted up to21952/14400.
+Record traversal versus proof closure, entered/returned prefix/history and partial phases; one hard leaf is not itself a multiplicity cause.
+Final reader binds catalog/terminals, preserves public-PGD accepted prefixes, computes trueUNSAFE union,n',Wilson,gain/loss,and both L3/L1 cost versions; no early stopping decision on incomplete witness-source queue.
+R1control freeze retained; R2 adds reviewed receipt/result aggregation with unchanged controlled mechanisms. Next launch immutable queue, not a new approval gate.
+G1–G6 remain OPEN; this tests the need for a new union mechanism, not its success.
+
 ## Twelve frozen models complete and audited 2026-10-22
 
 Training12/12,600epochs complete; realverification0. PID1168828 exited, total13,669.503s; no errors/partials.

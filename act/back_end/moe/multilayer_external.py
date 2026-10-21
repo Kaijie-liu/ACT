@@ -123,7 +123,8 @@ def verify_histories(model, *, center, lower, upper, rows, thresholds, pruning, 
     counts = tuple(math.comb(e, 2) for e in experts)
     expected = math.prod(counts)
     result = dict(status='UNKNOWN', expected_histories=expected, verified_histories=0,
-                  pruned_histories=0, attempted_histories=0, prefix_queries=0,
+                  pruned_histories=0, attempted_histories=0, returned_histories=0,
+                  attempted_prefix_queries=0, prefix_queries=0, active=None,
                   histories=[], exclusions=[], prefix_bounds=[], complete=False,
                   evidence_grade='GENBAB_NUMERICAL_FILTER', formal_SAFE=False)
     def tick():
@@ -133,14 +134,21 @@ def verify_histories(model, *, center, lower, upper, rows, thresholds, pruning, 
         tick()
         depth = len(prefix)
         if depth == len(experts):
+            result['active'] = dict(phase='history_compile', prefix=[list(p) for p in prefix], entered=time.monotonic())
+            publish(result)
             graph = GuardedHistory(model, prefix, rows, thresholds).eval()
             result['attempted_histories'] += 1
+            result['active'] = dict(phase='history_solver', prefix=[list(p) for p in prefix], entered=time.monotonic())
             publish(result)
             outcome, attacks = verify_graph(graph, lower, upper, len(rows), deadline)
+            tick()
+            result['returned_histories'] += 1
+            result['active'] = None
             record = dict(history=[list(p) for p in prefix], outcome=outcome)
             result['histories'].append(record)
             if outcome['status'] == 'verified':
                 result['verified_histories'] += 1
+            publish(result)
             if attacks is not None:
                 for point in attacks.detach().cpu().double().reshape(-1, *center.shape[1:]):
                     tick()
@@ -152,11 +160,17 @@ def verify_histories(model, *, center, lower, upper, rows, thresholds, pruning, 
         bounds = {}
         if pruning:
             before = time.monotonic()
+            result['attempted_prefix_queries'] += 1
+            result['active'] = dict(phase='prefix_CROWN', prefix=[list(p) for p in prefix], entered=before)
+            publish(result)
             bounds = bound_router(model, prefix, center, lower, upper, deadline)
+            tick()
             result['prefix_queries'] += 1
+            result['active'] = None
             result['prefix_bounds'].append(dict(prefix=[list(p) for p in prefix],
                 upper=[[i,j,value if math.isfinite(value) else None] for (i,j),value in bounds.items()],
                 seconds=time.monotonic()-before, guarantee='WHOLE_BOX_CROWN_NUMERICAL_UPPER'))
+            publish(result)
         for pair in itertools.combinations(range(experts[depth]), 2):
             tick()
             reason = excluded_pair(pair, experts[depth], bounds)
@@ -182,6 +196,10 @@ def verify_histories(model, *, center, lower, upper, rows, thresholds, pruning, 
             result['status'] = 'POSITIVE'
     result['unvisited_histories'] = expected-result['pruned_histories']-result['attempted_histories']
     result['unclosed_histories'] = expected-result['pruned_histories']-result['verified_histories']
+    result['inflight_histories'] = result['attempted_histories']-result['returned_histories']
+    result['returned_unproved_histories'] = result['returned_histories']-result['verified_histories']
+    result['traversal_complete'] = result['pruned_histories']+result['returned_histories']==expected
+    result['proof_complete'] = result['pruned_histories']+result['verified_histories']==expected
     if time.monotonic() >= deadline:
         result.update(status='TIMEOUT', complete=False)
     if result['status'] == 'UNSAFE_REPLAYED':
