@@ -62,7 +62,7 @@
     ]
   },
   "freeze_sha256": "f153f950413bd478149c2a4715b19a86db0af4cff201c139e856abfaf75c9598",
-  "local_calls": 7,
+  "local_calls": 10,
   "planned": {
     "artifact_bytes": 134217728,
     "full_requests": 60,
@@ -70,7 +70,7 @@
     "request_seconds": 300,
     "stage_seconds": 21600
   },
-  "real_calls": 0,
+  "real_calls": 1,
   "root": "/data1/Kane/MOE/results/b2_observed_20261021_r2",
   "schema": "B2_OBSERVED_DIAGNOSTIC_RECORDS_V1",
   "status": "RUNNING",
@@ -81,11 +81,18 @@
   },
   "controller_pid": 916650,
   "start_receipt_sha256": "ae7b861748c0207a0f489e4f600e750c6f3fb96eac201de88f29223be2ce33f3",
-  "completed_local_calls": 6,
+  "completed_local_calls": 10,
   "completed_full_calls": 0,
-  "reviewed_prefix": {
-    "count": 6,
-    "properties": 34,
+  "local_diagnosis": {
+    "count": 10,
+    "properties": 61,
+    "positive_calls": 8,
+    "unknown_calls": 2,
+    "positive_selected_properties": 51,
+    "properties_in_unresolved_groups": 10,
+    "seconds": 798.3854494802654,
+    "stage_seconds_through_local": 1377.0515280924737,
+    "stage_bytes_through_local": 5014252,
     "rows": [
       {
         "id": "b2_000",
@@ -124,7 +131,8 @@
           "launch.json": "918604117145ac272463ab377b6e2b8c7523e89938be8aa34b61a9487c0e9e3e",
           "outcome.json": "0faf7d6829c96663f8a3b93a2d4b9bba7c03ff27bc7729c5365e2a622e81bdcd",
           "terminal.json": "2032425673c37923f0e5b6de7f5137c401084b639ae6d6f5e00b01889aa55dfe",
-          "reception.json": "46fa19ff54a9aeab2e48429cf5915e0839cc5d9ca43d87e518432663f461d515"
+          "reception.json": "46fa19ff54a9aeab2e48429cf5915e0839cc5d9ca43d87e518432663f461d515",
+          "native.log": "aefc935119cb7d3013f0006fba0b935d7b71172c603eafb7de0f19fb8d0097da"
         },
         "ledger_sha256": "9fcf03566880db41196c925dc740a3cc0fc8a3ea34c9b0e26f60be94882b0518"
       },
@@ -161,7 +169,8 @@
           "launch.json": "3e3e68f3ae1f94b74b28a21c3e113ab7bd6607f3de71f7f92b58d728a37df34a",
           "outcome.json": "835b5b0bc45b823b243fac24a5cad0d572956d4b82842a759b2dcef5f52a2df3",
           "terminal.json": "84556569791a03a3cb5bcd153535ad3aba58d108306bbcf728acc6e9163ccec4",
-          "reception.json": "c5a1a03a45db5392cf5804cf67ff77de659561c73983d843c44311a52e396f03"
+          "reception.json": "c5a1a03a45db5392cf5804cf67ff77de659561c73983d843c44311a52e396f03",
+          "native.log": "55c8bc2049d24a414cff8a9eeb50adc0f67a5b86b48426f6b7a3b9e76e131f94"
         },
         "ledger_sha256": "aa53583399fe79dedde520d90ca87ca9f20a3e8447f8f93478139d9f012f2da2"
       },
@@ -197,7 +206,8 @@
           "launch.json": "9a47eb59cfc62822a007ab99aa612d5911bb4b580d6a0d29113a4a6f18b6c214",
           "outcome.json": "d9264b6835362fc7838d3109f38e98b4973df66f0a8f4cfcd2e986d9961aab8e",
           "terminal.json": "1fc7211d6edc66c1dc615978a4425727eb82f41ce36a58171f386e5ba46a14f5",
-          "reception.json": "cb54448180f30c9d8a63c36a9be35e3931369a5e92c2b3271bc2657d71c36ce1"
+          "reception.json": "cb54448180f30c9d8a63c36a9be35e3931369a5e92c2b3271bc2657d71c36ce1",
+          "native.log": "ddf5c0e6cfacdf52c515bf2a64ffc7206b227600618e87b9b6319ce60a9bfa09"
         },
         "ledger_sha256": "d6872f13c20a548bf74351a193c69601ad79ef7ba054136ef1eaa542d24599da"
       },
@@ -239,7 +249,8 @@
           "launch.json": "82247207f3c4ca616eb3ece0e7e3cc8fb8873804b677144402d4c3b736675922",
           "outcome.json": "34d59f1780ada4f36f1098b0c1b36e9f5a9ae11ad65393e8bcf47b7d196a4833",
           "terminal.json": "21fe5035bf30af0fe935cf6d3a966ff6e2d4eb6e59d10f034048610b35c9076f",
-          "reception.json": "ccc9b22acf40b8b9abecf38961c29044cb29bc88453147c070d9c0efe4e7f427"
+          "reception.json": "ccc9b22acf40b8b9abecf38961c29044cb29bc88453147c070d9c0efe4e7f427",
+          "native.log": "b5fad5adb8a3eda07e2a21322012c1d613e57e11d2e87598497b8e4a9a2ca8cf"
         },
         "ledger_sha256": "fc2d7129b6fb9f1c97134e2e70749ed0934835c7358936c1184c7f7ec563fe43"
       },
@@ -288,7 +299,8 @@
           "launch.json": "ad6fc2309cccd21173a12bfbfe1f57455302a9fd341dd21d589d4794d63905f1",
           "outcome.json": "faea6264f0dc4c7ce573c2b953227e24f96d6efad74c821043a4d313c5a09aed",
           "terminal.json": "8dd14749e716cc9d202d26cd8ce95c698c1173f6f53c423a63583e1fe3d2671b",
-          "reception.json": "10c3290da9adb04b08b52dea1b8da0ac105c01cff7a83b2bb5a1033aca7c942c"
+          "reception.json": "10c3290da9adb04b08b52dea1b8da0ac105c01cff7a83b2bb5a1033aca7c942c",
+          "native.log": "0cda938f4a2ebbb9ff36726b62f24f936b7227b2d86e5a097ab364f4baa319f7"
         },
         "ledger_sha256": "71b300c3f16870b8d5b480612c6d68d0cb58c9c328c6f8ac592c054c5ca06def"
       },
@@ -329,11 +341,189 @@
           "launch.json": "06c52bf1778074476e9a6e16ce829d0ec00b46eef67ad27aa9dd770183133079",
           "outcome.json": "e0f2e14b8f0a7af01314cb8847d8c814d30c4a736cff0990d3607738aac3b9c5",
           "terminal.json": "c0a2337d3dffe8a3a36207e8449f899d12cad2e38ba07a04678e24fadad23212",
-          "reception.json": "a69e1b65b100d59d0b7c9213a35c77b5b045060624e16cff45298d4de0be2a2e"
+          "reception.json": "a69e1b65b100d59d0b7c9213a35c77b5b045060624e16cff45298d4de0be2a2e",
+          "native.log": "4f4f51ac8ace97ec2c2022bc12c6aac183824b1eee19cb775430624709780536"
         },
         "ledger_sha256": "d645d14c453062f242643c7019af86ad66887d451c6f14da2abbcf96f0ded79c"
+      },
+      {
+        "id": "b2_006",
+        "model": "seed0",
+        "dataset_index": 4140,
+        "pair": [
+          3,
+          6
+        ],
+        "property_indices": [
+          3
+        ],
+        "status": "UNKNOWN",
+        "accepted": true,
+        "seconds": 293.3382284119725,
+        "aggregate": {
+          "expected": 1,
+          "formal_SAFE": false,
+          "received": 1,
+          "scope": "SELECTED_GUARDED_PAIR_DIAGNOSTIC_NOT_COMPLETE_REQUEST"
+        },
+        "stages": [
+          "nonlinear_bab"
+        ],
+        "bab_statistics": [
+          [
+            [
+              0,
+              -0.09258844358864834,
+              1048,
+              284.7628574371338
+            ]
+          ]
+        ],
+        "files": {
+          "launch.json": "052a2e0bb4b9b104dad838078494e0bc77f9c54b3c6ad3f2fcf58e6611aa2ab9",
+          "outcome.json": "dc330fc0739991f04878fbb30f3865ffcb015cfd280f639a95a38c792642c323",
+          "terminal.json": "bad0c4fea2b3b1afc44c78b3f26e1ea68e8f471299bc6cc6ddf5787f76d69a3d",
+          "reception.json": "ebc880c38a4a8bbec97d1f57e782e78a72fa7b1e5d90f9a040a607322bcf1e91",
+          "native.log": "968d543d5690a108a97f9c8446724f0cf037810fa902199c68badc00c666028d"
+        },
+        "ledger_sha256": "a2fe0c130f62ace5a8bcda7bd4b1abf823d2c8a70e03489bc179211f37f3c1d5"
+      },
+      {
+        "id": "b2_007",
+        "model": "seed2",
+        "dataset_index": 4141,
+        "pair": [
+          3,
+          7
+        ],
+        "property_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "status": "UNKNOWN",
+        "accepted": true,
+        "seconds": 293.0319382585585,
+        "aggregate": {
+          "expected": 9,
+          "formal_SAFE": false,
+          "received": 9,
+          "scope": "SELECTED_GUARDED_PAIR_DIAGNOSTIC_NOT_COMPLETE_REQUEST"
+        },
+        "stages": [
+          "nonlinear_bab"
+        ],
+        "bab_statistics": [
+          [
+            [
+              0,
+              -0.10509370924874219,
+              464,
+              284.29682087898254
+            ]
+          ]
+        ],
+        "files": {
+          "launch.json": "f4aa944006f3d6a8afa49337fcff2a67a296af9b60954cb06763042b2f9733c5",
+          "outcome.json": "10e25b28306bf65f92b2c26b8f486298666c959160f7756429737722c39891e2",
+          "terminal.json": "dc8ab352f75d8ce47343dbe6115262a4730fe88fa971781da3c9ff64a1f44ecd",
+          "reception.json": "dd62211c1646d3773cc121067d8c168e1d1d0280c7a14aaea1d7a57e9b2e101a",
+          "native.log": "240bd7d51a6cfff5f00d8f32e2b54181b4336c6896f05e74de6ca9ea213c98d7"
+        },
+        "ledger_sha256": "cb82e9923fa126dddf227bdfdaa11cc214bc7444b665ddb66d54f26e1438b82c"
+      },
+      {
+        "id": "b2_008",
+        "model": "seed1",
+        "dataset_index": 4142,
+        "pair": [
+          2,
+          6
+        ],
+        "property_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "status": "POSITIVE",
+        "accepted": true,
+        "seconds": 5.265511754900217,
+        "aggregate": {
+          "expected": 9,
+          "formal_SAFE": false,
+          "received": 9,
+          "scope": "SELECTED_GUARDED_PAIR_DIAGNOSTIC_NOT_COMPLETE_REQUEST"
+        },
+        "stages": [
+          "incomplete_only"
+        ],
+        "bab_statistics": [
+          []
+        ],
+        "files": {
+          "launch.json": "ac61a5f9c675718da8d367910cad14c0a18c5cc7f147ce89c2be519144a4820d",
+          "outcome.json": "698bade9aa15888c18e76d3d838caa6198a5a48c934425102eb90e8d4262921d",
+          "terminal.json": "f0f0c29669dc32ec0da2659de9b9726b09d7f44e4faa54b7728a017cdb9576d7",
+          "reception.json": "c7aa31ba760ff681847199af05ae385fd541d1a56c90e022f54db5ba5e235881",
+          "native.log": "7aeda7ea8f0982b9460f12e73ef6dc9445a693a3fb7a25a6061f58a2858eb456"
+        },
+        "ledger_sha256": "3e0820d1b4982c4932946e617ef3a7858330edbe65b165926b1b492052cd28ed"
+      },
+      {
+        "id": "b2_009",
+        "model": "seed0",
+        "dataset_index": 4150,
+        "pair": [
+          4,
+          5
+        ],
+        "property_indices": [
+          0,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "status": "POSITIVE",
+        "accepted": true,
+        "seconds": 5.166255688294768,
+        "aggregate": {
+          "expected": 8,
+          "formal_SAFE": false,
+          "received": 8,
+          "scope": "SELECTED_GUARDED_PAIR_DIAGNOSTIC_NOT_COMPLETE_REQUEST"
+        },
+        "stages": [
+          "incomplete_only"
+        ],
+        "bab_statistics": [
+          []
+        ],
+        "files": {
+          "launch.json": "583edad04fd1246e32d096799dcf016a28a2b4b86ad627b220c73dc5ebb53fbe",
+          "outcome.json": "1d55c19cb7fcc5f2336c888ab25e9ad782bc38cc93e079c1bff2b6893170562c",
+          "terminal.json": "dd550e1429de308f4ac19b1f0b1829687d55f7cbfcffd6ca9e4ad314ce76e9eb",
+          "reception.json": "47bc66d7d7e00685fe5c5c8d3fbd472ece17ebaa471f3a53fb7cd78556c248b0",
+          "native.log": "a101fe76598d605a9ef605eec8f044e6a52beb7cf931047b6c67f75db319b2a9"
+        },
+        "ledger_sha256": "11f03c0f4cc3e256503c966beb0ccb953f6a75233aee78b63c343f3c79a68938"
       }
     ],
-    "interpretation": "All six selected guarded diagnoses numerically positive. b2_000 is not ACT-exclusive; scalar-max margins are not comparable with ACT guarded-output margins. No complete request result yet."
+    "interpretation": "Complete frozen local cohort, not full MoE requests or a fair population comparison. No per-property bound inference within UNKNOWN groups."
   }
 }

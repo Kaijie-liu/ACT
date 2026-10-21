@@ -7,16 +7,22 @@ The first controller stopped before creating its run directory or invoking a
 real source. A tuple/list difference in serialized compatibility metadata caused
 a false identity mismatch; actual source hashes were unchanged. The repaired
 controller is running from commit `2caeae501636bdc6237be89b9a4202f3451df1d2`
-in an independent code copy, PID916650. Six local diagnoses have received
-positive numerical filters; the seventh is running. Full-request results
-are not yet available. [Records](b2_observed_records_20261021.json) retain that
+in an independent code copy, PID916650. All ten local diagnoses are complete:
+eight positive numerical filters and two UNKNOWN. The 41-request all-pair
+aggregate queue has started; its results are not yet complete.
+[Records](b2_observed_records_20261021.json) retain that
 failure and will preserve every attempted and unexecuted entry and its cost.
 
-## First six local results
+## Complete local diagnosis results
 
-These are selected guarded-pair diagnoses, not six complete MoE requests.
-Their 34 selected properties have matching source, clause, reception and
-deadline records. The remaining catalog continues without changing configuration.
+These are ten selected guarded-pair diagnoses, not ten complete MoE requests.
+All 61 selected properties have matching source, clause, reception and deadline
+records. Eight positive groups cover 51 properties; the two UNKNOWN groups
+contain ten properties, without a per-property result inferred from their joint
+outcome. All ten calls were normally received, with no ERROR or outer TIMEOUT.
+Their complete call costs sum to **798.385 seconds**. The tenth ledger charges
+**1,377.052 seconds**, including the 576-second failed-start upper bound and
+stage overhead, and records 5,014,252 artifact bytes at that point.
 
 | Model and input | Pair | Selected properties | Numerical result | Complete call seconds |
 | --- | --- | ---: | --- | ---: |
@@ -26,6 +32,10 @@ deadline records. The remaining catalog continues without changing configuration
 | Seed2 / 4113 | {4,7} | 9 | POSITIVE | 5.261 |
 | Seed0 / 4129 | {1,4} | 9 | POSITIVE | 8.654 |
 | Seed0 / 4129 | {4,5} | 8 | POSITIVE | 5.256 |
+| Seed0 / 4140 | {3,6} | 1 | UNKNOWN | 293.338 |
+| Seed2 / 4141 | {3,7} | 9 | UNKNOWN | 293.032 |
+| Seed1 / 4142 | {2,6} | 9 | POSITIVE | 5.266 |
+| Seed0 / 4150 | {4,5} | 8 | POSITIVE | 5.166 |
 
 The first result resolves the same seed1/4113 property that ACT's original F0
 left unresolved and its offline closed-slice endpoints made positive. GenBaB
@@ -40,7 +50,22 @@ as safety margins. Both results remain numerical-policy evidence. The 169.112s
 offline ACT slice receipts are not a complete online ACT timing baseline; the
 171.978s external call includes loading, graph construction and reception. No
 population win-rate, full-request victory or strict source-complete certificate
-follows from this prefix. Continue the fixed aggregate queue before selecting B3.
+follows from the local cohort. Continue the fixed aggregate queue before selecting B3.
+
+The seed0/4140 UNKNOWN ends after 1,048 visited domains and an internal search
+timeout, with scalar-max lower bound -0.092588444. Of 524 logged splits, 486
+select the same product-input coordinate; the final global bound is unchanged
+for 510 rounds. The printed range eventually reads `[4.9320,4.9320]`, which is
+not evidence of exact zero width. This supports a search-stagnation observation,
+not a unique relaxation cause or model unsafety. B1's pointwise replacement of
+lambda by sigmoid(m) is likewise not a checked feasible or global certificate.
+The second UNKNOWN reaches 464 domains and bound -0.105093709 before its
+internal timeout. Its 232 splits instead select expert ReLU inputs, with seven
+domains remaining; the last rounds still eliminate some domains. The two cases
+therefore do not support one common gate-relaxation or stagnation explanation.
+Neither unresolved result changes this frozen configuration. Independent
+read-only review checks all ten identities, guards, coverage and receptions;
+it is not a bound reproof.
 
 ## Fixed order and semantics
 

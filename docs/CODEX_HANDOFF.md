@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## B2 local cohort complete and aggregate running 2026-10-21
+
+Real increment10/10 local diagnoses complete:8 numerical POSITIVE/2UNKNOWN,61 selected properties,51 in positive groups; first full request running.
+[Existing B2 results](b2_observed_results_20261021.md)/[records](b2_observed_records_20261021.json) bind all local terminals;798.385s calls,1377.052s stage including576s failed-start debit.
+The prior ACT slice-positive obligation also closes under GenBaB; no ACT-exclusive or exact-proof claim.
+Seed0/4140 UNKNOWN shows repeated product-coordinate splits and stationary global bound; search versus representation remains unseparated.
+Controller916650/immutable2caeae501 now runs41 complete all-pair requests, then the fixed CROWN suffix; do not change or restart it.
+Finish the strong-path table before choosing B3. Existing slices/endpoint/margin rows are not new mechanisms. G1–G6 OPEN.
+
 ## B2 first six local diagnoses positive 2026-10-21
 
 Real increment6 completed local calls/34 selected properties, all numerical POSITIVE; seventh running, complete requests0.
