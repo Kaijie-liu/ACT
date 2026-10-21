@@ -6,6 +6,15 @@ This design closes a specific experimental-design gap: existing scalar records
 cannot distinguish an unfinished search from a weak relaxation. It does not
 introduce a new verifier, mechanism or claim of algorithmic gain.
 
+**Implementation follow-up:** the two interfaces below now pass the separate
+[native-return](b1_native_capture_results_20261021.md) and
+[complete synthetic request](b1_request_capture_results_20261021.md) controls.
+The prospective real selection/query protocol remains DRAFT_NOT_EXECUTABLE;
+passing interfaces does not freeze or execute the54-slot proposal. Do not repeat
+the completed controls. Captures explicitly distinguish integer-domain margin
+support from relaxed difference support, missing-source selection from a usable
+matrix, and registered F0 slots from actual native calls.
+
 ## The question and the objects that must not be conflated
 
 For each registered complete request, retain the full route/property denominator

@@ -1,5 +1,31 @@
 # MoE project handoff — current entry point
 
+## B1 same-invocation complete-request capture passed, 2026-10-21
+
+[Results](b1_request_capture_results_20261021.md) and
+[lossless records](b1_request_capture_records_20261021.json) archive the one
+frozen batch at`0cc9a4f9db5449b17a1a6444bbbc7cb5db5589b9`:4 complete synthetic
+requests,17/17 controls,2 selected actual-source records, saved-only audit PASS.
+Both off/on paths remain UNKNOWN with unchanged non-time verdicts. Each on
+request retains27 obligations:25 reused,1 selected and1 other returned.
+Elapsed6.585035s through terminal export; diagnostic Work3047→4493;
+run520,657 bytes + archive527,183 bytes. No trained source/data/GPU or real slot.
+
+Actual router/guarded-entry/joint/F0 sources, factor maps and native problem
+now travel together. Exact stored-prefix checks handle CSR order/duplicates
+without modifying sources. First-source failures lock an unavailable ordinal;
+partial coverage and request-level closure remain explicit. Margin support is
+integer-domain while difference support is relaxed; preserve this distinction
+in any attribution. This is diagnostic plumbing, not algorithm gain, point
+feasibility, network-lowering proof or real certificate.
+
+**Next:** finish B1's prospective dataset-aware candidate/history manifest and
+finite source-matched diagnostic query recipes before freezing real execution.
+Do not repeat these passed controls or reconstruct sources via stopped A2.
+Real ledger remains0/0/0; B2 failed deployment remains stopped, not automatically
+repaired/reimported. G1–G6 OPEN. The next scientific deliverable is a bounded
+unresolved-obligation attribution table, with unknown causes kept unknown.
+
 ## B1 complete-request source capture ready to freeze, 2026-10-21
 
 The [fixed protocol](b1_request_capture_protocol_20261021.md) connects actual

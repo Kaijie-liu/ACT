@@ -166,3 +166,9 @@ and raw solver-candidate capture in both staged and monolithic paths. It is not
 yet implemented/frozen. No native model, selection, solve, environment repair
 or GenBaB retry was performed by this historical audit. B2's failed saved audit
 remains failed, and the real-stage ledger remains0/0/0.
+
+**Later implementation update:** the optional source/raw-candidate interface
+has since passed [complete synthetic request controls](b1_request_capture_results_20261021.md).
+This supersedes “not yet implemented” above, but not the outstanding real
+candidate/history manifest and diagnostic query freeze. No real selection has
+been executed as a consequence of that interface work.
