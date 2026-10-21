@@ -134,6 +134,20 @@ is empirically refuted. Finish B2 before selecting the next mechanism.
 
 ## Fixed order and semantics
 
+Saved B1 dynamic float64 counterexamples are bound to the same B2 models,
+materialized inputs and properties: seed0/4237 maps to GenBaB b2_025 and CROWN
+b2_066; seed0/4341 to b2_042; seed1/4356 to b2_045. Their violating pair/property
+indices are respectively {6,7}/5, {4,6}/8 and {2,3}/1. The latter two are outside
+the frozen CROWN prefix. The records bind the three witness hashes; this is a
+saved-record consistency check, not a new replay or exact real-network proof.
+
+A future complete POSITIVE, or a positive receipt for that witness's same
+guarded pair/property, would require a numerical-conflict review before being
+used as a safety claim. Other-pair positives and UNKNOWN/TIMEOUT do not conflict.
+The frozen external configuration disables attacks, so it need not find these
+witnesses. Neither this mapping nor later external outcomes promote B1's
+offline counterexamples into its online result table.
+
 | Order | Path | Entries | Meaning |
 | --- | --- | ---: | --- |
 | 1 | Compatibility-adapted GenBaB guarded pair | 10 | Fixed-order ACT unresolved properties, local diagnosis only |

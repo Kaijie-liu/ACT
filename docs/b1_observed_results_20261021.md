@@ -44,6 +44,39 @@ obligations. Three show material product gaps as well; several replayed top-k
 sets differ from the encoded pair. No unique gate, product, guard or lowering
 cause follows from these substitutions. The records preserve each signed value.
 
+### Request level proof acquisition gaps
+
+A saved-record regrouping by request, pair and property accounts for all 720
+obligations without treating SELECTED as another solve: 159 reused, 147 accepted
+status0 positives, 271 unaccepted status1 positive raw duals, 111 other returned
+unresolved obligations, 28 attempted without a return and four not reached.
+The 111 comprise 14 status0 negative bounds, 65 status1 negative raw duals and
+32 status1 returns without a raw dual. These are numerical observations, not
+independently checked dual certificates.
+
+Ten requests have positive raw duals for every returned unresolved F0 obligation.
+Seven still lack one attempted output obligation. The other three have complete
+output-candidate coverage, but remain distinct from accepted full proofs:
+
+| Request | Reused | Accepted status0 positive | Unaccepted status1 positive | Missing | Online result |
+| --- | ---: | ---: | ---: | ---: | --- |
+| Seed2 / 4223 | 10 | 11 | 6 | 0 | UNKNOWN, normally received |
+| Seed0 / 4311 | 3 | 8 | 7 | 0 | UNKNOWN, normally received |
+| Seed0 / 4275 | 1 | 5 | 12 | 0 | ERROR, exit failure and package rejected |
+
+The minimum remaining raw dual values, including the output constant, are
+respectively 1.298542, 1.193812 and 0.424338. The records bind the inventories
+and observations for all ten requests; every selected positive is also above
+1e-7. No model or solver was executed for this regrouping.
+
+For the first two requests, the recorded remaining output obstacle lies in
+obtaining and accepting adequate proof evidence, rather than an observed
+nonpositive bound or missing output obligation. This does not establish that
+their raw dual values are sound: multipliers were not retained for independent
+checking, and source-lowering assumptions remain. The ERROR case has an
+additional reception failure. None is a new SAFE, and these observations do
+not authorize dropping the optimal-status gate or re-solving missing evidence.
+
 The complete online execution, including the retained tooling prefix and
 controller overhead, cost **10,460.354 seconds**. The R1/R2/R3 directories total
 176,741,085 bytes after the final receipt; separately stored controller logs add

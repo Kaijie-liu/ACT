@@ -1,4 +1,388 @@
 {
+  "saved_request_proof_acquisition": {
+    "counts": {
+      "attempted_no_return": 28,
+      "not_reached": 4,
+      "other_returned_unresolved": 111,
+      "reused": 159,
+      "status0_accepted_positive": 147,
+      "status1_positive_raw_dual": 271
+    },
+    "definition": "Remaining returned obligations all status1 with finite raw dual plus output constant >0; reused and status0 accepted obligations retained; missing output obligations and ERROR terminals retained.",
+    "new_model_calls": 0,
+    "new_solver_calls": 0,
+    "qualifying_requests": 10,
+    "raw_duals_independently_checked": false,
+    "repairs_online": false,
+    "rows": [
+      {
+        "accepted": false,
+        "all_remaining_raw_duals_above_1e_minus7": true,
+        "counts": {
+          "attempted_no_return": 1,
+          "reused": 3,
+          "status0_accepted_positive": 8,
+          "status1_positive_raw_dual": 15
+        },
+        "inventory": "/data1/Kane/MOE/results/b1_observed_20261021_r2/01_seed2_4113/diagnostics/00111_inventory_e7b3066956782ed61f87d97cfa9ae1dedbcd577ed33c6a2b1bccba5f9e210236.json",
+        "inventory_file_sha256": "e7b3066956782ed61f87d97cfa9ae1dedbcd577ed33c6a2b1bccba5f9e210236",
+        "inventory_sha256": "e7b3066956782ed61f87d97cfa9ae1dedbcd577ed33c6a2b1bccba5f9e210236",
+        "job_id": "01_seed2_4113",
+        "minimum_positive_raw_dual": 1.1580356114885262,
+        "missing": [
+          {
+            "pair": [
+              4,
+              7
+            ],
+            "property_index": 8,
+            "state": "ATTEMPTED"
+          }
+        ],
+        "obligations": 27,
+        "positive_observation_file_hashes": {
+          "00003_observation_78828b8bca0e5c11dcb5e00e9154fe45fa7dbe36e0fe8fa58ddfe6a84fea5c84.json": "78828b8bca0e5c11dcb5e00e9154fe45fa7dbe36e0fe8fa58ddfe6a84fea5c84",
+          "00009_observation_748cfd00108e509b3a8b83218481e27fd9559e55fe1746478530520c23caab99.json": "748cfd00108e509b3a8b83218481e27fd9559e55fe1746478530520c23caab99",
+          "00019_observation_3f7d95eca3abd2cf397b63b82b953f31803cdc1094ca056f4189a5ce24e9317b.json": "3f7d95eca3abd2cf397b63b82b953f31803cdc1094ca056f4189a5ce24e9317b",
+          "00037_observation_f0c230ab73b37d78cb53dfcd7b0e47ed528e9554501456943b7332b1516b2a09.json": "f0c230ab73b37d78cb53dfcd7b0e47ed528e9554501456943b7332b1516b2a09",
+          "00047_observation_b3916d11945d0215e2c35c7c1cc6d6802c71bda76f23e7707b3bb05da0eac719.json": "b3916d11945d0215e2c35c7c1cc6d6802c71bda76f23e7707b3bb05da0eac719",
+          "00053_observation_98986a98fd00e266ddc1d4ebef773c8741c43b38a074597c0e06dd7eedb82e67.json": "98986a98fd00e266ddc1d4ebef773c8741c43b38a074597c0e06dd7eedb82e67",
+          "00071_observation_7f3d9accf0418a7df35b6089bd335a5bb6d63fd3ff7c32ecfc3d5a1229004c0e.json": "7f3d9accf0418a7df35b6089bd335a5bb6d63fd3ff7c32ecfc3d5a1229004c0e",
+          "00077_observation_8b8fafd188398c1df90bcaa5efea94aba1370e3bee01685ed82e8cae4ee344d9.json": "8b8fafd188398c1df90bcaa5efea94aba1370e3bee01685ed82e8cae4ee344d9",
+          "00083_observation_088a0fa7b4a9a6f6157e5176ac041301b831fbdc80a83f4096c1b0f8cdf26cce.json": "088a0fa7b4a9a6f6157e5176ac041301b831fbdc80a83f4096c1b0f8cdf26cce",
+          "00088_observation_5b94947045577e2356967f8a44bf43031334a9396def580ae96674970489fc36.json": "5b94947045577e2356967f8a44bf43031334a9396def580ae96674970489fc36",
+          "00092_observation_84d6d379e146652d0affdd7938d9d5cf47fd115cefcceea0717e83f412ebb6ea.json": "84d6d379e146652d0affdd7938d9d5cf47fd115cefcceea0717e83f412ebb6ea",
+          "00096_observation_89de5c6354d13e13ae21ee8d3259c9df8f453c4f8ab2fb6e9d32a2cf9341f12e.json": "89de5c6354d13e13ae21ee8d3259c9df8f453c4f8ab2fb6e9d32a2cf9341f12e",
+          "00100_observation_8a57d39fce963efd0eb94ca95b5b28b21d06832f0cd3b2f6d3b24553e028a9f5.json": "8a57d39fce963efd0eb94ca95b5b28b21d06832f0cd3b2f6d3b24553e028a9f5",
+          "00104_observation_6a1798925ea4ed51eb8f74980779ae75ff8a7e0195c5a918a0d0a259e20b40b0.json": "6a1798925ea4ed51eb8f74980779ae75ff8a7e0195c5a918a0d0a259e20b40b0",
+          "00108_observation_1fe11bb326019afedd4d53dd0bd9b3e0f129789c7b05728ca494b7d299b2c631.json": "1fe11bb326019afedd4d53dd0bd9b3e0f129789c7b05728ca494b7d299b2c631"
+        },
+        "reception_sha256": "1f3e7c77e9ffc2814c2fcea0ce0c462b4bd949bae0d0ee529348eb0987da4d98",
+        "status": "TIMEOUT",
+        "terminal_sha256": "bdb758bb7fc59b8a8aa562e76a7cc84b46442b7cfbfde016681875342556aa85"
+      },
+      {
+        "accepted": false,
+        "all_remaining_raw_duals_above_1e_minus7": true,
+        "counts": {
+          "attempted_no_return": 1,
+          "status1_positive_raw_dual": 8
+        },
+        "inventory": "/data1/Kane/MOE/results/b1_observed_20261021_r2/05_seed1_4142/diagnostics/00034_inventory_16838bd94a03e46aab0ca73723fa50bc195baf3f1cd89d1f0d6a99261d440a3f.json",
+        "inventory_file_sha256": "16838bd94a03e46aab0ca73723fa50bc195baf3f1cd89d1f0d6a99261d440a3f",
+        "inventory_sha256": "16838bd94a03e46aab0ca73723fa50bc195baf3f1cd89d1f0d6a99261d440a3f",
+        "job_id": "05_seed1_4142",
+        "minimum_positive_raw_dual": 1.1711850835232447,
+        "missing": [
+          {
+            "pair": [
+              2,
+              6
+            ],
+            "property_index": 8,
+            "state": "ATTEMPTED"
+          }
+        ],
+        "obligations": 9,
+        "positive_observation_file_hashes": {
+          "00003_observation_2e018b0c10d2a7abb6e9ac3e99c1a36abe5825e483dd5e0d02f78e2da23fc26d.json": "2e018b0c10d2a7abb6e9ac3e99c1a36abe5825e483dd5e0d02f78e2da23fc26d",
+          "00007_observation_2e8fd9fb2115f0e8b2db38b6a8edb98bd2586f5c102e86c4d1c1fb256e9d89bf.json": "2e8fd9fb2115f0e8b2db38b6a8edb98bd2586f5c102e86c4d1c1fb256e9d89bf",
+          "00011_observation_d27f53d82358f54c2cecc807b327a81c2828ff329a4c4bce5149edbeea3eac37.json": "d27f53d82358f54c2cecc807b327a81c2828ff329a4c4bce5149edbeea3eac37",
+          "00015_observation_061a3a1f867a7ff394842e197f76990052adad132089a09e0dc6349c08779f04.json": "061a3a1f867a7ff394842e197f76990052adad132089a09e0dc6349c08779f04",
+          "00019_observation_e99ecdba449e6576aa5f3269c3616670d032ef89e4ce3cf155b457c79dcd10c4.json": "e99ecdba449e6576aa5f3269c3616670d032ef89e4ce3cf155b457c79dcd10c4",
+          "00023_observation_dc40cfb6bd129af62f25b091cf84001cd1fe19ac997067d7cd8982caad1ddf6a.json": "dc40cfb6bd129af62f25b091cf84001cd1fe19ac997067d7cd8982caad1ddf6a",
+          "00027_observation_e7d047ce857e4d54d84dff5bc92416ba05acd175eba83b8181a9ce49de676a49.json": "e7d047ce857e4d54d84dff5bc92416ba05acd175eba83b8181a9ce49de676a49",
+          "00031_observation_13176a4a1f939fac1d0166a2dedf914f0afe31c59d456c4082c7d956e0938cda.json": "13176a4a1f939fac1d0166a2dedf914f0afe31c59d456c4082c7d956e0938cda"
+        },
+        "reception_sha256": "1659752f50667afd764fc4d65ffaaef99d4e78b263dd59203020531ac52eb6bd",
+        "status": "TIMEOUT",
+        "terminal_sha256": "4b4292622996a3064776bfb1b4db57678bbccd11572eb637f3d95893bd9b02f7"
+      },
+      {
+        "accepted": false,
+        "all_remaining_raw_duals_above_1e_minus7": true,
+        "counts": {
+          "attempted_no_return": 1,
+          "status0_accepted_positive": 1,
+          "status1_positive_raw_dual": 7
+        },
+        "inventory": "/data1/Kane/MOE/results/b1_observed_20261021_r2/06_seed0_4150/diagnostics/00034_inventory_585a81c8eb9562ca43b9215135cd5d07d065f4a424ce58f9fa7c5ba5bf9c0ead.json",
+        "inventory_file_sha256": "585a81c8eb9562ca43b9215135cd5d07d065f4a424ce58f9fa7c5ba5bf9c0ead",
+        "inventory_sha256": "585a81c8eb9562ca43b9215135cd5d07d065f4a424ce58f9fa7c5ba5bf9c0ead",
+        "job_id": "06_seed0_4150",
+        "minimum_positive_raw_dual": 1.3469315500134287,
+        "missing": [
+          {
+            "pair": [
+              4,
+              5
+            ],
+            "property_index": 8,
+            "state": "ATTEMPTED"
+          }
+        ],
+        "obligations": 9,
+        "positive_observation_file_hashes": {
+          "00003_observation_6f09ce190d28f2962ed9a801eda02589b2a400a9d87017874d4b07eba13dca70.json": "6f09ce190d28f2962ed9a801eda02589b2a400a9d87017874d4b07eba13dca70",
+          "00011_observation_c6bdf53a4417c9a16c8d0365a85db85ba98fae9fbe34816d0d0abab3b127a87c.json": "c6bdf53a4417c9a16c8d0365a85db85ba98fae9fbe34816d0d0abab3b127a87c",
+          "00015_observation_6c940d44283577460f459e2200416e8cb485cca1fcb3f80e2f79f9a7936609a0.json": "6c940d44283577460f459e2200416e8cb485cca1fcb3f80e2f79f9a7936609a0",
+          "00019_observation_e4ff0ffbce31fda86aa38ab07ef46bc59b420408bfbecaf1250e1f3294f1217b.json": "e4ff0ffbce31fda86aa38ab07ef46bc59b420408bfbecaf1250e1f3294f1217b",
+          "00023_observation_a59edd5c813ad740a3d8c4a0ef333b4bfdcfd1a3937145e8ea6d5613df500897.json": "a59edd5c813ad740a3d8c4a0ef333b4bfdcfd1a3937145e8ea6d5613df500897",
+          "00027_observation_cad97793e162fac7f4b8c6fe2fcaac54ddca63a51a79c875ba0996e80f497144.json": "cad97793e162fac7f4b8c6fe2fcaac54ddca63a51a79c875ba0996e80f497144",
+          "00031_observation_0b02eb130c9a9d7fed0065e036f8826f14813cf11fc24c53a6045e042c9af4a5.json": "0b02eb130c9a9d7fed0065e036f8826f14813cf11fc24c53a6045e042c9af4a5"
+        },
+        "reception_sha256": "2532cbdcefedad886b2d978faeba035c2d6cf220a4ab326d7cb8cb050db58a6c",
+        "status": "TIMEOUT",
+        "terminal_sha256": "ed07274f9b173a030d64b026bae8145cea67b976d6a2d284ca5caf8f28f50baf"
+      },
+      {
+        "accepted": false,
+        "all_remaining_raw_duals_above_1e_minus7": true,
+        "counts": {
+          "attempted_no_return": 1,
+          "reused": 5,
+          "status0_accepted_positive": 4,
+          "status1_positive_raw_dual": 8
+        },
+        "inventory": "/data1/Kane/MOE/results/b1_observed_20261021_r2/09_seed2_4179/diagnostics/00050_inventory_18227de6e4e25004925210d83d8d086f557d1f0ea1cc8ebb4325b4da18280473.json",
+        "inventory_file_sha256": "18227de6e4e25004925210d83d8d086f557d1f0ea1cc8ebb4325b4da18280473",
+        "inventory_sha256": "18227de6e4e25004925210d83d8d086f557d1f0ea1cc8ebb4325b4da18280473",
+        "job_id": "09_seed2_4179",
+        "minimum_positive_raw_dual": 1.1173816847221498,
+        "missing": [
+          {
+            "pair": [
+              3,
+              7
+            ],
+            "property_index": 8,
+            "state": "ATTEMPTED"
+          }
+        ],
+        "obligations": 18,
+        "positive_observation_file_hashes": {
+          "00003_observation_8e800331e292303bb0c700beff4c39f8ce3ab2327c212a9c647a935d94f6d6e0.json": "8e800331e292303bb0c700beff4c39f8ce3ab2327c212a9c647a935d94f6d6e0",
+          "00011_observation_563303864e6c8216ab8bd9ff7b610f12a0938fa1a672d51dfb6404fb485ebc3b.json": "563303864e6c8216ab8bd9ff7b610f12a0938fa1a672d51dfb6404fb485ebc3b",
+          "00019_observation_014cda4ef40919245bf78d04db64c27c61b47d51c2f779f2d022df76be3b4515.json": "014cda4ef40919245bf78d04db64c27c61b47d51c2f779f2d022df76be3b4515",
+          "00023_observation_c7ef0ccbba9afc7ad837677ffebfab7943b48c84f4e8f1ad3e4306940df6fbf5.json": "c7ef0ccbba9afc7ad837677ffebfab7943b48c84f4e8f1ad3e4306940df6fbf5",
+          "00027_observation_7810890aa9421a0c57ddfddee0653564446ac6cbb457fe3561f5df58a64eb85d.json": "7810890aa9421a0c57ddfddee0653564446ac6cbb457fe3561f5df58a64eb85d",
+          "00031_observation_878b5cb548c28c8249763348ccbe854d57695c537f7b40d77779fc75019b1123.json": "878b5cb548c28c8249763348ccbe854d57695c537f7b40d77779fc75019b1123",
+          "00043_observation_5c7d16ca8faa5f97e9454c61988e5fcd4ac2fd42432711595d7bc2349beb348c.json": "5c7d16ca8faa5f97e9454c61988e5fcd4ac2fd42432711595d7bc2349beb348c",
+          "00047_observation_ea8511e51f8903c3935cb68efdf9ae05e8a7baa1e7659370cda2743de4c6d60c.json": "ea8511e51f8903c3935cb68efdf9ae05e8a7baa1e7659370cda2743de4c6d60c"
+        },
+        "reception_sha256": "7feb5d41c9ec571ead45f5672dc89827558f7556c0a72779fdc6ac3a07eda992",
+        "status": "TIMEOUT",
+        "terminal_sha256": "ce5a2f88eb724555128dfcb9bdb45200e22b685e7858eb3f11561eb173089b80"
+      },
+      {
+        "accepted": false,
+        "all_remaining_raw_duals_above_1e_minus7": true,
+        "counts": {
+          "attempted_no_return": 1,
+          "reused": 7,
+          "status0_accepted_positive": 11,
+          "status1_positive_raw_dual": 8
+        },
+        "inventory": "/data1/Kane/MOE/results/b1_observed_20261021_r2/10_seed0_4195/diagnostics/00078_inventory_799bc7b23207861cff0df91c74ddf0b9dea9ba8737500c00ed3e0cd215a55ce7.json",
+        "inventory_file_sha256": "799bc7b23207861cff0df91c74ddf0b9dea9ba8737500c00ed3e0cd215a55ce7",
+        "inventory_sha256": "799bc7b23207861cff0df91c74ddf0b9dea9ba8737500c00ed3e0cd215a55ce7",
+        "job_id": "10_seed0_4195",
+        "minimum_positive_raw_dual": 0.3597152342884422,
+        "missing": [
+          {
+            "pair": [
+              0,
+              7
+            ],
+            "property_index": 8,
+            "state": "ATTEMPTED"
+          }
+        ],
+        "obligations": 27,
+        "positive_observation_file_hashes": {
+          "00047_observation_0e7c163db7e8d5f71c2faa8b3c7f011fc1e8ba44f43621952682f7a6beeeb0e4.json": "0e7c163db7e8d5f71c2faa8b3c7f011fc1e8ba44f43621952682f7a6beeeb0e4",
+          "00051_observation_6b1ad99c84fc476a33105b2dcf0acdc5e62539e19a4bc26c26b991bb000d80c6.json": "6b1ad99c84fc476a33105b2dcf0acdc5e62539e19a4bc26c26b991bb000d80c6",
+          "00055_observation_9e27dc66e8d4548d4b00bdc7f9b5bdff1dc6a08567b63cf02444f26039d08477.json": "9e27dc66e8d4548d4b00bdc7f9b5bdff1dc6a08567b63cf02444f26039d08477",
+          "00059_observation_77ef7719af3a0ebf2d68c311cd1035af9df1a08ea3b5460d7521b93613632ef5.json": "77ef7719af3a0ebf2d68c311cd1035af9df1a08ea3b5460d7521b93613632ef5",
+          "00063_observation_13d45fe2ec3fecc2870140227120533bf29eb0b73900dc1126a0b4f3c4ec2584.json": "13d45fe2ec3fecc2870140227120533bf29eb0b73900dc1126a0b4f3c4ec2584",
+          "00067_observation_b13c9cc51780be80a06fd3da7747f692c3db5959aa7d456fea61d9587fbd1903.json": "b13c9cc51780be80a06fd3da7747f692c3db5959aa7d456fea61d9587fbd1903",
+          "00071_observation_44d2aeff4a66c3b30ed2951b845bb32470e3449714c25eadbdf8dde43773420c.json": "44d2aeff4a66c3b30ed2951b845bb32470e3449714c25eadbdf8dde43773420c",
+          "00075_observation_caff6561df6e2e406737561416b7c0471c39df71b67d8508b5c89a998584c060.json": "caff6561df6e2e406737561416b7c0471c39df71b67d8508b5c89a998584c060"
+        },
+        "reception_sha256": "8d56fdd251adefec7b3bda3c971053dee5fcb23a7e7da8c562c43fd71bd3497c",
+        "status": "TIMEOUT",
+        "terminal_sha256": "e0bf658b0c5495e446e61560a699c08516457eb55aeb5356ea6862a6e084c6c4"
+      },
+      {
+        "accepted": true,
+        "all_remaining_raw_duals_above_1e_minus7": true,
+        "counts": {
+          "reused": 10,
+          "status0_accepted_positive": 11,
+          "status1_positive_raw_dual": 6
+        },
+        "inventory": "/data1/Kane/MOE/results/b1_observed_20261021_r2/13_seed2_4223/diagnostics/00069_inventory_d6530bc87c74f0ab9679f16b6f4141383d538e74ec1b8a70b62bd559ef5af63b.json",
+        "inventory_file_sha256": "d6530bc87c74f0ab9679f16b6f4141383d538e74ec1b8a70b62bd559ef5af63b",
+        "inventory_sha256": "d6530bc87c74f0ab9679f16b6f4141383d538e74ec1b8a70b62bd559ef5af63b",
+        "job_id": "13_seed2_4223",
+        "minimum_positive_raw_dual": 1.2985416126099123,
+        "missing": [],
+        "obligations": 27,
+        "positive_observation_file_hashes": {
+          "00003_observation_0a47636f06af63d6f211c736e83042d3cba5efaae6e51746d95daae6c8a02e9f.json": "0a47636f06af63d6f211c736e83042d3cba5efaae6e51746d95daae6c8a02e9f",
+          "00011_observation_423a98cd6d5c40102cfc9aa41b238415a7ffb12afe3059e18f697975a37f6234.json": "423a98cd6d5c40102cfc9aa41b238415a7ffb12afe3059e18f697975a37f6234",
+          "00015_observation_8da3a45bab250107cf464a3388dc78e7ccd19a37e60d45c3ce2984d0b60d05ba.json": "8da3a45bab250107cf464a3388dc78e7ccd19a37e60d45c3ce2984d0b60d05ba",
+          "00043_observation_3d02f210b984caafa26df55b2c8456c7c01910d377458aea83e051056ecc96df.json": "3d02f210b984caafa26df55b2c8456c7c01910d377458aea83e051056ecc96df",
+          "00047_observation_de41a5a21c6d5cb3b9b983b78bb63a49f0be14c0cf0ca4320eb4206696b98272.json": "de41a5a21c6d5cb3b9b983b78bb63a49f0be14c0cf0ca4320eb4206696b98272",
+          "00059_observation_e8fc4afb3b95d09b46ceccd69c9689aeaf1bebbf92d8dc0df7a66399de11c59f.json": "e8fc4afb3b95d09b46ceccd69c9689aeaf1bebbf92d8dc0df7a66399de11c59f"
+        },
+        "reception_sha256": "41a3b602a1edcdfd40ae30b29f125980bb5c8d33d96922dd29c4fe8147b6f41b",
+        "status": "UNKNOWN",
+        "terminal_sha256": "edcf245ad59d1c725a5c602f8a4e762fa1ff8aa32a215e811207523544c97287"
+      },
+      {
+        "accepted": false,
+        "all_remaining_raw_duals_above_1e_minus7": true,
+        "counts": {
+          "attempted_no_return": 1,
+          "reused": 1,
+          "status1_positive_raw_dual": 7
+        },
+        "inventory": "/data1/Kane/MOE/results/b1_observed_20261021_r2/14_seed1_4232/diagnostics/00030_inventory_92d697d3aa7d5bd7655d5df04d1a8a96f4e2937eec1d45f65a8593af6c32d971.json",
+        "inventory_file_sha256": "92d697d3aa7d5bd7655d5df04d1a8a96f4e2937eec1d45f65a8593af6c32d971",
+        "inventory_sha256": "92d697d3aa7d5bd7655d5df04d1a8a96f4e2937eec1d45f65a8593af6c32d971",
+        "job_id": "14_seed1_4232",
+        "minimum_positive_raw_dual": 0.11598964533910383,
+        "missing": [
+          {
+            "pair": [
+              4,
+              6
+            ],
+            "property_index": 8,
+            "state": "ATTEMPTED"
+          }
+        ],
+        "obligations": 9,
+        "positive_observation_file_hashes": {
+          "00003_observation_235efdf4f2e79f7bd81112ae3e71382f9b6c4106c35663164f8db2e81532d675.json": "235efdf4f2e79f7bd81112ae3e71382f9b6c4106c35663164f8db2e81532d675",
+          "00007_observation_e2bbec811ec18be765fcaceb63b4ac69fcb23775ca0530f213c3dc792f382dc1.json": "e2bbec811ec18be765fcaceb63b4ac69fcb23775ca0530f213c3dc792f382dc1",
+          "00011_observation_1970b94086f430cb61e92c089ccca0bea5c0d2fcdf81f8daba38e910c3b7ded1.json": "1970b94086f430cb61e92c089ccca0bea5c0d2fcdf81f8daba38e910c3b7ded1",
+          "00015_observation_325e7e65695bf4e708c63e8e0f9b725d4831e6a02ab74073ad949939450af6f0.json": "325e7e65695bf4e708c63e8e0f9b725d4831e6a02ab74073ad949939450af6f0",
+          "00019_observation_1a4edff178b396b97d3572d837c94919158f09699049d590d0e3df534619028d.json": "1a4edff178b396b97d3572d837c94919158f09699049d590d0e3df534619028d",
+          "00023_observation_1c7520817aa65954190ad106aa6dc406a056ea7558b2880ba7c7f2ba93f0ea4f.json": "1c7520817aa65954190ad106aa6dc406a056ea7558b2880ba7c7f2ba93f0ea4f",
+          "00027_observation_e685e6e100b7687dd3ce4a4cd74e9b2783eff442af8a72b8fbb1d2bc648e54c1.json": "e685e6e100b7687dd3ce4a4cd74e9b2783eff442af8a72b8fbb1d2bc648e54c1"
+        },
+        "reception_sha256": "338e4aa7f8bdbba915e5d48707d05edcc60781087d38c442040970f816c53ac0",
+        "status": "TIMEOUT",
+        "terminal_sha256": "633c3e44cd981e2bc3a5a83a4e1bf44aad1106c9d196fde8992d886fb46a4785"
+      },
+      {
+        "accepted": false,
+        "all_remaining_raw_duals_above_1e_minus7": true,
+        "counts": {
+          "reused": 1,
+          "status0_accepted_positive": 5,
+          "status1_positive_raw_dual": 12
+        },
+        "inventory": "/data1/Kane/MOE/results/b1_observed_20261021_r2/17_seed0_4275/diagnostics/00069_inventory_f525341b6d12409c5f38a21f37372d538838d7aa453450a061e951d554091d09.json",
+        "inventory_file_sha256": "f525341b6d12409c5f38a21f37372d538838d7aa453450a061e951d554091d09",
+        "inventory_sha256": "f525341b6d12409c5f38a21f37372d538838d7aa453450a061e951d554091d09",
+        "job_id": "17_seed0_4275",
+        "minimum_positive_raw_dual": 0.42433756334000505,
+        "missing": [],
+        "obligations": 18,
+        "positive_observation_file_hashes": {
+          "00003_observation_cc7eb2fb5317e9eb81c4dae769f89dd229e4c3be5b7418a25dc162bbcdcde428.json": "cc7eb2fb5317e9eb81c4dae769f89dd229e4c3be5b7418a25dc162bbcdcde428",
+          "00007_observation_1df6883056572959964ff0444ee09929a3568eed25e907b7220be0dc56e9f52b.json": "1df6883056572959964ff0444ee09929a3568eed25e907b7220be0dc56e9f52b",
+          "00011_observation_127021c49eb90308bf4adef77815779d890bc1673e5c680500a2a616b97d8a3c.json": "127021c49eb90308bf4adef77815779d890bc1673e5c680500a2a616b97d8a3c",
+          "00015_observation_39b9294dfb43c1176e9dec5ca9669edb67886bb0c9c4cff02f572291cc99266c.json": "39b9294dfb43c1176e9dec5ca9669edb67886bb0c9c4cff02f572291cc99266c",
+          "00019_observation_680a86d8541ce607a26f89a35852748c474beaa9907a19b28866c7c972520de2.json": "680a86d8541ce607a26f89a35852748c474beaa9907a19b28866c7c972520de2",
+          "00023_observation_40ca20dc1e5da28737e2d4c4b0216c625097aa9dae8538b9e4b2f5a20d76611d.json": "40ca20dc1e5da28737e2d4c4b0216c625097aa9dae8538b9e4b2f5a20d76611d",
+          "00027_observation_741f19ccd75baf7b2017f821cb40ea0022169306eda45243cb9fa1f701f23ae9.json": "741f19ccd75baf7b2017f821cb40ea0022169306eda45243cb9fa1f701f23ae9",
+          "00031_observation_cf10625d578f97783fcdcc7d27ca3a5425d9889b0bf3c09502e6b9e806238395.json": "cf10625d578f97783fcdcc7d27ca3a5425d9889b0bf3c09502e6b9e806238395",
+          "00035_observation_45694d1f3c47a9aee7c23ecdc16a12fcafd403b2ad445c3a2b201d6d210e4d37.json": "45694d1f3c47a9aee7c23ecdc16a12fcafd403b2ad445c3a2b201d6d210e4d37",
+          "00043_observation_6c6ad45ae316d8ccd492e63d91e38d965c90401d3fc82c16b525cb9b54915e3e.json": "6c6ad45ae316d8ccd492e63d91e38d965c90401d3fc82c16b525cb9b54915e3e",
+          "00047_observation_11f1b17c501cd261f4208ee4f9ddff1b74a9444cd429e059883369bdd8098ef8.json": "11f1b17c501cd261f4208ee4f9ddff1b74a9444cd429e059883369bdd8098ef8",
+          "00063_observation_36c79ecad5fa1dcf249514563dedbbf2b8248cace8cc75afbe3e449449ee5ec6.json": "36c79ecad5fa1dcf249514563dedbbf2b8248cace8cc75afbe3e449449ee5ec6"
+        },
+        "reception_sha256": "529574822cb02994b4184ee7fa57abf23ea4ec9ee5d298c3b02c5119a7aa66a7",
+        "status": "ERROR",
+        "terminal_sha256": "15e7453b7a2bb489d3854e8de03254c174af6052716075d0b63c58df5e79f2dd"
+      },
+      {
+        "accepted": true,
+        "all_remaining_raw_duals_above_1e_minus7": true,
+        "counts": {
+          "reused": 3,
+          "status0_accepted_positive": 8,
+          "status1_positive_raw_dual": 7
+        },
+        "inventory": "/data1/Kane/MOE/results/b1_observed_20261021_r3/26_seed0_4311/diagnostics/00061_inventory_a8ea97fde502b76cc4e65b938e84b6e9a3f1e6db2c0344f4e0685d5b7bfc0495.json",
+        "inventory_file_sha256": "a8ea97fde502b76cc4e65b938e84b6e9a3f1e6db2c0344f4e0685d5b7bfc0495",
+        "inventory_sha256": "a8ea97fde502b76cc4e65b938e84b6e9a3f1e6db2c0344f4e0685d5b7bfc0495",
+        "job_id": "26_seed0_4311",
+        "minimum_positive_raw_dual": 1.1938116811012256,
+        "missing": [],
+        "obligations": 18,
+        "positive_observation_file_hashes": {
+          "00003_observation_515809737221ec88358ef3c55078f5cc87400a1d47350cddb56865b0504f31cd.json": "515809737221ec88358ef3c55078f5cc87400a1d47350cddb56865b0504f31cd",
+          "00011_observation_b4b2d5b086d599b94f743b1c1c4fe5b99b1a5085907ab1c340b3718c15ac1767.json": "b4b2d5b086d599b94f743b1c1c4fe5b99b1a5085907ab1c340b3718c15ac1767",
+          "00015_observation_a88e07ce8e5cda9c0ddef04b7c5870389586d836135aae5990f2bd8deb3fab9e.json": "a88e07ce8e5cda9c0ddef04b7c5870389586d836135aae5990f2bd8deb3fab9e",
+          "00019_observation_b92e22287c35cbc2e65c2e87f089831a4ec66191ac8e71406808f152a641b5fe.json": "b92e22287c35cbc2e65c2e87f089831a4ec66191ac8e71406808f152a641b5fe",
+          "00027_observation_9db1976db51e71bacb98a457308988078523f14e1e72610eb0337c994c39dfc9.json": "9db1976db51e71bacb98a457308988078523f14e1e72610eb0337c994c39dfc9",
+          "00031_observation_a1a933d21b8c972c490de544045262252accb8abe4d831bf3bc23d85b8deea05.json": "a1a933d21b8c972c490de544045262252accb8abe4d831bf3bc23d85b8deea05",
+          "00035_observation_72a5577f6b7fac0d134a613964b20ba5f281c5bbf20f3eaecef759853b5e5b7c.json": "72a5577f6b7fac0d134a613964b20ba5f281c5bbf20f3eaecef759853b5e5b7c"
+        },
+        "reception_sha256": "d9118330e3151d8b66ea92ce4818e782dca6e1be026974dd4adfd0e88606c829",
+        "status": "UNKNOWN",
+        "terminal_sha256": "d36158e821bd74511f9976a3e777a94c4ee33539a9721a19637cbf9a0a140464"
+      },
+      {
+        "accepted": false,
+        "all_remaining_raw_duals_above_1e_minus7": true,
+        "counts": {
+          "attempted_no_return": 1,
+          "reused": 1,
+          "status1_positive_raw_dual": 7
+        },
+        "inventory": "/data1/Kane/MOE/results/b1_observed_20261021_r3/31_seed0_4339/diagnostics/00030_inventory_848d5c1414f49f9903653659e3f799f15c14d6ca0a91d7cc48ae43807ad08ec8.json",
+        "inventory_file_sha256": "848d5c1414f49f9903653659e3f799f15c14d6ca0a91d7cc48ae43807ad08ec8",
+        "inventory_sha256": "848d5c1414f49f9903653659e3f799f15c14d6ca0a91d7cc48ae43807ad08ec8",
+        "job_id": "31_seed0_4339",
+        "minimum_positive_raw_dual": 0.7168450897020979,
+        "missing": [
+          {
+            "pair": [
+              0,
+              7
+            ],
+            "property_index": 8,
+            "state": "ATTEMPTED"
+          }
+        ],
+        "obligations": 9,
+        "positive_observation_file_hashes": {
+          "00003_observation_8069773521ec8689db2eed12cfd096a4aad3ed6487f79332319be41f56ed4247.json": "8069773521ec8689db2eed12cfd096a4aad3ed6487f79332319be41f56ed4247",
+          "00007_observation_fc576b4f40dba0c2d9d3df580c1a685cf7f08bab9d8fc2d1ce0b3d8fc361519a.json": "fc576b4f40dba0c2d9d3df580c1a685cf7f08bab9d8fc2d1ce0b3d8fc361519a",
+          "00011_observation_8e466c250ca002d17252ae51daeb471194beadf2e95c3a23bde37c38a2b25d4e.json": "8e466c250ca002d17252ae51daeb471194beadf2e95c3a23bde37c38a2b25d4e",
+          "00015_observation_368b61bc73bf1c07637a410ae687d8c27ae267f99628a4db0445ac0da7f01672.json": "368b61bc73bf1c07637a410ae687d8c27ae267f99628a4db0445ac0da7f01672",
+          "00019_observation_350a27d3e79d070ec8ca432a88cc74e52b88f3f760b36e7ac6656242a564c5ea.json": "350a27d3e79d070ec8ca432a88cc74e52b88f3f760b36e7ac6656242a564c5ea",
+          "00023_observation_a83df78df632f2e0f6c38e9e18cadf953483448e8f71e1107250072143f41f50.json": "a83df78df632f2e0f6c38e9e18cadf953483448e8f71e1107250072143f41f50",
+          "00027_observation_e830736b6b6457125c6745bbd302de2b571bf6b5e31b3a48191f785e1c4c2518.json": "e830736b6b6457125c6745bbd302de2b571bf6b5e31b3a48191f785e1c4c2518"
+        },
+        "reception_sha256": "56513c31b0435dd497d3667b32120526ef6676fd3e1e0db089098c3bbae1754f",
+        "status": "TIMEOUT",
+        "terminal_sha256": "e216c1ac11a539bfdda835326de3f5ef472968c43c8441094774deb42f41b998"
+      }
+    ],
+    "interpretation": "Two normally received UNKNOWN requests have complete numerical candidate coverage (seed2/4223, seed0/4311); seed0/4275 also covers all output candidates but remains rejected ERROR. No independently checked multipliers or source-complete proofs; no status-gate relaxation or online promotion.",
+    "nonpositive_breakdown": {
+      "status0_negative": 14,
+      "status1_negative_raw_dual": 65,
+      "status1_missing_raw_dual": 32
+    }
+  },
   "schema": "B1_SAVED_PREFIX_ANALYSIS_V1",
   "offline_diagnostics": {
     "actual_local_attempts": 141,

@@ -1,4 +1,61 @@
 {
+  "saved_witness_crosscheck": {
+    "scope": "Saved native float64 witness versus numerical-filter consistency only; no new model replay or exact real proof",
+    "new_model_calls": 0,
+    "new_solver_calls": 0,
+    "rows": [
+      {
+        "request": "15_seed0_4237",
+        "b1_query": "q015",
+        "genbab_aggregate": "b2_025",
+        "crown_aggregate": "b2_066",
+        "pair": [
+          6,
+          7
+        ],
+        "property_index": 5,
+        "saved_margin": -0.8687955817328256,
+        "witness": {
+          "path": "/data1/Kane/MOE/results/b1_observed_diagnostics_20261021_r1/q015/witness.pt",
+          "sha256": "2e29fd6280a4e8f6a6fd68f8de501f9296f3547cbae4c042465f02586f59c6eb"
+        }
+      },
+      {
+        "request": "32_seed0_4341",
+        "b1_query": "q032",
+        "genbab_aggregate": "b2_042",
+        "crown_aggregate": null,
+        "pair": [
+          4,
+          6
+        ],
+        "property_index": 8,
+        "saved_margin": -0.08213289253093392,
+        "witness": {
+          "path": "/data1/Kane/MOE/results/b1_observed_diagnostics_20261021_r1/q032/witness.pt",
+          "sha256": "c1d6334d999a0ce41082af1302048b3ef8d181b4e9a31b2a744d2ee01255b829"
+        }
+      },
+      {
+        "request": "35_seed1_4356",
+        "b1_query": "q035",
+        "genbab_aggregate": "b2_045",
+        "crown_aggregate": null,
+        "pair": [
+          2,
+          3
+        ],
+        "property_index": 1,
+        "saved_margin": -0.057576850198487683,
+        "witness": {
+          "path": "/data1/Kane/MOE/results/b1_observed_diagnostics_20261021_r1/q035/witness.pt",
+          "sha256": "ec7c48c0ef0c34914bd164a2ea34a325388b883674fc696813a5d5b896b36379"
+        }
+      }
+    ],
+    "trigger": "A complete POSITIVE or a positive guarded receipt for the witness's same pair/property is a SAME_OBJECT_WITNESS_NUMERICAL_CONFLICT_PENDING_REVIEW, not a usable safety claim. Other-pair positives and UNKNOWN/TIMEOUT do not conflict.",
+    "interpretation": "B1 offline witnesses never promote B1 online outcomes. B2 attacks are disabled; failure to find the witnesses is not an error. Check coverage, identities, dynamic/static gate semantics, guards and unsafe OR before attributing any future conflict."
+  },
   "claim": "FAILURE_SELECTED_NUMERICAL_DIAGNOSTIC_NOT_POPULATION_WIN_RATE",
   "code_copy": "/data1/Kane/MOE/executions/b2_observed_20261021_2caeae501",
   "control_root": "/data1/Kane/MOE/results/b2_vector_or_20261021_r1",

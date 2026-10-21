@@ -1,5 +1,13 @@
 # MoE project handoff — current entry point
 
+## B1 request level proof acquisition diagnosis 2026-10-21
+
+Real increment0 new calls; saved41-request/720-obligation regrouping identifies10 requests with all returned unresolved raw duals positive.
+[B1 results](b1_observed_results_20261021.md)/[records](b1_observed_records_20261021.json):7 still lack1 obligation;seed2/4223 andseed0/4311 have complete candidates but remain UNKNOWN.
+Seed0/4275 also has complete candidates but rejected ERROR; no offline promotion, multipliers not checked, source assumptions unchanged.
+This separates candidate-evidence acquisition from observed negative relaxation; it does not justify removing the status gate or select B3.
+Controller916650/immutable2caeae501 continues B2; live ledgers supersede the five-request archive. Finish strong-path table before B3; G1–G6 OPEN.
+
 ## B2 first five complete attempts 2026-10-21
 
 Real increment3 complete attempts:1POSITIVE/2UNKNOWN; audited prefix5 gives3POSITIVE/2UNKNOWN, with10 local diagnoses unchanged.
