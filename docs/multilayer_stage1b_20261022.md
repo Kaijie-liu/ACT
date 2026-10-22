@@ -1,5 +1,21 @@
 # Residual multilayer model validity study
 
+## Launch 2026-10-23
+
+Frozen six-model CPU queue launched at00:29:33AEDT,PID3997912/PPID1/SID3997912,
+nice10,two numerical threads,8GiB RLIMIT_AS read back. Immutable execution
+`executions/multilayer_stage1b_training_20261023_r1` is commit
+`21a21f2559803063b5b9ac3dea724e80b76654ca`; result root has the same basename.
+Manifest SHA256`6b3a401dcb87fb4e5e6e289e4f7174e9b8abc119cfd2349189e2ae800c57702a`;
+all eight source hashes,seven data files,and prior control/receipt match.
+New split matches frozen original
+`92a4da411c6d6c731da72203665b2533b0fb91b37f7d7f0c82e82d8ace0f1e5d`.
+Admission:load12.72/20CPU,available91GiB,disk80GiB;other jobs untouched,no GPU.
+First model is training,not final selected checkpoint; no accuracy/proof claim.
+After completion independently audit all six models/300epochs and earliest
+validation selection before freezing the240-request verification study. Apply
+the[post-prefix mechanism supplement](multilayer_stage1_20261022.md) to1b too.
+
 Stage1b is the user-authorized model-validity follow-up, not a replacement for
 the twelve frozen stage1a models. The old low accuracies and concentrated routes
 remain results. The new recipe changes a declared bundle of training/architecture

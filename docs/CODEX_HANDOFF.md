@@ -1,8 +1,17 @@
 # MoE project handoff — current entry point
 
+## Mechanism supplement registered;1b CPU training started 2026-10-23
+
+Real192/600 registration snapshot:55numerical positives/133timeouts/2unknown/2preserved errors; live ledgers supersede.
+User supplement is explicitly post189-prefix;[protocol](multilayer_stage1_20261022.md) keeps original endpoint and adds A/B/C mechanism gate before alpha-CROWN.
+1b six-model training startedPID3997912,immutable21a21f255,`results/multilayer_stage1b_training_20261023_r1`;two CPUthreads,nice10,8GiBAS,split hash matches.
+No GPU; load12.72/20CPUs,91GiB available,80GiB disk at admission. Training is not a verification result;240-call1b queue remains unfrozen/unstarted.
+Mandatory query-start publication and stdlib controls are being frozen;old1a r5 continues unchanged until a verified pre-worker boundary handoff.
+009 narration corrected:seed2/pruned,not seed1/naive;old request and terminal unchanged. G1–G6 OPEN.
+
 ## Stage1a running after ACT lowering repair 2026-10-22
 
-Real10/600 snapshot:5numerical positives,3timeouts,2preservedERRORs;009 GenBaB-naive returns positive31.199s, next010.
+Real10/600 snapshot:5numerical positives,3timeouts,2preservedERRORs;009 GenBaB-pruned/seed2 returns positive31.199s, next010 (narration corrected2026-10-23).
 DetachedPID4044622 runs immutable5483c7472 at`results/multilayer_stage1_20261022_r5`;[records](multilayer_stage1_records_20261022.json) bind chain/control/start.
 R1/r3 retained verbatim, carry1287s/8,373,830B, no completed calls replayed; all original600 endpoints and300s per request unchanged.
 Independent startup audit passes18 sources, full ancestor inventories, actual AS limits, cumulative costs and009 coverage780pruned+4verified=784.

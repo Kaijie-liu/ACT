@@ -12,7 +12,7 @@ import sys
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT),str(ROOT/'scripts')]
 from scoped_proof.io import load,sha
-from act.pipeline.moe.multilayer_study import coverage,endpoint
+from act.pipeline.moe.multilayer_study import coverage,endpoint,mechanism_decomposition,mechanism_endpoint
 
 
 def read(path):
@@ -190,16 +190,27 @@ def audit(root,manifest):
                 witness_sources.setdefault((q['model']['id'],q['sample']['index']),set()).add(q['arm'])
         else:
             cov=(ledger.get('partial') or {}).get('coverage',coverage({},q['arm'],expected))
+        telemetry=ledger.get('partial')
+        if telemetry is None and 'progress.json' in ledger.get('files',{}):
+            telemetry=load(target/'progress.json')
+        durations=[]
+        if result is not None and q['arm']!='act':
+            durations=[h['outcome'].get('seconds') for h in result['result'].get('histories',[])]
         rows.append(dict(model=q['model']['id'],index=q['sample']['index'],rank=q['sample']['rank'],arm=q['arm'],
             status=ledger['status'],seconds=ledger['seconds'],coverage=cov,
+            mechanism=mechanism_decomposition(ledger['seconds'],cov,telemetry,durations),
             evidence_grade=(result or {}).get('guarantee','NONE')))
-    unsafe=set(witness_sources);endpoints={}
+    unsafe=set(witness_sources);endpoints={};mechanisms={}
     for config in ('L3E8','L2E16'):
         cohort=[r for r in rows if r['model'].startswith(config+'_') and r['arm']=='genbab_pruned']
         # Do not calculate a premature stopping decision on a completed prefix.
         sources_complete=(not pending and all('pgd_'+m['id'] in byid for m in spec['models']))
         endpoints[config]=endpoint(cohort,unsafe) if len(cohort)==60 and sources_complete else dict(
             status='PENDING_WITNESS_SOURCE_QUEUE',completed=len(cohort),denominator=60)
+        mechanisms[config]=(mechanism_endpoint(cohort,unsafe,endpoints[config])
+            if len(cohort)==60 and sources_complete else dict(status='PENDING_WITNESS_SOURCE_QUEUE',
+                completed=len(cohort),denominator=60,
+                observed_categories=dict(Counter(r['mechanism']['category'] for r in cohort))))
         # Registered supplement: descriptive stratum only, all-seed decision unchanged.
         noncollapsed=[r for r in cohort if r['model']!=config+'_seed2']
         endpoints[config]['excluding_collapsed_seed_descriptive']=(endpoint(noncollapsed,unsafe)
@@ -266,6 +277,7 @@ def audit(root,manifest):
         assert sum(r['seconds'] for r in rows)+aux_seconds<=stage_seconds<=spec['budgets']['stage']
     return dict(status='PASS_COMPLETE' if not pending and complete else 'PASS_PREFIX',full_calls=len(rows),
         unexecuted=pending,expected_calls=600,endpoints=endpoints,summaries=summaries,paired=pairs,
+        mechanism_supplement=mechanisms,
         unsafe_union=[dict(model=k[0],index=k[1],sources=sorted(v)) for k,v in sorted(witness_sources.items())],
         unsafe_source_counts=dict(Counter(source for v in witness_sources.values() for source in v)),
         unsafe_source_overlap=dict(Counter('+'.join(sorted(v)) for v in witness_sources.values())),

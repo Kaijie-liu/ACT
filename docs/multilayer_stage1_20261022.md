@@ -1,5 +1,77 @@
 # Multilayer bottleneck elimination — stage 1
 
+## Post-prefix mechanism supplement, 2026-10-23
+
+**Registered after observing189/600, motivated by timeout telemetry**, not before
+outcomes. User's cited189 prefix and our00:32:15AEDT registration192 prefix:
+
+| Configuration/arm | At189: positive / timeout / unknown / error | At192 |
+| --- | ---: | ---: |
+| L1E8/pruned |20/1/0/0|20/1/0/0|
+| L2E8/ACT |0/19/0/1|0/20/0/1|
+| L2E8/naive |0/19/0/1|0/20/0/1|
+| L2E8/pruned |10/9/1/0|10/9/2/0|
+| L3E8/ACT |0/18/0/0|0/18/0/0|
+| L3E8/naive |0/18/0/0|0/18/0/0|
+| L3E8/pruned |11/7/0/0|11/7/0/0|
+| L2E16/ACT |0/18/0/0|0/18/0/0|
+| L2E16/naive |0/18/0/0|0/18/0/0|
+| L2E16/pruned |14/4/0/0|14/4/0/0|
+
+RegistrationHEADc0b5bb0e1; ordered(path,SHA256) ledger-list digest
+`81a4a872ad079b962510a5f0aaf55fd32f43aa4ded6241844c16d296bbfc480c`.
+All queue subjects, arms,300s, original Wilson endpoint and accepted evidence
+stay unchanged. This supplement also governs1b, with the same UNSAFE union.
+
+For incomplete traversal classify in this order: A if request seconds minus
+recorded phase seconds≥150, or an individually recorded history solve≥150;
+B otherwise if returned histories≥5 and that residual<50; C otherwise.
+Missing timing is unknown, not zero. The residual includes startup/unpublished
+overhead, so A is an operational label, not proof of one unique native cause.
+Aggregate history-solver time is not a maximum individual solve. Completed
+traversal but unclosed output is reported separately even if final reception
+times out. No missing old active-query identity is reconstructed as fact.
+
+Enter the existing alpha-CROWN entrance comparison only when original primary
+decision is bottleneck AND B/n' Wilson95 lower>10%. Otherwise preserve the
+original stop/gray rule; original bottleneck with failed B gate means stop/report
+“single-route proof difficulty, not combinations” under the user's operational
+rule. Retain C counts and uncertainty; do not claim this establishes causal
+exclusivity. Only after both gates and the alpha-CROWN test permit it may a new
+route mechanism proceed. Do not decide from a partial witness-source queue.
+
+### Query-start repair and finite control
+
+The old Progress limiter can discard a query start within0.25s of the previous
+publication. Force publication on full active identity changes (phase, history/
+prefix, entered time), including return-to-null; throttle only unchanged
+heartbeats. Retain last start and largest **individual completed** history time
+in the same bounded progress object. No support query, bound, scheduling order,
+timeout or numerical rule changes; publication cost remains inside request300s.
+
+One frozen stdlib-only control batch≤300s/128MiB,8GiB AS, existing owned-session
+supervisor, no model/solver/GPU. Cases: subquarter-second start/return and same-
+phase new history; heartbeat throttling; start retained after missing callback;
+150/50/5 thresholds, missing/nonfinite timing, aggregate-vs-individual distinction;
+same UNSAFE denominator and unchanged primary endpoint; pre-worker boundary stop.
+Freeze source hashes before running `scripts/multilayer_telemetry_control.py`;
+result root `results/multilayer_telemetry_control_20261023_r1`.
+
+The live r5 controller has no stop hook. After controls, exclusively reserve one
+not-yet-created future request directory with a `handoff_boundary.json` marker.
+Existing `invoke` fails at mkdir **before request/session/worker creation**, after
+the preceding request's terminal and ledger. No signal or live source edit.
+Confirm old owned cleanup, stopped receipt and absence of N request/session/
+ledger; then freeze a new continuation from N. Keep the marker/old stop/error
+record as intentional pre-admission handoff, not a model ERROR or completed slot.
+All elapsed execution, control and marker bytes carry forward; no budget reset.
+If an earlier error/limit occurs, preserve its actual boundary. Old completed
+records remain unchanged. This plan does not claim telemetry is already deployed.
+
+Correction: the earlier launch narration called009 seed1/naive. Raw immutable
+request/ledger show **L2E8_seed2/pruned**, positive31.199041s; corrected narration
+below, no result changed.
+
 ## ACT lowering repair and second continuation
 
 The r3 queue stopped at008:9/600 terminals,4 numerical positives,3timeouts,
@@ -37,7 +109,7 @@ addressed. The r5 descriptor carries1287s and8,373,830B, starts009, and retains
 both errors. The new control is not a network robustness certificate.
 
 The r5 immutable execution`5483c74725848b3fa5629a4dd2f390f64ef71645` launched
-detached asPID4044622. Its first new009 (L2E8_seed1 naive GenBaB) is numerically
+detached asPID4044622. Its first new009 (L2E8_seed2 pruned GenBaB) is numerically
 positive in31.199041s. At this snapshot10/600 are5positive/3timeout/2error.
 No scientific endpoint is decided from this prefix; the live receipts are
 authoritative. The new control did not change GenBaB's configuration or source.

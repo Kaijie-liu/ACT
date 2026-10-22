@@ -225,16 +225,31 @@ class Progress:
     def __init__(self,folder,arm,expected):
         self.folder=folder;self.arm=arm;self.expected=expected;self.last=0.
         self.calls=0;self.phase=None;self.phase_time=time.monotonic();self.times={}
+        self.query_identity=None;self.last_query_start=None;self.max_history=None
     def __call__(self,result,force=False):
         now=time.monotonic();self.calls+=1
         cov=coverage(result,self.arm,self.expected)
+        active=cov['active']
+        identity=json.dumps(active,sort_keys=True,separators=(',',':'))
+        changed=identity!=self.query_identity
+        if changed:
+            self.query_identity=identity
+            if active is not None:
+                self.last_query_start=dict(**active,published_clock=now)
+        if self.arm!='act' and result.get('histories'):
+            seconds=result['histories'][-1].get('outcome',{}).get('seconds')
+            if isinstance(seconds,(int,float)) and math.isfinite(seconds) and seconds>=0:
+                self.max_history=max(self.max_history or 0.,seconds)
         phase=(cov['active'] or {}).get('phase','between_queries')
         if phase!=self.phase:
             if self.phase is not None:self.times[self.phase]=self.times.get(self.phase,0.)+now-self.phase_time
             self.phase=phase;self.phase_time=now
-        if not force and now-self.last<.25:return
+        # Starts/returns are mandatory; only repeated same-query heartbeats throttle.
+        if not force and not changed and now-self.last<.25:return
         value=dict(clock=now,coverage=cov,publications=self.calls,phase_seconds=self.times,
-            active_phase_since=self.phase_time)
+            active_phase_since=self.phase_time,last_query_start=self.last_query_start,
+            max_completed_history_solver_seconds=self.max_history,
+            telemetry_schema='query-boundary-v2')
         temporary=self.folder/'progress.tmp'
         room(len(json.dumps(value,allow_nan=False).encode()))
         with temporary.open('w') as f:json.dump(value,f,allow_nan=False,separators=(',',':'));f.flush()

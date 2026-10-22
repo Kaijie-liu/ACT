@@ -60,6 +60,53 @@ def endpoint(records,unsafe):
         excluded_true_unsafe=len(records)-len(eligible))
 
 
+def mechanism_decomposition(seconds,cov,telemetry,history_seconds=()):
+    """2026-10-23 post-prefix operational labels, not unique causal proofs.
+
+    Never equate aggregate history_solver time with a single history duration.
+    Old missing telemetry stays unknown; residual includes unobserved overhead.
+    """
+    if cov['traversal_complete']:
+        return dict(category='TRAVERSAL_COMPLETE',residual_seconds=None,
+                    max_history_seconds=None,returned=cov['returned'])
+    telemetry=telemetry or {};phases=telemetry.get('phase_seconds')
+    valid=lambda v:isinstance(v,(int,float)) and not isinstance(v,bool) and math.isfinite(v) and v>=0
+    recorded=(sum(phases.values()) if isinstance(phases,dict)
+              and all(valid(v) for v in phases.values()) else None)
+    residual=seconds-recorded if recorded is not None else None
+    durations=[v for v in history_seconds if valid(v)]
+    maximum=telemetry.get('max_completed_history_solver_seconds')
+    if valid(maximum):durations.append(maximum)
+    maximum=max(durations) if durations else None
+    if (residual is not None and residual>=150) or (maximum is not None and maximum>=150):
+        category='A_SINGLE_QUERY_DOMINATED'
+    elif residual is not None and 0<=residual<50 and cov['returned']>=5:
+        category='B_MANY_HISTORIES_DOMINATED'
+    else:category='C_UNSEPARATED'
+    return dict(category=category,residual_seconds=residual,max_history_seconds=maximum,
+                recorded_phase_seconds=recorded,returned=cov['returned'],
+                active=cov.get('active'),last_query_start=telemetry.get('last_query_start'),
+                interpretation='operational telemetry grouping; residual includes unobserved overhead')
+
+
+def mechanism_endpoint(records,unsafe,primary):
+    """Supplemental gate; the original endpoint and its denominator stay intact."""
+    from collections import Counter
+    eligible=[r for r in records if (r['model'],r['index']) not in unsafe]
+    group=lambda r:r['mechanism']['category']
+    many=lambda r:group(r)=='B_MANY_HISTORIES_DOMINATED'
+    adjusted=wilson(sum(map(many,eligible)),len(eligible))
+    decision=primary['adjusted']['decision']
+    if decision=='ENTER_STAGE2':
+        decision=('ELIGIBLE_ALPHA_CROWN_ENTRANCE' if adjusted['decision']=='ENTER_STAGE2'
+                  else 'STOP_REPORT_SINGLE_ROUTE_NOT_COMBINATIONS_OPERATIONAL')
+    return dict(raw_many=wilson(sum(map(many,records)),len(records)),adjusted_many=adjusted,
+                raw_categories=dict(Counter(map(group,records))),
+                adjusted_categories=dict(Counter(map(group,eligible))),decision=decision,
+                primary_decision_unchanged=primary['adjusted']['decision'],
+                interpretation='post-189-prefix gate; unseparated is not proof of a unique cause')
+
+
 def affine_interval(layer,lo,hi):
     import torch
     from torch import nn
