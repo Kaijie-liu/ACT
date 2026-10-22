@@ -4,7 +4,8 @@
 
 Real9/600:4numerical positives,3timeouts,2ERRORs; r3 stopped at008 with missing`reshape`, no live verification queue.
 Source dispatch searched builtin repr/address for`add`, potentially misclassifying`cat`; frozen control contrasts stable names against this defect.
-One≤300s synthetic batch: deterministic dispatch, E8 L2/L3 full-width IR roundtrip, three-root receipt/cost mutations; no model/data/solver/GPU.
+R1 control numerical/chain PASS7.326s, but missing enforced AS cap: not resource-admitted; generatedr4 descriptor remains unexecuted.
+Tooling correction adds/readbacks RLIMIT_AS and relative-root audit; r2 includes r1 cost/bytes inside same300s/128MiB, no model/data/solver/GPU.
 After controls, immutable continuation starts009, retains000–008 and1270.835496s plus new control, unique root bytes and original600/52h/128MiB.
 See[stage record](multilayer_stage1_20261022.md). GenBaB stays r3; no methods/thresholds change; G1–G6 OPEN.
 1b remains frozen, not training; current host load33.86/20logicalCPUs. No training or replacement verification process started during repair.

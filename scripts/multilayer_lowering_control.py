@@ -8,6 +8,7 @@ import argparse
 import ast
 import json
 from pathlib import Path
+import resource
 import sys
 import traceback
 ROOT=Path(__file__).resolve().parents[1]
@@ -65,6 +66,7 @@ def dispatch_control(torch):
 def worker(folder):
     request=load(folder/'request.json');freeze=load(folder.parent/'freeze.json',request['freeze_sha256'])
     assert all(sha(ROOT/p)==h for p,h in freeze['sources'].items()) and sha(OLD)==freeze['old_dispatch_sha256']
+    assert resource.getrlimit(resource.RLIMIT_AS)==(8*2**30,8*2**30)
     import torch
     torch.set_num_threads(1);torch.set_num_interop_threads(1)
     from act.util.device_manager import initialize_device
@@ -100,33 +102,44 @@ def worker(folder):
     assert time.monotonic()<request['deadline']
     save(folder/'outcome.json',dict(status='PASS',dispatch=dispatch,roundtrips=cases,
         chain_control='r1/r3/synthetic-r4 plus duplicate/gap/cost/ancestor mutations',
-        real_models=0,solver_calls=0,seconds=time.monotonic()-ENTRY))
+        real_models=0,solver_calls=0,as_limit=resource.getrlimit(resource.RLIMIT_AS),seconds=time.monotonic()-ENTRY))
 
 
-def run(folder):
+def run(folder,prior=None):
     assert not folder.exists();folder.mkdir();child=folder/'fixed';child.mkdir()
+    retained=None;prior_seconds=0.;prior_bytes=0
+    if prior is not None:
+        previous=load(prior);prior_seconds=previous['seconds']
+        prior_bytes=sum(p.stat().st_size for p in prior.parent.rglob('*') if p.is_file())
+        retained=dict(path=str(prior),sha256=sha(prior),seconds=prior_seconds,
+                      qualification='numerical controls passed; AS limit not enforced; not sufficient for admission')
+    assert resource.getrlimit(resource.RLIMIT_AS)==(8*2**30,8*2**30)
     save(folder/'freeze.json',dict(sources={p:sha(ROOT/p) for p in CODE},old_dispatch_sha256=sha(OLD),
-        seconds=300,artifacts=128*2**20,as_bytes=8*2**30,threads=1,real_models=0,solver_calls=0,
+        seconds=300,retained_prior=retained,artifacts=128*2**20,as_bytes=8*2**30,
+        controller_as_limit=resource.getrlimit(resource.RLIMIT_AS),threads=1,real_models=0,solver_calls=0,
         cases=['repr address differential/unknown reject','E8 L2/L3 full-width two-history roundtrip','three-root continuation mutations']))
-    save(child/'request.json',dict(freeze_sha256=sha(folder/'freeze.json'),deadline=ENTRY+290))
+    save(child/'request.json',dict(freeze_sha256=sha(folder/'freeze.json'),deadline=ENTRY+290-prior_seconds))
     env=dict(PATH='/usr/bin:/bin',CUDA_VISIBLE_DEVICES='',OMP_NUM_THREADS='1',OPENBLAS_NUM_THREADS='1',
         MKL_NUM_THREADS='1',PYTHONDONTWRITEBYTECODE='1',PYTHONNOUSERSITE='1')
-    receipt=execute([ACT,'-I','-B',__file__,'worker',str(child)],run_deadline=ENTRY+294,
-        cleanup_deadline=ENTRY+298,env=env,rss_limit=None,development_policy=POLICY)
+    receipt=execute([ACT,'-I','-B',__file__,'worker',str(child)],run_deadline=ENTRY+294-prior_seconds,
+        cleanup_deadline=ENTRY+298-prior_seconds,env=env,rss_limit=None,development_policy=POLICY)
     save(folder/'session.json',receipt)
     from b1_observed_batch import session_ok
-    good=session_ok(receipt) and (child/'outcome.json').exists() and time.monotonic()<ENTRY+300
-    assert sum(p.stat().st_size for p in folder.rglob('*') if p.is_file())<128*2**20
-    save(folder/'complete.json',dict(status='PASS' if good else 'FAIL',seconds=time.monotonic()-ENTRY,
+    good=session_ok(receipt) and (child/'outcome.json').exists() and time.monotonic()<ENTRY+300-prior_seconds
+    assert prior_bytes+sum(p.stat().st_size for p in folder.rglob('*') if p.is_file())<128*2**20
+    save(folder/'complete.json',dict(status='PASS' if good else 'FAIL',seconds=prior_seconds+time.monotonic()-ENTRY,
+        current_seconds=time.monotonic()-ENTRY,retained_prior=retained,
         freeze_sha256=sha(folder/'freeze.json'),session_sha256=sha(folder/'session.json'),
         outcome_sha256=sha(child/'outcome.json') if good else None))
     print(json.dumps(load(folder/'complete.json')),flush=True)
 
 
 if __name__=='__main__':
+    resource.setrlimit(resource.RLIMIT_AS,(8*2**30,8*2**30))
     parser=argparse.ArgumentParser();parser.add_argument('mode',choices=['run','worker']);parser.add_argument('folder',type=Path)
+    parser.add_argument('--prior',type=Path)
     args=parser.parse_args()
-    if args.mode=='run':run(args.folder)
+    if args.mode=='run':run(args.folder,args.prior)
     else:
         try:worker(args.folder)
         except BaseException as exc:

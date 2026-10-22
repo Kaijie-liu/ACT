@@ -44,6 +44,8 @@ class ResumeControls(unittest.TestCase):
             save(root/'ledger_0035.json',ledger)
             good=audit(root,MANIFEST)
             self.assertEqual((good['full_calls'],good['unexecuted'][0]),(10,'verify_010'))
+            import os
+            self.assertEqual(audit(Path(os.path.relpath(root)),MANIFEST)['bytes'],good['bytes'])
             self.assertEqual(len(good['unsafe_union']),20)
             self.assertEqual([r['status'] for r in good['rows'] if r['status']=='ERROR'],['ERROR','ERROR'])
             for field,value in [('id','verify_008'),('id','verify_010'),('seconds',301.)]:

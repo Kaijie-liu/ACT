@@ -16,6 +16,17 @@ Use the callable's stable`__name__` only; unnamed callables remain unsupported.
 Do not substitute sample values, weaken mathematical checks, or change graph
 operators. The GenBaB snapshot remains exactly r3 with its five disclosed edits.
 
+The first repair control at`results/multilayer_lowering_control_20261022_r1`
+passes the numerical/chain checks in7.325763s: all four full-width roundtrips
+have maximum error0. Independent review found that its declared8GiB AS cap
+was not applied by the launch. Preserve its raw PASS as a mathematical-control
+result, but it is insufficient for resource admission. The generated r4
+continuation descriptor is retained **unexecuted** for this reason. A finite
+tooling correction sets and reads back RLIMIT_AS in parent and child; r2 control
+retains r1 time/bytes inside the same300s/128MiB allowance. This is not a new
+scientific attempt or replay of any real request. A separate relative-path
+reader fix ensures cumulative checks also apply to relative-root audit calls.
+
 Before executing the repair control, freeze one≤300s synthetic batch in
 `scripts/multilayer_lowering_control.py`: fixed cat-name/repr-containing-add old
 versus new dispatch, complete concatenated variables/values, unnamed rejection;

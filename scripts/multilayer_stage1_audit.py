@@ -86,6 +86,7 @@ def check_continuation(binding,manifest):
 
 
 def audit(root,manifest):
+    root=Path(root).resolve()
     spec=load(manifest);start=load(root/'start.json')
     assert start['manifest_sha256']==sha(manifest)
     roots=result_chain(root,manifest);origin=roots[0];binding=None;starts={}
