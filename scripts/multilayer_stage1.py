@@ -469,7 +469,21 @@ def freeze_resume(path,manifest,parent,control):
            'scripts/multilayer_lowering_control.py','tests/test_multilayer_resume.py')
     console=parent.with_suffix('.controller.log')
     stop=load(parent/'stopped.json')
-    save(path,dict(schema='multilayer-stage1-continuation-r2',parent_root=str(parent),
+    # New control artifacts stay at their original paths and are charged once.
+    external={}
+    for owner in roots:
+        if (owner/'continuation.json').exists():
+            for r in load(owner/'continuation.json').get('external_control_artifacts',[]):
+                external[r['root']]=r
+    control_roots={control.parent.resolve()}
+    retained=receipt.get('retained_prior')
+    if retained:control_roots.add(Path(retained['path']).parent.resolve())
+    for owner in control_roots:
+        if any(owner.is_relative_to(r.resolve()) for r in roots):continue
+        external[str(owner)]=dict(root=str(owner),files={str(p.relative_to(owner)):sha(p)
+                                                       for p in owner.rglob('*') if p.is_file()})
+    external_bytes=sum((Path(r['root'])/p).stat().st_size for r in external.values() for p in r['files'])
+    save(path,dict(schema='multilayer-stage1-continuation-r3',parent_root=str(parent),
         parent_files={str(p.relative_to(parent)):sha(p) for p in parent.rglob('*') if p.is_file()},
         parent_console=dict(path=str(console),sha256=sha(console),bytes=console.stat().st_size),
         manifest_sha256=sha(manifest),catalog_sha256=sha(roots[0]/'catalog.json'),next_verify=begin,
@@ -477,7 +491,8 @@ def freeze_resume(path,manifest,parent,control):
         backend_sha256=hashlib.sha256(json.dumps(backend.source_identity(),sort_keys=True).encode()).hexdigest(),
         control=dict(path=str(control),sha256=sha(control),seconds=receipt['seconds']),
         carried_seconds=math.ceil(stop.get('cumulative_seconds',stop['seconds'])+receipt['seconds']),
-        prior_bytes=sum(size(owner) for owner in roots),
+        prior_bytes=sum(size(owner) for owner in roots)+external_bytes,
+        external_control_artifacts=list(external.values()),
         reason=f'user-authorized tooling repair; retain all {begin} calls; unchanged models/inputs/methods/endpoints',
         errors_remain_in_denominator=True,repair_downtime_not_execution=True))
 

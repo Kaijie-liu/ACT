@@ -70,7 +70,16 @@ def _parent_chain(binding,manifest,seen=None):
     if 'parent_console' in binding:
         old_bytes+=sum(owner.with_suffix('.controller.log').stat().st_size for owner in roots
                        if owner.with_suffix('.controller.log').is_file())
-    if binding.get('schema')=='multilayer-stage1-continuation-r2':
+    if binding.get('schema')=='multilayer-stage1-continuation-r3':
+        external=binding['external_control_artifacts']
+        assert len({r['root'] for r in external})==len(external)
+        for record in external:
+            path=Path(record['root']).resolve()
+            assert all(not path.is_relative_to(r) for r in roots)
+            actual={str(p.relative_to(path)):sha(p) for p in path.rglob('*') if p.is_file()}
+            assert actual==record['files'],'external control artifact changed'
+            old_bytes+=sum((path/p).stat().st_size for p in actual)
+    if binding.get('schema') in ('multilayer-stage1-continuation-r2','multilayer-stage1-continuation-r3'):
         assert binding['prior_bytes']==old_bytes,'cumulative root bytes must be counted once'
         control=load(binding['control']['path'],binding['control']['sha256'])
         assert control['status']=='PASS' and control['seconds']==binding['control']['seconds']

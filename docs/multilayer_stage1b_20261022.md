@@ -10,6 +10,7 @@ Manifest SHA256`6b3a401dcb87fb4e5e6e289e4f7174e9b8abc119cfd2349189e2ae800c57702a
 all eight source hashes,seven data files,and prior control/receipt match.
 New split matches frozen original
 `92a4da411c6d6c731da72203665b2533b0fb91b37f7d7f0c82e82d8ace0f1e5d`.
+Startup record SHA256`a4ea04ce2f8764cf61507e58c773cd44d165648fd7adbe916cd6ff5e552de7a8`.
 Admission:load12.72/20CPU,available91GiB,disk80GiB;other jobs untouched,no GPU.
 First model is training,not final selected checkpoint; no accuracy/proof claim.
 After completion independently audit all six models/300epochs and earliest

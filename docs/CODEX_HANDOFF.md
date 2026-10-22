@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## Query-start repair controlled; immutable continuation prepared 2026-10-23
+
+Real194/600:55numerical positives/135timeouts/2unknown/2preservedERRORs;1b firstmodel50epochs complete,secondtraining.
+Post189 supplement keeps original endpoint;L3prefix18=11complete/5A/1B/1C, no final decision before witness-source queue finishes.
+Stdlib query-start/control PASS4/4; harness import failure retained, combined1.035043s; methods, solver config and accepted math unchanged.
+Planned boundary before194 stopped oldr5 only after193 terminal/ledger/cleanup;194 has no request/session/worker, not a new model ERROR.
+[R6 descriptor](multilayer_stage1_continuation_20261023_r6.json) starts194, carries42404s/17,562,177B including control artifacts; next launch immutable suffix.
+1bPID3997912 continues original21a21f255 two-thread CPU recipe; firsttest50.79% is one seed,not G5. G1–G6 OPEN.
+
 ## Mechanism supplement registered;1b CPU training started 2026-10-23
 
 Real192/600 registration snapshot:55numerical positives/133timeouts/2unknown/2preserved errors; live ledgers supersede.

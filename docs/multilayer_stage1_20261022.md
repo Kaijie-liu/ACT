@@ -64,6 +64,15 @@ coverage import replaced by that same file's function; no installed module,
 production algorithm or native library is patched. R2 uses a new result root,
 charges R1 seconds/bytes inside the same300s/128MiB, and runs the same controls.
 
+R2 PASS4/4,0.513980s current/1.035043s cumulative, no model/solver/GPU.
+Freeze512788edf822135a16c44d6e9b89c6019887a7551d281ca93cd5726441526b27;
+receiptbeebc9ef065b343c51d8915855dcf011efba481441f8046fef54cf907ca7adcd.
+Independent read-only review confirms the boundary publication and classification
+rules. After controls, only continuation **metadata accounting** changed: r3
+descriptors hash-bind external control artifact directories at their original
+paths and count them once in prior bytes. Tested Progress/helper functions remain
+unchanged; no duplicate control run or uncharged copy of a proof object.
+
 The live r5 controller has no stop hook. After controls, exclusively reserve one
 not-yet-created future request directory with a `handoff_boundary.json` marker.
 Existing `invoke` fails at mkdir **before request/session/worker creation**, after
@@ -74,6 +83,17 @@ record as intentional pre-admission handoff, not a model ERROR or completed slot
 All elapsed execution, control and marker bytes carry forward; no budget reset.
 If an earlier error/limit occurs, preserve its actual boundary. Old completed
 records remain unchanged. This plan does not claim telemetry is already deployed.
+
+The planned handoff occurred before194:193 terminal TIMEOUT and ledger complete;
+old controller exited with the intended mkdir FileExistsError, cleanup receipt
+has no live session. Directory194 contains only the handoff marker, no request,
+session,worker or ledger. Cumulative old cost42402.872109s; prefix audit PASS194:
+55positive/135timeout/2unknown/2preserved model/tool ERRORs. The handoff itself
+is not a third model ERROR. [R6 binding](multilayer_stage1_continuation_20261023_r6.json)
+starts194, carries42404s and17,562,177B including the two control directories.
+Full queue600, remaining406, original request300s and stage52h/128MiB unchanged.
+Both original and supplemental final decisions remain PENDING. L3 pruning
+prefix18 contains11 traversal-complete,5 A,1 B,1 C; not a final causal conclusion.
 
 Correction: the earlier launch narration called009 seed1/naive. Raw immutable
 request/ledger show **L2E8_seed2/pruned**, positive31.199041s; corrected narration
