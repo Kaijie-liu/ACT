@@ -2,13 +2,14 @@
 
 ## Telemetry suffix running;1b training active 2026-10-23
 
-Real194/600 snapshot unchanged;194 now running from immutable74f8897ec,PID580529,`results/multilayer_stage1_20261023_r6`.
+Real195/600:56numerical positives/135timeouts/2unknown/2ERRORs;194 POSITIVE28.777s,immutable74f8897ec,PID580529,`results/multilayer_stage1_20261023_r6`.
 Actual progress identifies history_solver,three-layer history and start clock; original queue/solver/300s unchanged, no old terminal rewritten.
 [Records](multilayer_stage1_records_20261022.json) bind194-call prefix,post189 supplement,4/4 controls and carry42404s/17,562,177B; metadata undercount/duplicate rejected.
 Independent review verifies all18 sources,parent inventories,oldERRORs004/008,no194worker before boundary,exact time/bytes; final decisions still PENDING.
 1b PID3997912 runs immutable21a21f255 CPUtwo-thread six-model queue; firstmodel complete,test50.79%,secondtraining; no GPU/new verification.
 Next finish1a plus final audit, finish/audit1b training then freeze240calls; use same supplementary mechanism gate, do not infer combinations from timeout alone.
 G1–G6 OPEN. Both detached queues continue without terminal connection; no claim of external advantage or source-complete proof.
+Before any later continuation, explicitly check canonical external-control roots/ancestor retention;currentr6 was independently checked,not a general alias-mutation guarantee.
 
 ## Query-start repair controlled; immutable continuation prepared 2026-10-23
 

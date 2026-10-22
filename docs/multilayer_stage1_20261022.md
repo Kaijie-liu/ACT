@@ -105,6 +105,17 @@ Live194 now records history_solver for[[0,4],[1,5],[4,7]],with entered and publi
 clocks, before the native call returns. No frozen native implementation was edited.
 New writes remain charged inside300s; full scientific conclusions await the queue.
 
+First resumed194 (L3E8_seed0,index1366,pruned) returns numerical POSITIVE28.777418s:
+21,944 excluded +8 verified histories =21,952, with recorded query starts and
+maximum individual returned solve2.569126s. This is a real telemetry integration
+check, not an algorithm speedup or a newly independent source proof.
+Known continuation-reader limitation from independent review: a future manually
+authored descriptor must not omit inherited external-control roots or alias them.
+Current r6's two canonical sibling roots and complete inherited set were checked
+independently; automatic producer retains them. Before another continuation,
+check resolved uniqueness/ancestor retention explicitly; do not silently reuse
+this review as a general mutation-safety proof. No running source is changed.
+
 Correction: the earlier launch narration called009 seed1/naive. Raw immutable
 request/ledger show **L2E8_seed2/pruned**, positive31.199041s; corrected narration
 below, no result changed.
