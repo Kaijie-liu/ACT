@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## Fifth compatibility repair passes and continuation prepared 2026-10-22
+
+Real5/600 unchanged; full-width synthetic compatibility15.139s PASS, operator256→62 differential and sixL2/L3 cases pass.
+Isolated r3 LiRPA selects six slope/bias spec axes; no author checkout or solver configuration changed. E2 controls are not E8 capacity.
+Continuation reader/control2/2 pass; two local mutation-fixture errors retained in[stage record](multilayer_stage1_20261022.md), not real reruns.
+New execution must start005, retain000–004, carry657s and original bytes/logs, preserve600/52h/128MiB and all primary decisions.
+Independent read-only repair and continuation reviews completed; no new algorithm/strict-proof claim. Next freeze descriptor and launch immutable suffix.
+Authorized1b training and alpha-CROWN entrance comparison remain separately pending; do not change running1a methods.
+
 ## Stage1 stopped prefix and authorized repair 2026-10-22
 
 Real5/600 terminals:3L1 numerical positives,1L2 ACT timeout,1L2 naive ERROR; stopped09:23AEDT after641.371s, no live queue.

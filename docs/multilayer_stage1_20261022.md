@@ -25,6 +25,45 @@ Separate1b training/verification is authorized in the research contract and
 does not replace1a subjects. Agreement supports the decision; disagreement is
 gray/report. New training effectiveness is not presumed.
 
+### Compatibility repair and continuation control
+
+The fifth disclosed edit is in an isolated auto_LiRPA snapshot, not the author
+checkout: BoundMul now selects all six positive/negative slope/bias tensors by
+the sparse intermediate `unstable_idx` on the specification axis. Shared-alpha
+dimension1 still broadcasts. The old code retained dense256 specifications while
+the failing optimized intermediate query had62; the saved trace supports this
+cause but did not capture that invocation's actual index vector. No relaxation
+formula, sparse setting, optimizer budget or numerical acceptance was changed.
+The four previous complete_verifier edits and their source commits remain.
+
+`results/multilayer_compat_control_20261022_r1` passes in15.138615s. The direct
+operator differential checks256 dense versus62 nonconsecutive specs, both signs,
+biases, gradients, shared alpha and nonoptimized mode. Six full-width synthetic
+cases cover L2/L3,3072 input,256/128 hidden,10 classes/all9 margins: four safe/tie
+numerical positives and two center violations at−.25. Forced two-iteration alpha
+on the nonconstant safe graphs yields minima.9452125064/.9790424310. All these
+fixtures use E2 (one legal pair); this is not an E8/E16 capacity or multitied-pair
+coverage result. Previously passed stage0 coverage semantics are not rerun.
+Independent read-only review checked source bindings,267 copied LiRPA files and
+control receipts. Both author repositories remain unmodified.
+
+Continuation uses a new result/execution root and retains every original byte.
+Its descriptor binds original manifest/catalog, all prior files and log, fixed
+next index005, new code/backend and control receipt. Original641.370645s plus
+15.138615s compatibility control are conservatively charged as657s before any
+new execution. Offline repair time is separate downtime. All old/new artifacts
+and controller logs share the original128MiB stage cap. No auxiliary measurement
+or completed request is repeated;004 remains ERROR in the600-request denominator.
+The reader merges physical owners without copying/relabeling old results.
+
+New continuation mutations plus the updated reader's600-terminal fixture pass
+2/2 in3.883s. Two initial local test invocations failed because the mutation test
+used an intentionally no-overwrite publisher on its own disposable fixture;
+the fixture write was corrected, no real receipt altered. Controls reject old
+prefix tampering, duplicate/missing/reordered calls and reset/excess request costs;
+the old20 public-PGD objects remain in the union. Independent review also checked
+owned-directory-only stop publication, both logs and cumulative-time reception.
+
 Pre-result freeze. Training12/12 and stage0 semantic9/9 are complete; stage1
 verification0/600 at registration. The fourth-revision user contract and its
 clarifications apply unchanged. This is a bottleneck test of the existing v1,

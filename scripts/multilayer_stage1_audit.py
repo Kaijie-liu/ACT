@@ -43,14 +43,35 @@ def ratio_bootstrap(left,right,unsafe,exclude):
         resampling='10000 common-input blocks; three fixed seeds retained',valid_resamples=len(values))
 
 
+def check_continuation(binding,manifest):
+    parent=Path(binding['parent_root'])
+    assert binding['manifest_sha256']==sha(manifest)
+    actual={str(p.relative_to(parent)):sha(p) for p in parent.rglob('*') if p.is_file()}
+    assert actual==binding['parent_files'],'old prefix changed'
+    assert sha(parent/'catalog.json')==binding['catalog_sha256']
+    assert binding['next_verify']==5
+    assert binding['carried_seconds']>=load(parent/'stopped.json')['seconds']
+    assert binding['prior_bytes']>=sum(p.stat().st_size for p in parent.rglob('*') if p.is_file())
+    if 'parent_console' in binding:
+        assert sha(binding['parent_console']['path'])==binding['parent_console']['sha256']
+    return parent
+
+
 def audit(root,manifest):
     spec=load(manifest);start=load(root/'start.json')
     assert start['manifest_sha256']==sha(manifest)
-    catalog=load(root/'catalog.json');assert catalog['manifest_sha256']==sha(manifest)
+    origin=root;roots=[root];binding=None
+    if (root/'continuation.json').exists():
+        binding=load(root/'continuation.json');origin=check_continuation(binding,manifest);roots=[origin,root]
+        assert start['execution_binding']['sha256']==sha(root/'continuation.json')
+        assert load(start['execution_binding']['path'],start['execution_binding']['sha256'])==binding
+        assert start['carried_seconds']==binding['carried_seconds']
+        assert start['deadline']==start['entry']+spec['budgets']['stage']-binding['carried_seconds']
+    catalog=load(origin/'catalog.json');assert catalog['manifest_sha256']==sha(manifest)
     queries=catalog['queries'];assert len(queries)==600
     assert len({(q['model']['id'],q['sample']['index'],q['arm']) for q in queries})==600
-    selected=read(root/'selection/outcome.json.gz')['value']['samples']
-    assert catalog['selection_outcome_sha256']==sha(root/'selection/outcome.json.gz')
+    selected=read(origin/'selection/outcome.json.gz')['value']['samples']
+    assert catalog['selection_outcome_sha256']==sha(origin/'selection/outcome.json.gz')
     assert len(selected)==30 and [s['index'] for s in selected]==sorted(s['index'] for s in selected)
     excluded={i for a,b in spec['excluded_ranges'] for i in range(a,b+1)}
     assert hashlib.sha256(json.dumps(sorted(excluded),separators=(',',':')).encode()).hexdigest()==spec['history_union_sha256']
@@ -61,14 +82,22 @@ def audit(root,manifest):
             arms=['genbab_pruned'] if model['architecture']['layers']==1 else ['act','genbab_naive','genbab_pruned']
             shift=(rank+position)%len(arms);arms=arms[shift:]+arms[:shift]
             for arm in arms:expected_queries.append(dict(kind='verification',model=model,sample=sample,
-                arm=arm,selection_root=str(root/'selection')))
+                arm=arm,selection_root=str(origin/'selection')))
     assert queries==expected_queries
-    ledgers=[load(p) for p in sorted(root.glob('ledger_*.json'))]
+    entries=[(owner,load(p)) for owner in roots for p in sorted(owner.glob('ledger_*.json'))]
+    ledgers=[r for _,r in entries];owners={r['id']:owner for owner,r in entries}
     assert len({r['id'] for r in ledgers})==len(ledgers)
+    if binding:
+        assert [r['id'] for owner,r in entries if owner==origin and r['kind']=='verification']==[
+            f'verify_{i:03d}' for i in range(5)]
+        assert all(r['kind']=='verification' and int(r['id'].split('_')[1])>=5
+                   for owner,r in entries if owner==root)
+        new=[r['id'] for owner,r in entries if owner==root]
+        assert new==[f'verify_{i:03d}' for i in range(5,5+len(new))], 'continuation has missing or reordered calls'
     byid={r['id']:r for r in ledgers};rows=[];pending=[]
     witness_sources={};aux_seconds=0.
     for ledger in ledgers:
-        target=root/ledger['id']
+        target=owners[ledger['id']]/ledger['id']
         terminal=load(target/'terminal.json')
         assert all(ledger[k]==v for k,v in terminal.items())
         assert sha(target/'terminal.json')==ledger['terminal_sha256']
@@ -77,6 +106,8 @@ def audit(root,manifest):
         assert all(sha(target/p)==h for p,h in terminal['files'].items())
         request=load(target/'request.json')
         assert request['manifest_sha256']==sha(manifest)
+        if binding and owners[ledger['id']]==root:
+            assert request['execution_binding']==start['execution_binding']
         assert ledger['kind']==request['kind']
         if 'model' in ledger:assert ledger['model']==request['model']['id']
         if ledger['accepted']:
@@ -102,12 +133,13 @@ def audit(root,manifest):
     for number,q in enumerate(queries):
         key=f'verify_{number:03d}';ledger=byid.get(key)
         if ledger is None:pending.append(key);continue
-        request=load(root/key/'request.json')
+        target=owners[key]/key
+        request=load(target/'request.json')
         assert all(request[k]==v for k,v in q.items())
         assert (ledger['model'],ledger['index'],ledger['arm'],ledger['rank'])==(
             q['model']['id'],q['sample']['index'],q['arm'],q['sample']['rank'])
         expected=math.comb(q['model']['architecture']['experts'],2)**q['model']['architecture']['layers']
-        result=read(root/key/'outcome.json.gz')['value'] if ledger['accepted'] else None
+        result=read(target/'outcome.json.gz')['value'] if ledger['accepted'] else None
         if result is not None:
             cov=coverage(result['result'],q['arm'],expected)
             assert cov==result['coverage']
@@ -134,6 +166,10 @@ def audit(root,manifest):
         sources_complete=(not pending and all('pgd_'+m['id'] in byid for m in spec['models']))
         endpoints[config]=endpoint(cohort,unsafe) if len(cohort)==60 and sources_complete else dict(
             status='PENDING_WITNESS_SOURCE_QUEUE',completed=len(cohort),denominator=60)
+        # Registered supplement: descriptive stratum only, all-seed decision unchanged.
+        noncollapsed=[r for r in cohort if r['model']!=config+'_seed2']
+        endpoints[config]['excluding_collapsed_seed_descriptive']=(endpoint(noncollapsed,unsafe)
+            if len(noncollapsed)==40 and sources_complete else dict(status='PENDING',completed=len(noncollapsed),denominator=40))
     summaries={}
     for config in ('L1E8','L2E8','L3E8','L2E16'):
         for arm in ('act','genbab_naive','genbab_pruned'):
@@ -165,7 +201,7 @@ def audit(root,manifest):
     for model in spec['models']:
         key='census_'+model['id'];ledger=byid.get(key)
         if not ledger:continue
-        values=[load(p) for p in sorted((root/key).glob('domain_*.json'))]
+        values=[load(p) for p in sorted((owners[key]/key).glob('domain_*.json'))]
         for multiplier in spec['census_multipliers']:
             group=[r['result'] for r in values if r['multiplier']==multiplier]
             census[key+'/'+str(multiplier)]=dict(executed=len(group),registered=30,
@@ -176,16 +212,23 @@ def audit(root,manifest):
                 late_diagnostic_receipts=sum(not r['accepted'] for r in values if r['multiplier']==multiplier),
                 interval_traversals_complete=sum(r['traversal_complete'] for r in group))
     complete=load(root/'complete.json') if (root/'complete.json').exists() else None
-    total_bytes=sum(p.stat().st_size for p in root.rglob('*') if p.is_file())
+    total_bytes=sum(p.stat().st_size for p in root.rglob('*') if p.is_file())+(binding['prior_bytes'] if binding else 0)
+    console=root.with_suffix('.controller.log')
+    if console.is_file():total_bytes+=console.stat().st_size
     assert total_bytes<=spec['budgets']['artifacts']
     stage_seconds=None
     if complete:
         assert complete['status']=='COMPLETE' and complete['full_calls']==600 and complete['terminals']==625
         assert len(ledgers)==625 and not pending and complete['auxiliary_calls']==25
         stage_seconds=complete['seconds']
+        if binding:
+            assert stage_seconds>=binding['carried_seconds']+sum(r['seconds'] for owner,r in entries if owner==root)
         if (root/'final_accounting.json').exists():
             final=load(root/'final_accounting.json');stage_seconds=final['seconds_including_result_audit']
             assert final['audit_sha256']==sha(root/'audit.json')
+            assert stage_seconds>=complete['seconds']
+            if binding:
+                assert final['deadline']==start['deadline'] and final['clock']<=start['deadline']
         assert sum(r['seconds'] for r in rows)+aux_seconds<=stage_seconds<=spec['budgets']['stage']
     return dict(status='PASS_COMPLETE' if not pending and complete else 'PASS_PREFIX',full_calls=len(rows),
         unexecuted=pending,expected_calls=600,endpoints=endpoints,summaries=summaries,paired=pairs,

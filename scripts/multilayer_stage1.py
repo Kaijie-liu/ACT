@@ -29,6 +29,9 @@ from act.pipeline.moe.multilayer_study import coverage
 CAP=128*2**20
 ARTIFACT_ROOT=None
 ARTIFACT_LIMIT=None
+PRIOR_BYTES=0
+EXECUTION_BINDING=None
+OWNED_OUTPUT=False
 ARMS=('act','genbab_naive','genbab_pruned')
 CODE=('scripts/multilayer_stage1.py','scripts/multilayer_stage1_audit.py','act/pipeline/moe/multilayer_study.py',
       'tests/test_multilayer_stage1.py',
@@ -43,7 +46,11 @@ def require(ok,message):
     if not ok:raise ValueError(message)
 
 
-def size(root):return sum(p.stat().st_size for p in Path(root).rglob('*') if p.is_file())
+def size(root):
+    root=Path(root)
+    if root.is_file():return root.stat().st_size
+    console=root.with_suffix('.controller.log')
+    return sum(p.stat().st_size for p in root.rglob('*') if p.is_file())+(console.stat().st_size if console.is_file() else 0)
 
 
 def room(extra):
@@ -278,6 +285,9 @@ def worker(folder):
     # Non-proof console is deliberately discarded; exceptions get their own file.
     fd=os.open(os.devnull,os.O_WRONLY);os.dup2(fd,1);os.dup2(fd,2);os.close(fd)
     try:
+        if 'execution_binding' in request:
+            b=load(request['execution_binding']['path'],request['execution_binding']['sha256'])
+            require(all(sha(ROOT/p)==h for p,h in b['source_files'].items()),'worker execution source')
         torch=setup(deadline)
         if request['kind']=='verification' and request['arm']!='act':
             environment=backend.probe()
@@ -343,10 +353,12 @@ def invoke(folder,request,seconds,manifest,stage_deadline):
     began=time.monotonic();require(began+seconds<=stage_deadline,'insufficient remaining time; do not shorten full request')
     end=began+seconds
     folder.mkdir();(folder/'tmp').mkdir();(folder/'cache').mkdir()
-    remaining=CAP-size(folder.parent)
+    remaining=CAP-PRIOR_BYTES-size(folder.parent)
     require(remaining>256*1024,'remaining evidence/terminal capacity')
     query=dict(**request,manifest=str(manifest),manifest_sha256=sha(manifest),worker_deadline=end-6,
         artifact_limit=remaining-192*1024)
+    if EXECUTION_BINDING is not None:
+        query['execution_binding']=dict(path=str(EXECUTION_BINDING),sha256=sha(EXECUTION_BINDING))
     save(folder/'request.json',query)
     external=request['kind']=='verification' and request['arm']!='act'
     python=str(backend.ENVIRONMENT/'bin/python') if external else backend.ACT
@@ -383,8 +395,78 @@ def invoke(folder,request,seconds,manifest,stage_deadline):
     return row,value
 
 
+def resume(folder,manifest,continuation):
+    """New execution root, immutable old prefix; no query/time/artifact reset."""
+    global ARTIFACT_ROOT,ARTIFACT_LIMIT,PRIOR_BYTES,EXECUTION_BINDING,OWNED_OUTPUT
+    from multilayer_stage1_audit import audit,check_continuation
+    require(ROOT!=Path('/data1/Kane/MOE/ACT') and (ROOT/'.frozen_commit').is_file(),'immutable execution copy')
+    require(not folder.exists(),'new continuation result root')
+    spec=load(manifest);binding=load(continuation)
+    parent=check_continuation(binding,manifest)
+    require(all(sha(ROOT/p)==h for p,h in binding['source_files'].items()),'new execution source')
+    require(binding['backend_sha256']==hashlib.sha256(json.dumps(backend.source_identity(),sort_keys=True).encode()).hexdigest(),
+            'fifth compatibility source identity')
+    require(spec['genbab_config']==backend.CONFIG,'unchanged strong numerical configuration')
+    prefix=audit(parent,manifest)
+    require(prefix['full_calls']==5 and prefix['unexecuted'][0]=='verify_005','exact stopped prefix')
+    require(binding['next_verify']==5,'no completed query rerun')
+    control=load(binding['control']['path'],binding['control']['sha256'])
+    require(control['status']=='PASS','wide synthetic controls')
+    PRIOR_BYTES=binding['prior_bytes'];ARTIFACT_LIMIT=CAP-PRIOR_BYTES;ARTIFACT_ROOT=folder
+    EXECUTION_BINDING=continuation
+    deadline=ENTRY+spec['budgets']['stage']-binding['carried_seconds']
+    resource.setrlimit(resource.RLIMIT_AS,(8*2**30,8*2**30));os.nice(10);folder.mkdir()
+    OWNED_OUTPUT=True
+    save(folder/'continuation.json',binding)
+    save(folder/'start.json',dict(commit=(ROOT/'.frozen_commit').read_text().strip(),manifest_sha256=sha(manifest),
+        entry=ENTRY,deadline=deadline,pid=os.getpid(),started_at=time.time(),
+        execution_binding=dict(path=str(continuation),sha256=sha(continuation)),
+        carried_seconds=binding['carried_seconds'],prior_bytes=PRIOR_BYTES))
+    queries=load(parent/'catalog.json')['queries'];ordinal=30
+    for number in range(5,len(queries)):
+        require(time.monotonic()+300<=deadline,'stage execution budget: suffix unexecuted')
+        terminal,value=invoke(folder/f'verify_{number:03d}',queries[number],300,manifest,deadline)
+        q=queries[number]
+        row=dict(id=f'verify_{number:03d}',kind='verification',**terminal,model=q['model']['id'],
+            arm=q['arm'],index=q['sample']['index'],rank=q['sample']['rank'])
+        ordinal+=1;save(folder/f'ledger_{ordinal:04d}.json',row)
+        print(json.dumps({k:row[k] for k in ('id','status','seconds')}),flush=True)
+        require(size(folder)+PRIOR_BYTES<=CAP,'cumulative artifacts')
+        if row['status'] in ('ERROR','UNSUPPORTED'):raise RuntimeError('tooling failure retained: '+row['id'])
+    save(folder/'complete.json',dict(status='COMPLETE',full_calls=600,auxiliary_calls=25,terminals=625,
+        seconds=binding['carried_seconds']+time.monotonic()-ENTRY,bytes=PRIOR_BYTES+size(folder),
+        current_full_calls=595,prior_full_calls=5))
+    summary=audit(folder,manifest);require(time.monotonic()<deadline,'final audit deadline')
+    save(folder/'audit.json',summary)
+    save(folder/'final_accounting.json',dict(seconds_including_result_audit=binding['carried_seconds']+time.monotonic()-ENTRY,
+        bytes_before_this_receipt=PRIOR_BYTES+size(folder),audit_sha256=sha(folder/'audit.json'),deadline=deadline,clock=time.monotonic()))
+
+
+def freeze_resume(path,manifest):
+    """Bind the original stopped prefix and the fifth compatibility control."""
+    parent=Path('/data1/Kane/MOE/results/multilayer_stage1_20261022_r1')
+    control=Path('/data1/Kane/MOE/results/multilayer_compat_control_20261022_r1/complete.json')
+    from multilayer_stage1_audit import audit
+    prefix=audit(parent,manifest)
+    require(prefix['full_calls']==5 and prefix['unexecuted'][0]=='verify_005','exact prefix before freeze')
+    receipt=load(control);require(receipt['status']=='PASS','compatibility control')
+    codes=(*CODE,'scripts/multilayer_compat_control.py','tests/test_multilayer_resume.py')
+    console=parent.with_suffix('.controller.log')
+    save(path,dict(schema='multilayer-stage1-continuation-r1',parent_root=str(parent),
+        parent_files={str(p.relative_to(parent)):sha(p) for p in parent.rglob('*') if p.is_file()},
+        parent_console=dict(path=str(console),sha256=sha(console),bytes=console.stat().st_size),
+        manifest_sha256=sha(manifest),catalog_sha256=sha(parent/'catalog.json'),next_verify=5,
+        source_files={p:sha(ROOT/p) for p in codes},
+        backend_sha256=hashlib.sha256(json.dumps(backend.source_identity(),sort_keys=True).encode()).hexdigest(),
+        control=dict(path=str(control),sha256=sha(control),seconds=receipt['seconds']),
+        carried_seconds=math.ceil(load(parent/'stopped.json')['seconds']+receipt['seconds']),
+        prior_bytes=size(parent),
+        reason='user-authorized tooling repair; retain000-004; no source/input/config/endpoint changes',
+        errors_remain_in_denominator=True,repair_downtime_not_execution=True))
+
+
 def batch(folder,manifest):
-    global ARTIFACT_ROOT,ARTIFACT_LIMIT
+    global ARTIFACT_ROOT,ARTIFACT_LIMIT,OWNED_OUTPUT
     require(ROOT!=Path('/data1/Kane/MOE/ACT') and (ROOT/'.frozen_commit').is_file(),'immutable execution copy')
     require(not folder.exists(),'new execution directory')
     spec=load(manifest);require(all(sha(ROOT/p)==h for p,h in spec['source_files'].items()),'frozen source')
@@ -400,6 +482,7 @@ def batch(folder,manifest):
         require(control_spec['source_files'][name]==spec['source_files'][name],'unchanged controlled mechanisms')
     resource.setrlimit(resource.RLIMIT_AS,(8*2**30,8*2**30))
     os.nice(10);folder.mkdir();deadline=ENTRY+spec['budgets']['stage']
+    OWNED_OUTPUT=True
     ARTIFACT_ROOT=folder;ARTIFACT_LIMIT=CAP
     save(folder/'start.json',dict(commit=(ROOT/'.frozen_commit').read_text().strip(),manifest_sha256=sha(manifest),
         control_sha256=sha(spec['controls']['result']),entry=ENTRY,deadline=deadline,pid=os.getpid(),started_at=time.time()))
@@ -447,10 +530,12 @@ def batch(folder,manifest):
 
 
 if __name__=='__main__':
-    parser=argparse.ArgumentParser();parser.add_argument('mode',choices=('freeze','worker','batch','controls'))
+    parser=argparse.ArgumentParser();parser.add_argument('mode',choices=('freeze','worker','batch','controls','resume','freeze-resume'))
     parser.add_argument('path',type=Path);parser.add_argument('--manifest',type=Path)
+    parser.add_argument('--continuation',type=Path)
     args=parser.parse_args()
     if args.mode=='freeze':freeze(args.path)
+    elif args.mode=='freeze-resume':freeze_resume(args.path,args.manifest)
     elif args.mode=='worker':sys.exit(worker(args.path))
     elif args.mode=='controls':
         args.path.mkdir()
@@ -458,8 +543,13 @@ if __name__=='__main__':
         save(args.path/'complete.json',dict(status='PASS' if value and value['status']=='PASS' else 'FAIL',
             terminal=row,control=value,seconds=time.monotonic()-ENTRY,bytes=size(args.path)))
     else:
-        try:batch(args.path,args.manifest)
+        try:
+            if args.mode=='resume':resume(args.path,args.manifest,args.continuation)
+            else:batch(args.path,args.manifest)
         except BaseException as exc:
-            if args.path.is_dir():save(args.path/'stopped.json',dict(kind=type(exc).__name__,error=str(exc),
-                traceback=traceback.format_exc(),seconds=time.monotonic()-ENTRY))
+            if OWNED_OUTPUT:
+                carried=load(args.continuation)['carried_seconds'] if args.mode=='resume' else 0
+                save(args.path/'stopped.json',dict(kind=type(exc).__name__,error=str(exc),
+                    traceback=traceback.format_exc(),seconds=time.monotonic()-ENTRY,
+                    cumulative_seconds=carried+time.monotonic()-ENTRY))
             raise
