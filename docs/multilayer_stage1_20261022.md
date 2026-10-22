@@ -95,6 +95,16 @@ Full queue600, remaining406, original request300s and stage52h/128MiB unchanged.
 Both original and supplemental final decisions remain PENDING. L3 pruning
 prefix18 contains11 traversal-complete,5 A,1 B,1 C; not a final causal conclusion.
 
+R6 launched00:45:59AEDT from immutable74f8897ecd46850194722442e7bcc695b714bcbf,
+PID580529,`results/multilayer_stage1_20261023_r6`. Independent read-only checks
+verify18 source hashes,the original model/query/300s,all three parent inventories,
+exact time/bytes,retained004/008 ERRORs and pre-admission194 absence. R3 metadata
+checks accept the actual binding and reject an undercount or duplicate control
+root; these are offline schema checks, not new model calls or numerical reruns.
+Live194 now records history_solver for[[0,4],[1,5],[4,7]],with entered and publish
+clocks, before the native call returns. No frozen native implementation was edited.
+New writes remain charged inside300s; full scientific conclusions await the queue.
+
 Correction: the earlier launch narration called009 seed1/naive. Raw immutable
 request/ledger show **L2E8_seed2/pruned**, positive31.199041s; corrected narration
 below, no result changed.
