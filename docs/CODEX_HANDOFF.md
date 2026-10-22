@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## Stage1 stopped prefix and authorized repair 2026-10-22
+
+Real5/600 terminals:3L1 numerical positives,1L2 ACT timeout,1L2 naive ERROR; stopped09:23AEDT after641.371s, no live queue.
+verify_004 fails in optimized multiplication:256 dense alpha specs versus62 sparse intermediate specs; not a scientific negative.
+User authorizes disclosed compatibility repair, full-width L2/L3 synthetic semantics, then continue005 without rerunning000–004; preserve failure/cost/source versions.
+[Contract supplement](ALGORITHM_RESEARCH_GOAL.md) registers alpha-CROWN entrance comparison, collapsed-seed strata and separate six-model residual/stem validity study.
+Census candidate-upper versus five-point observed-lower gap supports a hypothesis, not a proven reachable count or unique bottleneck cause.
+Next repair/control/resume original1a; keep checkpoints, inputs,300s,600-call denominator and main Wilson rule. G1–G6 OPEN.
+
 ## Stage1 frozen real queue running 2026-10-22
 
 Training12/12;selection30/30 and publicPGD240domains complete,20 accepted replay objects; no paired winner or primary decision yet.

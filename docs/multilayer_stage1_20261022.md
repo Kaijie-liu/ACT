@@ -1,5 +1,30 @@
 # Multilayer bottleneck elimination — stage 1
 
+## Authorized supplement before resuming the stopped prefix
+
+The original freeze below remains stage1a. At this supplement five terminals
+exist, including the L2 ACT timeout and L2 naive tooling error; this is not a
+wholly unobserved experiment. All remain in the denominator. After disclosed
+compatibility repair and full-width L2/L3 controls, continue005 without replaying
+completed requests. Bind both execution versions and cumulative active costs;
+repair downtime is separate, not a reset of52h execution or128MiB artifacts.
+
+Census candidates are upper counts; five-point observations are lower counts.
+They do not determine actual reachability. The working hypothesis is loose
+cross-layer exclusion because next-router bounds do not condition on previous
+guards. L3seed0 upper-middle median is4508 in the review; the frozen audit's
+interpolated median is3822. This convention does not change the main endpoint.
+If1a reports a bottleneck, first run alpha-CROWN optimized prefix pruning without
+prefix constraints on the same60 L3 requests,≤60calls/5h,300s each, same decision.
+Disappearance stops/report; persistence permits mechanism work; gray reports.
+B4 uses that stronger baseline. Prioritize prefix-conditioned relational
+exclusion; union representation is secondary if many candidates still remain.
+Report all-model endpoints and descriptive endpoints excluding first-layer
+≥99% pair-concentrated L3E8_seed2/L2E16_seed2; only all-model results decide.
+Separate1b training/verification is authorized in the research contract and
+does not replace1a subjects. Agreement supports the decision; disagreement is
+gray/report. New training effectiveness is not presumed.
+
 Pre-result freeze. Training12/12 and stage0 semantic9/9 are complete; stage1
 verification0/600 at registration. The fourth-revision user contract and its
 clarifications apply unchanged. This is a bottleneck test of the existing v1,
