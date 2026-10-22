@@ -29,7 +29,24 @@ from scoped_proof.owned_session import execute
 ACT = '/data1/Kane/miniconda3/envs/act-py312/bin/python'
 ENVIRONMENT = Path('/data1/Kane/MOE/envs/genbab-cpu-20261021-v1')
 TOOL = Path('/data1/Kane/MOE/baselines/alpha-beta-CROWN')
-COMPAT = Path('/data1/Kane/MOE/baselines/adaptations/genbab_cpu_20261021_r2')
+COMPAT = Path('/data1/Kane/MOE/baselines/adaptations/genbab_cpu_20261022_r3')
+LIRPA = COMPAT/'auto_LiRPA'
+LIRPA_EDIT = (
+    '            elif type(last_A) == Tensor:\n',
+    '            elif type(last_A) == Tensor:\n'
+    '                # ACT compatibility: intermediate C may contain only unstable\n'
+    '                # specs while BoundMul alpha retains the full spec axis.\n'
+    '                # Select all slopes AND biases, as activation_base does.\n'
+    "                unstable_idx = kwargs.get('unstable_idx', None)\n"
+    '                if opt and unstable_idx is not None:\n'
+    '                    assert isinstance(unstable_idx, Tensor) and unstable_idx.ndim == 1\n'
+    '                    def select_spec(value):\n'
+    '                        if value.shape[0] == 1:  # shared-alpha broadcast\n'
+    '                            return value\n'
+    '                        return self.non_deter_index_select(value, index=unstable_idx, dim=0)\n'
+    '                    alpha_pos, beta_pos, gamma_pos, alpha_neg, beta_neg, gamma_neg = (\n'
+    '                        select_spec(value) for value in\n'
+    '                        (alpha_pos, beta_pos, gamma_pos, alpha_neg, beta_neg, gamma_neg))\n')
 COMPAT_EDITS = {
     'activation_split/stage_solve.py': (
         '    all_node_split_flag = torch.any(\n',
@@ -119,8 +136,25 @@ def source_identity():
         hashes[name] = hashlib.sha256(actual).hexdigest()
     require({str(p.relative_to(COMPAT)) for p in (COMPAT/'complete_verifier').rglob('*.py')}
             == {name for name in files if name.endswith('.py')}, 'no additional executable source')
+    lirpa_hashes = {}
+    for name in git(TOOL/'auto_LiRPA', 'ls-files').splitlines():
+        original = TOOL/'auto_LiRPA'/name
+        actual = LIRPA/name
+        if original.is_symlink():
+            require(actual.is_symlink() and os.readlink(actual)==os.readlink(original), 'LiRPA symlink')
+            continue
+        expected = original.read_bytes()
+        if name == 'auto_LiRPA/operators/bivariate.py':
+            before, after = (s.encode() for s in LIRPA_EDIT)
+            require(expected.count(before)==1, 'LiRPA patch exact context')
+            expected=expected.replace(before,after,1)
+        require(actual.read_bytes()==expected, 'isolated LiRPA source: '+name)
+        lirpa_hashes[name]=hashlib.sha256(expected).hexdigest()
+    require({str(p.relative_to(LIRPA)) for p in LIRPA.rglob('*.py')} ==
+            {n for n in lirpa_hashes if n.endswith('.py')}, 'no extra LiRPA Python source')
     return dict(author_commits=SOURCES, compatibility_directory=str(COMPAT),
-                compatibility_edits=COMPAT_EDITS, files=hashes)
+                compatibility_edits=COMPAT_EDITS, files=hashes,
+                lirpa_files=lirpa_hashes, lirpa_edit=LIRPA_EDIT)
 
 
 def normalized(name):
@@ -186,7 +220,7 @@ def limits(deadline):
 def probe():
     require(sys.prefix == str(ENVIRONMENT), 'isolated CPU interpreter')
     source = source_identity()
-    sys.path[:0] = [str(TOOL/'auto_LiRPA'), str(COMPAT/'complete_verifier')]
+    sys.path[:0] = [str(LIRPA), str(COMPAT/'complete_verifier')]
     import torch
     import auto_LiRPA
     import api
@@ -197,7 +231,7 @@ def probe():
     for name, module in (('torch', torch), ('auto_LiRPA', auto_LiRPA),
                          ('complete_verifier.api', api), ('packaging', packaging), ('wheel', wheel)):
         path = Path(module.__file__).resolve()
-        expected = COMPAT if name == 'complete_verifier.api' else (TOOL if name == 'auto_LiRPA' else ENVIRONMENT)
+        expected = COMPAT if name == 'complete_verifier.api' else (LIRPA if name == 'auto_LiRPA' else ENVIRONMENT)
         require(path.is_relative_to(expected), 'loaded module origin: '+name)
         modules[name] = dict(path=str(path), sha256=sha(path), version=getattr(module, '__version__', None))
     rows = distributions()
