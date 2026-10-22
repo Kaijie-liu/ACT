@@ -1,5 +1,16 @@
 # MoE project handoff — current entry point
 
+## Stage1a running after ACT lowering repair 2026-10-22
+
+Real10/600 snapshot:5numerical positives,3timeouts,2preservedERRORs;009 GenBaB-naive returns positive31.199s, next010.
+DetachedPID4044622 runs immutable5483c7472 at`results/multilayer_stage1_20261022_r5`;[records](multilayer_stage1_records_20261022.json) bind chain/control/start.
+R1/r3 retained verbatim, carry1287s/8,373,830B, no completed calls replayed; all original600 endpoints and300s per request unchanged.
+Independent startup audit passes18 sources, full ancestor inventories, actual AS limits, cumulative costs and009 coverage780pruned+4verified=784.
+ACT callable-name dispatch replaces address-bearing repr parsing; four E8 L2/L3 roundtrips exact at sampled points, not full source proofs.
+Resource-deficient first control/r4 descriptor preserved unexecuted for admission; corrected capped control and cumulative accounting pass.
+Next finish1a;1b training remains unstarted under observed5–6% CPU idle. Recheck admission, no new user approval needed; no auto-training watcher installed.
+Primary decision waits complete witness-source queue; G1–G6 remain OPEN. Live ledgers supersede snapshot.
+
 ## ACT dispatch control accepted for continuation 2026-10-22
 
 Real9/600 unchanged. Corrected r2 control PASS8.482s, combined15.808s with preserved resource-deficient r1; controller/child AS readbacks both8GiB.

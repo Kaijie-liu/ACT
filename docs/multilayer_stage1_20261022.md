@@ -36,6 +36,16 @@ its two observations (AS application and relative-root normalization) are now
 addressed. The r5 descriptor carries1287s and8,373,830B, starts009, and retains
 both errors. The new control is not a network robustness certificate.
 
+The r5 immutable execution`5483c74725848b3fa5629a4dd2f390f64ef71645` launched
+detached asPID4044622. Its first new009 (L2E8_seed1 naive GenBaB) is numerically
+positive in31.199041s. At this snapshot10/600 are5positive/3timeout/2error.
+No scientific endpoint is decided from this prefix; the live receipts are
+authoritative. The new control did not change GenBaB's configuration or source.
+Independent read-only startup audit passes18 source hashes, original model and
+request binding, unchanged ancestor inventories/logs, actual parent/child caps,
+and cumulative time/bytes.009 covers784 histories(780pruned+4verified). The
+merged audit reports PASS_PREFIX10/600 with590 unexecuted, not a final result.
+
 Before executing the repair control, freeze one≤300s synthetic batch in
 `scripts/multilayer_lowering_control.py`: fixed cat-name/repr-containing-add old
 versus new dispatch, complete concatenated variables/values, unnamed rejection;
