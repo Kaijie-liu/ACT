@@ -35,24 +35,28 @@ def atomic_torch_save(path,value,torch):
     os.replace(temporary,path)
 
 
-def control(folder):
+def control(folder,residual=False):
     folder.mkdir()
     signal.signal(signal.SIGALRM,lambda *_:os._exit(124))
     signal.setitimer(signal.ITIMER_REAL,max(.01,300-(time.monotonic()-ENTRY)))
     torch=setup(1)
-    from act.pipeline.moe.multilayer_training import build,load_checkpoint
+    from act.pipeline.moe.multilayer_training import build,load_checkpoint,balance_term
     from act.pipeline.moe.train import _balance_loss
     rows=[]
-    for layers,experts in ((1,8),(2,8),(3,8),(2,16)):
+    configurations=((2,8),(3,8)) if residual else ((1,8),(2,8),(3,8),(2,16))
+    for layers,experts in configurations:
         config=dict(input_dim=4,classes=3,hidden_output=5,router_hidden=[4],expert_hidden=[6,5],
                     layers=layers,experts=experts)
+        if residual:config['family']='residual_stem_v1'
         model=build(config,0)
         x=torch.arange(16,dtype=torch.float32).reshape(4,4)/16
         y=torch.tensor([0,1,2,0])
         output,decisions=model.forward_with_routing(x)
         if not torch.equal(output,model(x)):raise ValueError('training/dynamic forward mismatch')
-        loss=torch.nn.functional.cross_entropy(output,y)+.1*torch.stack(
-            [_balance_loss(d,experts,'switch') for d in decisions]).mean()
+        balance=balance_term(decisions,experts,config)
+        if residual:
+            torch.testing.assert_close(balance,sum(_balance_loss(d,experts,'switch') for d in decisions))
+        loss=torch.nn.functional.cross_entropy(output,y)+.1*balance
         optimizer=torch.optim.AdamW(model.parameters(),lr=.001,weight_decay=.0001)
         before=[p.detach().clone() for p in model.parameters()]
         loss.backward();optimizer.step()
@@ -76,15 +80,55 @@ def control(folder):
         for network,opt in ((model,optimizer),(restored,resumed)):
             opt.zero_grad(set_to_none=True)
             value,decisions=network.forward_with_routing(x)
-            objective=torch.nn.functional.cross_entropy(value,y)+.1*torch.stack(
-                [_balance_loss(d,experts,'switch') for d in decisions]).mean()
+            objective=torch.nn.functional.cross_entropy(value,y)+.1*balance_term(decisions,experts,config)
             objective.backward();opt.step()
         if any(not torch.equal(a,b) for a,b in zip(model.parameters(),restored.parameters())):
             raise ValueError('optimizer resume differential')
-        rows.append(dict(layers=layers,experts=experts,status='PASS',checkpoint_sha256=sha(path)))
+        semantics=None
+        if residual:
+            semantics=residual_semantics(model.double().eval(),x[:1].double())
+        rows.append(dict(layers=layers,experts=experts,status='PASS',checkpoint_sha256=sha(path),semantics=semantics))
     save(folder/'complete.json',dict(status='PASS',controls=rows,seconds=time.monotonic()-ENTRY,
         real_training=0,guarantee='SYNTHETIC_TRAIN_SAVE_RESTORE_ONLY'))
     signal.setitimer(signal.ITIMER_REAL,0.)
+
+
+def residual_semantics(model,center):
+    """No solver: ACT and external static graph must include stem/residual/head."""
+    import torch
+    from act.back_end.moe.multilayer import HistoryPlan
+    from act.back_end.moe.multilayer_external import StaticPrefix,GuardedHistory
+    from act.pipeline.moe.multilayer_study import interval_census
+    history=((0,1),)*len(model.layers)
+    plan=HistoryPlan(model,center,weighted_matmul=True)
+    joint,router_rows=plan.compile(history)
+    static=StaticPrefix(model,history).eval()
+    classes=model.head.out_features
+    rows=torch.eye(classes,dtype=torch.float64);thresholds=torch.zeros(classes,dtype=torch.float64)
+    guarded=GuardedHistory(model,history,rows,thresholds).eval()
+    with torch.no_grad():
+        for point in (center-.01,center,center+.01):
+            x=model.stem(point.flatten(1));scores=[]
+            for layer,pair in zip(model.layers,history):
+                r=layer.router(x);weight=torch.sigmoid(r[:,0:1]-r[:,1:2])
+                x=x+layer.experts[1](x)+weight*(layer.experts[0](x)-layer.experts[1](x));scores.append(r)
+            expected=model.head(x)
+            torch.testing.assert_close(static(point),expected,rtol=1e-12,atol=1e-12)
+            torch.testing.assert_close(joint(point)[:,:classes],expected,rtol=1e-12,atol=1e-12)
+            atoms=[r[:,o:o+1]-r[:,i:i+1] for r in scores for i in (0,1) for o in range(2,r.shape[1])]
+            max_guard=torch.cat(atoms,dim=1).amax(1,keepdim=True)
+            torch.testing.assert_close(guarded(point),torch.maximum(expected,max_guard),rtol=1e-12,atol=1e-12)
+        for depth in range(len(model.layers)):
+            prefix=StaticPrefix(model,history[:depth],next_router=True).eval()
+            x=model.stem(center)
+            for layer in model.layers[:depth]:
+                r=layer.router(x);w=torch.sigmoid(r[:,0:1]-r[:,1:2])
+                x=x+layer.experts[1](x)+w*(layer.experts[0](x)-layer.experts[1](x))
+            torch.testing.assert_close(prefix(center),model.layers[depth].router(x),rtol=1e-12,atol=1e-12)
+        census=interval_census(model,center,center-.001,center+.001,time.monotonic()+2,20261022)
+        assert census['observed_lower']>=1 and census['candidate_upper']>=census['observed_lower']
+    return dict(status='PASS',act_compilation=True,external_full_and_prefix=True,
+        independent_guard_max=True,census_observed_not_excluded=True,solver_calls=0)
 
 
 def train(folder,manifest):
@@ -99,7 +143,7 @@ def train(folder,manifest):
     from torch.utils.data import DataLoader,random_split
     from torchvision.datasets import CIFAR10
     from torchvision.transforms import ToTensor
-    from act.pipeline.moe.multilayer_training import build
+    from act.pipeline.moe.multilayer_training import build,balance_term
     from act.pipeline.moe.train import _balance_loss
     control_result=load(spec['control_result'],spec['control_sha256'])
     if control_result['status']!='PASS':raise ValueError('training control not passed')
@@ -136,7 +180,7 @@ def train(folder,manifest):
             for x,y in loader:
                 optimizer.zero_grad(set_to_none=True)
                 value,decisions=model.forward_with_routing(x)
-                balance=torch.stack([_balance_loss(d,item['architecture']['experts'],'switch') for d in decisions]).mean()
+                balance=balance_term(decisions,item['architecture']['experts'],item['architecture'])
                 loss=torch.nn.functional.cross_entropy(value,y)+.1*balance
                 if not torch.isfinite(loss):raise ValueError('nonfinite loss')
                 loss.backward();optimizer.step()
@@ -169,10 +213,11 @@ def train(folder,manifest):
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('--control',type=Path)
+    parser.add_argument('--residual-control',action='store_true')
     parser.add_argument('--run',type=Path);parser.add_argument('--manifest',type=Path)
     args=parser.parse_args()
     try:
-        if args.control:control(args.control)
+        if args.control:control(args.control,args.residual_control)
         else:train(args.run,args.manifest)
     except BaseException as exc:
         folder=args.control or args.run

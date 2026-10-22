@@ -35,6 +35,9 @@ class StaticPrefix(nn.Module):
         self.expert_a, self.expert_b = nn.ModuleList(), nn.ModuleList()
         self.history = tuple(tuple(pair) for pair in history)
         self.experts = tuple(len(layer.experts) for layer in model.layers)
+        self.stem=getattr(model,'stem',None)
+        self.residual=getattr(model,'residual',False)
+        self.head=getattr(model,'head',None) if len(history)==len(model.layers) and not next_router else None
         for i, pair in enumerate(self.history):
             layer = model.layers[i]
             if (layer.mode != 'selected_softmax' or layer.k != 2 or len(pair) != 2
@@ -47,14 +50,17 @@ class StaticPrefix(nn.Module):
 
     def _run(self, x):
         x = x.flatten(1)
+        if self.stem is not None:x=self.stem(x)
         scores = []
         for i, pair in enumerate(self.history):
             r = self.routers[i](x)
             a, b = pair
             weight = torch.sigmoid(r[:, a:a+1] - r[:, b:b+1])
             ea, eb = self.expert_a[i](x), self.expert_b[i](x)
-            x = eb + weight * (ea - eb)
+            mixed = eb + weight * (ea - eb)
+            x = x+mixed if self.residual else mixed
             scores.append(r)
+        if self.head is not None:x=self.head(x)
         return x, scores
 
     def forward(self, x):

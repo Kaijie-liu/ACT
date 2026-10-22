@@ -118,6 +118,7 @@ def interval_census(model,center,lower,upper,deadline,seed):
             tick();boxes[i]=affine_interval(layer.experts[i],lo,hi)
         for a,b in live:
             nextlo,nexthi=pair_interval(a,b,boxes[a],boxes[b],rlo,rhi)
+            if getattr(model,'residual',False):nextlo,nexthi=nextlo+lo,nexthi+hi
             walk(depth+1,nextlo,nexthi,(*prefix,(a,b)))
     complete=False
     with torch.no_grad():
@@ -125,7 +126,9 @@ def interval_census(model,center,lower,upper,deadline,seed):
             for point in points:
                 tick();_,decisions=model.forward_with_routing(point)
                 observed.add(tuple(tuple(sorted(map(int,d.indices[0].tolist()))) for d in decisions))
-            walk(0,lower.flatten(1),upper.flatten(1),())
+            lo,hi=lower.flatten(1),upper.flatten(1)
+            if getattr(model,'stem',None) is not None:lo,hi=affine_interval(model.stem,lo,hi)
+            walk(0,lo,hi,())
             complete=True
         except TimeoutError:pass
     if len(observed)>expected-pruned:raise ValueError('census bound conflicts with observed histories')
