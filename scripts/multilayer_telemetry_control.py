@@ -20,7 +20,7 @@ CODE=('scripts/multilayer_telemetry_control.py','tests/test_multilayer_telemetry
       'act/pipeline/moe/multilayer_study.py')
 
 
-def main(folder,worker):
+def main(folder,worker,prior=None):
     resource.setrlimit(resource.RLIMIT_AS,(8*2**30,8*2**30))
     if worker:
         spec=load(folder.parent/'freeze.json')
@@ -32,22 +32,29 @@ def main(folder,worker):
             tests=result.testsRun,errors=len(result.errors),failures=len(result.failures),
             real_queries=0,solver_calls=0,as_limit=resource.getrlimit(resource.RLIMIT_AS)))
         return
+    prior_seconds=0.;prior_bytes=0;retained=None
+    if prior is not None:
+        previous=load(prior);prior_seconds=previous['seconds']
+        prior_bytes=sum(p.stat().st_size for p in prior.parent.rglob('*') if p.is_file())
+        retained=dict(path=str(prior),sha256=sha(prior),seconds=prior_seconds,
+                      meaning='preserved stdlib harness import failure; no control case executed')
     folder.mkdir();child=folder/'fixed';child.mkdir()
     save(folder/'freeze.json',dict(sources={p:sha(ROOT/p) for p in CODE},seconds=300,
-        artifacts=128*2**20,as_bytes=8*2**30,policy=POLICY,real_models=0,solver_calls=0,
+        artifacts=128*2**20,as_bytes=8*2**30,policy=POLICY,real_models=0,solver_calls=0,retained_prior=retained,
         cases=['mandatory start/identity/return and heartbeat throttle','exception/timeout retained start',
                '150/50/5 boundaries, missing, aggregate not individual',
                'same UNSAFE denominator, original endpoint unchanged','reserved boundary pre-worker stop']))
     env=dict(PATH='/usr/bin:/bin',CUDA_VISIBLE_DEVICES='',OPENBLAS_NUM_THREADS='1',
              PYTHONDONTWRITEBYTECODE='1',PYTHONNOUSERSITE='1')
-    receipt=execute([ACT,'-I','-S','-B',__file__,str(child),'--worker'],run_deadline=ENTRY+294,
-        cleanup_deadline=ENTRY+298,env=env,rss_limit=None,development_policy=POLICY)
+    receipt=execute([ACT,'-I','-S','-B',__file__,str(child),'--worker'],run_deadline=ENTRY+294-prior_seconds,
+        cleanup_deadline=ENTRY+298-prior_seconds,env=env,rss_limit=None,development_policy=POLICY)
     save(folder/'session.json',receipt)
     from b1_observed_batch import session_ok
     good=(session_ok(receipt) and (child/'outcome.json').exists()
-          and load(child/'outcome.json')['status']=='PASS' and time.monotonic()<ENTRY+300)
-    assert sum(p.stat().st_size for p in folder.rglob('*') if p.is_file())<128*2**20
-    save(folder/'complete.json',dict(status='PASS' if good else 'FAIL',seconds=time.monotonic()-ENTRY,
+          and load(child/'outcome.json')['status']=='PASS' and time.monotonic()<ENTRY+300-prior_seconds)
+    assert prior_bytes+sum(p.stat().st_size for p in folder.rglob('*') if p.is_file())<128*2**20
+    save(folder/'complete.json',dict(status='PASS' if good else 'FAIL',seconds=prior_seconds+time.monotonic()-ENTRY,
+        retained_prior=retained,current_seconds=time.monotonic()-ENTRY,
         freeze_sha256=sha(folder/'freeze.json'),session_sha256=sha(folder/'session.json'),
         outcome_sha256=sha(child/'outcome.json') if (child/'outcome.json').exists() else None))
     print(json.dumps(load(folder/'complete.json')),flush=True)
@@ -55,4 +62,5 @@ def main(folder,worker):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('folder',type=Path);p.add_argument('--worker',action='store_true')
-    a=p.parse_args();main(a.folder,a.worker)
+    p.add_argument('--prior',type=Path)
+    a=p.parse_args();main(a.folder,a.worker,a.prior)

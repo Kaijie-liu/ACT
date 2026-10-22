@@ -1,13 +1,27 @@
 """Stdlib controls for mandatory query-boundary publication and post-prefix labels."""
 import ast
+import importlib.util
 import json
 from pathlib import Path
 import tempfile
-from types import SimpleNamespace
+from types import SimpleNamespace,ModuleType
 import unittest
 from unittest.mock import patch
-import multilayer_stage1 as stage
-from act.pipeline.moe.multilayer_study import mechanism_decomposition,mechanism_endpoint,endpoint
+
+# Load the exact stdlib measurement source without executing pipeline/__init__,
+# which eagerly imports torch. No installed module or production dispatch patched.
+ROOT=Path(__file__).resolve().parents[1]
+spec=importlib.util.spec_from_file_location('control_study',ROOT/'act/pipeline/moe/multilayer_study.py')
+study=importlib.util.module_from_spec(spec);spec.loader.exec_module(study)
+mechanism_decomposition=study.mechanism_decomposition
+mechanism_endpoint=study.mechanism_endpoint
+endpoint=study.endpoint
+path=ROOT/'scripts/multilayer_stage1.py';tree=ast.parse(path.read_text())
+removed=[n for n in tree.body if isinstance(n,ast.ImportFrom) and n.module=='act.pipeline.moe.multilayer_study']
+assert len(removed)==1 and [(a.name,a.asname) for a in removed[0].names]==[('coverage',None)]
+tree.body=[n for n in tree.body if n is not removed[0]]
+stage=ModuleType('control_stage');stage.__file__=str(path);stage.coverage=study.coverage
+exec(compile(tree,str(path),'exec'),stage.__dict__)
 
 
 class Controls(unittest.TestCase):

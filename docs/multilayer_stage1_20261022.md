@@ -57,6 +57,13 @@ same UNSAFE denominator and unchanged primary endpoint; pre-worker boundary stop
 Freeze source hashes before running `scripts/multilayer_telemetry_control.py`;
 result root `results/multilayer_telemetry_control_20261023_r1`.
 
+R1 retained:0.521063s, child import error before any case. `pipeline/__init__`
+eagerly imports torch under `python -S`. Tool-only harness correction loads the
+exact measurement file by path and executes the stage module with only its
+coverage import replaced by that same file's function; no installed module,
+production algorithm or native library is patched. R2 uses a new result root,
+charges R1 seconds/bytes inside the same300s/128MiB, and runs the same controls.
+
 The live r5 controller has no stop hook. After controls, exclusively reserve one
 not-yet-created future request directory with a `handoff_boundary.json` marker.
 Existing `invoke` fails at mkdir **before request/session/worker creation**, after
