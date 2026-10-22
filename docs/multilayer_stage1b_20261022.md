@@ -32,8 +32,25 @@ the full historical exclusion and stage1a selected cohort, not by route count or
 bounds. PublicPGD and30×3 census follow1a. Verification is6models×20inputs×2arms
 (ACT v1,GenBaB pruning),240calls,20h,300s/request. All auxiliary cost, incomplete
 coverage,errors,UNSAFE sources and guarantee levels remain explicit. Freeze the
-actual external pruning version before results; do not silently change running1a.
+external r3 compatibility and plain-CROWN prefix/alpha-GenBaB leaf configuration
+used by resumed1a; the alpha-CROWN prefix entrance experiment remains separate.
 Apply the same L3 primary definition and Wilson rule. Agreement between1a/1b
 supports the corresponding next step; disagreement is gray/report. The separate
 alpha-CROWN entrance test precedes new mechanism design if1a finds a bottleneck.
 Neither successful training nor graph compatibility establishesG1/G3/G5.
+
+## Control and training freeze
+
+`results/multilayer_stage1b_control_20261022_r1` passes both L2/L3 controls in
+8.504584s including existing owned-session cleanup (body7.102405s). Training
+forward/dynamic forward, sum-balance, serialized model/optimizer/shuffle restore,
+ACT/static full and prefix graphs, guard-max and residual census checks pass.
+No trained checkpoint or solver was used. The training/propagation sources are
+exactly the controlled versions; a subsequent freeze-helper metadata correction
+clarified that the classifier head is applied once, with no implementation change.
+
+[Six-model training freeze](multilayer_stage1b_training_freeze_20261022.json)
+binds data, original split hash, all source files and control receipt. No real1b
+training has started at this snapshot: load38.49 on20 logicalCPUs warrants not
+adding a second numerical job. This is resource scheduling, not a scientific
+stop or a request for new authorization. Do not alter1a while it executes.

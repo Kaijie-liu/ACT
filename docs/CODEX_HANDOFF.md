@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## Stage1a resumed and stage1b training frozen 2026-10-22
+
+Real7/600 snapshot:4numerical positives,2timeouts,1preservedERROR; immutable2faff45ce/PID806655 runs005+ at newroot`results/multilayer_stage1_20261022_r3`.
+005 closes784 histories(782pruned+2verified) in15.496s;006TIMEOUT294.308s. Live ledgers override this prefix, no primary decision yet.
+[Records](multilayer_stage1_records_20261022.json) bind old/new sources; independent startup review passes,657s and old bytes carried, no completed calls rerun.
+[1b recipe/control](multilayer_stage1b_20261022.md) frozen: linear stem,128-wide residual blocks,one finalhead,sum balance; L2/L3×3seeds.
+Both new1b synthetic controls pass8.505s; model/optimizer/graphs/census tested without real training/solver. Metadata-only head wording correction does not change controlled code.
+1b training not launched: latestload38.49/20CPUs; recheck resources before starting frozen two-thread CPU queue, no new approval needed.
+Next finish1a; separately train/audit1b when resources permit, then freeze its new-input240-call queue. Alpha-CROWN entrance test remains conditional on1a bottleneck. G1–G6 OPEN.
+
 ## Fifth compatibility repair passes and continuation prepared 2026-10-22
 
 Real5/600 unchanged; full-width synthetic compatibility15.139s PASS, operator256→62 differential and sixL2/L3 cases pass.

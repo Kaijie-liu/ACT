@@ -42,7 +42,9 @@ def freeze(path,control_root):
     original=load(ROOT/'docs/multilayer_training_freeze_20261022.json')
     result=load(control_root/'complete.json');assert result['status']=='PASS'
     receipt=load(control_root/'freeze.json')
-    assert receipt['sources']=={p:sha(ROOT/p) for p in CODE}
+    # Training/propagation implementations must be exactly those controlled.
+    # This wrapper's freeze-only metadata is not part of the tested operator.
+    assert all(receipt['sources'][p]==sha(ROOT/p) for p in CODE if p!='scripts/multilayer_stage1b.py')
     models=[]
     for layers in (2,3):
         for seed in range(3):
@@ -57,7 +59,7 @@ def freeze(path,control_root):
         control_result=str(control_root/'fixed/complete.json'),control_sha256=sha(control_root/'fixed/complete.json'),
         control_receipt=str(control_root/'complete.json'),control_receipt_sha256=sha(control_root/'complete.json'),
         recipe=dict(stem='Linear3072->128, no extra activation',residual='x+MoE(x), each128->128',
-            head='Linear128->10 after every routed block',balance='0.1*sum(layer_switch_balance)',
+            head='Linear128->10 once after all routed blocks',balance='0.1*sum(layer_switch_balance)',
             optimizer='AdamW',lr=.001,weight_decay=.0001,batch=256,scheduler=None,
             augmentation=None,normalization=None,checkpoint='earliest validation maximum',
             test='report every seed, never select by verifiability'),

@@ -64,6 +64,14 @@ prefix tampering, duplicate/missing/reordered calls and reset/excess request cos
 the old20 public-PGD objects remain in the union. Independent review also checked
 owned-directory-only stop publication, both logs and cumulative-time reception.
 
+Continuation launched from immutable`2faff45ce7918cabcf98cb7fa716f297168c160e`,
+detachedPID806655, resultroot`multilayer_stage1_20261022_r3`. Independent read-only
+startup audit passed original1556 files,16 execution sources and actual backend
+module origins. First resumed005 returns POSITIVE in15.495993s:782 prefix-pruned
+and2 verified histories cover784.006 returns TIMEOUT in294.307525s. At this
+snapshot7/600 terminals are4 numerical positives,2 timeouts,1 retained ERROR.
+This is not a final paired result or evidence that the bottleneck gate passed.
+
 Pre-result freeze. Training12/12 and stage0 semantic9/9 are complete; stage1
 verification0/600 at registration. The fourth-revision user contract and its
 clarifications apply unchanged. This is a bottleneck test of the existing v1,
