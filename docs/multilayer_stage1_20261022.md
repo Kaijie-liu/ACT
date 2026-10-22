@@ -27,6 +27,15 @@ retains r1 time/bytes inside the same300s/128MiB allowance. This is not a new
 scientific attempt or replay of any real request. A separate relative-path
 reader fix ensures cumulative checks also apply to relative-root audit calls.
 
+The corrected r2 control passes in8.481902s (combined15.807664s including r1).
+Parent and child read back soft/hard RLIMIT_AS=8,589,934,592bytes. Four roundtrip
+errors remain exactly0; no source tensor was replaced with a center sample.
+The fixed-name defect and continuation controls pass under the actual cap.
+Independent read-only review accepted dispatch semantics and the chain design;
+its two observations (AS application and relative-root normalization) are now
+addressed. The r5 descriptor carries1287s and8,373,830B, starts009, and retains
+both errors. The new control is not a network robustness certificate.
+
 Before executing the repair control, freeze one≤300s synthetic batch in
 `scripts/multilayer_lowering_control.py`: fixed cat-name/repr-containing-add old
 versus new dispatch, complete concatenated variables/values, unnamed rejection;

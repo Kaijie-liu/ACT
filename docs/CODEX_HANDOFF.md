@@ -1,5 +1,13 @@
 # MoE project handoff — current entry point
 
+## ACT dispatch control accepted for continuation 2026-10-22
+
+Real9/600 unchanged. Corrected r2 control PASS8.482s, combined15.808s with preserved resource-deficient r1; controller/child AS readbacks both8GiB.
+Four E8 full-width L2/L3 FX→ACT→Torch differentials have error0; deterministic old repr misdispatch/new-name fix and chain mutations pass.
+New[r5 descriptor](multilayer_stage1_continuation_20261022_r5.json) carries1287s/8,373,830B, starts009; r4 descriptor remains unexecuted.
+Next launch immutable r5 suffix only; all sources/models/queries/methods/endpoints remain bound, GenBaB unchanged, no completed reruns.
+1b training remains pending resource admission: live CPU idle5–6%, run queue29–39; do not add the training queue now. G1–G6 OPEN.
+
 ## ACT dispatch repair and second continuation control 2026-10-22
 
 Real9/600:4numerical positives,3timeouts,2ERRORs; r3 stopped at008 with missing`reshape`, no live verification queue.
