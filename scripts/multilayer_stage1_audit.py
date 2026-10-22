@@ -43,30 +43,62 @@ def ratio_bootstrap(left,right,unsafe,exclude):
         resampling='10000 common-input blocks; three fixed seeds retained',valid_resamples=len(values))
 
 
-def check_continuation(binding,manifest):
+def result_chain(root,manifest,seen=None):
+    """Old roots remain in place; each immediate parent is hash-bound once."""
+    root=Path(root).resolve();seen=set() if seen is None else set(seen)
+    assert root not in seen,'cyclic continuation'
+    seen.add(root)
+    if not (root/'continuation.json').exists():return [root]
+    binding=load(root/'continuation.json')
+    return _parent_chain(binding,manifest,seen)+[root]
+
+
+def _parent_chain(binding,manifest,seen=None):
     parent=Path(binding['parent_root'])
     assert binding['manifest_sha256']==sha(manifest)
     actual={str(p.relative_to(parent)):sha(p) for p in parent.rglob('*') if p.is_file()}
     assert actual==binding['parent_files'],'old prefix changed'
-    assert sha(parent/'catalog.json')==binding['catalog_sha256']
-    assert binding['next_verify']==5
-    assert binding['carried_seconds']>=load(parent/'stopped.json')['seconds']
-    assert binding['prior_bytes']>=sum(p.stat().st_size for p in parent.rglob('*') if p.is_file())
+    roots=result_chain(parent,manifest,seen)
+    assert sha(roots[0]/'catalog.json')==binding['catalog_sha256']
+    ids=[load(p)['id'] for owner in roots for p in sorted(owner.glob('ledger_*.json'))
+         if load(p)['kind']=='verification']
+    assert ids==[f'verify_{i:03d}' for i in range(binding['next_verify'])]
+    stop=load(parent/'stopped.json')
+    assert binding['carried_seconds']>=stop.get('cumulative_seconds',stop['seconds'])
+    old_bytes=sum(p.stat().st_size for owner in roots for p in owner.rglob('*') if p.is_file())
+    # The original r1 test binding did not include a console; new bindings do.
+    if 'parent_console' in binding:
+        old_bytes+=sum(owner.with_suffix('.controller.log').stat().st_size for owner in roots
+                       if owner.with_suffix('.controller.log').is_file())
+    if binding.get('schema')=='multilayer-stage1-continuation-r2':
+        assert binding['prior_bytes']==old_bytes,'cumulative root bytes must be counted once'
+        control=load(binding['control']['path'],binding['control']['sha256'])
+        assert control['status']=='PASS' and control['seconds']==binding['control']['seconds']
+        assert binding['carried_seconds']==math.ceil(stop.get('cumulative_seconds',stop['seconds'])+control['seconds'])
+    else:assert binding['prior_bytes']>=old_bytes
     if 'parent_console' in binding:
         assert sha(binding['parent_console']['path'])==binding['parent_console']['sha256']
-    return parent
+    return roots
+
+
+def check_continuation(binding,manifest):
+    return _parent_chain(binding,manifest)[-1]
 
 
 def audit(root,manifest):
     spec=load(manifest);start=load(root/'start.json')
     assert start['manifest_sha256']==sha(manifest)
-    origin=root;roots=[root];binding=None
-    if (root/'continuation.json').exists():
-        binding=load(root/'continuation.json');origin=check_continuation(binding,manifest);roots=[origin,root]
-        assert start['execution_binding']['sha256']==sha(root/'continuation.json')
-        assert load(start['execution_binding']['path'],start['execution_binding']['sha256'])==binding
-        assert start['carried_seconds']==binding['carried_seconds']
-        assert start['deadline']==start['entry']+spec['budgets']['stage']-binding['carried_seconds']
+    roots=result_chain(root,manifest);origin=roots[0];binding=None;starts={}
+    for owner in roots:
+        owner_start=load(owner/'start.json');starts[owner]=owner_start
+        assert owner_start['manifest_sha256']==sha(manifest)
+        if not (owner/'continuation.json').exists():continue
+        b=load(owner/'continuation.json')
+        assert owner_start['execution_binding']['sha256']==sha(owner/'continuation.json')
+        assert load(owner_start['execution_binding']['path'],owner_start['execution_binding']['sha256'])==b
+        assert owner_start['carried_seconds']==b['carried_seconds']
+        assert owner_start['deadline']==owner_start['entry']+spec['budgets']['stage']-b['carried_seconds']
+        if owner==root:binding=b
     catalog=load(origin/'catalog.json');assert catalog['manifest_sha256']==sha(manifest)
     queries=catalog['queries'];assert len(queries)==600
     assert len({(q['model']['id'],q['sample']['index'],q['arm']) for q in queries})==600
@@ -87,13 +119,13 @@ def audit(root,manifest):
     entries=[(owner,load(p)) for owner in roots for p in sorted(owner.glob('ledger_*.json'))]
     ledgers=[r for _,r in entries];owners={r['id']:owner for owner,r in entries}
     assert len({r['id'] for r in ledgers})==len(ledgers)
-    if binding:
-        assert [r['id'] for owner,r in entries if owner==origin and r['kind']=='verification']==[
-            f'verify_{i:03d}' for i in range(5)]
-        assert all(r['kind']=='verification' and int(r['id'].split('_')[1])>=5
-                   for owner,r in entries if owner==root)
-        new=[r['id'] for owner,r in entries if owner==root]
-        assert new==[f'verify_{i:03d}' for i in range(5,5+len(new))], 'continuation has missing or reordered calls'
+    verified=[r['id'] for _,r in entries if r['kind']=='verification']
+    assert verified==[f'verify_{i:03d}' for i in range(len(verified))], 'missing or reordered calls'
+    for owner in roots[1:]:
+        begin=load(owner/'continuation.json')['next_verify']
+        new=[r['id'] for o,r in entries if o==owner]
+        assert all(r['kind']=='verification' for o,r in entries if o==owner)
+        assert new==[f'verify_{i:03d}' for i in range(begin,begin+len(new))]
     byid={r['id']:r for r in ledgers};rows=[];pending=[]
     witness_sources={};aux_seconds=0.
     for ledger in ledgers:
@@ -106,8 +138,9 @@ def audit(root,manifest):
         assert all(sha(target/p)==h for p,h in terminal['files'].items())
         request=load(target/'request.json')
         assert request['manifest_sha256']==sha(manifest)
-        if binding and owners[ledger['id']]==root:
-            assert request['execution_binding']==start['execution_binding']
+        owner_start=starts[owners[ledger['id']]]
+        if 'execution_binding' in owner_start:
+            assert request['execution_binding']==owner_start['execution_binding']
         assert ledger['kind']==request['kind']
         if 'model' in ledger:assert ledger['model']==request['model']['id']
         if ledger['accepted']:

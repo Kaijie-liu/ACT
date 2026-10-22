@@ -1007,7 +1007,10 @@ class _LayerGraphBuilder:
     
     def _handle_call_function(self, node: fx.Node) -> None:
         """Handle call_function node."""
-        target_name = str(node.target).lower()
+        # A builtin repr includes its owner's address.  Hex digits such as
+        # "add" must not dispatch torch.cat (or another function) as ADD.
+        # FX callable names are stable; never classify the address-bearing repr.
+        target_name = getattr(node.target, '__name__', '').lower()
         
         handlers = {
             'add': self._process_add_operation,

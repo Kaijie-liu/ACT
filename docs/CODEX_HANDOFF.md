@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## ACT dispatch repair and second continuation control 2026-10-22
+
+Real9/600:4numerical positives,3timeouts,2ERRORs; r3 stopped at008 with missing`reshape`, no live verification queue.
+Source dispatch searched builtin repr/address for`add`, potentially misclassifying`cat`; frozen control contrasts stable names against this defect.
+One≤300s synthetic batch: deterministic dispatch, E8 L2/L3 full-width IR roundtrip, three-root receipt/cost mutations; no model/data/solver/GPU.
+After controls, immutable continuation starts009, retains000–008 and1270.835496s plus new control, unique root bytes and original600/52h/128MiB.
+See[stage record](multilayer_stage1_20261022.md). GenBaB stays r3; no methods/thresholds change; G1–G6 OPEN.
+1b remains frozen, not training; current host load33.86/20logicalCPUs. No training or replacement verification process started during repair.
+
 ## Stage1a resumed and stage1b training frozen 2026-10-22
 
 Real7/600 snapshot:4numerical positives,2timeouts,1preservedERROR; immutable2faff45ce/PID806655 runs005+ at newroot`results/multilayer_stage1_20261022_r3`.

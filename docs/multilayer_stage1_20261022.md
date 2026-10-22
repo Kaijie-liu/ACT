@@ -1,5 +1,37 @@
 # Multilayer bottleneck elimination — stage 1
 
+## ACT lowering repair and second continuation
+
+The r3 queue stopped at008:9/600 terminals,4 numerical positives,3timeouts,
+2ERRORs. New007 timed out294.249330s;008 ACT L2E8_seed1 failed5.957871s
+before propagation with missing`reshape`. The retained cumulative active cost is
+1270.835496s. No completed request, including004/008, will be rerun or relabeled.
+
+The source dispatcher classified `str(node.target)`, which includes a builtin's
+owner address. A hexadecimal`add` substring can make`torch.cat` enter ADD;
+its list argument then yields no registered output and the following reshape
+is skipped. The old process address was not captured, so this is a reproducible
+source defect consistent with the trace, not a directly observed ASLR value.
+Use the callable's stable`__name__` only; unnamed callables remain unsupported.
+Do not substitute sample values, weaken mathematical checks, or change graph
+operators. The GenBaB snapshot remains exactly r3 with its five disclosed edits.
+
+Before executing the repair control, freeze one≤300s synthetic batch in
+`scripts/multilayer_lowering_control.py`: fixed cat-name/repr-containing-add old
+versus new dispatch, complete concatenated variables/values, unnamed rejection;
+E8 L2/L3 full widths3072/256/128 and10 classes, two fixed histories each, comparing
+all output and router coordinates of static FX and round-trip ACT IR at three
+inputs; and three-root continuation/mutation checks. No checkpoint/data, solver
+or GPU. A tool defect may be repaired with the failed prefix retained, but no
+semantic mismatch is silently accepted. Existing stage0/GenBaB solves are not rerun.
+
+Continuation binds r1→r3→newroot, starts009, preserves591 remaining calls and
+all600 slots. Each owner retains its own execution binding. Carry the previous
+cumulative cost plus this control once; count each physical root/log once under
+the original52h/128MiB budget. Original samples, arms, numerical configuration,
+300s requests and primary decisions remain unchanged. This is tooling repair,
+not algorithmic evidence or a new scientific result.
+
 ## Authorized supplement before resuming the stopped prefix
 
 The original freeze below remains stage1a. At this supplement five terminals
