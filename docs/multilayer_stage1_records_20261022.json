@@ -1,4 +1,38 @@
 {
+  "final_result_20261025": {
+    "status": "COMPLETE_AUDITED_ROUTE_UNION_GATE_STOP",
+    "result_root": "/data1/Kane/MOE/results/multilayer_stage1_20261024_r7",
+    "complete_sha256": "20446b3dc3e28dca06d31c58f16ca524be385522a347e647ca80ca9d559778f8",
+    "audit_sha256": "75d3b3423d3ddc23c117601721875b948882e71a650ec182e5fa1913a6253a2f",
+    "final_accounting_sha256": "9fd760b9e759c3988b9564fb420e0056bdd4f854b509c5992d7bb505675b5e03",
+    "completed_at": "2026-10-25T08:03:13.821499+11:00",
+    "full_calls": 600,
+    "auxiliary_calls": 25,
+    "unexecuted": 0,
+    "statuses": {"POSITIVE":160,"TIMEOUT":433,"UNKNOWN":4,"ERROR":2,"UNSUPPORTED":1},
+    "multilayer_positives": {"act":0,"genbab_naive":0,"genbab_pruned":108},
+    "multilayer_denominator_each_arm": 180,
+    "pruned_positives_by_configuration": {"L1E8":52,"L2E8":28,"L3E8":33,"L2E16":47},
+    "denominator_each_configuration_arm": 60,
+    "full_model_replayed_counterexample_objects": 20,
+    "counterexample_source": "public_pgd; not credited to verifier arms",
+    "seconds_including_online_audit": 132827.0654390026,
+    "full_call_seconds": 132407.21234056726,
+    "auxiliary_seconds": 282.6211425680667,
+    "retained_bytes_offline_recheck": 39267468,
+    "original_adjusted_coverage": {"L3E8":{"k":19,"n":52,"decision":"ENTER_STAGE2"},"L2E16":{"k":11,"n":58,"decision":"ENTER_STAGE2"}},
+    "post_prefix_mechanism_gate": {
+      "registration": "post189 prefix, not prospective before all outcomes",
+      "L3E8": {"complete":33,"A":15,"B":2,"C":2,"n":52,"B_wilson95":[0.010611711001315298,0.12981189157455764]},
+      "L2E16": {"complete":47,"A":10,"B":0,"C":1,"n":58,"B_wilson95":[0.0,0.062117855787202914]},
+      "decision": "STOP_REPORT_SINGLE_ROUTE_NOT_COMBINATIONS_OPERATIONAL",
+      "meaning": "operational stop; no universal or exclusive causal conclusion"
+    },
+    "fifth_revision_hardcore": {"all":55,"L2E8":25,"L3E8":19,"L2E16":11,"TIMEOUT":53,"UNKNOWN":2,"complete_outcome_with_prefix_bounds":3,"progress_only_no_complete_outcome":52},
+    "offline_recheck": "PASS_COMPLETE; scientific fields,all rows/pairs/endpoints identical after JSON normalization; cost matches final accounting rather than earlier audit timestamp; no model/solver call",
+    "comparison_assertions_retained": ["paired tuples versus JSON arrays", "pre-final versus post-audit stage_seconds"],
+    "evidence_grade": "numerical-policy accepts/filters plus structural audit; not source-complete strict proofs"
+  },
   "joint_hz_repair_20261024": {
     "preserved_full_calls": 283,
     "preserved_statuses": {"POSITIVE":88,"TIMEOUT":190,"UNKNOWN":2,"ERROR":2,"UNSUPPORTED":1},
@@ -39,7 +73,7 @@
     "prior_bytes": 17562177,
     "state": "RUNNING_FROM_VERIFY_194"
   },
-  "status": "RESUMED_WITH_PRESERVED_ERROR_NOT_FINAL",
+  "status": "COMPLETE_AUDITED_ROUTE_UNION_GATE_STOP",
   "initial_execution_status": "STOPPED_AFTER_VERIFY_004_TOOLING_ERROR",
   "latest_continuation": {
     "execution_commit": "4051f86e33e6d9f92e476d9df04a14fc4f63b629",
@@ -138,6 +172,6 @@
     "meaning": "separate auxiliary measurement; no verifier terminal upgraded, no absence-of-witness safety claim"
   },
   "live_ledger_authoritative": true,
-  "primary_endpoint": "PENDING_ALL_REGISTERED_WITNESS_SOURCES",
+  "primary_endpoint": "ORIGINAL_ENTER_STAGE2;POST_PREFIX_MECHANISM_STOP_REPORT",
   "guarantee": "numerical-policy experiment; G1-G6 remain OPEN"
 }

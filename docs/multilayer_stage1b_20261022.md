@@ -1,5 +1,15 @@
 # Residual multilayer model validity study
 
+## Fifth-revision change 2026-10-25
+
+User cancels the unexecuted ACT arm: the next version is **GenBaB pruning only,
+120 complete requests,10h total,300s/request**, with the same six checkpoints,
+selection rule, public PGD and census. The old two-arm240-call R4 freeze below is
+retained unexecuted; it must not be edited or passed to the new launch. At this
+registration the new queue is0/120,not launched. Nonpositive outcomes join the
+rule-defined hard-core diagnostic pool; they do not reopen the stopped route-union
+mechanism. New execution identity/freeze must bind the single-arm catalog first.
+
 ## Training archive and verification freeze 2026-10-24
 
 Real training is complete: **6/6 models, 300/300 epochs**. The independent

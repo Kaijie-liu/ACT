@@ -1,5 +1,71 @@
 # Multilayer bottleneck elimination — stage 1
 
+## Final result and fifth-revision boundary, 2026-10-25
+
+The original queue completed **600/600 full requests plus25 auxiliary calls** at
+08:03AEDT. Automatic terminal/coverage audit is `PASS_COMPLETE`; no unexecuted
+slot remains. Full retained state:160 numericalPOSITIVE,433TIMEOUT,4UNKNOWN,
+2ERROR,1UNSUPPORTED. Old errors and the joint-HZ loss are not rerun or relabeled.
+Result root: `/data1/Kane/MOE/results/multilayer_stage1_20261024_r7`, including
+its hash-bound predecessor chain. [Compact records](multilayer_stage1_records_20261022.json)
+bind the completed audit and final accounting receipt.
+
+| Configuration (60 model-input objects each) | ACT v1 positive | Naive GenBaB positive | Pruned GenBaB positive |
+| --- | ---: | ---: | ---: |
+| L2E8 | 0 | 0 | 28 |
+| L3E8 | 0 | 0 | 33 |
+| L2E16 | 0 | 0 | 47 |
+| Multilayer total | 0/180 | 0/180 | 108/180 |
+
+The L1 cost anchor separately has52/60 pruned positives. Multi-layer ACT has
+178TIMEOUT,1ERROR,1UNSUPPORTED; naive has179TIMEOUT,1ERROR; pruned has70TIMEOUT,
+2UNKNOWN besides its108 positives. Public PGD supplies20 full-model replayed
+counterexample objects across the12 models; these are not successes credited
+to a verifier arm. All positive counts retain their original numerical-policy
+grades, not G3 source-complete strict proofs. The same20 input identities recur
+across fixed models; calls are not independent images.
+
+Original adjusted incomplete-coverage endpoints remain:
+L3E8=19/52,Wilson95[24.8007%,50.1283%]; L2E16=11/58,[10.9343%,30.8524%].
+Both say `ENTER_STAGE2` for the original coverage criterion. The separately
+post-prefix registered mechanism criterion **does not pass**:
+
+| Eligible configuration | Traversal complete | A:single-query operational group | B:many-history group | C:unseparated |
+| --- | ---: | ---: | ---: | ---: |
+| L3E8 (n'=52) | 33 | 15 | 2 | 2 |
+| L2E16 (n'=58) | 47 | 10 | 0 | 1 |
+
+B/n' has Wilson95[1.0612%,12.9812%] and[0%,6.2118%], respectively; the L3B
+interval itself is gray. Under the registered combined rule both configurations
+produce `STOP_REPORT_SINGLE_ROUTE_NOT_COMBINATIONS_OPERATIONAL`. No route-union
+implementation or alpha-CROWN entrance comparison is licensed by these results.
+A/C do not prove a unique ReLU cause, and this is not a theorem excluding route
+combination bottlenecks elsewhere. The supplemental rule's post189 registration
+remains disclosed below; it does not rewrite the original endpoint.
+
+Total execution including online final audit:132,827.065439s(36.896407h), below
+52h. Offline counted retained roots/receipts are39,267,468B, below128MiB. Full-call elapsed
+sum is132,407.212341s; auxiliary calls282.621143s; stage cost additionally carries
+startup, failure/repair controls, bookkeeping and audit. L3/L1 pruned median cost
+ratio is7.4839(input-block bootstrap95[2.4532,42.5988]); excluding replay-UNSAFE
+objects it is3.2168[2.1711,33.7478]. These are fixed-model/shared-host observations,
+not universal slowdown guarantees. The later offline re-read is not added to
+online success or represented as an independent network-bound proof.
+
+Read-only recomputation with the generalized auditor reproduces all scientific
+fields, states, pairs, endpoints and rows. Comparing Python tuples with stored
+JSON arrays and pre-audit versus final-audit cost initially caused two comparison
+assertions; normalization and explicit final receipt comparison resolve these
+representation differences without changing any result or code. Final hashes
+and the difference in accounting timestamps are retained in the compact record.
+
+Fifth revision authorizes a new direction, not a post-hoc pass of this test:
+1a's nonpositive/non-replay-UNSAFE multi-layer cohort is55objects(L2E8=25,L3E8=19,
+L2E16=11). It is a diagnostic failure-selected set, not a fair confirmation set.
+Only3/55 retain full outcomes with prefix margin bounds;52 have progress but no
+full outcome. Missing ranges/history receipts must not be invented. The next
+1b version is pruning-only120calls/10h; the old240-call freeze stays unexecuted.
+
 ## Joint-HZ loss and bounded lifecycle repair, 2026-10-24
 
 R6 stopped after `verify_282`: L3E8_seed0/input1408/ACT,75.358s,

@@ -1,5 +1,16 @@
 # MoE project handoff — current entry point
 
+## Fifth revision registered: hard-core attribution/gate decoupling 2026-10-25
+
+Real increment0;1a600/600 COMPLETE,36.8964h,ACT0/180 versus pruned108/180;178ACTtimeouts+ERROR+UNSUPPORTED retained.
+Original coverage gate passes,post189 combination gate fails (L3 B=2/52,L2E16 B=0/58):stop route-union line,not a universal causal impossibility theorem.
+[Fifth goal](ALGORITHM_RESEARCH_GOAL_SUMMARY_20261025.txt) active;G1 now permits MoE-specific strong-engine frontend,HZ evidence checking,not per-history fullHZ/MILP engine.
+Hardcore:1a55 nonpositive/non-replayUNSAFE;B2 24 unresolved includes2ERROR;1b pool pending; only3/55 have full saved prefix bounds.
+1b user changes to pruned-only120calls/10h,PGD/census unchanged;old240freeze retained unexecuted,newfreeze required,currently0/120.
+V2 finalgate endpoints leave inner multilayer products;not two pureReLU graphs.V3 all-midpoint is diagnostic only;timeouts do not prove uniqueReLU cause.
+Stage4≤250local/21h/300s;conditionalB4≤600/50h;original user thresholds and B5/external conditional authorization retained.G1–G6OPEN.
+Next archive final1a table/identities,freeze pruned-only1b,then bound/guard/history contract and V2/V3 controls before real diagnostics;no new approval gates.
+
 ## Joint-HZ suffix running; six-model archive and1b freeze complete 2026-10-24
 
 Real285/600:88numerical positives/192TIMEOUT/2UNKNOWN/2ERROR/1UNSUPPORTED; snapshot, live ledgers supersede.
