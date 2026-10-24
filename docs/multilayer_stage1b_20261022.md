@@ -1,5 +1,59 @@
 # Residual multilayer model validity study
 
+## Training archive and verification freeze 2026-10-24
+
+Real training is complete: **6/6 models, 300/300 epochs**. The independent
+[record audit](multilayer_stage1b_training_records_20261024.json) checks the
+frozen code/data/weight identities, common 45k/5k split, all epoch records and
+earliest validation-best checkpoint selection. It does not rerun accuracy or
+establish an independently checked network proof.
+
+| Model | Selected epoch | Validation accuracy | Test accuracy |
+| --- | ---: | ---: | ---: |
+| R2E8 seed0 | 19 | 50.78% | 50.79% |
+| R2E8 seed1 | 13 | 50.54% | 50.91% |
+| R2E8 seed2 | 21 | 51.26% | 51.15% |
+| R3E8 seed0 | 22 | 50.40% | 50.97% |
+| R3E8 seed1 | 13 | 51.28% | 50.79% |
+| R3E8 seed2 | 13 | 51.40% | 52.18% |
+
+Queue time was 4,111.390998s; retained training files are 252,333,975B plus
+113,729B controller log, separate from verification's artifact budget. No
+zero-use expert occurs in the reported test routing counts. The two most-used
+experts account for 28.68%–36.43% of selections, rather than the old first-layer
+99% concentration. This is a model-validity observation, not a claim that the
+architecture change alone caused it, that accuracy satisfies G5, or that
+verification is easier.
+
+[Execution freeze R4](multilayer_stage1b_verification_freeze_20261024_r4.json)
+binds all six weights, 24 source files and the existing external r3 compatibility
+configuration. It retains epsilon 2/255, 300s/request, 240 complete slots,
+20h overall including auxiliary work, and 128MiB new artifacts. Two arms are
+ACT multilayer v1 and GenBaB with plain-CROWN prefix pruning/alpha-GenBaB leaves;
+the alpha-CROWN prefix experiment is not silently enabled. The R3E8 primary
+endpoint, public/full-model witness union and registered A/B/C mechanism rule
+are inherited. There is no invented L1 cost anchor or excluded collapsed seed.
+
+Selection is frozen as ascending common clean-correct inputs outside 1,855
+historical identities plus all 30 stage1a selected identities (1,885 total).
+The first 20 of 30 selected inputs form the paired verification cohort; all30
+enter the census. Actual indices and float64 tensors will be materialized by the
+first budgeted selection call, not selected here using routes or positive bounds.
+No model inference or stage1b verification was performed while freezing:
+**0/240 calls, not launched**. Existing stage1a runs from its immutable copy.
+
+Two distinct standard-library catalog/terminal-audit controls pass. Catalog
+equivalence preserves the original600-call order, rejects invalid arms/slot
+counts, and the full synthetic240-call ledger checks UNSAFE union (n'=59),
+paired counts, missing-terminal rejection and wrong-arm rejection. Two ledger
+fixture errors (duplicate directory creation, then intentional overwrite through
+the production no-overwrite writer) are retained; only the unfinished test was
+rerun. Cumulative controlled elapsed time is23.219515s and retained control files
+total19,341B including complete receipts. The earlier path-resolution preparation
+error did not launch a worker; its empty root is retained. These are test-harness
+failures, not real verification outcomes. See the compact
+[freeze/control record](multilayer_stage1b_verification_records_20261024.json).
+
 ## Launch 2026-10-23
 
 Frozen six-model CPU queue launched at00:29:33AEDT,PID3997912/PPID1/SID3997912,

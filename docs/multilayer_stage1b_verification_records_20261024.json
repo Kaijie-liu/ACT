@@ -1,0 +1,57 @@
+{
+  "status": "FROZEN_NOT_LAUNCHED",
+  "full_calls": 0,
+  "registered_calls": 240,
+  "manifest": "docs/multilayer_stage1b_verification_freeze_20261024_r4.json",
+  "manifest_sha256": "7fe484a7b3e3e960aff5b4666a2b5b9163468729510d89e8d7272a369f08ed3d",
+  "training_archive": "docs/multilayer_stage1b_training_records_20261024.json",
+  "training_archive_sha256": "f903e4a8d0b301825f941c1415fb1faa02cf198155bf6f80da8c5587525f3c51",
+  "training_scope": "6 frozen weights,300 epochs,source/data/split/selection record audit;no accuracy rerun",
+  "excluded_identities": 1885,
+  "selection": "rule frozen; actual30 indices and tensors await budgeted selection; first20 verify",
+  "independent_readonly_review": "PASS:24 sources,6 weights,training archive,240 full+13 auxiliary calls,20h/300s,1885 exclusions,R3 primary and mechanism gate,external config and retained control cost/hash chain; no1b runtime launched",
+  "historical_auditor_regression": "PASS_PREFIX283/600 using generalized auditor on immutable r6 records; first -S invocation could not import torch through package initialization, corrected command uses existing act-py312 with8GiB AS/one thread; no model/solver execution or historical result change",
+  "controls": {
+    "preparation_error": {
+      "root": "/data1/Kane/MOE/results/multilayer_stage1b_verification_control_20261024_r1",
+      "reason": "relative/absolute freeze path mismatch; missing manifest prevented worker launch",
+      "worker_launched": false,
+      "files": 0,
+      "seconds": null,
+      "meaning": "pre-execution preparation duration not measured; not silently represented as zero elapsed"
+    },
+    "attempts": [
+      {
+        "root": "/data1/Kane/MOE/results/multilayer_stage1b_verification_control_20261024_r2",
+        "complete_sha256": "b5aeec5c4b1763cd10fc03d93eae091340b83bd5e4b9e6c844cc6adb9547a47c",
+        "status": "FAIL",
+        "scope": "catalog PASS; ledger fixture duplicate directory ERROR",
+        "cumulative_seconds": 7.329141305759549,
+        "retained_bytes_including_complete": 7536
+      },
+      {
+        "root": "/data1/Kane/MOE/results/multilayer_stage1b_verification_control_20261024_r3",
+        "complete_sha256": "82d615904e4e8a088fe71cf5bef994f30686e74ca5cd54b9fb3ebaa05b957931",
+        "status": "FAIL",
+        "scope": "only unfinished ledger test; intentional mutation used no-overwrite writer ERROR",
+        "cumulative_seconds": 15.612096456810832,
+        "retained_bytes_including_complete": 7442
+      },
+      {
+        "root": "/data1/Kane/MOE/results/multilayer_stage1b_verification_control_20261024_r4",
+        "complete_sha256": "23e4f3a185627d6ec79887a5f940b21372e4a049a940dae37093c20e7da98f4d",
+        "status": "PASS",
+        "scope": "only corrected ledger test; prior catalog PASS retained; no real model or solver",
+        "cumulative_seconds": 23.219515282660723,
+        "retained_bytes_including_complete": 4363
+      }
+    ],
+    "distinct_controls_passed": 2,
+    "total_control_seconds": 23.219515282660723,
+    "total_retained_control_bytes": 19341,
+    "measurement_note": "complete receipts' bytes are root-local pre-receipt counts; totals here count all retained files once; preparation/freeze and offline review are separate, not request-speed observations",
+    "receipt_bound_by_execution_freeze": "r4 result bound to r3 control manifest; no rerun of passed catalog"
+  },
+  "evidence_level": "numerical-policy experiment frozen; no positive verification or algorithm advantage established",
+  "stage1a_execution_is_immutable": "4051f86e33e6d9f92e476d9df04a14fc4f63b629"
+}

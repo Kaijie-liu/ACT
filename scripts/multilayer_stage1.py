@@ -42,6 +42,21 @@ CODE=('scripts/multilayer_stage1.py','scripts/multilayer_stage1_audit.py','act/p
       'scoped_proof/owned_session.py','scoped_proof/io.py','scoped_source/development_work.py')
 
 
+def request_catalog(spec,samples,selection_root):
+    """Manifest-scoped arms; historical stage1a order is the default."""
+    queries=[]
+    for rank,sample in enumerate(samples[:spec.get('selection',{}).get('verification_count',20)]):
+        for position,model in enumerate(spec['models']):
+            arms=tuple(spec.get('study',{}).get('arms',
+                ('genbab_pruned',) if model['architecture']['layers']==1 else ARMS))
+            require(arms and len(set(arms))==len(arms) and set(arms)<=set(ARMS),'registered arms')
+            shift=(rank+position)%len(arms);arms=arms[shift:]+arms[:shift]
+            for arm in arms:queries.append(dict(kind='verification',model=model,sample=sample,
+                arm=arm,selection_root=str(selection_root)))
+    require(len(queries)==spec['budgets'].get('slots',600),'complete frozen catalog')
+    return queries
+
+
 def require(ok,message):
     if not ok:raise ValueError(message)
 
@@ -178,7 +193,7 @@ def select_inputs(folder,spec,deadline,torch):
             rows.append(dict(rank=len(rows),index=index,label=label,file=file,sha256=sha(folder/file),
                 tensors={k:fingerprint(v) for k,v in tensors.items()}))
             if len(rows)==spec['selection']['count']:break
-    require(len(rows)==30,'insufficient common clean-correct cohort; no replacement')
+    require(len(rows)==spec['selection']['count'],'insufficient common clean-correct cohort; no replacement')
     return dict(status='COMPLETE',samples=rows,scanned=scanned,full_test_telemetry_disclosed=True)
 
 
@@ -314,7 +329,7 @@ def worker(folder):
             import unittest
             sys.path.insert(0,str(ROOT/'tests'))
             output=io.StringIO()
-            suite=unittest.defaultTestLoader.loadTestsFromName('test_multilayer_stage1')
+            suite=unittest.defaultTestLoader.loadTestsFromName(spec['controls'].get('module','test_multilayer_stage1'))
             result=unittest.TextTestRunner(stream=output,verbosity=2).run(suite)
             value=dict(status='PASS' if result.wasSuccessful() else 'FAIL',tests=result.testsRun,
                 details=output.getvalue(),real_models=0)
@@ -438,7 +453,7 @@ def resume(folder,manifest,continuation):
         execution_binding=dict(path=str(continuation),sha256=sha(continuation)),
         carried_seconds=binding['carried_seconds'],prior_bytes=PRIOR_BYTES))
     origin=result_chain(parent,manifest)[0]
-    queries=load(origin/'catalog.json')['queries'];ordinal=25+begin
+    queries=load(origin/'catalog.json')['queries'];auxiliary=1+2*len(spec['models']);ordinal=auxiliary+begin
     for number in range(begin,len(queries)):
         require(time.monotonic()+300<=deadline,'stage execution budget: suffix unexecuted')
         terminal,value=invoke(folder/f'verify_{number:03d}',queries[number],300,manifest,deadline)
@@ -449,9 +464,10 @@ def resume(folder,manifest,continuation):
         print(json.dumps({k:row[k] for k in ('id','status','seconds')}),flush=True)
         require(size(folder)+PRIOR_BYTES<=CAP,'cumulative artifacts')
         if row['status'] in ('ERROR','UNSUPPORTED'):raise RuntimeError('tooling failure retained: '+row['id'])
-    save(folder/'complete.json',dict(status='COMPLETE',full_calls=600,auxiliary_calls=25,terminals=625,
+    slots=spec['budgets']['slots']
+    save(folder/'complete.json',dict(status='COMPLETE',full_calls=slots,auxiliary_calls=auxiliary,terminals=slots+auxiliary,
         seconds=binding['carried_seconds']+time.monotonic()-ENTRY,bytes=PRIOR_BYTES+size(folder),
-        current_full_calls=600-begin,prior_full_calls=begin))
+        current_full_calls=slots-begin,prior_full_calls=begin))
     summary=audit(folder,manifest);require(time.monotonic()<deadline,'final audit deadline')
     save(folder/'audit.json',summary)
     save(folder/'final_accounting.json',dict(seconds_including_result_audit=binding['carried_seconds']+time.monotonic()-ENTRY,
@@ -517,8 +533,9 @@ def batch(folder,manifest):
     require(control['status']=='PASS' and control_query['manifest_sha256']==spec['controls']['manifest_sha256'],
         'necessary controls bound to original freeze')
     control_spec=load(control_query['manifest'],control_query['manifest_sha256'])
-    for name in ('tests/test_multilayer_stage1.py','act/pipeline/moe/multilayer_study.py',
-                 'act/back_end/moe/multilayer_external.py'):
+    for name in spec['controls'].get('controlled_sources',
+            ('tests/test_multilayer_stage1.py','act/pipeline/moe/multilayer_study.py',
+             'act/back_end/moe/multilayer_external.py')):
         require(control_spec['source_files'][name]==spec['source_files'][name],'unchanged controlled mechanisms')
     resource.setrlimit(resource.RLIMIT_AS,(8*2**30,8*2**30))
     os.nice(10);folder.mkdir();deadline=ENTRY+spec['budgets']['stage']
@@ -540,25 +557,18 @@ def batch(folder,manifest):
         if row['status'] in ('ERROR','UNSUPPORTED'):raise RuntimeError('tooling failure retained: '+name)
         return value
     selected=call('selection',dict(kind='selection'),spec['budgets']['selection'])
-    require(selected is not None and len(selected['samples'])==30,'selection incomplete')
+    require(selected is not None and len(selected['samples'])==spec['selection']['count'],'selection incomplete')
     samples=selected['samples'];selection_root=str(folder/'selection')
-    queries=[]
-    for rank,sample in enumerate(samples[:20]):
-        for position,model in enumerate(spec['models']):
-            arms=('genbab_pruned',) if model['architecture']['layers']==1 else ARMS
-            shift=(rank+position)%len(arms);arms=arms[shift:]+arms[:shift]
-            for arm in arms:queries.append(dict(kind='verification',model=model,sample=sample,
-                arm=arm,selection_root=selection_root))
-    require(len(queries)==600,'complete frozen catalog')
+    queries=request_catalog(spec,samples,selection_root)
     save(folder/'catalog.json',dict(manifest_sha256=sha(manifest),queries=queries,
         selection_outcome_sha256=sha(folder/'selection/outcome.json.gz')))
     for model in spec['models']:
-        call('pgd_'+model['id'],dict(kind='pgd',model=model,samples=samples[:20],selection_root=selection_root),100)
+        call('pgd_'+model['id'],dict(kind='pgd',model=model,samples=samples[:spec['selection']['verification_count']],selection_root=selection_root),spec['budgets']['pgd_model'])
     for model in spec['models']:
-        call('census_'+model['id'],dict(kind='census',model=model,samples=samples,selection_root=selection_root),300)
+        call('census_'+model['id'],dict(kind='census',model=model,samples=samples,selection_root=selection_root),spec['budgets']['census_model'])
     for number,query in enumerate(queries):
         call(f'verify_{number:03d}',query,300)
-    save(folder/'complete.json',dict(status='COMPLETE',full_calls=600,auxiliary_calls=25,
+    save(folder/'complete.json',dict(status='COMPLETE',full_calls=spec['budgets']['slots'],auxiliary_calls=1+2*len(spec['models']),
         seconds=time.monotonic()-ENTRY,bytes=size(folder),terminals=len(ledger)))
     from multilayer_stage1_audit import audit
     summary=audit(folder,manifest)
@@ -579,10 +589,15 @@ if __name__=='__main__':
     elif args.mode=='freeze-resume':freeze_resume(args.path,args.manifest,args.parent,args.control)
     elif args.mode=='worker':sys.exit(worker(args.path))
     elif args.mode=='controls':
+        resource.setrlimit(resource.RLIMIT_AS,(8*2**30,8*2**30))
+        control_spec=load(args.manifest)
+        retained=control_spec['controls'].get('prior_result')
+        prior_seconds=load(retained['path'],retained['sha256'])['seconds'] if retained else 0.
         args.path.mkdir()
-        row,value=invoke(args.path/'fixed',dict(kind='controls'),295,args.manifest,ENTRY+300)
+        row,value=invoke(args.path/'fixed',dict(kind='controls'),295-prior_seconds,args.manifest,ENTRY+300-prior_seconds)
         save(args.path/'complete.json',dict(status='PASS' if value and value['status']=='PASS' else 'FAIL',
-            terminal=row,control=value,seconds=time.monotonic()-ENTRY,bytes=size(args.path)))
+            terminal=row,control=value,seconds=prior_seconds+time.monotonic()-ENTRY,
+            retained_prior=retained,bytes=size(args.path)))
     else:
         try:
             if args.mode=='resume':resume(args.path,args.manifest,args.continuation)

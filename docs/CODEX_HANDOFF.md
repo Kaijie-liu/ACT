@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## Joint-HZ suffix running; six-model archive and1b freeze complete 2026-10-24
+
+Real285/600:88numerical positives/192TIMEOUT/2UNKNOWN/2ERROR/1UNSUPPORTED; snapshot, live ledgers supersede.
+R7 PID673465 runs immutable4051f86e3 from283; old282/failures unchanged, original600/52h/300s retained, no completed rerun.
+Independent R7 review passes25 sources,283-prefix retention,ancestor/control time and bytes; lifetime fix is not proof of the old loss's sole cause.
+[Training audit](multilayer_stage1b_training_records_20261024.json):6/6 models,300epochs,test50.79%–52.18%,4111.391s; no old99% route concentration,not G5.
+[1b freeze R4](multilayer_stage1b_verification_freeze_20261024_r4.json):two arms240calls/20h/300s,all6 weights,1885 exclusions,original external r3 configuration,0/240 not launched.
+[Control record](multilayer_stage1b_verification_records_20261024.json):2 distinct stdlib controls pass;2 fixture failures retained,only unfinished ledger retested,cumulative23.220s/19,341B.
+Next finish1a and audit its full witness-source queue;1b actual input identities await budgeted ascending selection,not route/bound filtering. G1–G6 OPEN.
+
 ## Joint-HZ lifetime repair controlled;283-prefix retained 2026-10-24
 
 Real283/600:88numerical positives/190TIMEOUT/2UNKNOWN/2ERROR/1UNSUPPORTED; oldr6 stopped at282, no completed call replayed.

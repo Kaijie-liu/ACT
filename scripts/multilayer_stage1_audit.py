@@ -110,18 +110,22 @@ def audit(root,manifest):
         assert owner_start['deadline']==owner_start['entry']+spec['budgets']['stage']-b['carried_seconds']
         if owner==root:binding=b
     catalog=load(origin/'catalog.json');assert catalog['manifest_sha256']==sha(manifest)
-    queries=catalog['queries'];assert len(queries)==600
-    assert len({(q['model']['id'],q['sample']['index'],q['arm']) for q in queries})==600
+    slots=spec['budgets'].get('slots',600);auxiliary=1+2*len(spec['models'])
+    study=spec.get('study',{});selection=spec.get('selection',{})
+    count=selection.get('count',30);verify_count=selection.get('verification_count',20)
+    configs=list(dict.fromkeys(m['id'].rsplit('_seed',1)[0] for m in spec['models']))
+    queries=catalog['queries'];assert len(queries)==slots
+    assert len({(q['model']['id'],q['sample']['index'],q['arm']) for q in queries})==slots
     selected=read(origin/'selection/outcome.json.gz')['value']['samples']
     assert catalog['selection_outcome_sha256']==sha(origin/'selection/outcome.json.gz')
-    assert len(selected)==30 and [s['index'] for s in selected]==sorted(s['index'] for s in selected)
+    assert len(selected)==count and [s['index'] for s in selected]==sorted(s['index'] for s in selected)
     excluded={i for a,b in spec['excluded_ranges'] for i in range(a,b+1)}
     assert hashlib.sha256(json.dumps(sorted(excluded),separators=(',',':')).encode()).hexdigest()==spec['history_union_sha256']
     assert not excluded.intersection(s['index'] for s in selected)
     expected_queries=[]
-    for rank,sample in enumerate(selected[:20]):
+    for rank,sample in enumerate(selected[:verify_count]):
         for position,model in enumerate(spec['models']):
-            arms=['genbab_pruned'] if model['architecture']['layers']==1 else ['act','genbab_naive','genbab_pruned']
+            arms=list(study.get('arms',['genbab_pruned'] if model['architecture']['layers']==1 else ['act','genbab_naive','genbab_pruned']))
             shift=(rank+position)%len(arms);arms=arms[shift:]+arms[:shift]
             for arm in arms:expected_queries.append(dict(kind='verification',model=model,sample=sample,
                 arm=arm,selection_root=str(origin/'selection')))
@@ -210,22 +214,26 @@ def audit(root,manifest):
             mechanism=mechanism_decomposition(ledger['seconds'],cov,telemetry,durations),
             evidence_grade=(result or {}).get('guarantee','NONE')))
     unsafe=set(witness_sources);endpoints={};mechanisms={}
-    for config in ('L3E8','L2E16'):
+    for config in study.get('endpoint_configs',['L3E8','L2E16']):
         cohort=[r for r in rows if r['model'].startswith(config+'_') and r['arm']=='genbab_pruned']
+        denominator=verify_count*sum(m['id'].startswith(config+'_') for m in spec['models'])
         # Do not calculate a premature stopping decision on a completed prefix.
         sources_complete=(not pending and all('pgd_'+m['id'] in byid for m in spec['models']))
-        endpoints[config]=endpoint(cohort,unsafe) if len(cohort)==60 and sources_complete else dict(
-            status='PENDING_WITNESS_SOURCE_QUEUE',completed=len(cohort),denominator=60)
+        endpoints[config]=endpoint(cohort,unsafe) if len(cohort)==denominator and sources_complete else dict(
+            status='PENDING_WITNESS_SOURCE_QUEUE',completed=len(cohort),denominator=denominator)
         mechanisms[config]=(mechanism_endpoint(cohort,unsafe,endpoints[config])
-            if len(cohort)==60 and sources_complete else dict(status='PENDING_WITNESS_SOURCE_QUEUE',
-                completed=len(cohort),denominator=60,
+            if len(cohort)==denominator and sources_complete else dict(status='PENDING_WITNESS_SOURCE_QUEUE',
+                completed=len(cohort),denominator=denominator,
                 observed_categories=dict(Counter(r['mechanism']['category'] for r in cohort))))
         # Registered supplement: descriptive stratum only, all-seed decision unchanged.
-        noncollapsed=[r for r in cohort if r['model']!=config+'_seed2']
-        endpoints[config]['excluding_collapsed_seed_descriptive']=(endpoint(noncollapsed,unsafe)
-            if len(noncollapsed)==40 and sources_complete else dict(status='PENDING',completed=len(noncollapsed),denominator=40))
+        collapsed=set(study.get('collapsed_models',['L3E8_seed2','L2E16_seed2']))
+        if any(m.startswith(config+'_') for m in collapsed):
+            noncollapsed=[r for r in cohort if r['model'] not in collapsed]
+            noncollapsed_n=verify_count*sum(m['id'].startswith(config+'_') and m['id'] not in collapsed for m in spec['models'])
+            endpoints[config]['excluding_collapsed_seed_descriptive']=(endpoint(noncollapsed,unsafe)
+                if len(noncollapsed)==noncollapsed_n and sources_complete else dict(status='PENDING',completed=len(noncollapsed),denominator=noncollapsed_n))
     summaries={}
-    for config in ('L1E8','L2E8','L3E8','L2E16'):
+    for config in configs:
         for arm in ('act','genbab_naive','genbab_pruned'):
             group=[r for r in rows if r['model'].startswith(config+'_') and r['arm']==arm]
             if not group:continue
@@ -236,7 +244,8 @@ def audit(root,manifest):
                 proof_closed=sum(r['coverage']['proof_complete'] for r in group),
                 stopped_phases=dict(Counter((r['coverage']['active'] or {}).get('phase','none') for r in group)))
     pairs={}
-    for config in ('L2E8','L3E8','L2E16'):
+    for config in configs:
+        if all(m['architecture']['layers']==1 for m in spec['models'] if m['id'].startswith(config+'_')):continue
         groups={a:{(r['model'],r['index']):r for r in rows if r['model'].startswith(config+'_') and r['arm']==a}
             for a in ('act','genbab_pruned')}
         common=groups['act'].keys()&groups['genbab_pruned'].keys()
@@ -258,7 +267,7 @@ def audit(root,manifest):
         values=[load(p) for p in sorted((owners[key]/key).glob('domain_*.json'))]
         for multiplier in spec['census_multipliers']:
             group=[r['result'] for r in values if r['multiplier']==multiplier]
-            census[key+'/'+str(multiplier)]=dict(executed=len(group),registered=30,
+            census[key+'/'+str(multiplier)]=dict(executed=len(group),registered=count,
                 lower_median=percentile([r['observed_lower'] for r in group],.5),
                 lower_p90=percentile([r['observed_lower'] for r in group],.9),
                 upper_median=percentile([r['candidate_upper'] for r in group],.5),
@@ -272,8 +281,8 @@ def audit(root,manifest):
     assert total_bytes<=spec['budgets']['artifacts']
     stage_seconds=None
     if complete:
-        assert complete['status']=='COMPLETE' and complete['full_calls']==600 and complete['terminals']==625
-        assert len(ledgers)==625 and not pending and complete['auxiliary_calls']==25
+        assert complete['status']=='COMPLETE' and complete['full_calls']==slots and complete['terminals']==slots+auxiliary
+        assert len(ledgers)==slots+auxiliary and not pending and complete['auxiliary_calls']==auxiliary
         stage_seconds=complete['seconds']
         if binding:
             assert stage_seconds>=binding['carried_seconds']+sum(r['seconds'] for owner,r in entries if owner==root)
@@ -285,7 +294,7 @@ def audit(root,manifest):
                 assert final['deadline']==start['deadline'] and final['clock']<=start['deadline']
         assert sum(r['seconds'] for r in rows)+aux_seconds<=stage_seconds<=spec['budgets']['stage']
     return dict(status='PASS_COMPLETE' if not pending and complete else 'PASS_PREFIX',full_calls=len(rows),
-        unexecuted=pending,expected_calls=600,endpoints=endpoints,summaries=summaries,paired=pairs,
+        unexecuted=pending,expected_calls=slots,endpoints=endpoints,summaries=summaries,paired=pairs,
         mechanism_supplement=mechanisms,
         unsafe_union=[dict(model=k[0],index=k[1],sources=sorted(v)) for k,v in sorted(witness_sources.items())],
         unsafe_source_counts=dict(Counter(source for v in witness_sources.values() for source in v)),
