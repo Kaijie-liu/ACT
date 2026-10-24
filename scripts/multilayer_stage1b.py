@@ -74,7 +74,7 @@ def freeze(path,control_root):
             decision='same L3 primary rule; compare1a/1b, disagreement gray/report')))
 
 
-def freeze_verification(path,control_root,control_manifest=None,prior_control=None):
+def freeze_verification(path,control_root,control_manifest=None,prior_control=None,pruned_only=False):
     """Freeze existing six weights and selection rule; no model/data execution."""
     path=Path(path).resolve()
     from multilayer_training_audit import audit as training_audit
@@ -123,11 +123,24 @@ def freeze_verification(path,control_root,control_manifest=None,prior_control=No
     spec['endpoint']['mechanism_supplement']='registered post189 rule; B/n-prime Wilson lower>0.1 in addition to original bottleneck gate'
     spec['execution'].update(full_order='rank ascending; six model catalog; two arms rotated by (rank+model_position)%2',
         history_caps={'R2E8':784,'R3E8':21952})
+    if pruned_only:
+        # Fifth revision: preserve the unexecuted two-arm freeze; no numerical
+        # engine, checkpoint, input-selection or auxiliary-query changes.
+        spec['schema']='multilayer-stage1b-pruned-20261025-v1'
+        spec['study'].update(arms=['genbab_pruned'],
+            cross_study_decision='fifth revision: descriptive endpoint only; nonpositive requests join hard-core diagnosis; no route-union gate')
+        spec['budgets'].update(stage=10*3600,slots=120)
+        spec['execution']['full_order']='rank ascending; six model catalog; pruned-only arm'
+        spec['supersedes_unexecuted']=dict(path=str(ROOT/'docs/multilayer_stage1b_verification_freeze_20261024_r4.json'),
+            sha256=sha(ROOT/'docs/multilayer_stage1b_verification_freeze_20261024_r4.json'),
+            decision='user fifth revision: cancel ACT v1 arm,120calls/10h; old freeze retained, no old execution')
     control_manifest=(Path(control_manifest).resolve() if control_manifest else
-                      ROOT/'docs/multilayer_stage1b_verification_freeze_20261024_r1.json')
+                      ROOT/('docs/multilayer_stage1b_pruned_freeze_20261025_r1.json' if pruned_only else
+                            'docs/multilayer_stage1b_verification_freeze_20261024_r1.json'))
     controlled=('tests/test_multilayer_stage1b.py','scripts/multilayer_stage1.py',
         'scripts/multilayer_stage1_audit.py','act/pipeline/moe/multilayer_study.py','act/back_end/moe/multilayer_external.py')
-    target=('test_multilayer_stage1b.ResidualQueueControls.test_two_arm_240_full_ledger_and_unsafe_union'
+    target=('test_multilayer_stage1b.ResidualQueueControls.test_pruned_only_120_full_ledger_and_unsafe_union'
+            if pruned_only else 'test_multilayer_stage1b.ResidualQueueControls.test_two_arm_240_full_ledger_and_unsafe_union'
             if prior_control else 'test_multilayer_stage1b')
     spec['controls']=dict(module=target,batch_seconds=300,trained_models=False,
         result=str(control_root/'complete.json'),controlled_sources=controlled,
@@ -145,7 +158,7 @@ def freeze_verification(path,control_root,control_manifest=None,prior_control=No
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('mode',choices=['control','freeze','freeze-verification']);p.add_argument('path',type=Path)
     p.add_argument('--control-root',type=Path);p.add_argument('--control-manifest',type=Path)
-    p.add_argument('--prior-control',type=Path);a=p.parse_args()
+    p.add_argument('--prior-control',type=Path);p.add_argument('--pruned-only',action='store_true');a=p.parse_args()
     if a.mode=='control':control(a.path)
     elif a.mode=='freeze':freeze(a.path,a.control_root)
-    else:freeze_verification(a.path,a.control_root,a.control_manifest,a.prior_control)
+    else:freeze_verification(a.path,a.control_root,a.control_manifest,a.prior_control,a.pruned_only)

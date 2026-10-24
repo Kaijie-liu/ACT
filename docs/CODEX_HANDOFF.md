@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## 1b pruned-only frozen and controlled 2026-10-25
+
+Real increment0;1a600 remains archived;1b0/120 pending immutable launch,no ACT arm.
+[Pruned R2 freeze](multilayer_stage1b_pruned_freeze_20261025_r2.json) binds24 sources,6 weights,1885 exclusions,120/10h/300s,unchanged external r3/PGD/census.
+New120-slot/133-terminal synthetic control PASS9.762978s,4,081B; no model/solver,old passed controls not repeated; [records](multilayer_stage1b_pruned_records_20261025.json).
+Auditor omits absentACT paired table; no numerical engine change. Old240freeze retained unexecuted; final1a gate not relabeled.
+Host20CPUs sampled19.9–25.5%idle/load22.2; launch one-thread low-priorityCPU only after committed immutable copy and fresh resource check.
+Next run budgeted selection/publicPGD/census then120pruned requests; raw terminal/costs stay explicit,nonpositive joins stage4 pool.G1–G6OPEN.
+
 ## Fifth revision registered: hard-core attribution/gate decoupling 2026-10-25
 
 Real increment0;1a600/600 COMPLETE,36.8964h,ACT0/180 versus pruned108/180;178ACTtimeouts+ERROR+UNSUPPORTED retained.

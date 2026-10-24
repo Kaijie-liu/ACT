@@ -12,6 +12,14 @@ from multilayer_stage1_audit import audit
 
 class ResidualQueueControls(unittest.TestCase):
     def test_two_arm_240_full_ledger_and_unsafe_union(self):
+        self._full_ledger(pruned_only=False)
+
+    def test_pruned_only_120_full_ledger_and_unsafe_union(self):
+        self._full_ledger(pruned_only=True)
+
+    def _full_ledger(self,*,pruned_only):
+        slots=120 if pruned_only else 240
+        arms=['genbab_pruned'] if pruned_only else ['act','genbab_pruned']
         with tempfile.TemporaryDirectory(dir='/data1/Kane/MOE/results',prefix='stage1b_ledger_control_') as name:
             root=Path(name)
             models=[dict(id=f'R{depth}E8_seed{seed}',architecture=dict(layers=depth,experts=8))
@@ -19,8 +27,9 @@ class ResidualQueueControls(unittest.TestCase):
             spec=dict(models=models,excluded_ranges=[[98,98]],
                 history_union_sha256=hashlib.sha256(b'[98]').hexdigest(),
                 selection=dict(count=30,verification_count=20),
-                study=dict(arms=['act','genbab_pruned'],endpoint_configs=['R3E8'],collapsed_models=[]),
-                census_multipliers=[.5,1.,2.],budgets=dict(slots=240,artifacts=128*2**20,stage=20*3600))
+                study=dict(arms=arms,endpoint_configs=['R3E8'],collapsed_models=[]),
+                census_multipliers=[.5,1.,2.],budgets=dict(slots=slots,artifacts=128*2**20,
+                    stage=(10 if pruned_only else 20)*3600))
             manifest=root/'manifest.json';save(manifest,spec)
             save(root/'start.json',dict(manifest_sha256=sha(manifest)))
             samples=[dict(rank=i,index=2000+i) for i in range(30)]
@@ -28,8 +37,12 @@ class ResidualQueueControls(unittest.TestCase):
             with gzip.open(root/'selection/outcome.json.gz','wt') as stream:
                 json.dump(dict(value=dict(samples=samples)),stream)
             queries=request_catalog(spec,samples,root/'selection')
-            self.assertEqual(len(queries),240)
-            self.assertEqual([q['arm'] for q in queries[:4]],['act','genbab_pruned','genbab_pruned','act'])
+            self.assertEqual(len(queries),slots)
+            self.assertEqual([q['arm'] for q in queries[:4]],['genbab_pruned']*4 if pruned_only else
+                ['act','genbab_pruned','genbab_pruned','act'])
+            if pruned_only:
+                self.assertEqual({q['arm'] for q in queries},{'genbab_pruned'})
+                self.assertEqual([q['model']['id'] for q in queries[:6]],[m['id'] for m in models])
             self.assertEqual({q['sample']['index'] for q in queries},set(range(2000,2020)))
             save(root/'catalog.json',dict(manifest_sha256=sha(manifest),queries=queries,
                 selection_outcome_sha256=sha(root/'selection/outcome.json.gz')))
@@ -57,7 +70,7 @@ class ResidualQueueControls(unittest.TestCase):
             for i,query in enumerate(queries):
                 terminal(f'verify_{i:03d}',query,dict(model=query['model']['id'],arm=query['arm'],
                     index=query['sample']['index'],rank=query['sample']['rank']))
-            save(root/'complete.json',dict(status='COMPLETE',full_calls=240,auxiliary_calls=13,terminals=253,seconds=1000.))
+            save(root/'complete.json',dict(status='COMPLETE',full_calls=slots,auxiliary_calls=13,terminals=slots+13,seconds=1000.))
             value=audit(root,manifest)
             self.assertEqual(value['status'],'PASS_COMPLETE')
             self.assertEqual(value['endpoints']['R3E8']['adjusted']['n'],59)
@@ -65,11 +78,17 @@ class ResidualQueueControls(unittest.TestCase):
             self.assertEqual(set(value['endpoints']),{'R3E8'})
             self.assertNotIn('excluding_collapsed_seed_descriptive',value['endpoints']['R3E8'])
             self.assertIsNone(value['costs_L3_over_L1'])
-            self.assertEqual(value['paired']['R2E8']['pairs'],60)
-            self.assertEqual(value['paired']['R3E8']['pairs'],60)
+            if pruned_only:
+                self.assertEqual(value['paired'],{})
+                self.assertEqual(value['expected_calls'],120)
+                self.assertEqual(value['summaries']['R2E8/genbab_pruned']['n'],60)
+                self.assertEqual(value['summaries']['R3E8/genbab_pruned']['n'],60)
+            else:
+                self.assertEqual(value['paired']['R2E8']['pairs'],60)
+                self.assertEqual(value['paired']['R3E8']['pairs'],60)
             self.assertEqual(value['unsafe_source_counts'],dict(public_pgd=1))
             # Missing full-call receipt must not become a complete success.
-            last=root/'ledger_0253.json';held=root/'last_held.json';last.rename(held)
+            last=root/f'ledger_{slots+13:04d}.json';held=root/'last_held.json';last.rename(held)
             with self.assertRaises(AssertionError):audit(root,manifest)
             held.rename(last)
             # Intentional corruption of an isolated synthetic receipt. The

@@ -245,6 +245,7 @@ def audit(root,manifest):
                 stopped_phases=dict(Counter((r['coverage']['active'] or {}).get('phase','none') for r in group)))
     pairs={}
     for config in configs:
+        if 'arms' in study and not {'act','genbab_pruned'}.issubset(study['arms']):continue
         if all(m['architecture']['layers']==1 for m in spec['models'] if m['id'].startswith(config+'_')):continue
         groups={a:{(r['model'],r['index']):r for r in rows if r['model'].startswith(config+'_') and r['arm']==a}
             for a in ('act','genbab_pruned')}

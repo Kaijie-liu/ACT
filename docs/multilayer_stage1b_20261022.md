@@ -1,5 +1,31 @@
 # Residual multilayer model validity study
 
+## Pruned-only execution freeze, 2026-10-25
+
+[New execution R2](multilayer_stage1b_pruned_freeze_20261025_r2.json) implements
+the fifth revision: six frozen weights, first20 of30 common clean-correct new
+inputs, one GenBaB-pruned arm,120 complete slots/10h/300s. All24 source identities,
+old R4 identity, training archive,1885 exclusions and external r3 configuration
+are bound. Models, selection, epsilon, input preprocessing, PGD/census recipes
+and numerical acceptance are byte/value-identical to old R4. The runtime queue
+and supervisor are unchanged. Only the freeze helper and synthetic catalog
+test change; the auditor omits a nonexistent ACT/pruned paired comparison.
+
+One newly frozen synthetic control passes:120 ordered leaves,133 total terminals,
+R3 counterexample-union n'=59, no invented ACT comparison, missing terminal and
+wrong arm rejected. It ran in9.762978s, retained4,081B including its receipt;
+no trained-model/data/solver execution. This development control cost is reported
+separately from the subsequent10h queue, not as verification time or algorithm
+speed. The old240-call and600-call controls were not repeated.
+
+The full queue charges selection, PGD, census, every complete request, reception,
+cleanup and final audit to10h.120 is a ceiling, not a promise to fit120 worst-case
+300s calls plus auxiliaries; any budget-exhausted suffix stays unexecuted. An
+unexpected tool error retains its prefix and is repaired under the user policy,
+never relabeled as a mathematical negative. Nonpositive results join the
+registered diagnostic pool; old route-union gates remain descriptive only.
+See[execution/control records](multilayer_stage1b_pruned_records_20261025.json).
+
 ## Fifth-revision change 2026-10-25
 
 User cancels the unexecuted ACT arm: the next version is **GenBaB pruning only,
