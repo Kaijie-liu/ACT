@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## Joint-HZ lifetime repair controlled;283-prefix retained 2026-10-24
+
+Real283/600:88numerical positives/190TIMEOUT/2UNKNOWN/2ERROR/1UNSUPPORTED; oldr6 stopped at282, no completed call replayed.
+Single failing-history propagation retains34outputs/3810continuous/233binary in a fresh process; not a proof or unique memory-cause diagnosis.
+Fix restores initially unset TF and releases prior-history locals before next allocation; missing-HZ records now expose unresolved layer/drop reasons, no independent-box substitution.
+Four new controls covered:3PASS/1harnessFAIL retained; only weakref fixture rerun passes after removing Mock argument retention; cumulative diagnosis/control27.045056s.
+[R7 freeze](multilayer_stage1_continuation_20261024_r7.json) binds all25 sources, starts283, carries59230s/21,846,599B including failed control; original600/52h/300s unchanged.
+Next immutable suffix launch;1b six-model training complete/independently record-audited, verification0/240 pending freeze. G1–G6 OPEN.
+
 ## Telemetry suffix running;1b training active 2026-10-23
 
 Real195/600:56numerical positives/135timeouts/2unknown/2ERRORs;194 POSITIVE28.777s,immutable74f8897ec,PID580529,`results/multilayer_stage1_20261023_r6`.

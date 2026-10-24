@@ -466,7 +466,11 @@ def freeze_resume(path,manifest,parent,control):
     require(prefix['unexecuted'][0]==f'verify_{begin:03d}','exact prefix before freeze')
     receipt=load(control);require(receipt['status']=='PASS','compatibility control')
     codes=(*CODE,'act/pipeline/verification/torch2act.py','act/pipeline/verification/act2torch.py',
-           'scripts/multilayer_lowering_control.py','tests/test_multilayer_resume.py')
+           'scripts/multilayer_lowering_control.py','tests/test_multilayer_resume.py',
+           'act/back_end/transfer_functions.py','act/pipeline/moe/experiment1.py',
+           'act/back_end/hybridz_tf/hybridz_tf.py','act/back_end/moe/route_a.py',
+           'scripts/multilayer_hz_loss_control.py','scripts/multilayer_hz_lifetime_control.py',
+           'tests/test_multilayer_hz_lifetime.py')
     console=parent.with_suffix('.controller.log')
     stop=load(parent/'stopped.json')
     # New control artifacts stay at their original paths and are charged once.
@@ -477,7 +481,11 @@ def freeze_resume(path,manifest,parent,control):
                 external[r['root']]=r
     control_roots={control.parent.resolve()}
     retained=receipt.get('retained_prior')
-    if retained:control_roots.add(Path(retained['path']).parent.resolve())
+    while retained:
+        retained_path=Path(retained['path']).resolve()
+        require(retained_path.parent not in control_roots,'cyclic retained control')
+        control_roots.add(retained_path.parent)
+        retained=load(retained_path,retained['sha256']).get('retained_prior')
     for owner in control_roots:
         if any(owner.is_relative_to(r.resolve()) for r in roots):continue
         external[str(owner)]=dict(root=str(owner),files={str(p.relative_to(owner)):sha(p)

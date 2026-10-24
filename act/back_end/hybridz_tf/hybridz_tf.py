@@ -497,6 +497,11 @@ class HybridzTF(RegistryTF):
     def sparse_resource_events(self):
         return [] if self._sparse_budget is None else list(self._sparse_budget.events)
 
+    def sparse_drop_diagnostics(self):
+        """Unresolved drops in observation order; never a replacement HZ."""
+        return [dict(layer=lid, kind=self._net.by_id[lid].kind, reason=reason)
+                for lid, reason in self._sparse_drop_reasons.items()]
+
     def _drop_sparse_hz(self, layer_id: int, reason: str) -> None:
         lid = int(layer_id)
         self._sparse_hz_cache.pop(lid, None)

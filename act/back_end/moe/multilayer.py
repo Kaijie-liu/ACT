@@ -426,6 +426,10 @@ def verify_multilayer_box(model, *, center, lower, upper, rows, thresholds,
             return finish('UNKNOWN', 'history_limit_no_histories_dropped')
         for history in plan.histories():
             tick()
+            # Release prior-history working objects BEFORE allocating the next
+            # graph/HZ. Records contain only scalar/serialized evidence. This
+            # also covers prior properties followed by EXCLUDED/undefined paths.
+            propagated = hz = objective = bound = domain = net = compiled = None
             began = time.monotonic()
             record = {'history': [list(h) for h in history], 'status': 'UNKNOWN',
                 'phase': 'compile', 'properties': [], 'definedness': [], 'seconds': None}
@@ -441,6 +445,7 @@ def verify_multilayer_box(model, *, center, lower, upper, rows, thresholds,
                 propagated = _propagate_component(net, hybridz_config=HybridZConfig(max_input_dim=1))
             except RuntimeError as exc:
                 if str(exc) == 'HybridzTF did not retain an HZ at the component output':
+                    record['joint_hz_loss'] = getattr(exc, 'diagnostics', [])
                     raise NotImplementedError('backend_joint_HZ_not_retained; no independent-box substitution') from exc
                 raise
             tick()

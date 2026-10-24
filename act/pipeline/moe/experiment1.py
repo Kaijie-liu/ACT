@@ -348,8 +348,9 @@ def _propagate_component(net, *, entry_hz=None, hybridz_config=None) -> Propagat
     finally:
         tf.clear_entry_hz()
         set_solver_mode(previous_solver)
-        if previous_tf is not None:
-            set_transfer_function(previous_tf)
+        # An initially unset TF is also a state to restore. Otherwise the first
+        # component's entire graph/HZ cache remains globally reachable forever.
+        set_transfer_function(previous_tf)
 
 
 def shared_input_pair_propagation(

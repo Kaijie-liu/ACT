@@ -1,5 +1,41 @@
 # Multilayer bottleneck elimination — stage 1
 
+## Joint-HZ loss and bounded lifecycle repair, 2026-10-24
+
+R6 stopped after `verify_282`: L3E8_seed0/input1408/ACT,75.358s,
+`backend_joint_HZ_not_retained`. All283 terminals remain:88positive filters,
+190TIMEOUT,2UNKNOWN,2ERROR,1UNSUPPORTED. Prefix structural audit passes; no final
+scientific gate is evaluated. The failed ninth history is(01,01,13).
+
+A separately recorded one-history propagation diagnosis (no new output or
+feasibility query) retained the joint HZ:34 outputs,3810continuous/233binary.
+Propagation10.761660s; full supervised diagnosis17.254532s. This establishes
+fresh-process compatibility, not the unique cause of the old failure. It does
+not replay or relabel the full request. Stored source hashes bind the original
+`a4a4f593c` implementations and the new diagnostic script.
+
+Two source-level retention defects were independently identified: an initially
+unset global transfer function was not restored after the first propagation;
+previous-history local HZ/objective references survived into the next allocation.
+Restore `None` unconditionally and release those references before construction.
+No mathematical constraint, solver configuration, resource limit or acceptance
+gate changes. Missing-HZ errors now retain unresolved drop layer/kind/reason;
+the verifier still refuses independent-box substitution.
+
+New native synthetic controls check unset/existing TF on success/error and weak
+references, all sparse coefficients/constraints/factor identities before/after
+on L2/L3, prior-history release, and injected MemoryError/ValueError diagnostics.
+R1 has3PASS/1FAIL: the test's Mock call-argument history itself retained the HZ.
+That fixture was corrected; only the failed case reran inR2 and passed. Failure
+and both receipts remain. Combined diagnosis+controls27.045056s, no GPU or new
+native solver call. This is an execution fix, not algorithm innovation or speedup.
+
+[R7 continuation](multilayer_stage1_continuation_20261024_r7.json) starts283,
+retains000–282 and all prior errors, carries59230s and21,846,599B (including
+recursive diagnosis/failed-control roots), original600calls/52h/128MiB.
+Immutable execution is launched only from this repaired, committed version;
+both external methods, input identities, query order and300s stay fixed.
+
 ## Post-prefix mechanism supplement, 2026-10-23
 
 **Registered after observing189/600, motivated by timeout telemetry**, not before

@@ -113,8 +113,8 @@ class RegistryTF(TransferFunction, ABC):
 _current_tf: Optional[TransferFunction] = None
 
 
-def set_transfer_function(tf_impl: TransferFunction) -> None:
-    """Set the global transfer function implementation."""
+def set_transfer_function(tf_impl: Optional[TransferFunction]) -> None:
+    """Set (or restore the unset state of) the global transfer function."""
     global _current_tf
     _current_tf = tf_impl
 

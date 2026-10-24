@@ -56,13 +56,22 @@ class RouteAVerificationReport:
     stage: str = "TIER1_GATE_ELIMINATION"
 
 
+class MissingComponentHZ(RuntimeError):
+    def __init__(self, diagnostics):
+        super().__init__("HybridzTF did not retain an HZ at the component output")
+        self.diagnostics = diagnostics
+
+
 def _component_output_hz(net, tf: HybridzTF) -> HZ:
     assertion = get_assert_layer(net)
     output_ids = net.preds.get(assertion.id, [])
     if len(output_ids) != 1:
         raise ValueError("component ASSERT must have exactly one predecessor")
     output_id = output_ids[0]
-    return tf.get_sparse_hz(output_id) or tf.get_hz(output_id) or _missing_hz()
+    hz = tf.get_sparse_hz(output_id) or tf.get_hz(output_id)
+    if hz is None:
+        raise MissingComponentHZ(tf.sparse_drop_diagnostics())
+    return hz
 
 
 def _missing_hz():
