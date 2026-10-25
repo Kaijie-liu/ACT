@@ -4,7 +4,23 @@ This is the fifth revision's diagnostic, not a new confirmation cohort or a
 claim that changing engines is an algorithmic contribution. The scientific
 question is whether replacing gate equalities by narrow independent ranges
 allows the strong engine to close histories it previously did not close.
-The opposite outcome must remain visible. No real stage4 call has run.
+The opposite outcome must remain visible. Real stage4 execution is now running;
+the pre-execution statements below remain historical records.
+
+## Live execution snapshot
+
+Detached PID425771 runs immutable9bf3eacd6b462001e68c1c0257574601bc4410c5 in
+`executions/gate_decoupling_stage4_20261025_r1`; raw outputs are in the matching
+`results/gate_decoupling_stage4_20261025_r1`. The
+[startup record](gate_decoupling_stage4_records_20261025.json) binds the process,
+source/catalog/control identities, resource admission and original21h deadline.
+At20:38:48 AEDT,4 local calls completed and the fifth had started: the first two
+L2E16 seed0 histories (inputs1281,1288) each gave V2 POSITIVE and V3
+DIAGNOSTIC_CLOSED, with matching gate-domain identities. Times were13.352/9.812s
+and11.338/8.415s for V2/V3, including each call's range reconstruction.
+The raw-receipt prefix audit passes with decision `PENDING_REGISTERED_QUEUE`.
+These are two local-history numerical closures, not complete-request gains,
+strict certificates or a stage4 decision. Live ledgers supersede this snapshot.
 
 ## Final execution freeze after1b
 

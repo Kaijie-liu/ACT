@@ -1,5 +1,13 @@
 # MoE project handoff — current entry point
 
+## Gate-decoupling real diagnostics running 2026-10-25
+
+Real increment4 local calls,2paired histories;1b120/120 archived.Stage4 PID425771 detached,nice10,oneCPUthread,8GiBAS;immutable9bf3eacd6.
+[Startup/early review](gate_decoupling_stage4_records_20261025.json) binds20sources/catalog/control/deadline;raw4-call prefix passes,5thstarted,decisionPENDING.
+First L2E16seed0 histories1281/1288:V2 POSITIVE+V3 DIAGNOSTIC_CLOSED each,matching domains;8–13s/call including range rebuild,not fullMoE certificates/gain.
+Runroot`results/gate_decoupling_stage4_20261025_r1`;250local/21h/300s fixed;full193object denominator,missing IDs/unexecuted suffix retained.
+Next monitor this actual process,repair only tool errors preserving prefix/cumulative cost,then final attribution;no new mechanisms,resource changes or prefix gate decision.G1–G6OPEN.
+
 ## Gate controls pass; real diagnostic queue frozen 2026-10-25
 
 Real increment0;1b120/120 archived,stage4 real0.[R4 controls](gate_decoupling_control_records_20261025.json) PASS19/3API,11.004842s/191,232B cumulative including preservedR3FAIL.
