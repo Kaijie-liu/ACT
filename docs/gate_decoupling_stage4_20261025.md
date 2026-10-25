@@ -61,6 +61,19 @@ does not by itself distinguish relaxation weakness from search/guard/budget.
 
 ## Controls prepared; no numerical execution yet
 
+Update after1b completion: R3 ran once and failed after4.413010s because native
+model dumps exceeded the existing16KiB supervisor console cap. No final test or
+API receipt was accepted. The original failure and all files remain at
+`results/gate_decoupling_control_20261025_r3`; cleanup left no live owned child.
+[R4](gate_decoupling_control_20261025_r4.json) repairs only the control entry's
+non-evidence stdout handling to match the real worker, and carries R3 time and
+all bytes inside the same300s/128MiB total. The19 source/semantic/ledger cases,
+three prescribed API variants, numerical engine and acceptance rules are
+unchanged. Three new variant calls are prescribed; R3's interrupted API work is
+retained, not erased (at most three old plus three repair attempts). R4 has not
+run at this registration. This is a tooling repair, not a scientific rerun or
+mechanism result. The paragraphs below record the original pre-execution state.
+
 The [R3 control freeze](gate_decoupling_control_20261025_r3.json) binds19 source
 files,19 semantic/receipt/ledger test methods and exactly3 external API calls.
 It includes the local worker's shared endpoint deadline, partial interruption,

@@ -1,5 +1,13 @@
 # MoE project handoff — current entry point
 
+## Gate control stdout repair frozen 2026-10-25
+
+Real increment0;1b120/120 archived,stage4 real0.R3 controlFAIL4.413010s: native model dump hit unchanged16KiB console cap;no final control receipt.
+Original failure/files retained;owned child gone.No mathematical/engine rejection inferred and no live1b interference.
+[R4 freeze](gate_decoupling_control_20261025_r4.json) changes only control stdout handling and cumulative carry;19 cases/3 prescribed variants/300s/128MiB/8GiB unchanged.
+Old interrupted calls remain counted (at most3old+3repair);no accepted API or completed-control result is reused or erased.
+Static source/case/limit differential passes;native R4 pending.Next run R4 remaining budget,then final catalog/freeze and diagnostics under existing tool-repair authority.G1–G6OPEN.
+
 ## Residual-family1b complete and independently record-reviewed 2026-10-25
 
 Real increment107 since last committed snapshot;1b120/120=6numericalPOSITIVE+114TIMEOUT,13aux complete,PID1050832 exited;stage4 real0.

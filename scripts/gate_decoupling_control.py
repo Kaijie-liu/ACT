@@ -31,8 +31,15 @@ CODE = ('scripts/gate_decoupling_control.py', 'tests/test_gate_decoupling.py',
     'scoped_proof/io.py', 'scoped_proof/owned_session.py', 'scoped_source/development_work.py')
 
 
-def freeze(path):
-    save(path, dict(schema='gate-decoupling-synthetic-v3', policy=POLICY,
+def freeze(path, prior=None):
+    retained = None
+    if prior is not None:
+        old = load(prior)
+        assert old['status'] == 'FAIL'
+        retained = dict(path=str(prior.resolve()), sha256=sha(prior), seconds=old['seconds'],
+            files={str(p.relative_to(prior.parent)): sha(p) for p in prior.parent.rglob('*') if p.is_file()})
+    save(path, dict(schema='gate-decoupling-synthetic-v4', policy=POLICY,
+        retained_control=retained,
         seconds=300, artifacts=128*2**20, as_bytes=8*2**30,
         source_files={p: sha(ROOT/p) for p in CODE},
         native_python=str(backend.ENVIRONMENT/'bin/python'),
@@ -71,6 +78,8 @@ def worker(folder):
     os.environ['GATE_CONTROL_ROOT'] = str(folder)
     output = io.StringIO()
     suite = unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromName(name) for name in spec['suites'])
+    # Match the real worker: model dumps are not evidence; keep structured API results.
+    fd = os.open(os.devnull, os.O_WRONLY); os.dup2(fd, 1); os.close(fd)
     result = unittest.TextTestRunner(stream=output, verbosity=2, failfast=True).run(suite)
     import test_gate_decoupling as tests
     assert time.monotonic() < deadline
@@ -85,35 +94,45 @@ def run(folder, manifest):
     spec = load(manifest)
     assert all(sha(ROOT/p) == h for p, h in spec['source_files'].items())
     assert spec['seconds'] == 300 and spec['policy'] == POLICY
+    prior = spec.get('retained_control'); prior_seconds = 0.; prior_bytes = 0
+    if prior:
+        receipt = load(prior['path'], prior['sha256']); owner = Path(prior['path']).parent
+        assert receipt['status'] == 'FAIL' and receipt['seconds'] == prior['seconds']
+        assert {str(p.relative_to(owner)): sha(p) for p in owner.rglob('*') if p.is_file()} == prior['files']
+        prior_seconds = prior['seconds']
+        prior_bytes = sum((owner/p).stat().st_size for p in prior['files'])
+    end = ENTRY+300-prior_seconds
+    assert end > ENTRY+10 and prior_bytes < spec['artifacts']-65536
     folder.mkdir(); save(folder/'manifest.json', spec)
     assert sha(folder/'manifest.json') == sha(manifest)
     child = folder/'fixed'; child.mkdir()
     save(child/'request.json', dict(manifest=str(manifest.resolve()), manifest_sha256=sha(manifest),
-        deadline=ENTRY+290, budget_started=ENTRY))
+        deadline=end-10, budget_started=ENTRY, retained_control=prior))
     env = dict(PATH='/usr/bin:/bin', CUDA_VISIBLE_DEVICES='', OPENBLAS_NUM_THREADS='1',
         OMP_NUM_THREADS='1', MKL_NUM_THREADS='1', PYTHONDONTWRITEBYTECODE='1', PYTHONNOUSERSITE='1',
         XDG_CACHE_HOME=str(folder/'cache'), TMPDIR=str(folder/'tmp'))
     (folder/'cache').mkdir(); (folder/'tmp').mkdir()
     receipt = execute([spec['native_python'], '-I', '-B', __file__, 'worker', str(child)],
-        run_deadline=ENTRY+294, cleanup_deadline=ENTRY+298, env=env, rss_limit=None, development_policy=POLICY)
+        run_deadline=end-6, cleanup_deadline=end-2, env=env, rss_limit=None, development_policy=POLICY)
     save(folder/'session.json', receipt)
     from b1_observed_batch import session_ok
     outcome = load(child/'outcome.json') if (child/'outcome.json').is_file() else None
     good = bool(session_ok(receipt) and outcome and outcome['status'] == 'PASS'
-        and outcome['request_sha256'] == sha(child/'request.json') and outcome['clock'] < ENTRY+290
-        and len(outcome['api_results']) == spec['solver_calls'] and time.monotonic() < ENTRY+300)
-    retained = sum(p.stat().st_size for p in folder.rglob('*') if p.is_file())
+        and outcome['request_sha256'] == sha(child/'request.json') and outcome['clock'] < end-10
+        and len(outcome['api_results']) == spec['solver_calls'] and time.monotonic() < end)
+    retained = prior_bytes+sum(p.stat().st_size for p in folder.rglob('*') if p.is_file())
     assert retained < spec['artifacts']-65536  # Reserve the final receipt inside the cap.
-    save(folder/'complete.json', dict(status='PASS' if good else 'FAIL', seconds=time.monotonic()-ENTRY,
+    save(folder/'complete.json', dict(status='PASS' if good else 'FAIL', seconds=prior_seconds+time.monotonic()-ENTRY,
         manifest_sha256=sha(manifest), session_sha256=sha(folder/'session.json'),
         outcome_sha256=sha(child/'outcome.json') if outcome else None, bytes_before_receipt=retained,
-        real_calls=0, as_limit=resource.getrlimit(resource.RLIMIT_AS)))
+        retained_control=prior, real_calls=0, as_limit=resource.getrlimit(resource.RLIMIT_AS)))
     print(json.dumps(load(folder/'complete.json')), flush=True)
 
 
 if __name__ == '__main__':
     p = argparse.ArgumentParser(); p.add_argument('mode', choices=('freeze', 'run', 'worker'))
-    p.add_argument('path', type=Path); p.add_argument('--manifest', type=Path); a = p.parse_args()
-    if a.mode == 'freeze': freeze(a.path)
+    p.add_argument('path', type=Path); p.add_argument('--manifest', type=Path)
+    p.add_argument('--prior', type=Path); a = p.parse_args()
+    if a.mode == 'freeze': freeze(a.path, a.prior)
     elif a.mode == 'worker': worker(a.path)
     else: run(a.path, a.manifest)
