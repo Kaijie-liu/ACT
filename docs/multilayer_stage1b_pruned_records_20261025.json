@@ -1,5 +1,6 @@
 {
-  "status": "FROZEN_PENDING_IMMUTABLE_LAUNCH",
+  "status": "RUNNING_SNAPSHOT_NOT_FINAL",
+  "snapshot_at": "2026-10-25T11:02:48+11:00",
   "full_calls": 0,
   "registered_full_calls": 120,
   "auxiliary_calls": 13,
@@ -7,6 +8,41 @@
   "arms": ["genbab_pruned"],
   "stage_seconds_limit": 36000,
   "request_seconds_limit": 300,
+  "execution_commit": "6568139e9797726a7e773f6dda1274e9e1574734",
+  "execution_root": "/data1/Kane/MOE/executions/multilayer_stage1b_pruned_20261025_r1",
+  "result_root": "/data1/Kane/MOE/results/multilayer_stage1b_pruned_20261025_r1",
+  "controller_log": "/data1/Kane/MOE/results/multilayer_stage1b_pruned_20261025_r1.controller.log",
+  "controller_pid": 1050832,
+  "start_sha256": "8e0ad8fa1749f581ad0249cc365f4b18373e7f612376fe5960715b5f7703acd2",
+  "started_at_unix": 1792886282.1042924,
+  "catalog_sha256": "66108a82e4a9cf195d68013ec2a42cca4f6386f7ec376c81b941f6309f34ee91",
+  "selection_outcome_sha256": "9a0537435f42cd14cda082fde4f993e4e191bea1633611fcb7d5c81e3c64150c",
+  "launch": {
+    "detached": true,
+    "ppid_and_session_readback": [1, 1050832],
+    "nice": 10,
+    "numerical_threads": 1,
+    "cpu_only": true,
+    "rlimit_as_soft_hard_readback_bytes": [8589934592, 8589934592],
+    "admission_observation_at": "2026-10-25T10:57:47+11:00",
+    "logical_cpus": 20,
+    "load_1_5_15": [22.927, 23.942, 26.418],
+    "one_second_idle_percent": 19.374,
+    "available_memory_kib": 94390612,
+    "free_disk_bytes": 560430542848,
+    "other_jobs_untouched": true
+  },
+  "startup_readonly_review": "PASS: immutable24 source hashes, commit, manifest/control/start bindings and36000s deadline; materialized selection/catalog hashes,120 pruned-only queries,120 accepted publicPGD records; no solver rerun",
+  "auxiliary_snapshot": {
+    "completed": 13,
+    "charged_terminal_seconds": 206.92172020114958,
+    "public_pgd_model_input_objects": 120,
+    "full_model_replayed_unsafe": 26,
+    "no_replayed_counterexample": 94,
+    "public_pgd_not_credited_to_verifier": true,
+    "census_groups_completed": 6
+  },
+  "live_ledger_authoritative": true,
   "manifest": "docs/multilayer_stage1b_pruned_freeze_20261025_r2.json",
   "manifest_sha256": "34e9bd5b9ecb6ff9ac2185900b8dc19deb439cb6689b99e95f3181edc3d34fb8",
   "retained_unexecuted_two_arm_manifest": "docs/multilayer_stage1b_verification_freeze_20261024_r4.json",
@@ -24,7 +60,11 @@
     "cost_scope": "pre-execution development control, separate from10h real queue"
   },
   "freeze_review": "24 current source hashes and control bindings match; six weights,selection,epsilon,preprocessing,publicPGD,census,backend config equal retainedR4; no experimental outcome used",
-  "selection": "first30 ascending common clean-correct outside1885 history identities; first20 verify; actual indices await budgeted selection",
+  "selection": {
+    "rule": "first30 ascending common clean-correct outside1885 history identities; first20 verify; no route/bound selection; full-test telemetry disclosed",
+    "scanned_nonexcluded": 152,
+    "indices": [1259,1262,1267,1271,1273,1282,1293,1298,1301,1305,1309,1312,1316,1317,1327,1338,1340,1347,1351,1359,1360,1363,1364,1372,1384,1390,1392,1396,1414,1417]
+  },
   "evidence_grade": "GenBaB numerical filter, not source-complete strict SAFE",
   "scientific_role": "residual-family validity and hard-core diagnosis; no ACT comparison, no route-union mechanism restart"
 }

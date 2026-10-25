@@ -1,5 +1,21 @@
 # Residual multilayer model validity study
 
+## Pruned-only launch, 2026-10-25
+
+At10:58:02AEDT the120-request queue started from immutable commit
+`6568139e9797726a7e773f6dda1274e9e1574734`, PID1050832/PPID1/SID1050832,
+one CPU numerical thread,nice10,8GiB AS read back. Execution and results use
+`multilayer_stage1b_pruned_20261025_r1`; terminal disconnection does not stop it.
+Startup review verifies24 frozen sources, manifest/control/start identities,
+the10h deadline, materialized inputs and the120-query pruning-only catalog.
+At11:02:48 all13 auxiliary calls were accepted: selection7.020819s, all public
+PGD groups and all six census groups,206.921720s total terminal cost. The30
+ascending selected inputs are retained in the[record](multilayer_stage1b_pruned_records_20261025.json);
+all are outside the1885 exclusions; first20 enter verification. Public PGD gives
+26 replayed-UNSAFE model/input objects and94 without a replayed witness, not
+verifier results or94 safe objects. At this snapshot0/120 full terminals were
+complete and verify_000 was running. Live ledgers supersede the snapshot.
+
 ## Pruned-only execution freeze, 2026-10-25
 
 [New execution R2](multilayer_stage1b_pruned_freeze_20261025_r2.json) implements
