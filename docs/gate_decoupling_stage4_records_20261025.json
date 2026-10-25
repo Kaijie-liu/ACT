@@ -1115,5 +1115,157 @@
       "Known local positive source types differ; old results and new diagnostics are not spliced into complete-request success."
     ],
     "offline_analysis_seconds": 0.04598464258015156
+  },
+  "completed_1a_analysis": {
+    "snapshot_at": "2026-10-25 13:00:36 UTC",
+    "selection": "All55 frozen1a objects/calls000..109; no source-, outcome- or runtime-based removal.",
+    "scope": "Completed1a subgroup inside still-running193-object Stage4; descriptive local-history numerical outcomes, no interim scientific gate.",
+    "audit": {
+      "status": "AUDITED_PREFIX",
+      "actual_local_calls": 110,
+      "attempted_local_calls": 111,
+      "primary_decision": "PENDING_REGISTERED_QUEUE",
+      "elapsed_call_seconds": 11915.135353529826,
+      "bytes": 6358161,
+      "mathematical_bound_reproof": false,
+      "recorded_cost_scope": "LIVE_PREFIX_ONLY",
+      "counts": {
+        "v3_timeout": 6,
+        "both_closed": 24,
+        "v3_closed_v2_observed_unclosed": 15
+      },
+      "domains_different": 0,
+      "offline_seconds": 1.3417738229036331
+    },
+    "analysis": {
+      "family": {
+        "L2E16": {
+          "POSITIVE / DIAGNOSTIC_CLOSED": 3,
+          "TIMEOUT / TIMEOUT": 4,
+          "TIMEOUT / DIAGNOSTIC_CLOSED": 3,
+          "SOURCE_MISSING / SOURCE_MISSING": 1
+        },
+        "L2E8": {
+          "POSITIVE / DIAGNOSTIC_CLOSED": 9,
+          "TIMEOUT / DIAGNOSTIC_CLOSED": 7,
+          "SOURCE_MISSING / SOURCE_MISSING": 8,
+          "TIMEOUT / TIMEOUT": 1
+        },
+        "L3E8": {
+          "POSITIVE / DIAGNOSTIC_CLOSED": 12,
+          "TIMEOUT / DIAGNOSTIC_CLOSED": 5,
+          "SOURCE_MISSING / SOURCE_MISSING": 1,
+          "TIMEOUT / TIMEOUT": 1
+        }
+      },
+      "source_kind": {
+        "SAVED_CUT_FIRST_PENDING_NOT_RETURNED": {
+          "POSITIVE / DIAGNOSTIC_CLOSED": 11,
+          "TIMEOUT / TIMEOUT": 1,
+          "TIMEOUT / DIAGNOSTIC_CLOSED": 1
+        },
+        "SAVED_INFLIGHT_FIRST_HISTORY": {
+          "TIMEOUT / TIMEOUT": 5,
+          "TIMEOUT / DIAGNOSTIC_CLOSED": 14,
+          "POSITIVE / DIAGNOSTIC_CLOSED": 10
+        },
+        "EARLIER_UNPROVED_ID_MISSING": {
+          "SOURCE_MISSING / SOURCE_MISSING": 10
+        },
+        "SAVED_FIRST_RETURNED_UNPROVED": {
+          "POSITIVE / DIAGNOSTIC_CLOSED": 3
+        }
+      },
+      "positive_endpoints": {
+        "incomplete_only / incomplete_only": 22,
+        "nonlinear_bab / nonlinear_bab": 1,
+        "incomplete_only / nonlinear_bab": 1
+      },
+      "positive_non_initial": [
+        {
+          "object": "1a:L2E8_seed2:1366",
+          "endpoint_stages": [
+            "nonlinear_bab",
+            "nonlinear_bab"
+          ]
+        },
+        {
+          "object": "1a:L3E8_seed1:1288",
+          "endpoint_stages": [
+            "incomplete_only",
+            "nonlinear_bab"
+          ]
+        }
+      ],
+      "timeout_endpoints": {
+        "MISSING / MISSING": 12,
+        "verified / MISSING": 6,
+        "unknown / MISSING": 3
+      },
+      "gate_range_seconds": {
+        "n": 45,
+        "median": 0.9671556204557419,
+        "maximum": 2.9312584716826677
+      },
+      "costs": {
+        "L2E16": {
+          "V2": {
+            "n": 11,
+            "total": 2102.9434392638505,
+            "median": 294.2471206821501
+          },
+          "V3": {
+            "n": 11,
+            "total": 1676.5021935217083,
+            "median": 150.50378139689565
+          }
+        },
+        "L2E8": {
+          "V3": {
+            "n": 25,
+            "total": 938.0521514080465,
+            "median": 11.077190613374114
+          },
+          "V2": {
+            "n": 25,
+            "total": 3044.0661756768823,
+            "median": 32.7886399962008
+          }
+        },
+        "L3E8": {
+          "V2": {
+            "n": 19,
+            "total": 3489.9570050910115,
+            "median": 212.65185045450926
+          },
+          "V3": {
+            "n": 19,
+            "total": 663.6143885683268,
+            "median": 11.894132051616907
+          }
+        }
+      },
+      "domains_different": 0,
+      "total_seconds": 11915.135353529826
+    },
+    "limitations": [
+      "24V2positives are local history numerical filters; V3 closures are counterfactual diagnostics, not original-model positives.",
+      "11positive histories were pending at the saved cut (unrecorded later work unknown);10 were inflight without return;only3 returned unproved,all on input1366 across three seeds.",
+      "Old inflight durations and reused/charged ranges are not matched complete-request budgets; no runtime ratio or end-to-end win is inferred.",
+      "21V2timeouts contain6verified low endpoints and3unknown low endpoints with no high endpoint result; these do not establish relaxation impossibility.",
+      "V3 retains router/guard ReLUs and changes counterfactual states; timeouts/closures do not uniquely locate expert or gate difficulty.",
+      "10missing histories remain in55-object counts and costs; full193-object primary denominator and pending decision are unchanged.",
+      "Offline record audit does not reprove numerical bounds, establish reachability, or upgrade historical/online results."
+    ],
+    "ledger_binding": {
+      "root": "/data1/Kane/MOE/results/gate_decoupling_stage4_20261025_r1",
+      "first": 0,
+      "last": 109,
+      "count": 110,
+      "sorted_name_space_sha256_newline_digest": "5481964139f94fc8412656ecb8ef27c7a0b59bab7e215d889a891c7055fffb9e",
+      "catalog_sha256": "5bfe432aac6010bdfc24dbb8837849dcf323b4af85f6b85a5f4d3ef46b55d7de",
+      "raw_worker_files_bound_by_each_ledger": true
+    },
+    "offline_archive_seconds": 0.005352320149540901
   }
 }

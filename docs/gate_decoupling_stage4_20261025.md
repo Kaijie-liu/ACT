@@ -127,6 +127,43 @@ statistics do not select a threshold or prove a causal gate-width effect;
 they show why narrow inner gates alone cannot promise easy verification.
 The80-call raw-prefix audit passes; all stage-level decisions remain pending.
 
+The full1a diagnostic subgroup is complete at110 local calls /55 objects. The
+record's `completed_1a_analysis` binds all110 ledgers, source kinds, endpoint
+outcomes, costs and the frozen prefix audit. B2 calls continue in the original
+queue; this subgroup does not replace the registered193-object population.
+
+| Family | Both close | V3 only | Both time out | Missing source | Total objects |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| L2E16 | 3 | 3 | 4 | 1 | 11 |
+| L2E8 | 9 | 7 | 1 | 8 | 25 |
+| L3E8 | 12 | 5 | 1 | 1 | 19 |
+| Total | 24 | 15 | 6 | 10 | 55 |
+
+The24 V2 local numerical positives break down by old history provenance:
+11 were saved-cut pending,10 were recorded in flight without a returned
+conclusion, and3 had returned unproved. Those last3 are the already documented
+input1366 across three seeds. Thus24 must not be presented as24 individually
+failed old solver queries that the new method beat. A saved-cut pending label
+does not rule out unrecorded later work. A new local numerical positive on such
+a history is diagnostic evidence, but not a matched win.
+
+Both endpoints close during initial bound propagation on22of24 positives.
+L2E8 seed2/input1366 needs nonlinear BaB at both endpoints; L3E8
+seed1/input1288 needs it at the high endpoint. On45 available domains, gate-range
+acquisition has median0.967s and maximum2.931s. The21 V2 timeouts have12 missing
+endpoint pairs,6 verified low endpoints with the high result missing, and3
+unknown low endpoints with the high result missing. This locates observed
+execution cost and partial evidence; it does not certify a nonpositive optimum
+or isolate an intrinsic relaxation gap.
+
+All110 terminal costs sum11915.135s:8636.967s for V2 and3278.169s for V3, including
+missing-source terminals. These exclude subsequent calls and final batch
+accounting. V3 is a different counterfactual task, so the cost contrast is not
+an equal-guarantee speedup. The separate1.342s frozen-source/raw-receipt audit
+passes with no paired domain mismatch; it is not a reproof of numerical bounds.
+The primary decision remains `PENDING_REGISTERED_QUEUE`. No early mechanism
+selection, threshold change, or complete-request success is inferred.
+
 V3 removes variable gate products but retains router and guard computation.
 For this L2E16 family the graph adds56 ReLU max steps for guard atoms, plus8
 selected-expert and2 router ReLUs. The saved input1476 V3 graph lists66 available

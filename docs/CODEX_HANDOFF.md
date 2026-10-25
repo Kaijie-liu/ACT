@@ -1,13 +1,13 @@
 # MoE project handoff — current entry point
 
-## Gate-decoupling real diagnostics running 2026-10-25
+## Gate-decoupling1a analyzed;remaining queue running 2026-10-26
 
-Real increment16 since prior archived observation:80 local terminals,including18SOURCE_MISSING;1b120/120 archived.PID425771 detached,immutable9bf3eacd6,81ststarted;live ledgers supersede snapshot.
-[Research observation/review](gate_decoupling_stage4_records_20261025.json) audits80-call prefix:15bothclose/11V3only/5bothtimeout/9missing pairs;decisionPENDING.
-Completed two-layer block36objects/72calls:12bothclose/10V3only/5bothtimeout/9missing;11of12V2positives close at initial bounds,one at nonlinearBaB.
-All27available V2range acquisitions <=1.274s;15V2timeouts include5withLOverified/HIunreturned,3withLOunknown/HIunreturned.Neither proves relaxation impossibility.
-Positive origins6pending/3inflight/3returned-unproved;last3share1366.No full-request splicing/speedup/route-changing or source-complete claim;V3 still has router/guard ReLUs.
-Inner-range widths overlap outcomes and include near-zero paired timeout;do not infer a narrow-gate threshold or unique ReLU cause from these descriptive summaries.
+Real increment30 since prior archived observation:110 local terminals,including20SOURCE_MISSING;1b120/120 archived.PID425771 detached,immutable9bf3eacd6,111ststarted;live ledgers supersede snapshot.
+[Completed1a analysis/review](gate_decoupling_stage4_records_20261025.json):55objects=24bothclose/15V3only/6bothtimeout/10missing;all110terminalcost11915.135s;primary decisionPENDING.
+Family both/V3only/bothTO/missing:L2E16=3/3/4/1,L2E8=9/7/1/8,L3E8=12/5/1/1;no interim gate or denominator substitution.
+22of24V2positives close at initial bounds;45available range acquisitions median0.967s/max2.931s;21timeouts include6LOverified/HIunreturned and3LOunknown/HIunreturned.
+Positive origins11pending/10inflight/3returned-unproved;last3share1366.Not24failed old queries beaten;no splicing,full-request speedup,route-changing or source-complete claim.
+V3 retains router/guard ReLUs;no unique expert/gate cause inferred.No new mechanism or execution-code change;B2 then1b follow the frozen order.
 Runroot`results/gate_decoupling_stage4_20261025_r1`;250local/21h/300s fixed;full193object denominator,missing IDs/unexecuted suffix retained.
 Next monitor this actual process,repair only tool errors preserving prefix/cumulative cost,then final attribution;no new mechanisms,resource changes or prefix gate decision.G1–G6OPEN.
 
