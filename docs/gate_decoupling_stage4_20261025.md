@@ -64,6 +64,28 @@ endpoint treatment, establish a new abstract domain, or prove a runtime ratio:
 the new local diagnostic reuses saved ranges and is not a matched full request.
 Old pruning and new closure must not be spliced into an online success.
 
+The same input1366 now has returned-unproved history closures on all three
+L2E8 seeds. This is **one input across three trained models**, not three
+independent inputs. The record's `returned_unproved_input1366_all_seeds` binds
+all old queries, new endpoint receipts and domains:
+
+| Seed | Old coupled query, unknown (s) | New V2 local call, positive (s) | New V3 diagnostic call (s) | V2 endpoint stages |
+| --- | ---: | ---: | ---: | --- |
+| 0 | 288.656 | 22.131 | 8.488 | Both initial bound propagation |
+| 1 | 287.489 | 79.359 | 13.773 | Both initial bound propagation |
+| 2 | 287.778 | 266.012 | 9.116 | Both nonlinear BaB |
+
+Seed2's endpoint solver costs are157.362s and95.201s; its near-budget closure
+limits any suggestion of uniformly cheap verification. Old costs cover one
+solver query; new costs cover a local diagnostic using saved original-prefix
+ranges. Their ratio is not an end-to-end speedup. Each old numerical census
+pruned783of784 histories and left just this one: these cases do **not** establish
+route-changing request gains or independently checked route stability.
+They support studying the computational effect of the gate treatment, while
+the full diagnostic and subsequent complete-request gates remain necessary.
+The64-call prefix audit passes with11 joint closures,8 V3-only closures,
+4 paired timeouts and9 paired missing sources; the stage decision is pending.
+
 All11 fixed L2E16 hard-core objects have now finished both variants:3 both
 close,3 close only V3,4 time out in both,1 lacks the first-history identity.
 All22 calls cost3779.446s, including missing-source terminals; this excludes

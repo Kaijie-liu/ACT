@@ -2,10 +2,10 @@
 
 ## Gate-decoupling real diagnostics running 2026-10-25
 
-Real increment9 since prior archived observation:27 local calls;1b120/120 archived.Stage4 PID425771 detached,immutable9bf3eacd6,28thstarted;live ledgers supersede snapshot.
-[Research observation/review](gate_decoupling_stage4_records_20261025.json) audits27-call prefix:5bothclose/3V3only,4V3timeouts;decisionPENDING.
-First returned-unproved closure:L2E8seed0/1366,history(2,7)/(1,7);old coupled query unknown288.656s,newV2 both endpoints/all9 properties22.131s,V3 8.488s.
-Same registered engine config;bothV2 endpoints close in initial bounds with saved prefix ranges.Not a matched full-request speedup or source-complete certificate;do not splice old pruning/new local result into online success.
+Real increment37 since prior archived observation:64 local terminals,including18SOURCE_MISSING;1b120/120 archived.PID425771 detached,immutable9bf3eacd6,65thstarted;live ledgers supersede snapshot.
+[Research observation/review](gate_decoupling_stage4_records_20261025.json) audits64-call prefix:11bothclose/8V3only/4bothtimeout/9missing pairs;decisionPENDING.
+Input1366 all3L2E8seeds:old coupled queries unknown288.656/287.489/287.778s,newV2 local positives22.131/79.359/266.012s;seed2 needs nonlinearBaB for both endpoints.
+Same registered engine config,saved prefix ranges;one input across3models.Old census pruned783/784each:neither route-changing gains nor matched full-request speedups/source-complete certificates;no splicing online success.
 L2E16 complete subgroup11pairs:3bothclose/3V3only/4bothtimeout/1missing.1557 earlier inflight signal retained;V3 still has router/guard ReLUs,so timeout does not isolate expert difficulty.
 Runroot`results/gate_decoupling_stage4_20261025_r1`;250local/21h/300s fixed;full193object denominator,missing IDs/unexecuted suffix retained.
 Next monitor this actual process,repair only tool errors preserving prefix/cumulative cost,then final attribution;no new mechanisms,resource changes or prefix gate decision.G1–G6OPEN.

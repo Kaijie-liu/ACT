@@ -356,19 +356,19 @@
     "interpretation": "First observed V2 positive on a history recorded as in-flight in the old coupled run. Remaining time at query entry is not proof of equal solver effort or a matched local rerun."
   },
   "latest_prefix_review": {
-    "snapshot_at": "2026-10-25T21:48:35.750238+11:00",
+    "snapshot_at": "2026-10-25T22:21:14.811282+11:00",
     "status": "AUDITED_PREFIX",
-    "completed_local_calls": 27,
-    "started_local_calls": 28,
+    "completed_local_calls": 64,
+    "started_local_calls": 65,
     "counts": {
       "v3_timeout": 4,
-      "both_closed": 5,
-      "v3_closed_v2_observed_unclosed": 3
+      "both_closed": 11,
+      "v3_closed_v2_observed_unclosed": 8
     },
     "decision": "PENDING_REGISTERED_QUEUE",
-    "sum_completed_call_seconds": 3972.2609242182225,
-    "bytes": 2140647,
-    "offline_seconds": 0.19326253980398178,
+    "sum_completed_call_seconds": 6065.934141045436,
+    "bytes": 3565743,
+    "offline_seconds": 0.6248257178813219,
     "scope": "record/source/deadline checks only; no numerical reproof, no online upgrade, no new queries"
   },
   "first_saved_returned_unproved_local_closure": {
@@ -564,5 +564,389 @@
       "358f2da113fc9b602b9771235eac55e3def6f026e2203553d6f3b387e3b96289"
     ],
     "decision": "DESCRIPTIVE_SUBGROUP_ONLY_NO_STAGE_DECISION"
+  },
+  "returned_unproved_input1366_all_seeds": {
+    "snapshot_at": "2026-10-25T22:21:14.811282+11:00",
+    "input_count": 1,
+    "model_input_count": 3,
+    "cases": [
+      {
+        "object_id": "1a:L2E8_seed0:1366",
+        "history": [
+          [
+            2,
+            7
+          ],
+          [
+            1,
+            7
+          ]
+        ],
+        "original_sources": [
+          {
+            "path": "/data1/Kane/MOE/results/multilayer_stage1_20261022_r5/verify_185/request.json",
+            "sha256": "f78b3c75308e800de52ee4a4ea32924139aa4faa92e54b4a7c669475f6c1b0ea"
+          },
+          {
+            "path": "/data1/Kane/MOE/results/multilayer_stage1_20261022_r5/verify_185/terminal.json",
+            "sha256": "54b948625c8b53eab1a64d4e0b0e932e1f2d5b48aab7fa16a9e4108fd2a92bb6"
+          },
+          {
+            "path": "/data1/Kane/MOE/results/multilayer_stage1_20261022_r5/verify_185/outcome.json.gz",
+            "sha256": "6d1ba273a10359bd9a7f676e578fd4137651957bb6166dd5130d25574316a35e"
+          }
+        ],
+        "baseline_coverage": {
+          "active": null,
+          "attempted": 1,
+          "expected": 784,
+          "in_flight": 0,
+          "never_started": 0,
+          "prefix_attempts": 2,
+          "prefix_returns": 2,
+          "proof_complete": false,
+          "proof_unclosed": 1,
+          "pruned": 783,
+          "returned": 1,
+          "returned_unproved": 1,
+          "traversal_complete": true,
+          "verified": 0
+        },
+        "baseline_solver_outcome": {
+          "status": "unknown",
+          "stage": "nonlinear_bab",
+          "seconds": 288.65562449395657
+        },
+        "same_registered_engine_config": true,
+        "domain": {
+          "domain_sha256": "073d12517b4e9bf548d27097a9ef5c7bb23f928a893288f543875d6e93df349e",
+          "evidence_grade": "CROWN_SIGMOID_NUMERICAL_POLICY_NOT_EXACT_ENCLOSURE",
+          "history": [
+            [
+              2,
+              7
+            ],
+            [
+              1,
+              7
+            ]
+          ],
+          "intervals": [
+            [
+              0.6670377462538766,
+              0.6865419324201552
+            ],
+            [
+              0.3574424584390947,
+              0.9850951269891648
+            ]
+          ],
+          "margins": [
+            [
+              0.6948175039578174,
+              0.7840017093988111
+            ],
+            [
+              -0.5864819778446485,
+              4.19105000494245
+            ]
+          ],
+          "origin": "SAVED_ORIGINAL_PREFIX_CROWN",
+          "source_id": "9c6d2b7ddc50d0c626c205e3c473799709b943da66405e335a096ceb0c3ba55d"
+        },
+        "calls": [
+          {
+            "call_index": 24,
+            "variant": "V2",
+            "status": "POSITIVE",
+            "seconds": 22.13119849190116,
+            "ledger_sha256": "6585738b5441dbc91bf8d6e6fc8816a71d74b0d9765778ed84345cf674774015",
+            "terminal_sha256": "2bf63a77f82160a362a4ec1ed980f892f21acd1385b91bcd2c5029ef4bf30da4",
+            "endpoints": [
+              {
+                "variant": "V2_LO",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 10.722795145586133
+              },
+              {
+                "variant": "V2_HI",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 1.6165499053895473
+              }
+            ]
+          },
+          {
+            "call_index": 25,
+            "variant": "V3",
+            "status": "DIAGNOSTIC_CLOSED",
+            "seconds": 8.48800928145647,
+            "ledger_sha256": "3e9cff7a6609f3eb5c0fce74cf100365574c8c9c6addd3d2f3727f435ace18b6",
+            "terminal_sha256": "f19b495e4c542c4844cd832ed4f26204f964842a2623d421ac563453f42a2712",
+            "endpoints": [
+              {
+                "variant": "V3_MIDPOINT",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 1.7013713363558054
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "object_id": "1a:L2E8_seed1:1366",
+        "history": [
+          [
+            0,
+            4
+          ],
+          [
+            1,
+            2
+          ]
+        ],
+        "original_sources": [
+          {
+            "path": "/data1/Kane/MOE/results/multilayer_stage1_20261022_r5/verify_187/request.json",
+            "sha256": "49d20ea3c62270ad6e1437321aaba2fe7fb5b9ba487325d88becf906be0afee1"
+          },
+          {
+            "path": "/data1/Kane/MOE/results/multilayer_stage1_20261022_r5/verify_187/terminal.json",
+            "sha256": "fb4af122d9a567b283ff973c84e0e6a1077dfad2736a987dd14e307e06b5d28e"
+          },
+          {
+            "path": "/data1/Kane/MOE/results/multilayer_stage1_20261022_r5/verify_187/outcome.json.gz",
+            "sha256": "d441c58df8b91664fe8dad6824be07bf362c6e3fb16f91558495f8cf6ff4a621"
+          }
+        ],
+        "baseline_coverage": {
+          "active": null,
+          "attempted": 1,
+          "expected": 784,
+          "in_flight": 0,
+          "never_started": 0,
+          "prefix_attempts": 2,
+          "prefix_returns": 2,
+          "proof_complete": false,
+          "proof_unclosed": 1,
+          "pruned": 783,
+          "returned": 1,
+          "returned_unproved": 1,
+          "traversal_complete": true,
+          "verified": 0
+        },
+        "baseline_solver_outcome": {
+          "status": "unknown",
+          "stage": "nonlinear_bab",
+          "seconds": 287.48866482824087
+        },
+        "same_registered_engine_config": true,
+        "domain": {
+          "domain_sha256": "e536879090d324cb9b79a211c6ea8822dce902746a8d99e2cdc5457faec57559",
+          "evidence_grade": "CROWN_SIGMOID_NUMERICAL_POLICY_NOT_EXACT_ENCLOSURE",
+          "history": [
+            [
+              0,
+              4
+            ],
+            [
+              1,
+              2
+            ]
+          ],
+          "intervals": [
+            [
+              0.12567739819390827,
+              0.15874317105537905
+            ],
+            [
+              0.10643027189264842,
+              0.8569213321733844
+            ]
+          ],
+          "margins": [
+            [
+              -1.9397311252669867,
+              -1.6676093786686272
+            ],
+            [
+              -2.1277343241350946,
+              1.7899515162958335
+            ]
+          ],
+          "origin": "SAVED_ORIGINAL_PREFIX_CROWN",
+          "source_id": "071e543e8f0bec416b4d3520b7772a4b42f0a2e7309b6c5500c5a8cfbfefc46a"
+        },
+        "calls": [
+          {
+            "call_index": 43,
+            "variant": "V2",
+            "status": "POSITIVE",
+            "seconds": 79.35869608074427,
+            "ledger_sha256": "e3c8bc092a084ffa969d9720ae9259f6b729173c89471d3fb39dd7eaff81aea7",
+            "terminal_sha256": "358cee607224d526421a9ebaf8e4a70b7b3e948915ee2799c9acd481be4143b0",
+            "endpoints": [
+              {
+                "variant": "V2_LO",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 65.90050803683698
+              },
+              {
+                "variant": "V2_HI",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 2.9986368604004383
+              }
+            ]
+          },
+          {
+            "call_index": 42,
+            "variant": "V3",
+            "status": "DIAGNOSTIC_CLOSED",
+            "seconds": 13.772719936445355,
+            "ledger_sha256": "8c6f39521879b81732eb0ef8858228951640e2e9dc3fb213ea0b1b4bf9813c51",
+            "terminal_sha256": "0dfae6ca30356634827c0b9bf94eb04c0ad9da419a4886bae09a07e0975dbc60",
+            "endpoints": [
+              {
+                "variant": "V3_MIDPOINT",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 2.471267430111766
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "object_id": "1a:L2E8_seed2:1366",
+        "history": [
+          [
+            0,
+            6
+          ],
+          [
+            2,
+            5
+          ]
+        ],
+        "original_sources": [
+          {
+            "path": "/data1/Kane/MOE/results/multilayer_stage1_20261022_r5/verify_189/request.json",
+            "sha256": "a6b753eaa0bd8b84abd9cc73d70abf33d4bb87ed04a414300b3f98d6ba00f3d3"
+          },
+          {
+            "path": "/data1/Kane/MOE/results/multilayer_stage1_20261022_r5/verify_189/terminal.json",
+            "sha256": "9236f718d39b291fb7ebeb4d25195bca057d406af0119c0567b5e88246d2d2e8"
+          },
+          {
+            "path": "/data1/Kane/MOE/results/multilayer_stage1_20261022_r5/verify_189/outcome.json.gz",
+            "sha256": "7d819b2dac1f5865298bba38c25d02acda10cdd603b86811ba4363092d9bc436"
+          }
+        ],
+        "baseline_coverage": {
+          "active": null,
+          "attempted": 1,
+          "expected": 784,
+          "in_flight": 0,
+          "never_started": 0,
+          "prefix_attempts": 2,
+          "prefix_returns": 2,
+          "proof_complete": false,
+          "proof_unclosed": 1,
+          "pruned": 783,
+          "returned": 1,
+          "returned_unproved": 1,
+          "traversal_complete": true,
+          "verified": 0
+        },
+        "baseline_solver_outcome": {
+          "status": "unknown",
+          "stage": "nonlinear_bab",
+          "seconds": 287.7782725356519
+        },
+        "same_registered_engine_config": true,
+        "domain": {
+          "domain_sha256": "7d4e64cceb16af9ae7d8587869202adb1c61259294ad2a59196abe2c0c07778b",
+          "evidence_grade": "CROWN_SIGMOID_NUMERICAL_POLICY_NOT_EXACT_ENCLOSURE",
+          "history": [
+            [
+              0,
+              6
+            ],
+            [
+              2,
+              5
+            ]
+          ],
+          "intervals": [
+            [
+              0.7978303028529576,
+              0.8556430344581427
+            ],
+            [
+              0.41558647873176785,
+              0.9911115864902099
+            ]
+          ],
+          "margins": [
+            [
+              1.3727884921557225,
+              1.7795641138686755
+            ],
+            [
+              -0.3409180922540098,
+              4.714078552121365
+            ]
+          ],
+          "origin": "SAVED_ORIGINAL_PREFIX_CROWN",
+          "source_id": "c7b3d721860ea2581e22e2df7483f0e6d638e9589b190e4da0794fe06f8cb38e"
+        },
+        "calls": [
+          {
+            "call_index": 60,
+            "variant": "V2",
+            "status": "POSITIVE",
+            "seconds": 266.0119978208095,
+            "ledger_sha256": "f312ad38418d11a77105788bbf4f00c96d1d79b270e804dca9f91fcfba09a5a2",
+            "terminal_sha256": "3ccdd4a429ac7b0dc49adefad2d7e1678c35d52087360e9fcfe860250ba07e80",
+            "endpoints": [
+              {
+                "variant": "V2_LO",
+                "status": "verified",
+                "stage": "nonlinear_bab",
+                "seconds": 157.3619847651571
+              },
+              {
+                "variant": "V2_HI",
+                "status": "verified",
+                "stage": "nonlinear_bab",
+                "seconds": 95.20118936896324
+              }
+            ]
+          },
+          {
+            "call_index": 61,
+            "variant": "V3",
+            "status": "DIAGNOSTIC_CLOSED",
+            "seconds": 9.115593729540706,
+            "ledger_sha256": "3b6bf56b1622310668e080554a2d7e988455cc067008b8a1c7ca99bd02b71187",
+            "terminal_sha256": "22f0c84984d7e74fc66560a5e7b9ca844707d5a9daed653a6954da0a9d54957e",
+            "endpoints": [
+              {
+                "variant": "V3_MIDPOINT",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 4.021972684189677
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "scope": "Three trained seeds on the same input; old coupled query costs versus new local diagnostic costs, not matched complete-request costs.",
+    "interpretation": "All three formerly returned-unproved histories close numerically under V2. Seeds0/1 close endpoints in incomplete bound propagation;seed2 needs nonlinear BaB for both endpoints and266.012s total. Saved original-prefix ranges are reused. Each original numerical census pruned783of784 histories, so these cases are not evidence of route-changing request gains, independent-input generalization or source-complete certification. Do not splice old pruning and new local closures into online success."
   }
 }
