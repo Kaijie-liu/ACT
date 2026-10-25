@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## Gate controls pass; real diagnostic queue frozen 2026-10-25
+
+Real increment0;1b120/120 archived,stage4 real0.[R4 controls](gate_decoupling_control_records_20261025.json) PASS19/3API,11.004842s/191,232B cumulative including preservedR3FAIL.
+[Full catalog](gate_decoupling_sources_20261025_r2.json):193 objects=55+24+114,44missing first-history IDs,4reusable ranges;known counterexamples remain labeled.
+[Real freeze](gate_decoupling_stage4_freeze_20261025_r1.json) SHA58f30f30d22ae334631514cec4a7fdde2567e8b9bb37df61ca96504411c448d5;250calls/21h/300s/128MiB/8GiB unchanged.
+Fixed386-call table executes at most125pairs (55+24+46),leaves≥136calls unexecuted;29prefix objects lack history,full193denominator retained.
+Before outcomes:only96prefix pairs have IDs,so full-population rules(a)/(c) cannot trigger under this cap;no missing→timeout or denominator change,report limitation/strata honestly.
+Next fresh resources,immutablecopy and detached diagnostic launch;no extra infrastructure,models,GPU or approval gate.G1–G6OPEN.
+
 ## Gate control stdout repair frozen 2026-10-25
 
 Real increment0;1b120/120 archived,stage4 real0.R3 controlFAIL4.413010s: native model dump hit unchanged16KiB console cap;no final control receipt.

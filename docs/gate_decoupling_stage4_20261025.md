@@ -6,6 +6,34 @@ question is whether replacing gate equalities by narrow independent ranges
 allows the strong engine to close histories it previously did not close.
 The opposite outcome must remain visible. No real stage4 call has run.
 
+## Final execution freeze after1b
+
+[R1 real freeze](gate_decoupling_stage4_freeze_20261025_r1.json), SHA256
+`58f30f30d22ae334631514cec4a7fdde2567e8b9bb37df61ca96504411c448d5`, binds the
+[complete catalog](gate_decoupling_sources_20261025_r2.json), unchanged engine,
+20 source files and the accepted [control record](gate_decoupling_control_records_20261025.json).
+R4 passed19 methods/3 prescribed API variants; cumulative R3+R4 cost11.004842s
+and191,232bytes includes the preserved stdout-cap failure. This establishes
+the diagnostic integration, not a trained-model improvement.
+
+The full population is193 objects:1a55, B2 24 and1b114. The fixed386-call table
+retains adjacent variants and alternating order. The250-call cap covers at most
+125 paired objects (55+24+46); at least136 calls on68 objects remain unexecuted.
+The same21h/300s/128MiB/8GiB policy applies; no new source selection or quota.
+There are44 missing first-history identities (10 in1a,34 in1b), including29
+among the first125 paired objects. Only4 complete range sources exist; missing
+ranges are reconstructed within each call when the history identity is known.
+
+This provenance/cap limitation is recorded **before diagnostic outcomes**:
+at most96 pairs in the executable prefix have identified histories. With the
+registered full193-object primary denominator, rule(a)'s timeout lower bound
+above50% and rule(c)'s observed majority cannot be reached by this prefix.
+Rule(b) or gray remains possible. Do not shrink the denominator, turn missing
+records into timeouts, or infer absence of ReLU difficulty from an unreachable
+stop statistic. Single-/multilayer strata and all missing/unexecuted counts
+remain explicit. The evidence can still test local closure and inform the
+registered report; it cannot supply complete-population attribution.
+
 ## Same-history graph and scope
 
 For the canonical selected pair `(a_l,b_l)` at layer `l`, write
