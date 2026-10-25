@@ -22,6 +22,7 @@ from scoped_source.development_work import POLICY
 import genbab_cpu_ready as backend
 
 CODE = ('scripts/gate_decoupling_control.py', 'tests/test_gate_decoupling.py',
+    'scripts/gate_decoupling_worker.py', 'scripts/multilayer_stage1.py',
     'act/back_end/moe/gate_decoupling.py', 'act/back_end/moe/multilayer_external.py',
     'act/back_end/moe/multilayer.py', 'act/back_end/moe/model.py', 'act/back_end/moe/schema.py',
     'act/pipeline/moe/multilayer_training.py', 'act/back_end/moe/genbab_pair.py',
@@ -30,13 +31,14 @@ CODE = ('scripts/gate_decoupling_control.py', 'tests/test_gate_decoupling.py',
 
 
 def freeze(path):
-    save(path, dict(schema='gate-decoupling-synthetic-v1', policy=POLICY,
+    save(path, dict(schema='gate-decoupling-synthetic-v2', policy=POLICY,
         seconds=300, artifacts=128*2**20, as_bytes=8*2**30,
         source_files={p: sha(ROOT/p) for p in CODE},
         native_python=str(backend.ENVIRONMENT/'bin/python'),
         trained_models=0, real_diagnostic_calls=0, solver_calls=3, gpu=False,
         module='test_gate_decoupling',
-        suites=['test_gate_decoupling.SourceControls', 'test_gate_decoupling.GraphControls'],
+        suites=['test_gate_decoupling.SourceControls', 'test_gate_decoupling.WorkerControls',
+                'test_gate_decoupling.GraphControls'],
         cases=['ordered margins/direction/tie/source mutation',
                'missing prefix/binding/nonfinite/inverted range/alias',
                'inner endpoint unsoundness counterexample',
@@ -45,6 +47,8 @@ def freeze(path):
                'ten classes/nonzero constants/tie/output-level object',
                'midpoint-positive original-negative control',
                'V2 retains inner products/V3 affine-ReLU/no nonlinear suffix',
+               'same endpoint deadline/unknown continuation/partial interruption',
+               'artifact cap/exclusive publication/late receipt/source/scope mutations',
                'same fixed safe L2 graph:V2_LO,V2_HI,V3 through existing GenBaB API'],
         acceptance='all declared semantic controls and three analytic-positive API calls pass; not performance or real proof'))
 
@@ -61,6 +65,7 @@ def worker(folder):
     torch.set_num_threads(1); torch.set_num_interop_threads(1)
     torch.set_default_dtype(torch.float64)
     os.environ['GATE_CONTROL_DEADLINE'] = str(deadline)
+    os.environ['GATE_CONTROL_ROOT'] = str(folder)
     output = io.StringIO()
     suite = unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromName(name) for name in spec['suites'])
     result = unittest.TextTestRunner(stream=output, verbosity=2, failfast=True).run(suite)

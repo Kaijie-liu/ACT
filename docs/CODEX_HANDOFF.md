@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## Local gate diagnostic worker prepared 2026-10-25
+
+Real increment3 since prior catalog snapshot;1b9/120=1numericalPOSITIVE+8TIMEOUT,PID1050832 live;stage4 real calls0.
+[Worker](../scripts/gate_decoupling_worker.py) uses existing owned supervisor/API;range reconstruction/all endpoints/replay/reception share300s,phase prefixes retained.
+Parent rechecks source/domain/property/endpoints/local scope;V3 cannot become original-positive,partialV2 cannot close a history;not numerical-bound proof.
+[R2 control freeze](gate_decoupling_control_20261025_r2.json) binds17sources/14methods/3syntheticAPIcalls;R1 preserved unexecuted,no control repeated.
+Static AST/hash/declared-case audit passes;native controls NOT RUN,not a completed integration/performance stage;no new model/solver load.
+Next finish1b,run frozen controls under fresh admission,complete catalog/call-order and budgeted diagnostic queue;no concurrent numerical diagnosis.G1–G6OPEN.
+
 ## Hard-core source catalog read-only audit 2026-10-25
 
 Real increment2;1b6/120 at11:30:59=1numericalPOSITIVE+5TIMEOUT,PID1050832 live;no new stage4 numerical call.

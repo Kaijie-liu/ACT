@@ -61,10 +61,14 @@ does not by itself distinguish relaxation weakness from search/guard/budget.
 
 ## Controls prepared; no numerical execution yet
 
-The [R1 control freeze](gate_decoupling_control_20261025_r1.json) binds15 source
-files,10 semantic/receipt test methods and exactly3 external API calls. Static
-parsing and source-hash checks pass; none of those10 tests or3 API calls has run.
-This is a prepared prototype, not a passed native-integration stage.
+The [R2 control freeze](gate_decoupling_control_20261025_r2.json) binds17 source
+files,14 semantic/receipt test methods and exactly3 external API calls. It adds
+the local worker's shared endpoint deadline, partial interruption, artifact
+budget and reception controls. R1 is preserved unexecuted, superseded before
+any control run. Static parsing and source-hash checks pass; none of the14 tests
+or3 API calls has run. This is a prepared prototype, not a passed integration
+stage. R2 SHA256 is
+`5ad5608653daf62a3c1605dec35f2f60f15d59ca48d521af7575b1d8876ecb3c`.
 
 The control batch uses the existing owned-session supervisor, existing isolated
 GenBaB CPU environment, unchanged engine configuration and one shared300s/128MiB
@@ -83,6 +87,23 @@ defects may be repaired under the existing user policy; no changed acceptance
 threshold or reset of the cumulative budget. Native controls wait until1b ends,
 so this diagnostic preparation does not add a competing numerical process.
 Static parsing/review is not recorded as native-control passage.
+
+The [local worker](../scripts/gate_decoupling_worker.py) uses the existing
+owned-session supervisor and numerical API. Its parent charges a single300s
+call, with the existing6s worker/cleanup/reception reserve; V2_LO and V2_HI do
+not receive separate budgets. Loading, original-prefix reconstruction,
+construction, solver and original-model replay have append-only ENTER/RETURN
+records. An unfinished range query cannot be counted as a V3 expert-solver
+timeout. Ordinary UNKNOWN still permits the second endpoint within the same
+remaining deadline; interrupted calls retain partial records without closure.
+The parent rechecks the catalog, property roster, gate domain, endpoint files
+and local aggregate, without loading the network. This checks identity/coverage,
+not CROWN's numerical arithmetic. A frozen-midpoint positive remains diagnostic.
+Candidates from extended V2 inputs are projected to the original input and
+replayed on the original dynamic model; independent gate values never stand in
+for an input witness. Final real catalog/call-table freeze, worker controls and
+batch execution remain pending. There is no real-call launch CLI or new OS
+supervisor in this prototype, and the live1b immutable copy is unchanged.
 
 ## Real diagnostic preparation
 

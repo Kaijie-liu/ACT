@@ -5,6 +5,7 @@ from fractions import Fraction
 import importlib.util
 import math
 import operator
+import os
 from pathlib import Path
 import sys
 import time
@@ -250,6 +251,81 @@ class GraphControls(unittest.TestCase):
             expected_source_id=SOURCE, deadline=deadline)['original_history_closed'])
         self.assertFalse(G.receive_diagnosis(d, 'V3', receipts[2:], property_count=1,
             expected_source_id=SOURCE, deadline=deadline)['original_history_closed'])
+
+
+class WorkerControls(unittest.TestCase):
+    """No numerical calls: exercise the real endpoint orchestration/receivers."""
+    def setUp(self):
+        import gate_decoupling_worker as worker
+        self.worker = worker
+        self.folder = Path(os.environ['GATE_CONTROL_ROOT'])/self._testMethodName
+        self.folder.mkdir()
+        self.deadline = time.monotonic()+10
+        self.journal = worker.Journal(self.folder, self.deadline, 1024*1024)
+
+    def execute(self, statuses, *, fail_second=False):
+        d = domain(((0, 1),)); calls = []
+        def prepare(variant):
+            return variant, dict(lower='lo', upper='hi')
+        def verify(graph, lo, hi, count, deadline):
+            calls.append((graph, deadline))
+            self.assertEqual((lo, hi, count), ('lo', 'hi', 2))
+            if fail_second and len(calls) == 2:
+                raise TimeoutError('fixed second-endpoint interruption')
+            return receipt(d, graph, statuses[len(calls)-1])['outcome'], None
+        result = self.worker.endpoints(G, d, 'V2', 2, self.deadline,
+            prepare=prepare, verify=verify, replay=lambda *_: [], journal=self.journal)
+        self.assertEqual(calls, [('V2_LO', self.deadline), ('V2_HI', self.deadline)])
+        return result
+
+    def test_endpoints_one_deadline_and_ordinary_unknown_keeps_second(self):
+        result = self.execute(['unknown', 'verified'])
+        self.assertFalse(result['closed']); self.assertFalse(result['complete_MoE'])
+        self.assertTrue((self.folder/'V2_LO.json').is_file())
+        self.assertTrue((self.folder/'V2_HI.json').is_file())
+        phases = [self.worker.load(p) for p in sorted(self.folder.glob('phase_*.json'))]
+        self.assertEqual([p['phase'] for p in phases if p['state'] == 'ENTER'],
+            ['V2_LO:construct', 'V2_LO:solve', 'V2_LO:replay', 'V2_HI:construct', 'V2_HI:solve', 'V2_HI:replay'])
+
+    def test_interruption_retains_first_endpoint_without_aggregate(self):
+        with self.assertRaises(TimeoutError): self.execute(['verified'], fail_second=True)
+        self.assertTrue((self.folder/'V2_LO.json').is_file())
+        self.assertFalse((self.folder/'V2_HI.json').exists())
+        self.assertFalse((self.folder/'outcome.json').exists())
+        phase = self.worker.load(sorted(self.folder.glob('phase_*.json'))[-1])
+        self.assertEqual((phase['phase'], phase['state']), ('V2_HI:solve', 'ENTER'))
+
+    def test_journal_cap_expiry_and_exclusive_publication(self):
+        self.journal.put('retained.json', dict(value=1))
+        with self.assertRaises(FileExistsError): self.journal.put('retained.json', dict(value=2))
+        self.assertEqual(self.worker.load(self.folder/'retained.json'), dict(value=1))
+        tiny = self.worker.Journal(self.folder, self.deadline, 1)
+        with self.assertRaises(ValueError): tiny.put('over.json', dict(value=3))
+        expired = self.worker.Journal(self.folder, time.monotonic()-1, 1024)
+        with self.assertRaises(TimeoutError): expired.put('late.json', dict(value=4))
+        self.assertFalse((self.folder/'over.json').exists()); self.assertFalse((self.folder/'late.json').exists())
+
+    def test_receiver_source_and_counterfactual_scope(self):
+        w = self.worker
+        obj = dict(id='fixed', source_kind='output_mlp', history=[[0, 1]], properties=[{}, {}])
+        catalog = self.folder/'catalog.json'; w.save(catalog, dict(objects=[obj]))
+        spec = dict(catalog=dict(path=str(catalog), sha256=w.sha(catalog)), source_files={}, backend_identity='fixed-stub')
+        call = dict(object_id='fixed', variant='V3')
+        sid = w.digest(dict(object=obj, sources={}, backend='fixed-stub'))
+        d = G.domain_from_prefix_bounds(obj['history'], [3], prefix_records(obj['history']),
+            source_id=sid, expected_source_id=sid)
+        row = receipt(d, 'V3_MIDPOINT'); row['source_id'] = sid
+        w.save(self.folder/'V3_MIDPOINT.json', row)
+        row = w.load(self.folder/'V3_MIDPOINT.json')
+        w.save(self.folder/'domain.json', dict(source_id=sid, history=d.history, margins=d.margins,
+            intervals=d.intervals, domain_sha256=G.domain_digest(d)))
+        value = G.receive_diagnosis(d, 'V3', [row], property_count=2, expected_source_id=sid, deadline=self.deadline)
+        value.update(source_id=sid, domain_sha256=G.domain_digest(d), property_count=2, endpoints=[row])
+        w.check_received(self.folder, value, spec, call, self.deadline)
+        for fields in (dict(status='POSITIVE'), dict(original_history_closed=True),
+                       dict(source_id='b'*64), dict(property_count=1), dict(endpoints=[])):
+            with self.assertRaises(ValueError): w.check_received(self.folder, dict(value, **fields), spec, call, self.deadline)
+        with self.assertRaises(TimeoutError): w.check_received(self.folder, value, spec, call, time.monotonic()-1)
 
 
 if __name__ == '__main__':
