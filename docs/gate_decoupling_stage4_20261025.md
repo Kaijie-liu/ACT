@@ -7,6 +7,36 @@ allows the strong engine to close histories it previously did not close.
 The opposite outcome must remain visible. Real stage4 execution is now running;
 the pre-execution statements below remain historical records.
 
+## Completed single-layer B2 diagnostics
+
+All24 frozen B2 objects (19 distinct inputs) have both local calls completed:
+4 both closed,7 V3-only closed,13 neither closed,0 V2-only. None is omitted.
+
+| Variant | Local positive / diagnostic closed | UNKNOWN | TIMEOUT | Sum of terminal costs | Median local cost |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| V2 independent gate + final endpoints | 4 | 4 | 16 | 6165.293s | 294.203s |
+| V3 frozen-gate counterfactual | 11 | 9 | 4 | 4394.150s | 293.281s |
+
+The48 receipt costs sum to10559.443s. The contiguous interval from the first
+B2 start to the first1b start is10567.941s, including inter-call bookkeeping;
+neither includes other cohorts or later offline review. V3 changes the function,
+so its lower cost is not a same-guarantee speedup. All24 domain pairs match.
+The [record](gate_decoupling_stage4_records_20261025.json),
+`completed_b2_analysis`, binds48 ledgers and their checked artifact hashes,
+per-object outcomes, endpoint statuses and source provenance. This is a record
+review, not an independent numerical proof of the bounds.
+
+Three V2 positives concern old returned-unproved histories; seed1/4212 concerns
+an old unvisited pair. The historical guard-graph/engine confounds below remain,
+so these are not four isolated gate-only wins over matched failed queries.
+One of the7 V3-only objects has a known original same-history violation, as
+documented below. Unknown bounds and absent endpoint returns do not establish
+relaxation optimality or a unique ReLU cause. Range reconstruction is small
+here (48 calls: median0.125s,maximum0.751s). Yet gate width0.00312 does not close,
+while positives have widths0.02813 through0.37852: no narrow-gate success rule
+is inferred from these observations. The complete stage4 queue, full193-object
+denominator and primary decision remain pending;1b continues without new queries.
+
 ## Counterfactual closure with a known original violation
 
 B2 seed1/input4356, selected pair `(2,3)`, now gives V3

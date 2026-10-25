@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## All24 single-layer gate diagnostics reviewed 2026-10-26
+
+Real increment16 since archived148:164 local terminals,165thstarted;PID425771 live,immutable9bf3eacd6 unchanged;live ledger supersedes snapshot.
+[B2 results](gate_decoupling_stage4_20261025.md):48calls/24objects/19inputs=4both closed,7V3-only,13neither;V2=4positive/4unknown/16timeout,V3=11closed/9unknown/4timeout.
+All24domains match;48ledgers/artifacts/source/property coverage independently record-checked,not numerical reproof;frozen prefix auditor passes/PENDING.
+Receipt costs10559.443s;contiguous B2 section10567.941s;V3 is a changed function,not same-guarantee speedup.
+Three V2 positives were returned-unproved histories,one unvisited;old engine/guard confounds and known same-history negative remain explicit.No gate-width success threshold.
+1b now runs;first available R2seed0/1262 history closes locally,not full-request success.Full193denominator/final gate unchanged,G1–G6OPEN.
+Next continue original queue and final audit/attribution;no additional mechanism,resource change or rerun.
+
 ## Frozen-gate closure does not establish original safety 2026-10-26
 
 Real increment28 since archived120:148 local terminals,149thstarted;PID425771 live,immutable9bf3eacd6 unchanged;live ledger supersedes snapshot.

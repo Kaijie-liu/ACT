@@ -1571,5 +1571,1052 @@
     },
     "offline_review_seconds": 0.047008875757455826,
     "recorded_at": "2026-10-26T00:33:49.030346+11:00"
+  },
+  "completed_b2_analysis": {
+    "recorded_at": "2026-10-26T02:57:03.449133+11:00",
+    "scope": "All 24 frozen B2 objects / 48 local diagnostics, calls110..157; numerical-policy history diagnostics, not full requests or an independent comparison. Overall stage4 remains pending.",
+    "distinct_inputs": 19,
+    "status_counts": {
+      "V3:UNKNOWN": 9,
+      "V2:TIMEOUT": 16,
+      "V3:DIAGNOSTIC_CLOSED": 11,
+      "V2:POSITIVE": 4,
+      "V2:UNKNOWN": 4,
+      "V3:TIMEOUT": 4
+    },
+    "paired_counts": {
+      "neither_closed": 13,
+      "both_closed": 4,
+      "V3_only": 7
+    },
+    "by_model": {
+      "seed0": {
+        "neither_closed": 4,
+        "both_closed": 1,
+        "V3_only": 1
+      },
+      "seed2": {
+        "neither_closed": 7
+      },
+      "seed1": {
+        "both_closed": 3,
+        "V3_only": 6,
+        "neither_closed": 2
+      }
+    },
+    "source_origins": {
+      "SAVED_FIRST_RETURNED_UNPROVED": 21,
+      "SAVED_FIRST_UNVISITED_PAIR": 1,
+      "SAVED_FIRST_STARTED_NO_RETURN": 2
+    },
+    "positive_source_origins": {
+      "SAVED_FIRST_RETURNED_UNPROVED": 3,
+      "SAVED_FIRST_UNVISITED_PAIR": 1
+    },
+    "matching_domain_pairs": 24,
+    "property_rows_per_history": 9,
+    "costs": {
+      "V3": {
+        "terminal_seconds_sum": 4394.149936726317,
+        "median_seconds": 293.28144977614284,
+        "mean_seconds": 183.08958069692986
+      },
+      "V2": {
+        "terminal_seconds_sum": 6165.293391551822,
+        "median_seconds": 294.20263039227575,
+        "mean_seconds": 256.8872246479926
+      }
+    },
+    "sum_all_terminal_seconds": 10559.44332827814,
+    "contiguous_section_wall_seconds_to_next_start": 10567.941479846835,
+    "cost_scope": "Terminal receipts include local loading/ranges/construction/solve/reception/cleanup. Section interval uses started_110 to started_158 and includes inter-call bookkeeping; excludes other cohorts and offline review, not final whole-stage accounting.",
+    "gate_range_seconds": {
+      "n": 48,
+      "median": 0.12495141942054033,
+      "maximum": 0.7510681170970201
+    },
+    "gate_width_by_V2_status": {
+      "TIMEOUT": {
+        "n": 16,
+        "min": 0.0031218923484396255,
+        "median": 0.14057924419849413,
+        "max": 0.27958070380995975
+      },
+      "POSITIVE": {
+        "n": 4,
+        "min": 0.028129993407508214,
+        "median": 0.28442844738332584,
+        "max": 0.378521483356621
+      },
+      "UNKNOWN": {
+        "n": 4,
+        "min": 0.0831691634915801,
+        "median": 0.18084883055250886,
+        "max": 0.3344009082826995
+      }
+    },
+    "V2_endpoint_patterns": [
+      {
+        "terminal": "TIMEOUT",
+        "LO": "unknown",
+        "HI": "unknown",
+        "count": 7
+      },
+      {
+        "terminal": "POSITIVE",
+        "LO": "verified",
+        "HI": "verified",
+        "count": 4
+      },
+      {
+        "terminal": "UNKNOWN",
+        "LO": "verified",
+        "HI": "unknown",
+        "count": 3
+      },
+      {
+        "terminal": "TIMEOUT",
+        "LO": "unknown",
+        "HI": "MISSING",
+        "count": 4
+      },
+      {
+        "terminal": "UNKNOWN",
+        "LO": "unknown",
+        "HI": "verified",
+        "count": 1
+      },
+      {
+        "terminal": "TIMEOUT",
+        "LO": "MISSING",
+        "HI": "MISSING",
+        "count": 3
+      },
+      {
+        "terminal": "TIMEOUT",
+        "LO": "verified",
+        "HI": "unknown",
+        "count": 2
+      }
+    ],
+    "rows": [
+      {
+        "object": "B2:seed0:4140",
+        "history": [
+          [
+            3,
+            6
+          ]
+        ],
+        "origin": "SAVED_FIRST_RETURNED_UNPROVED",
+        "V2": [
+          "TIMEOUT",
+          294.2051044944674
+        ],
+        "V3": [
+          "UNKNOWN",
+          293.20493674091995
+        ],
+        "gate": [
+          0.9089654470224304,
+          0.9656877589570603
+        ],
+        "V2_endpoints": {
+          "V2_LO.json": {
+            "status": "unknown",
+            "stage": "nonlinear_bab",
+            "seconds": 285.71779854409397
+          },
+          "V2_HI.json": {
+            "status": "unknown",
+            "stage": "nonlinear_bab",
+            "seconds": 1.2276649754494429
+          }
+        },
+        "known_witness": false
+      },
+      {
+        "object": "B2:seed2:4141",
+        "history": [
+          [
+            3,
+            7
+          ]
+        ],
+        "origin": "SAVED_FIRST_RETURNED_UNPROVED",
+        "V2": [
+          "TIMEOUT",
+          294.18399623036385
+        ],
+        "V3": [
+          "UNKNOWN",
+          293.3579628113657
+        ],
+        "gate": [
+          0.14267359618800335,
+          0.3194163413085475
+        ],
+        "V2_endpoints": {
+          "V2_LO.json": {
+            "status": "unknown",
+            "stage": "nonlinear_bab",
+            "seconds": 285.02449014782906
+          },
+          "V2_HI.json": {
+            "status": "unknown",
+            "stage": "nonlinear_bab",
+            "seconds": 1.1417690720409155
+          }
+        },
+        "known_witness": false
+      },
+      {
+        "object": "B2:seed1:4150",
+        "history": [
+          [
+            6,
+            7
+          ]
+        ],
+        "origin": "SAVED_FIRST_RETURNED_UNPROVED",
+        "V2": [
+          "POSITIVE",
+          77.16243693046272
+        ],
+        "V3": [
+          "DIAGNOSTIC_CLOSED",
+          17.80876849964261
+        ],
+        "gate": [
+          0.381922563527755,
+          0.7223526634133536
+        ],
+        "V2_endpoints": {
+          "V2_LO.json": {
+            "status": "verified",
+            "stage": "nonlinear_bab",
+            "seconds": 62.145761858671904
+          },
+          "V2_HI.json": {
+            "status": "verified",
+            "stage": "nonlinear_bab",
+            "seconds": 6.503023458644748
+          }
+        },
+        "known_witness": false
+      },
+      {
+        "object": "B2:seed2:4150",
+        "history": [
+          [
+            1,
+            6
+          ]
+        ],
+        "origin": "SAVED_FIRST_RETURNED_UNPROVED",
+        "V2": [
+          "UNKNOWN",
+          293.7989246509969
+        ],
+        "V3": [
+          "UNKNOWN",
+          293.71215846948326
+        ],
+        "gate": [
+          0.6710861215596159,
+          0.754255285051196
+        ],
+        "V2_endpoints": {
+          "V2_LO.json": {
+            "status": "verified",
+            "stage": "nonlinear_bab",
+            "seconds": 98.37843413464725
+          },
+          "V2_HI.json": {
+            "status": "unknown",
+            "stage": "nonlinear_bab",
+            "seconds": 187.01278379745781
+          }
+        },
+        "known_witness": false
+      },
+      {
+        "object": "B2:seed0:4195",
+        "history": [
+          [
+            0,
+            7
+          ]
+        ],
+        "origin": "SAVED_FIRST_RETURNED_UNPROVED",
+        "V2": [
+          "POSITIVE",
+          170.67657022364438
+        ],
+        "V3": [
+          "DIAGNOSTIC_CLOSED",
+          57.24642132781446
+        ],
+        "gate": [
+          0.5537792265668627,
+          0.7822060214479158
+        ],
+        "V2_endpoints": {
+          "V2_LO.json": {
+            "status": "verified",
+            "stage": "nonlinear_bab",
+            "seconds": 38.740916607901454
+          },
+          "V2_HI.json": {
+            "status": "verified",
+            "stage": "nonlinear_bab",
+            "seconds": 124.2279821690172
+          }
+        },
+        "known_witness": false
+      },
+      {
+        "object": "B2:seed1:4195",
+        "history": [
+          [
+            1,
+            5
+          ]
+        ],
+        "origin": "SAVED_FIRST_RETURNED_UNPROVED",
+        "V2": [
+          "TIMEOUT",
+          294.23780746012926
+        ],
+        "V3": [
+          "DIAGNOSTIC_CLOSED",
+          120.0590477026999
+        ],
+        "gate": [
+          0.6289686910023473,
+          0.8040637149994379
+        ],
+        "V2_endpoints": {
+          "V2_LO.json": {
+            "status": "unknown",
+            "stage": "nonlinear_bab",
+            "seconds": 285.55566559545696
+          },
+          "V2_HI.json": {
+            "status": "unknown",
+            "stage": "nonlinear_bab",
+            "seconds": 1.1184679362922907
+          }
+        },
+        "known_witness": false
+      },
+      {
+        "object": "B2:seed1:4212",
+        "history": [
+          [
+            2,
+            3
+          ]
+        ],
+        "origin": "SAVED_FIRST_UNVISITED_PAIR",
+        "V2": [
+          "POSITIVE",
+          8.899153616279364
+        ],
+        "V3": [
+          "DIAGNOSTIC_CLOSED",
+          7.974101224914193
+        ],
+        "gate": [
+          0.9599451951492023,
+          0.9880751885567105
+        ],
+        "V2_endpoints": {
+          "V2_LO.json": {
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 0.8014791384339333
+          },
+          "V2_HI.json": {
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 0.5739976037293673
+          }
+        },
+        "known_witness": false
+      },
+      {
+        "object": "B2:seed0:4237",
+        "history": [
+          [
+            5,
+            6
+          ]
+        ],
+        "origin": "SAVED_FIRST_STARTED_NO_RETURN",
+        "V2": [
+          "TIMEOUT",
+          294.2296054325998
+        ],
+        "V3": [
+          "UNKNOWN",
+          293.8679718077183
+        ],
+        "gate": [
+          0.4799588979265394,
+          0.5210294446632656
+        ],
+        "V2_endpoints": {
+          "V2_LO.json": {
+            "status": "unknown",
+            "stage": "nonlinear_bab",
+            "seconds": 286.4169274866581
+          },
+          "V2_HI.json": {
+            "status": "MISSING",
+            "stage": null,
+            "seconds": null
+          }
+        },
+        "known_witness": true
+      },
+      {
+        "object": "B2:seed1:4257",
+        "history": [
+          [
+            6,
+            7
+          ]
+        ],
+        "origin": "SAVED_FIRST_RETURNED_UNPROVED",
+        "V2": [
+          "UNKNOWN",
+          293.9680952820927
+        ],
+        "V3": [
+          "DIAGNOSTIC_CLOSED",
+          21.764938632026315
+        ],
+        "gate": [
+          0.3977296877343568,
+          0.7321305960170563
+        ],
+        "V2_endpoints": {
+          "V2_LO.json": {
+            "status": "unknown",
+            "stage": "nonlinear_bab",
+            "seconds": 286.655026961118
+          },
+          "V2_HI.json": {
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 0.46043348498642445
+          }
+        },
+        "known_witness": false
+      },
+      {
+        "object": "B2:seed1:4275",
+        "history": [
+          [
+            4,
+            6
+          ]
+        ],
+        "origin": "SAVED_FIRST_RETURNED_UNPROVED",
+        "V2": [
+          "TIMEOUT",
+          294.3027956597507
+        ],
+        "V3": [
+          "UNKNOWN",
+          293.889859335497
+        ],
+        "gate": [
+          0.03302057201931944,
+          0.0570914164502996
+        ],
+        "V2_endpoints": {
+          "V2_LO.json": {
+            "status": "unknown",
+            "stage": "nonlinear_bab",
+            "seconds": 286.978406842798
+          },
+          "V2_HI.json": {
+            "status": "MISSING",
+            "stage": null,
+            "seconds": null
+          }
+        },
+        "known_witness": false
+      },
+      {
+        "object": "B2:seed2:4278",
+        "history": [
+          [
+            2,
+            5
+          ]
+        ],
+        "origin": "SAVED_FIRST_RETURNED_UNPROVED",
+        "V2": [
+          "TIMEOUT",
+          294.2604473493993
+        ],
+        "V3": [
+          "UNKNOWN",
+          293.6197049189359
+        ],
+        "gate": [
+          0.5017275950740526,
+          0.5048494874224922
+        ],
+        "V2_endpoints": {
+          "V2_LO.json": {
+            "status": "unknown",
+            "stage": "nonlinear_bab",
+            "seconds": 285.48386962898076
+          },
+          "V2_HI.json": {
+            "status": "unknown",
+            "stage": "nonlinear_bab",
+            "seconds": 1.4802499897778034
+          }
+        },
+        "known_witness": false
+      },
+      {
+        "object": "B2:seed1:4301",
+        "history": [
+          [
+            4,
+            7
+          ]
+        ],
+        "origin": "SAVED_FIRST_RETURNED_UNPROVED",
+        "V2": [
+          "TIMEOUT",
+          294.8143184427172
+        ],
+        "V3": [
+          "TIMEOUT",
+          294.28676237538457
+        ],
+        "gate": [
+          0.16619024349282804,
+          0.2695528722049859
+        ],
+        "V2_endpoints": {
+          "V2_LO.json": {
+            "status": "MISSING",
+            "stage": null,
+            "seconds": null
+          },
+          "V2_HI.json": {
+            "status": "MISSING",
+            "stage": null,
+            "seconds": null
+          }
+        },
+        "known_witness": false
+      },
+      {
+        "object": "B2:seed2:4301",
+        "history": [
+          [
+            0,
+            6
+          ]
+        ],
+        "origin": "SAVED_FIRST_RETURNED_UNPROVED",
+        "V2": [
+          "TIMEOUT",
+          294.52631221339107
+        ],
+        "V3": [
+          "TIMEOUT",
+          294.3784557264298
+        ],
+        "gate": [
+          0.21150355496815598,
+          0.3472015728835826
+        ],
+        "V2_endpoints": {
+          "V2_LO.json": {
+            "status": "MISSING",
+            "stage": null,
+            "seconds": null
+          },
+          "V2_HI.json": {
+            "status": "MISSING",
+            "stage": null,
+            "seconds": null
+          }
+        },
+        "known_witness": false
+      },
+      {
+        "object": "B2:seed1:4322",
+        "history": [
+          [
+            1,
+            5
+          ]
+        ],
+        "origin": "SAVED_FIRST_RETURNED_UNPROVED",
+        "V2": [
+          "TIMEOUT",
+          294.90833622030914
+        ],
+        "V3": [
+          "DIAGNOSTIC_CLOSED",
+          36.6416692994535
+        ],
+        "gate": [
+          0.3915538933289033,
+          0.671134597138863
+        ],
+        "V2_endpoints": {
+          "V2_LO.json": {
+            "status": "MISSING",
+            "stage": null,
+            "seconds": null
+          },
+          "V2_HI.json": {
+            "status": "MISSING",
+            "stage": null,
+            "seconds": null
+          }
+        },
+        "known_witness": false
+      },
+      {
+        "object": "B2:seed2:4330",
+        "history": [
+          [
+            0,
+            2
+          ]
+        ],
+        "origin": "SAVED_FIRST_RETURNED_UNPROVED",
+        "V2": [
+          "TIMEOUT",
+          294.5661443211138
+        ],
+        "V3": [
+          "TIMEOUT",
+          294.61375064216554
+        ],
+        "gate": [
+          0.5725998237073071,
+          0.6267322538204407
+        ],
+        "V2_endpoints": {
+          "V2_LO.json": {
+            "status": "unknown",
+            "stage": "nonlinear_bab",
+            "seconds": 280.76181118004024
+          },
+          "V2_HI.json": {
+            "status": "MISSING",
+            "stage": null,
+            "seconds": null
+          }
+        },
+        "known_witness": false
+      },
+      {
+        "object": "B2:seed0:4341",
+        "history": [
+          [
+            4,
+            6
+          ]
+        ],
+        "origin": "SAVED_FIRST_RETURNED_UNPROVED",
+        "V2": [
+          "TIMEOUT",
+          294.19368969649076
+        ],
+        "V3": [
+          "UNKNOWN",
+          294.0808510873467
+        ],
+        "gate": [
+          0.44785882898456697,
+          0.7031659567908108
+        ],
+        "V2_endpoints": {
+          "V2_LO.json": {
+            "status": "unknown",
+            "stage": "nonlinear_bab",
+            "seconds": 277.49256959185004
+          },
+          "V2_HI.json": {
+            "status": "unknown",
+            "stage": "nonlinear_bab",
+            "seconds": 1.0267635751515627
+          }
+        },
+        "known_witness": true
+      },
+      {
+        "object": "B2:seed1:4341",
+        "history": [
+          [
+            0,
+            6
+          ]
+        ],
+        "origin": "SAVED_FIRST_RETURNED_UNPROVED",
+        "V2": [
+          "POSITIVE",
+          24.190041637048125
+        ],
+        "V3": [
+          "DIAGNOSTIC_CLOSED",
+          6.122252872213721
+        ],
+        "gate": [
+          0.2556908523772696,
+          0.6342123357338906
+        ],
+        "V2_endpoints": {
+          "V2_LO.json": {
+            "status": "verified",
+            "stage": "nonlinear_bab",
+            "seconds": 17.992615344002843
+          },
+          "V2_HI.json": {
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 0.4426418971270323
+          }
+        },
+        "known_witness": false
+      },
+      {
+        "object": "B2:seed1:4349",
+        "history": [
+          [
+            2,
+            3
+          ]
+        ],
+        "origin": "SAVED_FIRST_RETURNED_UNPROVED",
+        "V2": [
+          "UNKNOWN",
+          293.57619416713715
+        ],
+        "V3": [
+          "DIAGNOSTIC_CLOSED",
+          29.54823822528124
+        ],
+        "gate": [
+          0.19169731006423066,
+          0.3929928927371745
+        ],
+        "V2_endpoints": {
+          "V2_LO.json": {
+            "status": "verified",
+            "stage": "nonlinear_bab",
+            "seconds": 7.480956571176648
+          },
+          "V2_HI.json": {
+            "status": "unknown",
+            "stage": "nonlinear_bab",
+            "seconds": 279.44618010520935
+          }
+        },
+        "known_witness": false
+      },
+      {
+        "object": "B2:seed1:4356",
+        "history": [
+          [
+            2,
+            3
+          ]
+        ],
+        "origin": "SAVED_FIRST_RETURNED_UNPROVED",
+        "V2": [
+          "TIMEOUT",
+          294.16835070215166
+        ],
+        "V3": [
+          "DIAGNOSTIC_CLOSED",
+          8.223722085356712
+        ],
+        "gate": [
+          0.5072056503418291,
+          0.7395663230712833
+        ],
+        "V2_endpoints": {
+          "V2_LO.json": {
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 0.5330927334725857
+          },
+          "V2_HI.json": {
+            "status": "unknown",
+            "stage": "nonlinear_bab",
+            "seconds": 286.64842556230724
+          }
+        },
+        "known_witness": true
+      },
+      {
+        "object": "B2:seed2:4374",
+        "history": [
+          [
+            0,
+            3
+          ]
+        ],
+        "origin": "SAVED_FIRST_STARTED_NO_RETURN",
+        "V2": [
+          "TIMEOUT",
+          294.2679618168622
+        ],
+        "V3": [
+          "UNKNOWN",
+          293.5226110238582
+        ],
+        "gate": [
+          0.2560839374538268,
+          0.4791060793734606
+        ],
+        "V2_endpoints": {
+          "V2_LO.json": {
+            "status": "unknown",
+            "stage": "nonlinear_bab",
+            "seconds": 287.1315951682627
+          },
+          "V2_HI.json": {
+            "status": "unknown",
+            "stage": "nonlinear_bab",
+            "seconds": 1.251762019470334
+          }
+        },
+        "known_witness": false
+      },
+      {
+        "object": "B2:seed0:4382",
+        "history": [
+          [
+            5,
+            7
+          ]
+        ],
+        "origin": "SAVED_FIRST_RETURNED_UNPROVED",
+        "V2": [
+          "TIMEOUT",
+          294.2001562900841
+        ],
+        "V3": [
+          "TIMEOUT",
+          294.2018296290189
+        ],
+        "gate": [
+          0.130857715073836,
+          0.20189320370367142
+        ],
+        "V2_endpoints": {
+          "V2_LO.json": {
+            "status": "unknown",
+            "stage": "nonlinear_bab",
+            "seconds": 286.66331881284714
+          },
+          "V2_HI.json": {
+            "status": "unknown",
+            "stage": "nonlinear_bab",
+            "seconds": 1.403951968997717
+          }
+        },
+        "known_witness": false
+      },
+      {
+        "object": "B2:seed1:4384",
+        "history": [
+          [
+            5,
+            7
+          ]
+        ],
+        "origin": "SAVED_FIRST_RETURNED_UNPROVED",
+        "V2": [
+          "UNKNOWN",
+          293.42691441625357
+        ],
+        "V3": [
+          "DIAGNOSTIC_CLOSED",
+          244.966883238405
+        ],
+        "gate": [
+          0.19655388706928437,
+          0.3569559655013582
+        ],
+        "V2_endpoints": {
+          "V2_LO.json": {
+            "status": "verified",
+            "stage": "nonlinear_bab",
+            "seconds": 30.041969133540988
+          },
+          "V2_HI.json": {
+            "status": "unknown",
+            "stage": "nonlinear_bab",
+            "seconds": 255.8181335069239
+          }
+        },
+        "known_witness": false
+      },
+      {
+        "object": "B2:seed2:4384",
+        "history": [
+          [
+            1,
+            6
+          ]
+        ],
+        "origin": "SAVED_FIRST_RETURNED_UNPROVED",
+        "V2": [
+          "TIMEOUT",
+          294.2085043210536
+        ],
+        "V3": [
+          "UNKNOWN",
+          293.7373547628522
+        ],
+        "gate": [
+          0.4958585203614776,
+          0.7160302192008345
+        ],
+        "V2_endpoints": {
+          "V2_LO.json": {
+            "status": "verified",
+            "stage": "nonlinear_bab",
+            "seconds": 168.83357286825776
+          },
+          "V2_HI.json": {
+            "status": "unknown",
+            "stage": "nonlinear_bab",
+            "seconds": 119.2057354003191
+          }
+        },
+        "known_witness": false
+      },
+      {
+        "object": "B2:seed0:4385",
+        "history": [
+          [
+            0,
+            3
+          ]
+        ],
+        "origin": "SAVED_FIRST_RETURNED_UNPROVED",
+        "V2": [
+          "TIMEOUT",
+          294.3215299770236
+        ],
+        "V3": [
+          "DIAGNOSTIC_CLOSED",
+          23.319684287533164
+        ],
+        "gate": [
+          0.3881760868545171,
+          0.5336365573360787
+        ],
+        "V2_endpoints": {
+          "V2_LO.json": {
+            "status": "unknown",
+            "stage": "nonlinear_bab",
+            "seconds": 287.3686383329332
+          },
+          "V2_HI.json": {
+            "status": "MISSING",
+            "stage": null,
+            "seconds": null
+          }
+        },
+        "known_witness": false
+      }
+    ],
+    "binding_review": {
+      "root": "/data1/Kane/MOE/results/gate_decoupling_stage4_20261025_r1",
+      "ledger_sha256": {
+        "ledger_110.json": "14fd2454e5003727bc7759980698ba66040a859560b40cc56c85bb0fe54635dd",
+        "ledger_111.json": "13c3f65ea84e9ebc85d8f0402e645af1b13940e68649cd61ecd2a56981074fc5",
+        "ledger_112.json": "89803e32e982eb09cd5e6ec9b4a88a0517b98b42fe1a6b87c7250a7182f38e76",
+        "ledger_113.json": "d1d39bdc8d5b17aaa324fe77cbb2687cbf8450de366a213ef30537f377958dc5",
+        "ledger_114.json": "b2c5461fcfc6b00cbd91b0afcf28c598f003aecfaa0fe75530463b2fae84b576",
+        "ledger_115.json": "f34953539ada1936c8743cc9a0c7eb9c93c9fba6a431ea7dcfe82ee8b11acf4b",
+        "ledger_116.json": "2e6ca4567662e6975ef608f0a86d23678ad9da8985e7ecf1df9b84c5ec0f4487",
+        "ledger_117.json": "edc9e4f33b28aec5182977fe3fd11ea94530bf163f6d206d5ed29ceda048afad",
+        "ledger_118.json": "6c40a5c831a49568d61ea0adfa40788cb24878c771228139a96fa17528b3c44f",
+        "ledger_119.json": "e71954f2f242c260c3f41f64bf4c63663b33e2b91ec83d55e45eeddd1a6b4029",
+        "ledger_120.json": "9268275dc9bd1a655a13cb87094abd9030b60090d23267d0965b263d56aa8daa",
+        "ledger_121.json": "6bd83ec4dd59e0d500e6c6eeb4d967a58d81b2b02f73bb68c56cb94ed3846427",
+        "ledger_122.json": "c4f6ef85f3b48695d66f4f5157eb38865b55ad348106be722ff7945eb05aaf44",
+        "ledger_123.json": "aec7e14835673cbf3450ed0a1fd3e5dff6bb928d2e795f4912859ca7ade89fd6",
+        "ledger_124.json": "ecad65f635c023b6f860c5ac7a075b398786896bf8e15e4eedc7532e98d52725",
+        "ledger_125.json": "08ba353cec7248e1c1a5b89973594d015bdc9b1b26399916e774ab9515c20154",
+        "ledger_126.json": "e6823a62d29b1d306bfe0104f95b013f59a7e0e6359843327b4847e610a0a878",
+        "ledger_127.json": "f71cc3333da030d7de0958d417598d9e726c82274180fe0c1714ac0a47cf2ed6",
+        "ledger_128.json": "ae1ff1dbb1c499c13f82259e3169c25888dd1f6a7713b23d366bccf770cdcd2d",
+        "ledger_129.json": "f977fd824f5b9b9ca9cacb2eab51c079df5f2a0a58f8266e4c8df048579fa10e",
+        "ledger_130.json": "20139f916931fc7000e1f317d30f0bbc12f4dcbafd9b076aedfb59d442ae2ef8",
+        "ledger_131.json": "c7912124ecaef7983b0ddb8dafe0d23964b9325420402bff4ba93c3b203d398a",
+        "ledger_132.json": "80029ada22c1427725fc0ca8e11978829824eaae1495f64517b847492ad7ab7d",
+        "ledger_133.json": "2e8945f5ee231e21bcbc5241bc5ed500d1d9adfcab6a814149e5b0ca168298dc",
+        "ledger_134.json": "f58ed04ffe0ed8531ee2e1e50f7443531ef20efef623c13c5904655daff81084",
+        "ledger_135.json": "000e000b1a73db504838dc5bcdb7553681ef054e9d5617f73b353ce227d7f895",
+        "ledger_136.json": "fe35b0943972c0771342e19484b2e0da16b3ab2e98bb81d16ca2e18ab05a5a09",
+        "ledger_137.json": "8272eab2f3748cc5b3d633628cd2cb2378ec187dacd423f4aa3154e83431e998",
+        "ledger_138.json": "0323c87eca334d3dc4741ef64d541236c42eb873b0ffb34ab765ba0b431e91f5",
+        "ledger_139.json": "e57d58e6af23c54d3697ec20a4d43a2a4cc7965510de393a26d26441f68e86ad",
+        "ledger_140.json": "f149498e5c4eb76be735950caf94394d3478a71b1d5e67f2af3e0e0ff9f800d9",
+        "ledger_141.json": "9432d8f31f396c32a778ce71288cd03a3b53a433c313a4d8c0f38e3ec8ae0e80",
+        "ledger_142.json": "c49b9f13cf796f4f6ff53e1df4aa5b18dbebb9d7838321b79dd60cbce30410c6",
+        "ledger_143.json": "192c1df566ad0a0e40eaafed76973f67769bb3ef5b72901d23f45674fe4f5c0c",
+        "ledger_144.json": "2b0c4d850ff25a5e01c75e4fee0ee0c7f0a279cedeb6c2f810dcfb4b3f0b6cd1",
+        "ledger_145.json": "50adf4e795fe16c2e2ad26debd878bb801aa508cebc4eeafbd191cc0b4b322fd",
+        "ledger_146.json": "a3a16cd87c22497b144504406acb64f8c52fa634be0d5074e09734b9e2321d80",
+        "ledger_147.json": "4f9a85e0e50c83d3c790733380b992af1a3974bc87e0c0d3728960f51ae12886",
+        "ledger_148.json": "f69c7762f67e4d61f1d49c5b4da62a32e6c2217a336479c7d3b016b87b9673a2",
+        "ledger_149.json": "d000d3fd9f3ababf5275c03f88e3e5eacfe445917e87a3b926b284ec776f2a7c",
+        "ledger_150.json": "3792fc3c954ee24199b1ac34afd352fa63b67bf2c511747f43693131abe2548c",
+        "ledger_151.json": "0ba7d912066415c9a9e7a2ae66791a766183939064da142821469d53b3c8eca9",
+        "ledger_152.json": "9e1ee45263a1c6eb71deb21ce65c48160e605042a725e9790af152411c4272d3",
+        "ledger_153.json": "fcba2a6e3d71bfa2b7a8ffe3471736ebcbeb7bddcb803cf33b70962b816a1f24",
+        "ledger_154.json": "619577099d618449fc9f704e8bef79af93104b904cab3acb50cc281be4669ba0",
+        "ledger_155.json": "646c02e900579e90d63a7d645bb54881f1c286ba14391891f2fa48f7786210b2",
+        "ledger_156.json": "43c8a6650e275bbe00ff3138c11101758672e20c2da2a4be3693ddc315cb8d65",
+        "ledger_157.json": "81e13d85d8312020752e78204a8063263c012e1bc3e4635e3d5a30f4816a98d3"
+      },
+      "catalog_sha256": "5bfe432aac6010bdfc24dbb8837849dcf323b4af85f6b85a5f4d3ef46b55d7de",
+      "freeze_sha256": "58f30f30d22ae334631514cec4a7fdde2567e8b9bb37df61ca96504411c448d5",
+      "all_ledger_file_hashes_recomputed": true,
+      "source_objects_equal_catalog": true,
+      "positive_endpoint_and_property_coverage_checked": true,
+      "mathematical_bound_reproof": false
+    },
+    "frozen_prefix_auditor_observation": {
+      "status": "AUDITED_PREFIX",
+      "actual_local_calls": 160,
+      "attempted_local_calls": 161,
+      "primary_decision": "PENDING_REGISTERED_QUEUE",
+      "bytes": 9941699,
+      "elapsed_call_seconds": 22475.236350120977,
+      "offline_seconds": 1.2531979996711016
+    },
+    "limitations": [
+      "Three V2 positives were previously returned-unproved; one was an unvisited pair, not an individually failed query.",
+      "Historical B2 used a different guard-max graph and compatibility snapshot r1 versus current r3; this is not a gate-only matched comparison.",
+      "V3-only includes seed1/4356 with a known original same-history violation; frozen-gate closure does not imply original safety or loss caused by relaxation.",
+      "Small gate width does not guarantee closure; these descriptive groups do not establish a threshold or unique cause.",
+      "V3 changes the function, so its cost difference is not a same-guarantee speedup.",
+      "No old pruning/positive rows are spliced with local outcomes; full193 denominator/order and final decision remain unchanged."
+    ],
+    "offline_independent_record_review_seconds": 0.11752586625516415
   }
 }
