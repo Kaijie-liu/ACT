@@ -2,9 +2,10 @@
 
 ## Gate-decoupling real diagnostics running 2026-10-25
 
-Real increment4 local calls,2paired histories;1b120/120 archived.Stage4 PID425771 detached,nice10,oneCPUthread,8GiBAS;immutable9bf3eacd6.
-[Startup/early review](gate_decoupling_stage4_records_20261025.json) binds20sources/catalog/control/deadline;raw4-call prefix passes,5thstarted,decisionPENDING.
-First L2E16seed0 histories1281/1288:V2 POSITIVE+V3 DIAGNOSTIC_CLOSED each,matching domains;8–13s/call including range rebuild,not fullMoE certificates/gain.
+Real increment4 since startup snapshot:8 local calls/4paired histories;1b120/120 archived.Stage4 PID425771 detached,immutable9bf3eacd6,9thstarted.
+[Research observation/review](gate_decoupling_stage4_records_20261025.json) binds raw8-call prefix,all4paired gate domains equal;decisionPENDING.
+L2E16seed0:1281/1288 both close,but old saved-cut histories were pending,not established individual baseline failures;no fullMoE gains.
+1431 both solverTIMEOUT after<1s range reconstruction;1476 V3closes173.668s,V2low verifies5.284s/highTIMEOUT;neither proves a unique cause or nonpositive relaxation optimum.
 Runroot`results/gate_decoupling_stage4_20261025_r1`;250local/21h/300s fixed;full193object denominator,missing IDs/unexecuted suffix retained.
 Next monitor this actual process,repair only tool errors preserving prefix/cumulative cost,then final attribution;no new mechanisms,resource changes or prefix gate decision.G1–G6OPEN.
 

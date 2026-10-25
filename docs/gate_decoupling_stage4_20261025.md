@@ -22,6 +22,20 @@ The raw-receipt prefix audit passes with decision `PENDING_REGISTERED_QUEUE`.
 These are two local-history numerical closures, not complete-request gains,
 strict certificates or a stage4 decision. Live ledgers supersede this snapshot.
 
+At20:57:24 AEDT the reviewed prefix has8 completed calls and4 paired histories,
+with the ninth call running. The same record's `latest_research_observation`
+binds each terminal/ledger and saved endpoint; all four raw gate-domain pairs
+match. Inputs1281/1288 were saved-cut pending histories in the original run,
+not established individual baseline failures. Input1431 times out in both
+V2 and V3 solving after less than1s per-call range reconstruction. Input1476
+closes V3 in173.668s total; V2's low endpoint verifies in5.284s solver time,
+but its high endpoint exhausts the remaining shared budget. This distinguishes
+observed terminal patterns, not their unique causes: no checked feasible upper
+bound or relaxation-optimality evidence establishes that V2 is intrinsically
+too loose. Total completed-call cost is1099.282738s, excluding the running call;
+the separate0.081315s offline record review upgrades no online conclusion.
+The registered queue/denominator/decision rules remain unchanged and pending.
+
 ## Final execution freeze after1b
 
 [R1 real freeze](gate_decoupling_stage4_freeze_20261025_r1.json), SHA256
