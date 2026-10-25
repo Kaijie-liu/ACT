@@ -164,6 +164,19 @@ passes with no paired domain mismatch; it is not a reproof of numerical bounds.
 The primary decision remains `PENDING_REGISTERED_QUEUE`. No early mechanism
 selection, threshold change, or complete-request success is inferred.
 
+Before those B2 objects execute, the existing three witness labels have also
+been checked against the historical full-model replay receipts. The record's
+`known_b2_witness_history_relations` binds the launch/outcome/receipt files and
+witness hashes; all three request items exactly match the current catalog.
+Seed0/input4341 has a saved negative replay on pair `(4,6)`, and seed1/input4356
+on `(2,3)`: both match their selected diagnostic histories. Seed0/input4237 has
+its negative replay on `(6,7)`, while the selected history is `(5,6)`.
+Thus failure to prove the first two original histories cannot simply be
+attributed to verifier difficulty; a local positive on the third history would
+not conflict with an unsafe different route. These are historical numerical
+full-model replays, not newly run or independently exact witness checks.
+The frozen cohort, order, denominator and decision rules remain unchanged.
+
 V3 removes variable gate products but retains router and guard computation.
 For this L2E16 family the graph adds56 ReLU max steps for guard atoms, plus8
 selected-expert and2 router ReLUs. The saved input1476 V3 graph lists66 available

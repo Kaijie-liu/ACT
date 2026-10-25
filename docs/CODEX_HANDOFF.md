@@ -8,6 +8,7 @@ Family both/V3only/bothTO/missing:L2E16=3/3/4/1,L2E8=9/7/1/8,L3E8=12/5/1/1;no in
 22of24V2positives close at initial bounds;45available range acquisitions median0.967s/max2.931s;21timeouts include6LOverified/HIunreturned and3LOunknown/HIunreturned.
 Positive origins11pending/10inflight/3returned-unproved;last3share1366.Not24failed old queries beaten;no splicing,full-request speedup,route-changing or source-complete claim.
 V3 retains router/guard ReLUs;no unique expert/gate cause inferred.No new mechanism or execution-code change;B2 then1b follow the frozen order.
+B2 saved full-model negative replays:seed0/4341 andseed1/4356 match selected histories;seed0/4237 uses another route.Same request items/hashes checked,no fresh replay;keep labels/denominator.
 Runroot`results/gate_decoupling_stage4_20261025_r1`;250local/21h/300s fixed;full193object denominator,missing IDs/unexecuted suffix retained.
 Next monitor this actual process,repair only tool errors preserving prefix/cumulative cost,then final attribution;no new mechanisms,resource changes or prefix gate decision.G1–G6OPEN.
 
