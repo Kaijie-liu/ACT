@@ -48,6 +48,29 @@ remaining budget is not a matched local rerun or proof of equal solver effort,
 and neither this history nor these times establish a complete-request gain.
 The complete fixed queue must still determine the stage decision.
 
+The27-call reviewed prefix adds the first closure on a **returned-unproved**
+old query: L2E8 seed0/input1366, history `(2,7)/(1,7)`. The old run pruned783
+of784 histories; its one returned query remained `unknown` after288.656s in
+nonlinear BaB. V2 now closes both endpoints/all9 properties in22.131s total;
+the endpoint solver calls take10.723s and1.617s, both `incomplete_only`.
+V3 closes in8.488s total. Registered engine configurations match, and both new
+variants bind the same saved original-prefix domain: inner gate
+`[0.6670377463,0.6865419324]`, final gate `[0.3574424584,0.9850951270]`.
+The record's `first_saved_returned_unproved_local_closure` binds the raw sources
+and receipts. This is evidence that a sound-in-principle, weaker gate relation
+can be computationally easier for this bound engine; numerical execution still
+inherits its CROWN/sigmoid policy. It does not isolate decoupling from final
+endpoint treatment, establish a new abstract domain, or prove a runtime ratio:
+the new local diagnostic reuses saved ranges and is not a matched full request.
+Old pruning and new closure must not be spliced into an online success.
+
+All11 fixed L2E16 hard-core objects have now finished both variants:3 both
+close,3 close only V3,4 time out in both,1 lacks the first-history identity.
+All22 calls cost3779.446s, including missing-source terminals; this excludes
+other calls and final batch accounting. This subgroup is descriptive, not a
+replacement for the193-object registered denominator. The27-call prefix audit
+passes; the stage decision remains `PENDING_REGISTERED_QUEUE`.
+
 V3 removes variable gate products but retains router and guard computation.
 For this L2E16 family the graph adds56 ReLU max steps for guard atoms, plus8
 selected-expert and2 router ReLUs. The saved input1476 V3 graph lists66 available

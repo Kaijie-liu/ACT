@@ -2,10 +2,11 @@
 
 ## Gate-decoupling real diagnostics running 2026-10-25
 
-Real increment10 since prior observation:18 local calls/9paired histories;1b120/120 archived.Stage4 PID425771 detached,immutable9bf3eacd6,19thstarted.
-[Research observation/review](gate_decoupling_stage4_records_20261025.json) binds raw18-call prefix:3bothclose/3V3only/3bothtimeout;decisionPENDING.
-First recorded-inflight V2closure:L2E16seed1/1557,history(4,15)/(0,13),18.020s total;V3 11.416s,same domain.Old query entered with240.335s worker budget remaining and did not return closure.
-This is a local numerical mechanism signal,not matched runtime/fullMoE gain;earlier1281/1288 positives were saved-cut pending histories.V3 also retains router/guard ReLUs,so timeout does not isolate expert difficulty.
+Real increment9 since prior archived observation:27 local calls;1b120/120 archived.Stage4 PID425771 detached,immutable9bf3eacd6,28thstarted;live ledgers supersede snapshot.
+[Research observation/review](gate_decoupling_stage4_records_20261025.json) audits27-call prefix:5bothclose/3V3only,4V3timeouts;decisionPENDING.
+First returned-unproved closure:L2E8seed0/1366,history(2,7)/(1,7);old coupled query unknown288.656s,newV2 both endpoints/all9 properties22.131s,V3 8.488s.
+Same registered engine config;bothV2 endpoints close in initial bounds with saved prefix ranges.Not a matched full-request speedup or source-complete certificate;do not splice old pruning/new local result into online success.
+L2E16 complete subgroup11pairs:3bothclose/3V3only/4bothtimeout/1missing.1557 earlier inflight signal retained;V3 still has router/guard ReLUs,so timeout does not isolate expert difficulty.
 Runroot`results/gate_decoupling_stage4_20261025_r1`;250local/21h/300s fixed;full193object denominator,missing IDs/unexecuted suffix retained.
 Next monitor this actual process,repair only tool errors preserving prefix/cumulative cost,then final attribution;no new mechanisms,resource changes or prefix gate decision.G1–G6OPEN.
 

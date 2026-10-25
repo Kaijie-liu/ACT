@@ -356,19 +356,213 @@
     "interpretation": "First observed V2 positive on a history recorded as in-flight in the old coupled run. Remaining time at query entry is not proof of equal solver effort or a matched local rerun."
   },
   "latest_prefix_review": {
-    "snapshot_at": "2026-10-25T21:33:32.652495+11:00",
+    "snapshot_at": "2026-10-25T21:48:35.750238+11:00",
     "status": "AUDITED_PREFIX",
-    "completed_local_calls": 18,
-    "started_local_calls": 19,
+    "completed_local_calls": 27,
+    "started_local_calls": 28,
     "counts": {
-      "v3_timeout": 3,
-      "both_closed": 3,
+      "v3_timeout": 4,
+      "both_closed": 5,
       "v3_closed_v2_observed_unclosed": 3
     },
     "decision": "PENDING_REGISTERED_QUEUE",
-    "sum_completed_call_seconds": 3190.1907769925892,
-    "bytes": 1666042,
-    "offline_seconds": 0.20077033154666424,
+    "sum_completed_call_seconds": 3972.2609242182225,
+    "bytes": 2140647,
+    "offline_seconds": 0.19326253980398178,
     "scope": "record/source/deadline checks only; no numerical reproof, no online upgrade, no new queries"
+  },
+  "first_saved_returned_unproved_local_closure": {
+    "snapshot_at": "2026-10-25T21:48:35.750238+11:00",
+    "object_id": "1a:L2E8_seed0:1366",
+    "history": [
+      [
+        2,
+        7
+      ],
+      [
+        1,
+        7
+      ]
+    ],
+    "history_source_kind": "SAVED_FIRST_RETURNED_UNPROVED",
+    "original_sources": [
+      {
+        "path": "/data1/Kane/MOE/results/multilayer_stage1_20261022_r5/verify_185/request.json",
+        "sha256": "f78b3c75308e800de52ee4a4ea32924139aa4faa92e54b4a7c669475f6c1b0ea"
+      },
+      {
+        "path": "/data1/Kane/MOE/results/multilayer_stage1_20261022_r5/verify_185/terminal.json",
+        "sha256": "54b948625c8b53eab1a64d4e0b0e932e1f2d5b48aab7fa16a9e4108fd2a92bb6"
+      },
+      {
+        "path": "/data1/Kane/MOE/results/multilayer_stage1_20261022_r5/verify_185/outcome.json.gz",
+        "sha256": "6d1ba273a10359bd9a7f676e578fd4137651957bb6166dd5130d25574316a35e"
+      }
+    ],
+    "baseline_terminal_status": "TIMEOUT",
+    "baseline_history_outcome": {
+      "status": "unknown",
+      "success": false,
+      "seconds": 288.65562449395657,
+      "stage": "nonlinear_bab",
+      "stats": {
+        "bab": [
+          [
+            0,
+            -0.14796567824806728,
+            194,
+            194.13537096977234
+          ]
+        ],
+        "elapsed": 288.4871106147766,
+        "pgd": null
+      }
+    },
+    "baseline_coverage": {
+      "active": null,
+      "attempted": 1,
+      "expected": 784,
+      "in_flight": 0,
+      "never_started": 0,
+      "prefix_attempts": 2,
+      "prefix_returns": 2,
+      "proof_complete": false,
+      "proof_unclosed": 1,
+      "pruned": 783,
+      "returned": 1,
+      "returned_unproved": 1,
+      "traversal_complete": true,
+      "verified": 0
+    },
+    "same_registered_engine_configuration": true,
+    "calls": [
+      {
+        "call_index": 24,
+        "variant": "V2",
+        "status": "POSITIVE",
+        "seconds": 22.13119849190116,
+        "ledger_sha256": "6585738b5441dbc91bf8d6e6fc8816a71d74b0d9765778ed84345cf674774015",
+        "terminal_sha256": "2bf63a77f82160a362a4ec1ed980f892f21acd1385b91bcd2c5029ef4bf30da4",
+        "domain_file_sha256": "5b1377d90ae2bd69c6cde9e2e9c6a8b235bdf632e196deb825be827c15a520ba",
+        "endpoints": [
+          {
+            "variant": "V2_LO",
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 10.722795145586133
+          },
+          {
+            "variant": "V2_HI",
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 1.6165499053895473
+          }
+        ]
+      },
+      {
+        "call_index": 25,
+        "variant": "V3",
+        "status": "DIAGNOSTIC_CLOSED",
+        "seconds": 8.48800928145647,
+        "ledger_sha256": "3e9cff7a6609f3eb5c0fce74cf100365574c8c9c6addd3d2f3727f435ace18b6",
+        "terminal_sha256": "f19b495e4c542c4844cd832ed4f26204f964842a2623d421ac563453f42a2712",
+        "domain_file_sha256": "5b1377d90ae2bd69c6cde9e2e9c6a8b235bdf632e196deb825be827c15a520ba",
+        "endpoints": [
+          {
+            "variant": "V3_MIDPOINT",
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 1.7013713363558054
+          }
+        ]
+      }
+    ],
+    "domain": {
+      "domain_sha256": "073d12517b4e9bf548d27097a9ef5c7bb23f928a893288f543875d6e93df349e",
+      "evidence_grade": "CROWN_SIGMOID_NUMERICAL_POLICY_NOT_EXACT_ENCLOSURE",
+      "history": [
+        [
+          2,
+          7
+        ],
+        [
+          1,
+          7
+        ]
+      ],
+      "intervals": [
+        [
+          0.6670377462538766,
+          0.6865419324201552
+        ],
+        [
+          0.3574424584390947,
+          0.9850951269891648
+        ]
+      ],
+      "margins": [
+        [
+          0.6948175039578174,
+          0.7840017093988111
+        ],
+        [
+          -0.5864819778446485,
+          4.19105000494245
+        ]
+      ],
+      "origin": "SAVED_ORIGINAL_PREFIX_CROWN",
+      "source_id": "9c6d2b7ddc50d0c626c205e3c473799709b943da66405e335a096ceb0c3ba55d"
+    },
+    "scope": "Local numerical diagnostic with reused saved prefix ranges; not an online complete-request certificate, matched speedup or independently checked proof.",
+    "interpretation": "The old coupled query returned unknown after nonlinear BaB; both decoupled endpoints verify during incomplete bound propagation. This supports investigating gate treatment/graph complexity, not a unique causal attribution, new abstract domain or general superiority. Old pruning and new local closure cannot be spliced into an online success."
+  },
+  "completed_l2e16_subgroup": {
+    "snapshot_at": "2026-10-25T21:48:35.750238+11:00",
+    "objects": 11,
+    "local_calls": 22,
+    "counts": {
+      "both_closed": 3,
+      "both_timeout": 4,
+      "v3_only_closed": 3,
+      "both_source_missing": 1
+    },
+    "status_counts": {
+      "V2": {
+        "POSITIVE": 3,
+        "TIMEOUT": 7,
+        "SOURCE_MISSING": 1
+      },
+      "V3": {
+        "DIAGNOSTIC_CLOSED": 6,
+        "TIMEOUT": 4,
+        "SOURCE_MISSING": 1
+      }
+    },
+    "sum_completed_call_seconds": 3779.4456327855587,
+    "ledger_sha256": [
+      "d9043bdd4e9276a4a8f9f58171f13add7a12d99585d1c0f0957ccd914fae3d74",
+      "f329e58bc69408533d09be23272ba93630d47dba8278c7520d1b37ad005d10da",
+      "9a4e730003efc374b8b0aa4ef18e09d27c1fdf21ac48cc5f3ad6ae54489887e4",
+      "73bc7f8fbaa06fd035788e70905c229f807ac706b201f4d36217917573f91243",
+      "e3d8219c349b624e265af108cb11e2695f6eacf1138f7fb000b1b5085ae06a24",
+      "31943ebcd9d77cb5a4de6ee4a6bec6fba6e69c963ee3827286601dca991e535b",
+      "339e07c0dcf0e747284ac40d6a6322a5dbfe8221ae0a094022f399f0a2d9ec67",
+      "747546feba7437bec1d6ddc54d810a34f943e8d4f08d94da98b7081535b5d7b4",
+      "49d1794772a7101ff8df1be2b02a21ef507b778741c602e8c665fdbb899c5b91",
+      "52967eff8fe7601f7c368f31014a7732d075ee1ad900e8d14ed8686f0a7e20db",
+      "9574310e3b43c88a2763c2ff48346b9cc36a9b65f161c43c774b9b736da6ef18",
+      "349a439e23902f251ca545437fe72c2c5452074931cc1b9bb2d380296c2a7f16",
+      "052a1f7719bb2284788ba14334b89819a83d3e17962823bffbe29d418f28ed27",
+      "64cc11c9e4718879eb885f43647a7a536cb075843fdcc7ab206a5815dd400c85",
+      "f28b1dd2157058298cc9a69d7589a31332f9396670473f1c5b34d8d06ac28dc4",
+      "65a0ac0123cbef51ec80741a1a72b2b4e81ac45339cc1537179eef7dbf721c79",
+      "927b0a2676d8704cd723adeb47691c41ef3cf5c8c446c30819d7f46f33848d09",
+      "945ab55691a80329023b675ec32b71e1c73ff97181301a97c8206b2d7f50645a",
+      "54d58a48b43986f285986c6a971e5358a9447817734ed80419849b3f6ff42c24",
+      "2b600cb4824c162a5d6325015622452e6d0ec00ad161584042a67f53e02197d9",
+      "93bba6ac91387f30ec60a71574cc752fa2d42d67c528be2a007f4a7791023385",
+      "358f2da113fc9b602b9771235eac55e3def6f026e2203553d6f3b387e3b96289"
+    ],
+    "decision": "DESCRIPTIVE_SUBGROUP_ONLY_NO_STAGE_DECISION"
   }
 }
