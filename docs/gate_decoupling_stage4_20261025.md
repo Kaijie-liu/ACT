@@ -4,8 +4,122 @@ This is the fifth revision's diagnostic, not a new confirmation cohort or a
 claim that changing engines is an algorithmic contribution. The scientific
 question is whether replacing gate equalities by narrow independent ranges
 allows the strong engine to close histories it previously did not close.
-The opposite outcome must remain visible. Real stage4 execution is now running;
-the pre-execution statements below remain historical records.
+The opposite outcome must remain visible. Stage4 completed on2026-10-26 at the
+registered250-call cap. Earlier execution snapshots below remain historical
+records; the final review is authoritative for this batch.
+
+## Final result: gray under the registered full-catalog rule
+
+All250 attempted local calls have terminals; there are no unaccounted starts,
+execution errors, new accepted full-model counterexamples or full-request
+certificates. The immutable execution is9bf3eacd6. The frozen auditor rerun
+and a separate raw-record recount agree with the online audit: **GRAY_REPORT**.
+The [record](gate_decoupling_stage4_records_20261025.json), `final_review`,
+binds all250 ledgers, original source/catalog/engine identities, final accounting,
+per-object results, endpoint coverage and known-counterexample qualifications.
+All earlier record fields are preserved.
+
+| Cohort | Both V2/V3 closed | V3 only closed | Neither closed | Source missing | Unexecuted | Registered objects |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Original multilayer1a | 24 | 15 | 6 | 10 | 0 | 55 |
+| Single-layerB2 | 4 | 7 | 13 | 0 | 0 | 24 |
+| Residual-family1b | 10 | 12 | 5 | 19 | 68 | 114 |
+| Total | **38** | **34** | **24** | **29** | **68** | **193** |
+
+The250 calls cover125 pairs, of which96 have identified sources and both
+numerical calls. The other29 pairs return SOURCE_MISSING. The remaining68
+objects/136 calls are unexecuted under the fixed cap, including every residual
+R3 object and the last9 R2seed2 objects. They are not algorithm failures.
+The original193-object catalog contains57 distinct input indices; the38 V2
+positives involve24 distinct indices, not38 independent images. The observed
+38/96 is descriptive only and does not replace the registered denominator.
+
+| Registered primary event | Count /193 | Descriptive Wilson95 interval | Required trigger | Outcome |
+| --- | ---: | --- | --- | --- |
+| V3 outer TIMEOUT | 12/193 | [3.59%,10.55%] | Lower bound >50% | Not triggered |
+| Both variants closed | 38/193 | [14.69%,25.87%] | Lower bound >30% | Not triggered |
+| V3 closed, V2 observed UNKNOWN/TIMEOUT | 34/193 | [12.89%,23.61%] | More than half the catalog | Not triggered |
+
+Single-layer and multilayer descriptive strata also return gray. These are the
+predefined model-input calculations, not independence-adjusted population
+inference. Missing and unexecuted objects account for97/193: the gate does not
+justify concluding that gate decoupling is ineffective or that expert ReLUs
+are the unique obstacle. Conversely, the available-source subgroup cannot be
+used after seeing results to authorize stage5. The pre-execution capacity
+limitation remains disclosed; no thresholds, order or denominator changed.
+
+| Variant | Local positive / diagnostic closed | UNKNOWN | TIMEOUT | Source missing | Unexecuted |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| V2 independent gates + final endpoints | 38 | 4 | 54 | 29 | 68 |
+| V3 frozen-gate diagnostic | 72 | 12 | 12 | 29 | 68 |
+
+## What the completed diagnostic establishes
+
+Thirty of38 V2 positives close both endpoints at initial bound propagation;
+eight need BaB for at least one endpoint. All38 retain all9 output properties,
+the selected history and the same original request binding. This supports
+local computational feasibility of independent gates plus final endpoint
+treatment; it is not a new abstract domain or an isolated gate-only causal
+comparison. Six positives concern old **returned-unproved** queries,20 concern
+saved in-flight histories,11 saved pending histories and one an unvisited
+pair. Therefore these are not38 established failed baseline queries beaten.
+Historical B2 engine/guard-graph differences documented below still apply.
+
+The new1b contribution is10 local positives (R2 seeds0/1/2:3/4/3), all on
+saved in-flight histories. One closes with a final-gate range about
+[0.00530,0.99999], while other ranges can be narrow. No narrow-gate threshold
+or success rule is fitted. All96 raw V2/V3 domain records compare equal;
+only42 pairs have both accepted outcome records, explaining the frozen
+auditor's narrower accepted-receipt comparison. Equality does not reprove the
+CROWN bounds or the floating sigmoid enclosure.
+
+The54 V2 timeouts retain18 cases with neither endpoint return,7 with a verified
+low endpoint and no high return,20 with an unknown low endpoint and no high
+return,7 with both unknown and2 with a verified low/unknown high. The4 V2
+UNKNOWN terminals contain3 verified-low/unknown-high and1 unknown-low/verified-high.
+None establishes an optimal nonpositive relaxation. Of12 V3 outer timeouts,
+6 lack a solver return;6 already saved an unknown result and end with a
+`replay RETURN` marker. In those6, replay itself records only0.0008--0.0024s,
+whereas the solver records about276--288s. A last replay marker is not a
+replay bottleneck or evidence of a unique expert cause.
+
+Known original counterexamples remain labeled. The earlier B2 same-history
+example4356 demonstrates that V3 can close a counterfactual while the original
+model violates the property. The saved1b public-PGD records identify26 known
+original violations, but do not save their route histories/router logits;
+20 have a selected diagnostic history and6 lack one. Their selected-history
+relation cannot be recovered by this read-only review. None of the38 V2
+positives has a catalog known-counterexample label. No new model replay or
+numerical bound reproof was performed; absence of a label is not proof of safety.
+
+## Complete cost and stop boundary
+
+| Variant | Charged terminal calls | Sum of terminal cost | Mean, including missing-source terminals | Median, including missing-source terminals |
+| --- | ---: | ---: | ---: | ---: |
+| V2 | 125 | 20902.068s | 167.217s | 239.700s |
+| V3 | 125 | 9749.921s | 77.999s | 11.769s |
+
+Terminal costs sum to30651.989s. Complete batch cost through online audit and
+final accounting is**30688.638s (8.524622h)**; the36.649s difference includes
+inter-call/batch accounting and online audit. Offline frozen-auditor plus
+independent-record review took2.464s in the archived final review, separately
+charged as offline analysis and never used to upgrade online results.
+All8199 result files total13973493 bytes; the29731-byte console makes
+**14003224 bytes** including console, below the128MiB cap. No source or
+checkpoint was deleted. The192 recorded gate-range phases total140.268s
+(median0.552s,maximum3.112s); these are already inside terminal costs.
+
+For the96 source-available calls per variant, V2 median is294.197s and V3
+median23.527s. Missing-source returns must not be described as acceleration;
+V3 changes the function, so neither cost comparison is a same-guarantee speedup.
+These local diagnostics also cannot be spliced into earlier full requests.
+
+The registered result is gray: **archive and report for user direction; do not
+launch stage5, increase the cap, replace missing objects, tune a width threshold
+or select another mechanism.** G1--G6 remain OPEN. This batch supplies38 local
+numerical closures and an explicit missingness boundary, not full-request
+competitive gains, source-complete certificates or grounds to stop all MoE
+algorithm research as disproven.
 
 ## Completed single-layer B2 diagnostics
 

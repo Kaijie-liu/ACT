@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## Stage4 final:250 local terminals,registered gray 2026-10-26
+
+Real increment34 since216 observed:250/250local terminals,0new complete-request certificates;PID425771 exited normally at LOCAL_CALL_CAP,immutable9bf3eacd6.
+[Final results](gate_decoupling_stage4_20261025.md)/[record](gate_decoupling_stage4_records_20261025.json) `final_review`:193objects=38both/34V3only/24neither/29missing/68unexecuted;125attempted pairs,96with sources.
+Frozen auditor rerun plus independent records/domain/property recount agree:GRAY_REPORT;38/193 Wilson[14.69%,25.87%],no registered next-stage trigger;all earlier records retained.
+Full online30688.638s/8.524622h,250receipt costs30651.989s;offline review2.464s separate;14003224bytes including console;no model/solver reproof or extra run.
+30/38positives close at initial bounds;only6refer to old returned-unproved queries;other32pending/inflight/unvisited.No full-request wins or same-guarantee V3 speedup.
+All96raw domains match;known negatives remain labeled;1bPGD lacks route histories,so selected-history relation unknown.G1--G6OPEN.
+Next report gray and await user direction;do not launch stage5,expand/reorder/retry,fit thresholds or choose a replacement mechanism.
+
 ## All24 single-layer gate diagnostics reviewed 2026-10-26
 
 Real increment16 since archived148:164 local terminals,165thstarted;PID425771 live,immutable9bf3eacd6 unchanged;live ledger supersedes snapshot.
