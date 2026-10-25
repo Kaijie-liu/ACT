@@ -39,7 +39,9 @@ def require(condition, message):
 
 
 def size(folder):
-    return sum(p.stat().st_size for p in folder.rglob('*') if p.is_file())
+    console = folder.with_suffix('.controller.log')
+    return (sum(p.stat().st_size for p in folder.rglob('*') if p.is_file())
+            + (console.stat().st_size if console.is_file() else 0))
 
 
 class Journal:

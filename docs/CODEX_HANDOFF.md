@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## Gate diagnostic batch entry prepared 2026-10-25
+
+Real increment4 since worker snapshot;1b13/120=1numericalPOSITIVE+12TIMEOUT,PID1050832 live;stage4 real calls0.
+[Stage driver](../scripts/gate_decoupling_stage4.py) connects existing worker/supervisor to fixed catalog order,250/21h/300s and full-denominator user-rule summaries.
+Missing/error/unexecuted/started-without-terminal stay separate;all/single/multilayer descriptive Wilson tables and timeout phases retained,no prefix scientific decision.
+[R3 control freeze](gate_decoupling_control_20261025_r3.json) binds19sources/19methods/3syntheticAPIcalls;R1/R2 unexecuted preserved,no control rerun.
+Static syntax/hash/case inventory passes;native controls NOT RUN,real catalog awaits final1b;this is execution preparation,not mechanism gain.
+Next finish1b,run frozen controls once with fresh admission,freeze final full catalog and execute diagnostics;stop expanding infrastructure.G1–G6OPEN.
+
 ## Local gate diagnostic worker prepared 2026-10-25
 
 Real increment3 since prior catalog snapshot;1b9/120=1numericalPOSITIVE+8TIMEOUT,PID1050832 live;stage4 real calls0.

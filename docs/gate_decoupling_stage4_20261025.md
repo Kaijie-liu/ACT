@@ -61,14 +61,15 @@ does not by itself distinguish relaxation weakness from search/guard/budget.
 
 ## Controls prepared; no numerical execution yet
 
-The [R2 control freeze](gate_decoupling_control_20261025_r2.json) binds17 source
-files,14 semantic/receipt test methods and exactly3 external API calls. It adds
-the local worker's shared endpoint deadline, partial interruption, artifact
-budget and reception controls. R1 is preserved unexecuted, superseded before
-any control run. Static parsing and source-hash checks pass; none of the14 tests
+The [R3 control freeze](gate_decoupling_control_20261025_r3.json) binds19 source
+files,19 semantic/receipt/ledger test methods and exactly3 external API calls.
+It includes the local worker's shared endpoint deadline, partial interruption,
+artifact budget/reception and the stage queue's fixed-order/cap/denominator
+checks. R1/R2 are preserved unexecuted, superseded before any control run.
+Static parsing and source-hash checks pass; none of the19 tests
 or3 API calls has run. This is a prepared prototype, not a passed integration
-stage. R2 SHA256 is
-`5ad5608653daf62a3c1605dec35f2f60f15d59ca48d521af7575b1d8876ecb3c`.
+stage. R3 SHA256 is
+`87d0246b19689cf7e71fc07854845c0fc0bed4594eccb3c958ef87a3bba0ade4`.
 
 The control batch uses the existing owned-session supervisor, existing isolated
 GenBaB CPU environment, unchanged engine configuration and one shared300s/128MiB
@@ -102,8 +103,31 @@ not CROWN's numerical arithmetic. A frozen-midpoint positive remains diagnostic.
 Candidates from extended V2 inputs are projected to the original input and
 replayed on the original dynamic model; independent gate values never stand in
 for an input witness. Final real catalog/call-table freeze, worker controls and
-batch execution remain pending. There is no real-call launch CLI or new OS
-supervisor in this prototype, and the live1b immutable copy is unchanged.
+batch execution remain pending. The live1b immutable copy is unchanged.
+
+The [stage driver](../scripts/gate_decoupling_stage4.py) calls that worker, using
+the existing supervisor. It freezes only after completed/audited1b is included
+and the synthetic integration batch passes. Inventory order is retained, with
+adjacent V2/V3 calls and alternating within-object order; no result-dependent
+reordering or extra endpoint budgets. The full catalog is kept even if250 calls,
+21h or128MiB leave a suffix unexecuted. Starts without a terminal count as
+attempts and remain distinct from calls never started. Tool errors preserve
+their prefix for the authorized repair process.
+
+Primary decision uses all fixed hard-core model-input objects; single-layer and
+multilayer summaries use the same rules and their own full catalog denominators.
+The user's ordered rules remain: V3 TIMEOUT Wilson95 lower>.5 stops; joint V2/V3
+closure Wilson95 lower>.3 enters stage5; V3 closure with observed V2 UNKNOWN or
+TIMEOUT in more than half the catalog calls for a mathematical contract and user
+review; otherwise gray. ERROR, source-missing and unexecuted entries do not
+become observed V2 failures. Prefix summaries make no decision. Total V3 TIMEOUT
+keeps the registered rule while phase strata distinguish preparation from
+solver timeouts; that decision is not a unique causal explanation. Missing
+observations stay visible in the denominator/status table. These are descriptive
+intervals on a selected set with repeated inputs/fixed models, not independent
+population evidence. Costs include final audit/accounting when available; a
+stopped prefix explicitly lacks a final cost receipt. No stage4 numerical result
+has been inspected to choose these interpretations or alter the thresholds.
 
 ## Real diagnostic preparation
 

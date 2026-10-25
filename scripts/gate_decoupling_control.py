@@ -23,6 +23,7 @@ import genbab_cpu_ready as backend
 
 CODE = ('scripts/gate_decoupling_control.py', 'tests/test_gate_decoupling.py',
     'scripts/gate_decoupling_worker.py', 'scripts/multilayer_stage1.py',
+    'scripts/gate_decoupling_stage4.py', 'tests/test_gate_decoupling_stage4.py',
     'act/back_end/moe/gate_decoupling.py', 'act/back_end/moe/multilayer_external.py',
     'act/back_end/moe/multilayer.py', 'act/back_end/moe/model.py', 'act/back_end/moe/schema.py',
     'act/pipeline/moe/multilayer_training.py', 'act/back_end/moe/genbab_pair.py',
@@ -31,13 +32,14 @@ CODE = ('scripts/gate_decoupling_control.py', 'tests/test_gate_decoupling.py',
 
 
 def freeze(path):
-    save(path, dict(schema='gate-decoupling-synthetic-v2', policy=POLICY,
+    save(path, dict(schema='gate-decoupling-synthetic-v3', policy=POLICY,
         seconds=300, artifacts=128*2**20, as_bytes=8*2**30,
         source_files={p: sha(ROOT/p) for p in CODE},
         native_python=str(backend.ENVIRONMENT/'bin/python'),
         trained_models=0, real_diagnostic_calls=0, solver_calls=3, gpu=False,
         module='test_gate_decoupling',
         suites=['test_gate_decoupling.SourceControls', 'test_gate_decoupling.WorkerControls',
+                'test_gate_decoupling_stage4.BatchControls',
                 'test_gate_decoupling.GraphControls'],
         cases=['ordered margins/direction/tie/source mutation',
                'missing prefix/binding/nonfinite/inverted range/alias',
@@ -49,6 +51,7 @@ def freeze(path):
                'V2 retains inner products/V3 affine-ReLU/no nonlinear suffix',
                'same endpoint deadline/unknown continuation/partial interruption',
                'artifact cap/exclusive publication/late receipt/source/scope mutations',
+               'full denominator/Wilson gates/fixed order/call cap/tool-error prefix/failed start accounting',
                'same fixed safe L2 graph:V2_LO,V2_HI,V3 through existing GenBaB API'],
         acceptance='all declared semantic controls and three analytic-positive API calls pass; not performance or real proof'))
 
@@ -82,7 +85,9 @@ def run(folder, manifest):
     spec = load(manifest)
     assert all(sha(ROOT/p) == h for p, h in spec['source_files'].items())
     assert spec['seconds'] == 300 and spec['policy'] == POLICY
-    folder.mkdir(); child = folder/'fixed'; child.mkdir()
+    folder.mkdir(); save(folder/'manifest.json', spec)
+    assert sha(folder/'manifest.json') == sha(manifest)
+    child = folder/'fixed'; child.mkdir()
     save(child/'request.json', dict(manifest=str(manifest.resolve()), manifest_sha256=sha(manifest),
         deadline=ENTRY+290, budget_started=ENTRY))
     env = dict(PATH='/usr/bin:/bin', CUDA_VISIBLE_DEVICES='', OPENBLAS_NUM_THREADS='1',
