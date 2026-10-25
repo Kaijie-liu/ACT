@@ -1350,5 +1350,148 @@
       },
       "scope": "Read-only identity/receipt audit of historical full-model replay; no fresh model replay or solver call; frozen diagnostic denominator/order unchanged."
     }
-  ]
+  ],
+  "singlelayer_first_local_closure_and_confound_review": {
+    "object": "B2:seed1:4150",
+    "history": [
+      [
+        6,
+        7
+      ]
+    ],
+    "scope": "Read-only attribution of first B2 local positive; no solver/model execution or stage decision.",
+    "baseline": {
+      "commit": "2caeae501636bdc6237be89b9a4202f3451df1d2",
+      "selected_pair_status": "unknown",
+      "selected_pair_solver_seconds": 249.90528345666826,
+      "full_request_status": "UNKNOWN",
+      "full_request_seconds": 293.6114810667932,
+      "other_pairs_verified": 27,
+      "compatibility_directory": "/data1/Kane/MOE/baselines/adaptations/genbab_cpu_20261021_r1"
+    },
+    "diagnostics": {
+      "V3": {
+        "status": "DIAGNOSTIC_CLOSED",
+        "total_call_seconds": 17.80876849964261,
+        "domain": {
+          "domain_sha256": "a5ba9e747a78e35bdccf836f15398d58c34765499a46c1a38a1b260301de773f",
+          "evidence_grade": "CROWN_SIGMOID_NUMERICAL_POLICY_NOT_EXACT_ENCLOSURE",
+          "history": [
+            [
+              6,
+              7
+            ]
+          ],
+          "intervals": [
+            [
+              0.381922563527755,
+              0.7223526634133536
+            ]
+          ],
+          "margins": [
+            [
+              -0.48139587656377486,
+              0.9561617381784645
+            ]
+          ],
+          "origin": "REBUILT_ORIGINAL_PREFIX_CROWN_CHARGED",
+          "source_id": "a70c193c01242f2ed4150780bd3631d5da3ce73686920ab7a66b7c2c8742070a"
+        },
+        "endpoints": [
+          {
+            "variant": "V3_MIDPOINT",
+            "status": "verified",
+            "stage": "nonlinear_bab",
+            "solver_seconds": 8.757415344938636
+          }
+        ]
+      },
+      "V2": {
+        "status": "POSITIVE",
+        "total_call_seconds": 77.16243693046272,
+        "domain": {
+          "domain_sha256": "a5ba9e747a78e35bdccf836f15398d58c34765499a46c1a38a1b260301de773f",
+          "evidence_grade": "CROWN_SIGMOID_NUMERICAL_POLICY_NOT_EXACT_ENCLOSURE",
+          "history": [
+            [
+              6,
+              7
+            ]
+          ],
+          "intervals": [
+            [
+              0.381922563527755,
+              0.7223526634133536
+            ]
+          ],
+          "margins": [
+            [
+              -0.48139587656377486,
+              0.9561617381784645
+            ]
+          ],
+          "origin": "REBUILT_ORIGINAL_PREFIX_CROWN_CHARGED",
+          "source_id": "a70c193c01242f2ed4150780bd3631d5da3ce73686920ab7a66b7c2c8742070a"
+        },
+        "endpoints": [
+          {
+            "variant": "V2_LO",
+            "status": "verified",
+            "stage": "nonlinear_bab",
+            "solver_seconds": 62.145761858671904
+          },
+          {
+            "variant": "V2_HI",
+            "status": "verified",
+            "stage": "nonlinear_bab",
+            "solver_seconds": 6.503023458644748
+          }
+        ]
+      }
+    },
+    "binding_review": {
+      "original_item_equal": true,
+      "all_nine_properties_equal": true,
+      "catalog_original_hashes_checked": 31,
+      "ledger_raw_files_checked": true,
+      "same_V2_V3_domains": true,
+      "registered_config_equal": true,
+      "verify_graph_function_ast_equal": true,
+      "historical_adapter_unchanged_in_frozen_tree": true,
+      "new_backend_identity": "9f678185a1a0bf64b044613fa68779a140a8932f74539bd0f0e756703421c589",
+      "new_api_path": "/data1/Kane/MOE/baselines/adaptations/genbab_cpu_20261022_r3/complete_verifier/api.py"
+    },
+    "historical_comparison_confounds": [
+      "Old B2 builds one shared maximum of guard atoms, then max(property,guard); Stage4 folds all guard atoms into each property. Equivalent real predicate, different ReLU graph/relaxation and cost.",
+      "Old B2 used compatibility r1; frozen Stage4 uses r3 with sparse-spec BoundMul and branching-score compatibility changes. Equal CONFIG and API function do not imply identical engine sources.",
+      "The old number is one query inside a complete aggregate; the new number includes an independently loaded local diagnostic and charged range reconstruction. Not a paired full-request runtime comparison.",
+      "Gate equality removal and final endpoint treatment are combined; no direct factor ablation was run."
+    ],
+    "limitations": [
+      "Numerical CROWN/sigmoid policy only; no source-complete or deployed-float proof.",
+      "Local closure cannot be spliced with27 historical positives into a new online full-request result.",
+      "The gate interval width is about0.34043; this observation does not establish a narrow-gate selection threshold.",
+      "V2/V3 in the current batch retain the same engine and guard graph; historical confounds do not retroactively change their accepted status.",
+      "Full193-object gate remains pending; no extra coupled rerun, configuration change or sample was added."
+    ],
+    "raw_bindings": {
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_017/launch.json": "31814e9055130316aa63c6679ac80228d3365f278349b59b595fac8d9142bc63",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_017/spec.json": "03098dc80a69fbedb24bbbcdbcb74e058d2f8adea0f3088ef2797a08455b06a6",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_017/terminal.json": "4457f7ba1c5aaca4776fb84e235e5eb6f74be7918514fa8ab092e202b8a361d8",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_017/pair_27_result.json": "1fcb9b171acce61bc5b3dadec992a4a5c58609797af340aa8700a4b427f42a6e",
+      "/data1/Kane/MOE/results/b2_observed_20261021_r2/b2_017/environment.json": "6869023efac4e174da1420b9fcdfe530253d936a4483065e323d95e84ed468e0",
+      "/data1/Kane/MOE/results/gate_decoupling_stage4_20261025_r1/ledger_114.json": "b2c5461fcfc6b00cbd91b0afcf28c598f003aecfaa0fe75530463b2fae84b576",
+      "/data1/Kane/MOE/results/gate_decoupling_stage4_20261025_r1/call_114/source.json": "d34a97c920b59e773a483ca792f4af19f29547d890901121bd0ade35acbe8341",
+      "/data1/Kane/MOE/results/gate_decoupling_stage4_20261025_r1/call_114/domain.json": "4b468280503f4e23a030184762eba2a4f3ad83338d999c16a1afd8570ffdcd9e",
+      "/data1/Kane/MOE/results/gate_decoupling_stage4_20261025_r1/call_114/environment.json": "be41379df362489d6ad1d331beaf324d240d1e448c1d7e355319f1516c85adaa",
+      "/data1/Kane/MOE/results/gate_decoupling_stage4_20261025_r1/call_114/outcome.json": "98fd5ae3d79b85cf77f3551ee58976adb252fc48d27b4e504f908e0cacee3c9f",
+      "/data1/Kane/MOE/results/gate_decoupling_stage4_20261025_r1/ledger_115.json": "f34953539ada1936c8743cc9a0c7eb9c93c9fba6a431ea7dcfe82ee8b11acf4b",
+      "/data1/Kane/MOE/results/gate_decoupling_stage4_20261025_r1/call_115/source.json": "906a9c66f176f9ff8c8d59dde6f7c9580d70a96ec0ffb705c06def8053c92bcb",
+      "/data1/Kane/MOE/results/gate_decoupling_stage4_20261025_r1/call_115/domain.json": "4b468280503f4e23a030184762eba2a4f3ad83338d999c16a1afd8570ffdcd9e",
+      "/data1/Kane/MOE/results/gate_decoupling_stage4_20261025_r1/call_115/environment.json": "be41379df362489d6ad1d331beaf324d240d1e448c1d7e355319f1516c85adaa",
+      "/data1/Kane/MOE/results/gate_decoupling_stage4_20261025_r1/call_115/outcome.json": "9ec2466c96734b7416a11397b6eedfbfa4bbf76d2454dadfa644b61a409447e9"
+    },
+    "offline_review_seconds": 0.047008875757455826,
+    "recorded_at": "2026-10-26T00:33:49.030346+11:00"
+  }
 }

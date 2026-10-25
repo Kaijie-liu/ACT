@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## Single-layer local signal and historical confounds 2026-10-26
+
+Real increment10 since archived110:120 local terminals,121ststarted;PID425771 live,immutable9bf3eacd6 unchanged;live ledger supersedes snapshot.
+B2 seed1/4150 pair6,7:V2 POSITIVE77.162s,V3 diagnostic17.809s;old coupled queryUNKNOWN249.905s,same original object/9properties,not a full-request win.
+[Attribution review](gate_decoupling_stage4_20261025.md):old B2 shared guard-max versus new per-property fold;old engine r1 versus current r3 despite equal CONFIG/API function.
+These are historical-comparison confounds;current V2/V3 share r3/guard construction.No old27pair-positive/newlocal splicing or gate-only causal claim.
+Gate interval[0.38192256,0.72235266];not evidence for a universal narrow-gate threshold.No new solve or execution-code change.
+Continue the frozen B2 then1b queue;full193 denominator and final gate remain pending.G1–G6OPEN.
+
 ## Gate-decoupling1a analyzed;remaining queue running 2026-10-26
 
 Real increment30 since prior archived observation:110 local terminals,including20SOURCE_MISSING;1b120/120 archived.PID425771 detached,immutable9bf3eacd6,111ststarted;live ledgers supersede snapshot.

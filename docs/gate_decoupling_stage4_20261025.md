@@ -7,6 +7,35 @@ allows the strong engine to close histories it previously did not close.
 The opposite outcome must remain visible. Real stage4 execution is now running;
 the pre-execution statements below remain historical records.
 
+## Single-layer local closure: historical comparison limits
+
+B2 seed1/input4150, pair `(6,7)`, is the first single-layer V2 positive.
+Its old coupled query returned unknown after249.905s; V2 closes both endpoints
+and all9 properties in77.162s total (endpoint solver costs62.146s/6.503s,
+both BaB). V3 closes in17.809s. The two new calls bind the same gate interval
+`[0.3819225635,0.7223526634]`, reconstructed within their budgets. Its width
+about0.34043 does not support treating every local gain as a nearly fixed gate.
+The [record](gate_decoupling_stage4_records_20261025.json) field
+`singlelayer_first_local_closure_and_confound_review` checks the same original
+request, checkpoint identity,9 properties,31 original-source hashes and both
+new receipts. No additional model execution or solver query was performed.
+
+There are two additional confounds in comparison with **historical B2**.
+The old adapter first forms one shared maximum of all guard atoms and then
+combines it with each property. Stage4 folds the atoms into each property.
+The real predicates are equivalent, but the ReLU graphs differ and may affect
+bound propagation and cost. Also, old B2 used compatibility snapshot r1;
+Stage4 uses r3 with the later sparse-spec multiplication and branching-score
+fixes. Matching CONFIG and the unchanged `verify_graph` function do not mean
+identical engine sources. These differences prevent attributing this historical
+contrast solely to gate decoupling or claiming an equal-cost speedup.
+
+The current V2/V3 pair uses the same frozen r3 engine and guard construction.
+Its accepted local outcomes remain unchanged. The old27 other pair positives
+must not be combined with this new local closure into an online full-request
+success. Numerical source limitations and the full193-object decision remain;
+no interim gate, threshold, graph modification or extra coupled rerun follows.
+
 ## Live execution snapshot
 
 Detached PID425771 runs immutable9bf3eacd6b462001e68c1c0257574601bc4410c5 in
