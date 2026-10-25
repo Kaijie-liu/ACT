@@ -36,6 +36,26 @@ too loose. Total completed-call cost is1099.282738s, excluding the running call;
 the separate0.081315s offline record review upgrades no online conclusion.
 The registered queue/denominator/decision rules remain unchanged and pending.
 
+At21:33:32 AEDT the reviewed prefix has18 completed calls/9 pairs:3 both
+closed,3 V3-only closed and3 both timed out. L2E16 seed1/input1557 is the first
+V2 positive whose selected history was recorded in flight in the old coupled
+run, rather than merely pending. The same history `(4,15)/(0,13)` entered the
+old solver with240.335s until its worker deadline, without a returned closure.
+V2 now verifies both endpoints in18.020s total, V3 closes in11.416s, and the
+gate-domain identities match. Source/terminal hashes are in the record's
+`first_saved_inflight_local_closure`. This is a local numerical signal: the old
+remaining budget is not a matched local rerun or proof of equal solver effort,
+and neither this history nor these times establish a complete-request gain.
+The complete fixed queue must still determine the stage decision.
+
+V3 removes variable gate products but retains router and guard computation.
+For this L2E16 family the graph adds56 ReLU max steps for guard atoms, plus8
+selected-expert and2 router ReLUs. The saved input1476 V3 graph lists66 available
+ReLU split nodes, consistent with that construction. These are graph nodes,
+not visited branches, scalar activation counts or a timing attribution. V3
+timeout therefore does not isolate expert-network difficulty from guard
+encoding, bound optimization and search. No graph or decision rule is changed.
+
 ## Final execution freeze after1b
 
 [R1 real freeze](gate_decoupling_stage4_freeze_20261025_r1.json), SHA256

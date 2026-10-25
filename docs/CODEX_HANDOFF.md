@@ -2,10 +2,10 @@
 
 ## Gate-decoupling real diagnostics running 2026-10-25
 
-Real increment4 since startup snapshot:8 local calls/4paired histories;1b120/120 archived.Stage4 PID425771 detached,immutable9bf3eacd6,9thstarted.
-[Research observation/review](gate_decoupling_stage4_records_20261025.json) binds raw8-call prefix,all4paired gate domains equal;decisionPENDING.
-L2E16seed0:1281/1288 both close,but old saved-cut histories were pending,not established individual baseline failures;no fullMoE gains.
-1431 both solverTIMEOUT after<1s range reconstruction;1476 V3closes173.668s,V2low verifies5.284s/highTIMEOUT;neither proves a unique cause or nonpositive relaxation optimum.
+Real increment10 since prior observation:18 local calls/9paired histories;1b120/120 archived.Stage4 PID425771 detached,immutable9bf3eacd6,19thstarted.
+[Research observation/review](gate_decoupling_stage4_records_20261025.json) binds raw18-call prefix:3bothclose/3V3only/3bothtimeout;decisionPENDING.
+First recorded-inflight V2closure:L2E16seed1/1557,history(4,15)/(0,13),18.020s total;V3 11.416s,same domain.Old query entered with240.335s worker budget remaining and did not return closure.
+This is a local numerical mechanism signal,not matched runtime/fullMoE gain;earlier1281/1288 positives were saved-cut pending histories.V3 also retains router/guard ReLUs,so timeout does not isolate expert difficulty.
 Runroot`results/gate_decoupling_stage4_20261025_r1`;250local/21h/300s fixed;full193object denominator,missing IDs/unexecuted suffix retained.
 Next monitor this actual process,repair only tool errors preserving prefix/cumulative cost,then final attribution;no new mechanisms,resource changes or prefix gate decision.G1–G6OPEN.
 

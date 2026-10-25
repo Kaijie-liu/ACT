@@ -278,5 +278,97 @@
       "Input1476 has V3 diagnostic closure and V2 high-endpoint timeout; its low endpoint verified. This does not prove the independent-gate relaxation optimum is nonpositive."
     ],
     "phase_decision": "PENDING_REGISTERED_QUEUE; no threshold, denominator, source, order, or resource change"
+  },
+  "first_saved_inflight_local_closure": {
+    "snapshot_at": "2026-10-25T21:33:32.652457+11:00",
+    "object_id": "1a:L2E16_seed1:1557",
+    "history": [
+      [
+        4,
+        15
+      ],
+      [
+        0,
+        13
+      ]
+    ],
+    "history_source_kind": "SAVED_INFLIGHT_FIRST_HISTORY",
+    "original_sources": [
+      {
+        "path": "/data1/Kane/MOE/results/multilayer_stage1_20261024_r7/verify_504/request.json",
+        "sha256": "363d7d013956f669a897baaa60e7e037c82405452b005675764b8b5c17f37fe2"
+      },
+      {
+        "path": "/data1/Kane/MOE/results/multilayer_stage1_20261024_r7/verify_504/terminal.json",
+        "sha256": "586cb11bcf598734620ee80007c7aa3e8db757a5363d79fb64559394f1c4f13e"
+      },
+      {
+        "path": "/data1/Kane/MOE/results/multilayer_stage1_20261024_r7/verify_504/progress.json",
+        "sha256": "558bce7ed6d4db06f6e3b0ce6b4ef8c05ed11b9e0f0520f8f82b5809acb48c07"
+      }
+    ],
+    "baseline_worker_deadline": 11703840.401047356,
+    "baseline_history_entered": 11703600.066011444,
+    "baseline_remaining_at_enter_seconds": 240.33503591269255,
+    "baseline_terminal": "TIMEOUT; active same history, no returned closure",
+    "calls": [
+      {
+        "call_index": 16,
+        "variant": "V2",
+        "status": "POSITIVE",
+        "seconds": 18.019665654748678,
+        "terminal_sha256": "375769e134471cfde3e3909bec34f535686ec1cf96656e839ea87d355500c19b",
+        "ledger_sha256": "927b0a2676d8704cd723adeb47691c41ef3cf5c8c446c30819d7f46f33848d09",
+        "endpoints": [
+          {
+            "variant": "V2_LO",
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 3.4265984520316124
+          },
+          {
+            "variant": "V2_HI",
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 2.660264315083623
+          }
+        ]
+      },
+      {
+        "call_index": 17,
+        "variant": "V3",
+        "status": "DIAGNOSTIC_CLOSED",
+        "seconds": 11.416186310350895,
+        "terminal_sha256": "27ae731a385ececeb0bf81cf983df6ee0d4e6705731947e6a2eac1e26ea4dc98",
+        "ledger_sha256": "945ab55691a80329023b675ec32b71e1c73ff97181301a97c8206b2d7f50645a",
+        "endpoints": [
+          {
+            "variant": "V3_MIDPOINT",
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 2.5448537580668926
+          }
+        ]
+      }
+    ],
+    "domain_sha256": "35ec4305478444e769c9ebf318482a4b4bb3965e1d5efb2185baba9a9c1bb32f",
+    "scope": "one history numerical closure, not a complete MoE certificate or matched runtime gain",
+    "interpretation": "First observed V2 positive on a history recorded as in-flight in the old coupled run. Remaining time at query entry is not proof of equal solver effort or a matched local rerun."
+  },
+  "latest_prefix_review": {
+    "snapshot_at": "2026-10-25T21:33:32.652495+11:00",
+    "status": "AUDITED_PREFIX",
+    "completed_local_calls": 18,
+    "started_local_calls": 19,
+    "counts": {
+      "v3_timeout": 3,
+      "both_closed": 3,
+      "v3_closed_v2_observed_unclosed": 3
+    },
+    "decision": "PENDING_REGISTERED_QUEUE",
+    "sum_completed_call_seconds": 3190.1907769925892,
+    "bytes": 1666042,
+    "offline_seconds": 0.20077033154666424,
+    "scope": "record/source/deadline checks only; no numerical reproof, no online upgrade, no new queries"
   }
 }
