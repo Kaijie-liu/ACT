@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## Hard-core source catalog read-only audit 2026-10-25
+
+Real increment2;1b6/120 at11:30:59=1numericalPOSITIVE+5TIMEOUT,PID1050832 live;no new stage4 numerical call.
+[Inventory](gate_decoupling_sources_20261025_r1.json) binds79 old objects/619 raw files;independent direct-product/B2 roster checks pass,not network proofs or execution freeze.
+1a=3returned-unproved+29inflight+13saved-cut pending+10missing earlier IDs;B2=21returned-unproved+2ERROR starts+1unvisited,not24 mathematical failed histories.
+Three B2 saved-witness records remain labeled;only3/79 reusable prefix-range sources,76 require charged reconstruction if history identified.
+[Generator](../scripts/gate_decoupling_catalog.py) loads no model/tensor/solver;1b is excluded until complete/audited,no dataset/source substitution.
+Native V2/V3 control remains frozen/unexecuted;next complete1b,run control,complete fixed diagnostic roster and supervised calls within250/21h.G1–G6OPEN.
+
 ## V2/V3 prototype/control frozen;1b continues 2026-10-25
 
 Real increment2;1b4/120 at11:20:08=1numericalPOSITIVE+3TIMEOUT,13aux complete,PID1050832 live;immutable6568139e9 unchanged.

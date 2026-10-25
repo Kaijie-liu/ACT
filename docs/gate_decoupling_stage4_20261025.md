@@ -86,6 +86,30 @@ Static parsing/review is not recorded as native-control passage.
 
 ## Real diagnostic preparation
 
+The [read-only source inventory](gate_decoupling_sources_20261025_r1.json) now
+binds the79 already defined1a/B2 objects. It is **not an execution freeze** and
+does not include the still-running1b cohort. Its generator is
+[gate_decoupling_catalog.py](../scripts/gate_decoupling_catalog.py), using only
+the standard library; checkpoint/tensor contents are not loaded. A separate
+read-only cross-check passes619 distinct raw-file hashes, the55+24 denominator,
+canonical product ordinals and all24 B2 pair/property rosters. Catalog SHA256:
+`ae03542cc691ece2da75629431b1af7ffe066b75f472d17968a35f7298e147e1`.
+
+| Cohort | Saved returned-unproved history | Saved first in-flight history | Saved pending/unvisited only | Earlier identity missing |
+| --- | ---: | ---: | ---: | ---: |
+| 1a,55 objects | 3 | 29 | 13 | 10 |
+| B2,24 objects | 21 | 2 started-without-return | 1 | 0 |
+
+The two B2 interrupted starts are retained ERRORs (seed0/4237 pair5,6 and
+seed2/4374 pair0,3); seed1/4212 pair2,3 was unvisited after a verified prefix.
+These are not24 mathematically unsuccessful single-history solves. Three B2
+objects also have previously saved witness records, kept in the inventory;
+their selected history need not be the witness's history. No new replay was
+performed here and no local positive can become whole-request robustness.
+Only3/79 have reusable complete prefix-range records;76 need charged range
+reconstruction if a history can be identified. This distinguishes preparation
+cost/missing provenance from expert or gate difficulty before any V2/V3 result.
+
 The hard-core catalog remains1a55 plus B2 24 plus the pending1b nonpositive set;
 known counterexamples, tool errors and missing sources retain separate labels.
 The existing1a inventory has3 complete first-history/range records,42 saved-cut
