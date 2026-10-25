@@ -66,6 +66,17 @@ Only3/55 retain full outcomes with prefix margin bounds;52 have progress but no
 full outcome. Missing ranges/history receipts must not be invented. The next
 1b version is pruning-only120calls/10h; the old240-call freeze stays unexecuted.
 
+Read-only stage4 source review separates these55 further:3 full outcomes record
+their first unproved history and prefix bounds;42 progress-only requests have
+`returned_unproved=0` and `returned=verified`. Under the archived canonical DFS,
+`pruned+verified` is the first pending history's lexicographic ordinal at the
+saved cut. This does not recover lost margin bounds, certify reachability or
+identify unrecorded work after that cut. The remaining10 have an earlier returned
+unproved history whose identity was not saved. Their current/last active history
+is later and cannot replace it. The[compact record](multilayer_stage1_records_20261022.json)
+lists those10. Range/history reconstruction must be charged to the new diagnostic
+budget or reported missing; this review made no numerical call or result change.
+
 ## Joint-HZ loss and bounded lifecycle repair, 2026-10-24
 
 R6 stopped after `verify_282`: L3E8_seed0/input1408/ACT,75.358s,

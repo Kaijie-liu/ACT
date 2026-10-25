@@ -6,6 +6,7 @@ Real full-call increment0 at11:02:48;13/13 auxiliary calls complete,verify_000 a
 PID1050832 runs immutable6568139e9,detached nice10/one CPUthread/8GiBAS;[records](multilayer_stage1b_pruned_records_20261025.json) bind startup/source/input/catalog review.
 30 new ascending common-correct inputs outside1885 exclusions;first20 verify.PublicPGD120 objects gives26 replayedUNSAFE/94 no witness,not verifier wins.
 Selection/PGD/census charged206.921720s;120/10h/300s includes auxiliaries and final audit,unexecuted suffix retained if time expires.
+Stage4 read-only1a sources:3 full first-history/range receipts,42 saved-cut pending ordinals,10 earlier-unproved IDs missing;[inventory](multilayer_stage1_records_20261022.json);no new solve or active-history substitution.
 Next finish1b and stage4 source/first-unclosed-history preparation; no parallel numerical diagnostics,no ACT arm or route-union restart.G1–G6OPEN.
 
 ## 1b pruned-only frozen and controlled 2026-10-25
