@@ -7,6 +7,22 @@ allows the strong engine to close histories it previously did not close.
 The opposite outcome must remain visible. Real stage4 execution is now running;
 the pre-execution statements below remain historical records.
 
+## Counterfactual closure with a known original violation
+
+B2 seed1/input4356, selected pair `(2,3)`, now gives V3
+`DIAGNOSTIC_CLOSED` in8.224s, while V2 ends `TIMEOUT` in294.168s.
+V3 verifies all9 properties at initial bounds. V2's low endpoint verifies;
+its high endpoint returns unknown before the outer timeout. Both variants bind
+the same original request and rebuilt gate interval `[0.50720565,0.73956632]`.
+The saved original full-model replay already has a valid same-pair negative
+margin `-0.0575768502`. Thus, at the registered numerical-policy grade, a
+V3-only closure can coexist with an original violation; it does not establish
+that independent-gate relaxation lost a proof of an actually safe history.
+The record's `known_b2_witness_history_relations` entry binds the new receipts
+and old replay. This review loads no model or solver and does not reprove the
+numerical bounds or witness-gate containment. Keep the known-witness label,
+full denominator, order and pending final decision unchanged.
+
 ## Single-layer local closure: historical comparison limits
 
 B2 seed1/input4150, pair `(6,7)`, is the first single-layer V2 positive.

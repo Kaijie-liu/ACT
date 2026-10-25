@@ -1348,7 +1348,85 @@
         "path": "/data1/Kane/MOE/results/b1_observed_diagnostics_20261021_r1/q035/witness.pt",
         "sha256": "ec7c48c0ef0c34914bd164a2ea34a325388b883674fc696813a5d5b896b36379"
       },
-      "scope": "Read-only identity/receipt audit of historical full-model replay; no fresh model replay or solver call; frozen diagnostic denominator/order unchanged."
+      "scope": "Read-only identity/receipt audit of historical full-model replay; no fresh model replay or solver call; frozen diagnostic denominator/order unchanged.",
+      "stage4_diagnostic_observation": {
+        "recorded_at": "2026-10-26T02:10:36.878368+11:00",
+        "domain": {
+          "domain_sha256": "4d6456986c0a76d9df1191319d801b1ab770ad29c39f5d6623decdd942d06ea1",
+          "evidence_grade": "CROWN_SIGMOID_NUMERICAL_POLICY_NOT_EXACT_ENCLOSURE",
+          "history": [
+            [
+              2,
+              3
+            ]
+          ],
+          "intervals": [
+            [
+              0.5072056503418291,
+              0.7395663230712833
+            ]
+          ],
+          "margins": [
+            [
+              0.02882459696229467,
+              1.0437157348446218
+            ]
+          ],
+          "origin": "REBUILT_ORIGINAL_PREFIX_CROWN_CHARGED",
+          "source_id": "d1a5b714c33f8f36cc80d61eb2a6664c913c195e65aaa38143685b580ac5bf10"
+        },
+        "variants": {
+          "V3": {
+            "status": "DIAGNOSTIC_CLOSED",
+            "accepted": true,
+            "seconds": 8.223722085356712,
+            "returncode": 0,
+            "outcomes": {
+              "V3_MIDPOINT.json": {
+                "status": "verified",
+                "success": true,
+                "stage": "incomplete_only",
+                "seconds": 1.3678338751196861
+              }
+            }
+          },
+          "V2": {
+            "status": "TIMEOUT",
+            "accepted": false,
+            "seconds": 294.16835070215166,
+            "returncode": -14,
+            "outcomes": {
+              "V2_LO.json": {
+                "status": "verified",
+                "success": true,
+                "stage": "incomplete_only",
+                "seconds": 0.5330927334725857
+              },
+              "V2_HI.json": {
+                "status": "unknown",
+                "success": false,
+                "stage": "nonlinear_bab",
+                "seconds": 286.64842556230724
+              }
+            }
+          }
+        },
+        "original_request_item_equal": true,
+        "all_properties": 9,
+        "raw_bindings": {
+          "/data1/Kane/MOE/results/gate_decoupling_stage4_20261025_r1/ledger_146.json": "a3a16cd87c22497b144504406acb64f8c52fa634be0d5074e09734b9e2321d80",
+          "/data1/Kane/MOE/results/gate_decoupling_stage4_20261025_r1/call_146/source.json": "57772d35e34e7418c911bbecd00ebfef71df139ffc1b889395561ecbafa8b8da",
+          "/data1/Kane/MOE/results/gate_decoupling_stage4_20261025_r1/call_146/domain.json": "ab83c8d6c15958ed3b41dda81eed47c65194e6561ee5d9e0910c7bba20c5a3c2",
+          "/data1/Kane/MOE/results/gate_decoupling_stage4_20261025_r1/call_146/V3_MIDPOINT.json": "d55b9f9e3b31591d4b1f3861be179a35c0f791156ee8dab235e6c9462366cd13",
+          "/data1/Kane/MOE/results/gate_decoupling_stage4_20261025_r1/ledger_147.json": "4f9a85e0e50c83d3c790733380b992af1a3974bc87e0c0d3728960f51ae12886",
+          "/data1/Kane/MOE/results/gate_decoupling_stage4_20261025_r1/call_147/source.json": "4a4ad6e80d6eb1f74d54ad27e4379462848e09d06684602a92e4514f3d1f7e3e",
+          "/data1/Kane/MOE/results/gate_decoupling_stage4_20261025_r1/call_147/domain.json": "ab83c8d6c15958ed3b41dda81eed47c65194e6561ee5d9e0910c7bba20c5a3c2",
+          "/data1/Kane/MOE/results/gate_decoupling_stage4_20261025_r1/call_147/V2_LO.json": "1d594c2b3e5684408b5022be4ec52195f08625e77047d58627c8f819ba838435",
+          "/data1/Kane/MOE/results/gate_decoupling_stage4_20261025_r1/call_147/V2_HI.json": "2b761f9e6c68d7e18a22768bf9fbb2c52d2084e2027c8ab1fd827e72858c085e"
+        },
+        "interpretation": "At the registered numerical-policy grade, the frozen-gate counterfactual closes although a saved full-model negative replay exists on the same selected history. V3-only closure therefore does not establish that the original history was safe or that independent-gate relaxation lost a proof. V2 produced no accepted positive: LO verified, HI unknown, outer TIMEOUT. Keep the known-witness label, registered denominator/order and final decision unchanged. This is read-only record review, not a fresh model replay, numerical reproof or exact witness-gate containment check.",
+        "offline_review_seconds": 0.002361023798584938
+      }
     }
   ],
   "singlelayer_first_local_closure_and_confound_review": {

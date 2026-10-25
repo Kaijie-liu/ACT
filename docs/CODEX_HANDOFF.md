@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## Frozen-gate closure does not establish original safety 2026-10-26
+
+Real increment28 since archived120:148 local terminals,149thstarted;PID425771 live,immutable9bf3eacd6 unchanged;live ledger supersedes snapshot.
+B2 seed1/4356 pair2,3:V3 closes all9 properties in8.224s;V2 LO verifies/HI unknown,outerTIMEOUT294.168s.
+The same original request/history already has saved valid negative replay margin−0.05757685;source/domain/property/receipt bindings checked without model execution.
+[Interpretation and bindings](gate_decoupling_stage4_20261025.md):V3-only can coexist with original violation,not evidence that decoupling lost an original safety proof.
+No new solve,rerun,runtime change or exact reproof;keep known-witness labels,full193 denominator and final gate pending.
+Continue original B2 then1b queue;next aggregate completedB2 or final batch,not additional mechanism work.G1–G6OPEN.
+
 ## Single-layer local signal and historical confounds 2026-10-26
 
 Real increment10 since archived110:120 local terminals,121ststarted;PID425771 live,immutable9bf3eacd6 unchanged;live ledger supersedes snapshot.
