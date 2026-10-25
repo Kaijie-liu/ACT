@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## V2/V3 prototype/control frozen;1b continues 2026-10-25
+
+Real increment2;1b4/120 at11:20:08=1numericalPOSITIVE+3TIMEOUT,13aux complete,PID1050832 live;immutable6568139e9 unchanged.
+[Stage4 contract](gate_decoupling_stage4_20261025.md) and opt-in graph retain canonical direction/all guards/properties/residual affine suffix;V2 keeps inner products,V3 never original-positive.
+Receipt requires bothV2 endpoints/all properties/same source-domain/deadline;missing/falsified/frozen outcomes cannot become fullMoE SAFE/UNSAFE.
+[Control R1](gate_decoupling_control_20261025_r1.json) binds15sources,10test methods/3fixed synthetic GenBaB API calls,one300s/128MiB batch,existing supervisor/CPUenvironment.
+Static syntax/source binding reviewed only;native tests/API NOT RUN,real stage4 calls0,no claimed integration/performance/proof gain.
+Next finish1b,run this frozen control once under fresh admission,then freeze complete hard-core call table/source reconstruction within250/21h;no concurrent numerical diagnosis.G1–G6OPEN.
+
 ## 1b pruned-only running 2026-10-25
 
 Real full-call increment0 at11:02:48;13/13 auxiliary calls complete,verify_000 active; live ledger supersedes this snapshot.
