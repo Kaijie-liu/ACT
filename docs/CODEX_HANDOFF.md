@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## Residual-family1b complete and independently record-reviewed 2026-10-25
+
+Real increment107 since last committed snapshot;1b120/120=6numericalPOSITIVE+114TIMEOUT,13aux complete,PID1050832 exited;stage4 real0.
+[Final results](multilayer_stage1b_pruned_results_20261025.md) and [review](multilayer_stage1b_pruned_results_20261025.json):R2=5/60,R3=1/60;publicPGD26 unsafe,zero positive conflicts.
+Frozen auditor recomputation plus independent partition/domain checks pass;23 positive history queries closed beforeBaB;not numeric/source reproof or reachability.
+Complete cost33953.001589s/9.431389h includes onlineaudit;offline review5.906158s separate;all114timeouts retained,raw15,851,507B plus console.
+R3 adjusted49:44single-query/1many-history/3unseparated/1traversal;no unique ReLU/gate cause and no route-union restart.
+Stage4 full catalog193 objects/386 potential calls;keep250cap/order/full denominator and explicit unexecuted suffix,known counterexamples and missing identities.
+Next fresh resources,run already-frozen R3 controls once,then final catalog/freeze and V2/V3;no new infrastructure.G1–G6OPEN.
+
 ## Gate diagnostic batch entry prepared 2026-10-25
 
 Real increment4 since worker snapshot;1b13/120=1numericalPOSITIVE+12TIMEOUT,PID1050832 live;stage4 real calls0.
