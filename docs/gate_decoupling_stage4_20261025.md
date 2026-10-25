@@ -93,6 +93,40 @@ other calls and final batch accounting. This subgroup is descriptive, not a
 replacement for the193-object registered denominator. The27-call prefix audit
 passes; the stage decision remains `PENDING_REGISTERED_QUEUE`.
 
+Both two-layer subgroups are now complete (calls000--071). The record's
+`completed_two_layer_analysis` binds the source files and the independent
+terminal/domain/endpoint recount. This is an exploratory completed-subgroup
+analysis, not an interim replacement for the full193-object decision rule:
+
+| Family | Both close | V3 only | Both time out | Missing source | Total objects |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| L2E16 | 3 | 3 | 4 | 1 | 11 |
+| L2E8 | 9 | 7 | 1 | 8 | 25 |
+
+Of12 V2 positives,11 close both endpoints during initial bound propagation;
+one needs nonlinear BaB at both endpoints. Initial-bound completion is not
+uniformly cheap: one such call takes199.115s including all local costs.
+The old selected-history identities for these positives are6 saved-cut pending,
+3 in-flight and3 returned-unproved; pending histories are not demonstrated
+individual baseline failures. The3 returned-unproved cases share input1366.
+
+On all27 objects with comparable domains, V2 gate-range acquisition takes at
+most1.274s. For the15 V2 timeouts,7 save neither endpoint result,5 save a verified
+low endpoint but no high-endpoint result, and3 save an unknown low endpoint but
+no high-endpoint result. Thus neither a missing high result nor a partially
+positive pair establishes that the relaxation is intrinsically unprovable.
+The first72 terminal costs total5147.010s for V2 and2614.554s for V3, including
+missing-source terminals, excluding later calls and final batch accounting.
+V3 has a different, counterfactual guarantee; this cost difference is not an
+equal-task speedup.
+
+Inner gate-width medians are0.03779 for joint closures,0.11386 for V3-only
+closures, and0.00136 for paired timeouts. The paired-timeout group even includes
+an inner range of width about1.11e-16. These descriptive, outcome-conditioned
+statistics do not select a threshold or prove a causal gate-width effect;
+they show why narrow inner gates alone cannot promise easy verification.
+The80-call raw-prefix audit passes; all stage-level decisions remain pending.
+
 V3 removes variable gate products but retains router and guard computation.
 For this L2E16 family the graph adds56 ReLU max steps for guard atoms, plus8
 selected-expert and2 router ReLUs. The saved input1476 V3 graph lists66 available

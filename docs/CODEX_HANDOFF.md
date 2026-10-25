@@ -2,11 +2,12 @@
 
 ## Gate-decoupling real diagnostics running 2026-10-25
 
-Real increment37 since prior archived observation:64 local terminals,including18SOURCE_MISSING;1b120/120 archived.PID425771 detached,immutable9bf3eacd6,65thstarted;live ledgers supersede snapshot.
-[Research observation/review](gate_decoupling_stage4_records_20261025.json) audits64-call prefix:11bothclose/8V3only/4bothtimeout/9missing pairs;decisionPENDING.
-Input1366 all3L2E8seeds:old coupled queries unknown288.656/287.489/287.778s,newV2 local positives22.131/79.359/266.012s;seed2 needs nonlinearBaB for both endpoints.
-Same registered engine config,saved prefix ranges;one input across3models.Old census pruned783/784each:neither route-changing gains nor matched full-request speedups/source-complete certificates;no splicing online success.
-L2E16 complete subgroup11pairs:3bothclose/3V3only/4bothtimeout/1missing.1557 earlier inflight signal retained;V3 still has router/guard ReLUs,so timeout does not isolate expert difficulty.
+Real increment16 since prior archived observation:80 local terminals,including18SOURCE_MISSING;1b120/120 archived.PID425771 detached,immutable9bf3eacd6,81ststarted;live ledgers supersede snapshot.
+[Research observation/review](gate_decoupling_stage4_records_20261025.json) audits80-call prefix:15bothclose/11V3only/5bothtimeout/9missing pairs;decisionPENDING.
+Completed two-layer block36objects/72calls:12bothclose/10V3only/5bothtimeout/9missing;11of12V2positives close at initial bounds,one at nonlinearBaB.
+All27available V2range acquisitions <=1.274s;15V2timeouts include5withLOverified/HIunreturned,3withLOunknown/HIunreturned.Neither proves relaxation impossibility.
+Positive origins6pending/3inflight/3returned-unproved;last3share1366.No full-request splicing/speedup/route-changing or source-complete claim;V3 still has router/guard ReLUs.
+Inner-range widths overlap outcomes and include near-zero paired timeout;do not infer a narrow-gate threshold or unique ReLU cause from these descriptive summaries.
 Runroot`results/gate_decoupling_stage4_20261025_r1`;250local/21h/300s fixed;full193object denominator,missing IDs/unexecuted suffix retained.
 Next monitor this actual process,repair only tool errors preserving prefix/cumulative cost,then final attribution;no new mechanisms,resource changes or prefix gate decision.G1–G6OPEN.
 

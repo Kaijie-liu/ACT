@@ -948,5 +948,172 @@
     ],
     "scope": "Three trained seeds on the same input; old coupled query costs versus new local diagnostic costs, not matched complete-request costs.",
     "interpretation": "All three formerly returned-unproved histories close numerically under V2. Seeds0/1 close endpoints in incomplete bound propagation;seed2 needs nonlinear BaB for both endpoints and266.012s total. Saved original-prefix ranges are reused. Each original numerical census pruned783of784 histories, so these cases are not evidence of route-changing request gains, independent-input generalization or source-complete certification. Do not splice old pruning and new local closures into online success."
+  },
+  "completed_two_layer_analysis": {
+    "snapshot_at": "2026-10-25T22:57:31.257241+11:00",
+    "selection": "All first36 objects / calls000..071 in frozen catalog; complete L2E16 and L2E8 subgroups, no outcome-based exclusion.",
+    "objects": 36,
+    "local_calls": 72,
+    "paired_counts": {
+      "both_closed": 12,
+      "both_timeout": 5,
+      "V3_only": 10,
+      "missing": 9
+    },
+    "families": {
+      "L2E16": {
+        "both_closed": 3,
+        "both_timeout": 4,
+        "V3_only": 3,
+        "missing": 1
+      },
+      "L2E8": {
+        "both_closed": 9,
+        "V3_only": 7,
+        "missing": 8,
+        "both_timeout": 1
+      }
+    },
+    "positive_endpoint_stages_LO_then_HI": {
+      "incomplete_only / incomplete_only": 11,
+      "nonlinear_bab / nonlinear_bab": 1
+    },
+    "positive_history_source_kinds": {
+      "SAVED_CUT_FIRST_PENDING_NOT_RETURNED": 6,
+      "SAVED_INFLIGHT_FIRST_HISTORY": 3,
+      "SAVED_FIRST_RETURNED_UNPROVED": 3
+    },
+    "V2_timeout_saved_endpoint_statuses_LO_then_HI": {
+      "MISSING / MISSING": 7,
+      "verified / MISSING": 5,
+      "unknown / MISSING": 3
+    },
+    "descriptive_metrics_by_terminal": {
+      "both_closed": {
+        "inner_gate_width": {
+          "n": 12,
+          "minimum": 0.004788921739383611,
+          "median": 0.03779214488148114,
+          "maximum": 0.1605354211694956
+        },
+        "final_gate_width": {
+          "n": 12,
+          "minimum": 0.003962060777930862,
+          "median": 0.4383887621513515,
+          "maximum": 0.8694011857506717
+        },
+        "V2_gate_range_seconds": {
+          "n": 12,
+          "minimum": 0.0027177203446626663,
+          "median": 0.5608767364174128,
+          "maximum": 1.2739189639687538
+        },
+        "V2_call_seconds": {
+          "n": 12,
+          "minimum": 9.311090242117643,
+          "median": 24.084927166812122,
+          "maximum": 266.0119978208095
+        },
+        "V3_call_seconds": {
+          "n": 12,
+          "minimum": 7.073115108534694,
+          "median": 11.246688461862504,
+          "maximum": 16.587949430570006
+        }
+      },
+      "both_timeout": {
+        "inner_gate_width": {
+          "n": 5,
+          "minimum": 1.1102230246251565e-16,
+          "median": 0.0013572870615364274,
+          "maximum": 0.12883550762108706
+        },
+        "final_gate_width": {
+          "n": 5,
+          "minimum": 0.1019692483461726,
+          "median": 0.19854375953919068,
+          "maximum": 0.9957889892426236
+        },
+        "V2_gate_range_seconds": {
+          "n": 5,
+          "minimum": 0.5166348069906235,
+          "median": 0.7845849953591824,
+          "maximum": 1.1319151613861322
+        },
+        "V2_call_seconds": {
+          "n": 5,
+          "minimum": 294.2369877900928,
+          "median": 294.25055017881095,
+          "maximum": 294.32238111644983
+        },
+        "V3_call_seconds": {
+          "n": 5,
+          "minimum": 294.21081253513694,
+          "median": 294.26052696071565,
+          "maximum": 294.4745500534773
+        }
+      },
+      "V3_only": {
+        "inner_gate_width": {
+          "n": 10,
+          "minimum": 0.0015561879138228374,
+          "median": 0.11386427295863047,
+          "maximum": 0.2163799567089839
+        },
+        "final_gate_width": {
+          "n": 10,
+          "minimum": 0.08980834332563523,
+          "median": 0.43714679263815115,
+          "maximum": 0.9986367839054185
+        },
+        "V2_gate_range_seconds": {
+          "n": 10,
+          "minimum": 0.4694266617298126,
+          "median": 0.6394411716610193,
+          "maximum": 0.9671556204557419
+        },
+        "V2_call_seconds": {
+          "n": 10,
+          "minimum": 294.2022202089429,
+          "median": 294.2687102602795,
+          "maximum": 294.33820557408035
+        },
+        "V3_call_seconds": {
+          "n": 10,
+          "minimum": 10.65898877941072,
+          "median": 93.06997034326196,
+          "maximum": 277.97186348214746
+        }
+      }
+    },
+    "all_terminal_seconds": {
+      "V2": 5147.009614940733,
+      "V3": 2614.5543449297547
+    },
+    "binding": {
+      "root": "/data1/Kane/MOE/results/gate_decoupling_stage4_20261025_r1",
+      "unique_files": 773,
+      "sorted_relative_path_space_sha256_newline_digest": "b2d883c599a54c121bdcf8907d374d65575276e7ed05d57e629e57360a329275"
+    },
+    "review": "Frozen full-prefix auditor passed at80terminals/81started; raw checks plus independent72-row/domain/endpoint recount; no numerical-bound reproof or online upgrade.",
+    "prefix_audit": {
+      "calls": 80,
+      "started": 81,
+      "status": "AUDITED_PREFIX",
+      "decision": "PENDING_REGISTERED_QUEUE",
+      "completed_call_seconds": 8230.27526841499,
+      "bytes_at_review": 4584754,
+      "offline_seconds": 0.8424156419932842
+    },
+    "limits": [
+      "Exploratory subgroup summaries do not replace full193-object decision denominator or adjust any gate.",
+      "Only27objects have comparable gate domains;9missing remain in all-object counts and cost.",
+      "Timeout endpoint missing is not a negative bound or evidence of intrinsic relaxation failure; partial LO positive is not V2 closure.",
+      "11initial-bound closures do not imply uniformly low cost; one such positive takes199.115s end-to-end.",
+      "Narrow inner gates alone do not guarantee closure; both-timeout group includes an inner interval width near machine precision.",
+      "V3 retains router/guard ReLUs and changes counterfactual states; no unique causal attribution to experts.",
+      "Known local positive source types differ; old results and new diagnostics are not spliced into complete-request success."
+    ],
+    "offline_analysis_seconds": 0.04598464258015156
   }
 }
