@@ -27,8 +27,8 @@
   "source_models": 18,
   "excluded_count": 2329,
   "backend_identity": "40246f43aa290511811410e962b2db9e24f0467c76a2aa900aeb5f7685a6209a",
-  "scientific_complete_calls": 6,
-  "numerical_positive_complete_requests": 0,
+  "scientific_complete_calls": 17,
+  "numerical_positive_complete_requests": 5,
   "source_complete_certificates": 0,
   "limits": "M-A-only test after both new mechanisms failed5a; not a successful three-mechanism algorithm claim; numerical results not G3 proof",
   "launch": {
@@ -104,9 +104,13 @@
     "review": "All frozen exclusion indices, ascending scan completeness, common clean-correct selection and44 published file identities checked; no model forward rerun, not numerical bound reproof."
   },
   "observed": {
-    "at": 1793044608.9329615,
+    "at": 1793046235.4260228,
     "auxiliary_completed": 31,
-    "verification_completed": 6,
+    "verification_completed": 17,
+    "statuses": {
+      "TIMEOUT": 12,
+      "POSITIVE": 5
+    },
     "pid_live": true,
     "stopped": false
   },
@@ -642,5 +646,93 @@
     "limits": "Observed histories are sampled native executions, not exact real tie-legal reachability. One observed history does not prove route stability. Candidate counts are numerical interval upper estimates, not exact legal counts. Failed PGD is not safety; no main endpoint denominator changes.",
     "process_wall_seconds_observed": 3.193451103,
     "process_cost_scope": "whole tool-observed process including imports and record write, separate from online requests"
+  },
+  "first_positive_pair_review": {
+    "status": "PASS_FROZEN_RECORD_AUDIT",
+    "at": 1793046235.4250827,
+    "model": "L2E16_seed0",
+    "index": 1742,
+    "rows": [
+      {
+        "part": "main",
+        "model": "L2E16_seed0",
+        "index": 1742,
+        "rank": 0,
+        "arm": "off",
+        "status": "POSITIVE",
+        "accepted": true,
+        "seconds": 7.72838887758553,
+        "coverage": {
+          "active": null,
+          "attempted": 1,
+          "expected": 14400,
+          "in_flight": 0,
+          "never_started": 0,
+          "prefix_attempts": 2,
+          "prefix_returns": 2,
+          "proof_complete": true,
+          "proof_unclosed": 0,
+          "pruned": 14399,
+          "returned": 1,
+          "returned_unproved": 0,
+          "traversal_complete": true,
+          "verified": 1
+        },
+        "guarantee": "GENBAB_NUMERICAL_FILTER"
+      },
+      {
+        "part": "main",
+        "model": "L2E16_seed0",
+        "index": 1742,
+        "rank": 0,
+        "arm": "on",
+        "status": "POSITIVE",
+        "accepted": true,
+        "seconds": 20.027896597981453,
+        "coverage": {
+          "active": null,
+          "attempted": 1,
+          "expected": 14400,
+          "in_flight": 0,
+          "never_started": 0,
+          "prefix_attempts": 2,
+          "prefix_returns": 2,
+          "proof_complete": true,
+          "proof_unclosed": 0,
+          "pruned": 14399,
+          "returned": 1,
+          "returned_unproved": 0,
+          "traversal_complete": true,
+          "verified": 1
+        },
+        "guarantee": "GENBAB_NUMERICAL_FILTER"
+      }
+    ],
+    "bindings": [
+      {
+        "ledger": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1/main_verify_0012_ledger.json",
+        "sha256": "cb93a7efe9670a887fca163dea818af7b369768026984cc0f198012ff4abd949"
+      },
+      {
+        "ledger": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1/main_verify_0013_ledger.json",
+        "sha256": "09b0aa916ef2bcc8284ac3ba31204d7fbd3591d6f5abf96b122f6a336af691e6"
+      }
+    ],
+    "cascade": {
+      "method": "M_A_HARD120_V2_THEN_REMAINING_COUPLED",
+      "phase_folder": "v2_history_0000",
+      "phase_seconds": 9.461755340918899,
+      "phase_status": "POSITIVE",
+      "source_id": "3c2643cd41ee45ffc1be148dfcae6a868618d707185b243a288b355236859ab0",
+      "used_fallback": false
+    },
+    "cost_on_minus_off": 12.299507720395923,
+    "cost_on_over_off": 2.591471122275938,
+    "seconds_including_import": 2.56310747936368,
+    "interpretation": "Shared complete numerical positives, zero gain/loss. One verified history plus numerical-policy prefix exclusions covers14400 directory histories; not independently proved routing or source-complete SAFE. M-A closes without coupled fallback but costs more on this pair; no population cost inference.",
+    "numerical_bound_reproof": false,
+    "new_online_verdicts": 0,
+    "process_wall_seconds_observed": 3.030818983,
+    "process_cost_scope": "tool-observed whole review process including imports/record write, separate from online calls"
   }
 }

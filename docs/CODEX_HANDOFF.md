@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## B4 first shared positive: M-A closes but costs more 2026-10-27
+
+Real increment7 since lastturn10:17/1080calls=12TIMEOUT+5numericalPOSITIVE at snapshot;PID710019live;notfinalpairedgain decision.
+[Record](moe_aware_b4_records_20261027.json)`first_positive_pair_review`:L2E16seed0/1742 off/on POSITIVE7.728/20.028s;0gain/loss,2.591costratio onthispair.
+Both numericprefixexclusions14399+oneverifiedhistory cover14400directoryhistories;M-Aphase9.462sPOSITIVE,no fallback;notroute-changing/G3proof.
+Frozen audits originalon-time acceptance/engine/source/property/coverage/cascadefiles PASS;review2.563sincludingimport separate,no offlineverdictchange.
+[Interpretation](moe_aware_b4_20261026.md) preserveslocalcostloss withoutapplying globalmedian gate toonepair;no T1/configuration change.
+Next continue fixedB4/final fullpairedanalysis;G1–G6OPEN.
+
 ## B4 public main cohort characterized without new solving 2026-10-27
 
 Real increment0 newqueries for thisanalysis;6/1080completeverifications,allTIMEOUT,PID710019live;31auxiliarydone.
