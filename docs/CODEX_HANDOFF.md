@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## B4 paired design and analysis prepared 2026-10-26
+
+Real increment4 since archived116:supplement120/194(11V2positive/49V3diagnostic),PID2231367 live;5a/B4 real0,full-request gains0.
+[B4 design](moe_aware_b4_20261026.md):1320/110h unchanged,four nontransferable parts;20shared new input blocks,15main/3boundary models.
+Six-model subset fixed before5a/B4 outcomes:L2E8/L3E8/L2E16seed0/1;residuals stay in all15main models,subset claims do not imply residual ablation.
+Pure catalog/paired-input bootstrap and exact decision gates implemented;3ordinary tests pass,affected exact-threshold recheck pass;no model/solver call.
+Full acceptance still needs bound5a admission,final input/source/config freeze,complete dispatcher and offline queue audit;current design does not run B4.
+M-A defaultoff committed556c5ede4;immutable5a9b7db404e remains unchanged/ready and must execute after supplement serially.
+G1–G6OPEN;local positives,synthetic controls and statistical preparation are not complete-request advantage or G3.
+
 ## Optional M-A complete-request cascade connected 2026-10-26
 
 Real increment12 since archived104: supplement116/194(11V2positive/47V3diagnostic),PID2231367 live;M-B/M-C real0,full-request gains0.
