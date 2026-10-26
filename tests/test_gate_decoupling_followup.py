@@ -1,5 +1,6 @@
 """New reconstruction/provenance controls, not another graph benchmark."""
 import copy
+import json
 import os
 from pathlib import Path
 import time
@@ -120,6 +121,9 @@ class FollowupControls(unittest.TestCase):
             result.update(source_id=source_id, history=selected['history'], history_origin=F.MODE,
                 selection_sha256=W.sha(self.folder/'history_selection.json'),
                 property_count=1, domain_sha256=G.domain_digest(domain))
+            # Real reception reads JSON. Preserve the checker; reproduce that
+            # boundary instead of comparing in-memory tuples with JSON arrays.
+            result = json.loads(json.dumps(result))
             call = dict(object_id=obj['id'], variant=group)
             W.check_received(self.folder, result, spec, call, self.deadline)
             for key, value in [('history', [[0, 2], [0, 1]]), ('selection_sha256', 'bad'),

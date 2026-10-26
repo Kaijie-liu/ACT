@@ -1,5 +1,11 @@
 # MoE project handoff — current entry point
 
+## Supplement control JSON boundary correction 2026-10-26
+
+Real increment0.R1 retainedFAIL7.492215s:four new standard-library controls pass;native two endpoints positive but test called receiver before JSON tuple→array conversion.
+Production receipt checks unchanged;only control mimics real JSON boundary.R2 runs unfinished native/reception/ledger checks,not four passed controls;prior cost/bytes retained within300s.
+No mathematical rejection or real run;next R2 then frozen194-call supplement under existing tool-repair authority.
+
 ## Sixth revision: user-approved complete-request cascade study 2026-10-26
 
 Real increment0;old250/250 andGRAY remain unchanged.User explicitly entersstage5;not a retroactivegate pass.

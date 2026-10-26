@@ -44,7 +44,8 @@ def freeze(path, prior=None, followup=False):
             retained_control=retained, seconds=300, artifacts=128*2**20, as_bytes=8*2**30,
             source_files={p: sha(ROOT/p) for p in code}, native_python=str(backend.ENVIRONMENT/'bin/python'),
             trained_models=0, real_diagnostic_calls=0, solver_calls=3, prefix_crown_calls=2, gpu=False,
-            suites=['test_gate_decoupling_followup.FollowupControls',
+            suites=[('test_gate_decoupling_followup.FollowupControls.test_z_native_reconstruction_graph_and_reception'
+                     if prior else 'test_gate_decoupling_followup.FollowupControls'),
                 'test_gate_decoupling.WorkerControls.test_receiver_source_and_counterfactual_scope',
                 'test_gate_decoupling_stage4.BatchControls.test_audit_binds_raw_terminal_and_failed_attempt'],
             cases=['fixed supplementary selection/T1', 'canonical prefix exclusion/ties',
