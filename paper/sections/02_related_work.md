@@ -148,12 +148,18 @@ specialization-to-acceptance sequence is therefore a program-analysis result:
 route conditioning extends an existing verifier's input language.
 
 We study three ways to carry a route condition to such a backend. Retaining the
-linear condition in HZ/MILP preserves it exactly at verification scale.
-Replacing the guarded cell by its coordinate hull is sound but recovers almost
-no information in high dimension. Compiling the implication into an augmented
-output is semantically sound only with a positive tie margin and remains too
-loose in our CROWN cohort. These negative controls prevent us from treating all
-guard representations as equivalent.
+linear condition in HZ/MILP preserves it in the declared representation at
+verification scale. Replacing the guarded cell by its coordinate hull is sound
+but recovers almost no information in the historical high-dimensional control.
+The earlier augmented-output experiments must not be generalized to all strong
+backends. For weak tie-legal guards, the strict maximum specification encodes
+the original strict output target; replacing its strict comparison by a weak
+one can admit a negative property at a legal tie. The later all-pair GenBaB
+frontend obtains 60/60 numerical positives on the registered historical-success
+cohort. Thus the old plain-CROWN and smoke failures do not show that a general
+nonlinear verifier cannot exploit guards. See the
+[guarded specification contract](../../docs/genbab_guarded_pair_semantics_20261020.md)
+and [executed strong-backend results](../../docs/advantage_region_results_20261021.md).
 
 Monolithic F0/MILP joins the same branch outer relaxations used by the
 decomposed weighted path. It is not an exact encoding of the original softmax.
@@ -187,9 +193,11 @@ The condensed manuscript also distinguishes within-request scoped facts from
 and [learned-conflict inheritance under query refinement](https://arxiv.org/abs/2603.12232).
 Constraint retention is not new in general: [Clip-and-Verify](https://proceedings.neurips.cc/paper_files/paper/2025/hash/ffa977364ab7046c803da0e04dbb2832-Abstract-Conference.html)
 uses linear constraints in a modern BaB backend. The completed plain-CROWN
-experiment does not measure that entire method family. Our same-task evidence
-is complementarity with an ACT-fronted static weighted path, not a claim of
-generic external-tool superiority. See the [targeted reference checks](../../docs/submission_references_20260921.md)
+experiment does not measure that entire method family. Its observed
+complementarity is limited to that configuration. The later strong guarded
+baseline and multilayer results must also be considered, and the completed
+M-B/M-C diagnostics do not establish their proposed competitive advantage.
+See the [targeted reference checks](../../docs/submission_references_20260921.md)
 for scope and remaining full-paper/metadata review work.
 
 We do not claim a universal verifier, a dominance result over CROWN, or a

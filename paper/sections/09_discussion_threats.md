@@ -2,7 +2,7 @@
 
 ## What the evidence establishes
 
-The confirmation experiment shows a reproducible gain over two registered
+The historical confirmation experiment shows a reproducible gain over two registered
 internal monolithic configurations on new verification inputs. It does not
 establish that smaller per-branch problems always solve faster: the preceding
 four-arm experiment favored monolithic coverage, and its results remain part
@@ -17,6 +17,34 @@ network unsafe. Two multi-route gains face completed-relaxation failures in
 that control, supporting a precision mechanism. The third gain faces a solver
 limit, and the product also changes problem size. These observations do not
 identify every runtime or coverage difference as a pure correlation effect.
+
+The stronger external studies constrain what those results can imply.
+The registered historical-success cohort has 60/60 GenBaB numerical positives,
+with no observed ACT-only request. Its success-based selection, 43 distinct
+inputs and older ACT comparison version prevent a population or paired-speedup
+claim. The separate 41-request failure-selected cohort has 17 external positives,
+22 UNKNOWN and two ERROR. Neither selected cohort replaces a new-input,
+contemporaneous complete-request comparison. Evidence:
+[success cohort](../../docs/advantage_region_results_20261021.md),
+[failure cohort](../../docs/b2_observed_results_20261021.md).
+
+The completed multilayer comparison gives pruned GenBaB 108/180 positives and
+ACT v1 zero, with the latter's 178 TIMEOUT, one ERROR and one UNSUPPORTED all
+retained. The post-prefix many-history criterion stopped the proposed union
+mechanism. Its timing-based categories are operational labels, not a unique
+causal separation of network difficulty, guard precision and execution overhead.
+The post-189 registration must remain visible; it must not be described as
+pre-registered before all outcomes. Evidence:
+[multilayer result](../../docs/multilayer_stage1_20261022.md).
+
+M-B and M-C subsequently fail their finite diagnostic admission rules. A higher
+initial score on a subset of completed M-C tables is not a complete-history
+gain; missing tables and the extra analysis cost remain part of the result.
+This does not refute weak duality or all possible margin partitions. It does
+remove empirical support for the proposed three-component advantage in the
+tested implementations. The ongoing M-A-only B4 retains its full denominator,
+radius and single-layer boundary queues; no prefix is a final efficacy decision.
+See the [diagnostic table](08_evaluation.md#multilayer-mechanism-diagnostics-no-admitted-m-b-or-m-c-benefit).
 
 ## Model and input generality
 
@@ -161,9 +189,11 @@ under its frozen rules; changing evidence scheduling would require a separately
 identified engineering study, not replacement of these results.
 
 The central conclusion is that route invariance is not necessary for proving
-the output property, and retaining route/input/expert relationships can support
-complete results beyond that premise. Whether the more expensive relational
-path is worthwhile depends on the task, numerical contract and alternative
-backend. Establishing positive certificate gains on the second family and
-reducing upstream proof trust remain substantive open problems, not reasons to
-erase the current scoped positive and negative results.
+the output property, and complete route-conditioned obligations can expose
+that problem to both HZ-based and general nonlinear backends. The completed
+strong-baseline and mechanism studies do not establish an irreplaceable HZ
+advantage or a successful MoE-aware three-component algorithm. Whether the
+gate-decoupling cascade yields a net complete-request benefit remains the
+question of the ongoing frozen experiment. Same-source strict positive proofs
+and cross-family competitiveness remain open; historical internal gains and
+the explicit negative results are both retained.

@@ -1,5 +1,13 @@
 # MoE project handoff — current entry point
 
+## Current manuscript aligned with completed strong-baseline evidence 2026-10-27
+
+Real increment3 since prior80:liveB4 83/1080,41completepairs,gain/loss2/0;PID710019continues fixedqueue,no newquery from thisedit.
+[Working abstract](../paper/abstract.md),introduction,relatedwork,discussion now include GenBaB60/60success-selected,17/41failure-selected and multilayer108/180 versus ACT0;cohort/timing/compatibility limits explicit.
+M-B/MC negative admission and M-A-only B4pending carried into claims;no finalB4 advantage,universal guard limitation or successfulthree-component claim.
+Four archived finalrecord bindings/counts and50local links/anchors rechecked PASS,0.017s,no model/solvercall;diffcheckPASS,not numericalreproof.
+Earlier LaTeX review draft remains explicitlyhistorical;frozen results/queues/configuration untouched. Next completeB4/finalpairedaudit;G1–G6OPEN.
+
 ## B4 second complete input block audited 2026-10-27
 
 Real increment22 audited calls since archived38:first60complete,30pairs,gain/loss2/0;actualqueue62/1080at review,PID710019continues rank2.

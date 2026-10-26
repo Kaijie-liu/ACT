@@ -10,9 +10,12 @@ rule. Some complete M-C initial tables improve, at greater cost, without closing
 a history. B4 has started with M-A alone and has no final performance result.
 The conditional proof rules therefore remain candidate-method results, not an
 experimentally successful three-component algorithm.
-The short technical-review paper and its tables below remain the earlier
-single-layer/conditional-evidence draft; they are not the current seventh-revision
-evaluation. Use [the handoff](../docs/CODEX_HANDOFF.md) for live evidence.
+The working abstract, introduction, related-work comparison and discussion now
+include the completed stronger GenBaB and multilayer negative results; none
+claims a final B4 gain. The short technical-review LaTeX paper and its generated
+tables remain the earlier single-layer/conditional-evidence draft; they are not
+the current seventh-revision evaluation. Use [the handoff](../docs/CODEX_HANDOFF.md)
+for live evidence.
 
 Historical claim disposition (2026-09-23): read the
 [competition and guarantee response](../docs/competition_guarantee_disposition_20260923.md).

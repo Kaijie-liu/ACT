@@ -65,9 +65,9 @@ CROWN on variable-weight static pairs produces 13 numerical positive filters,
 versus 11 HZ-policy safety results, at substantially lower observed cost.
 There are three ACT-only and five CROWN-only positives. These evidence levels
 are not interchangeable, but the cheaper path is a real usability challenge,
-not a frontend-rejection straw man. Our claim is therefore scoped net benefit
-and complementary verification capability, not domination of generic neural
-network verifiers. A separate 20-call comparison on the MetaMoE author
+not a frontend-rejection straw man. This historical comparison supports
+complementarity with that particular plain-CROWN path, not domination of
+generic neural network verifiers. A separate 20-call comparison on the MetaMoE author
 checkpoint is more adverse: ACT obtains four policy acceptances, all shared
 with nine author-backend numerical sufficient filters. ACT has no unique
 positive. The author path includes a disclosed compatibility wrapper and
@@ -77,6 +77,39 @@ not a new certificate. On the four common positives ACT is also slower
 (10.55 versus 7.17 seconds on average). Thus the earlier external-path
 complementarity must not be generalized to every author-model comparison.
 See the [complete repaired comparison](../../docs/metamoe_las_followup_result_20260923_r1.md).
+
+Later strong-backend experiments materially narrow the competitive claim.
+The registered compatibility-adapted GenBaB path obtains numerical positives
+on all 60 registered historical-success requests (43 distinct inputs),
+including 51 recorded multi-pair cases.
+It also closes 17 of 41 requests in a separate historical-failure cohort; the
+remaining 22 UNKNOWN and two ERROR are retained. These studies select by old
+ACT outcomes and execute at different times and versions, so their timings
+are not a new paired speedup and their counts are not a population success rate.
+They leave no ACT-only positive in the selected success cohort and stop the
+registered single-layer advantage-region direction. See the
+[success-region diagnosis](../../docs/advantage_region_results_20261021.md) and
+[failure-cohort results](../../docs/b2_observed_results_20261021.md).
+
+The subsequent multilayer experiment completes 600 requests. On its 180
+multilayer objects, prefix-pruned GenBaB obtains 108 numerical positives,
+while ACT v1 and naive enumeration obtain none. ACT retains 178 TIMEOUT,
+one ERROR and one UNSUPPORTED, not 180 homogeneous solver timeouts. The
+many-history mechanism criterion stops the route-union direction; this
+supplement was registered after a 189-request prefix and is explicitly not
+an outcome-blind rule. It does not prove that route combinations can never be
+a bottleneck or that every unresolved history is limited by ReLU difficulty.
+See the [completed comparison](../../docs/multilayer_stage1_20261022.md).
+
+This evidence motivates testing optional strong-engine mechanisms rather than
+assuming that an HZ implementation is necessary for competitive verification.
+The completed guard-dual and first-margin partition diagnostics add no history
+closures and fail their frozen admission rules. Their rejection and the
+partitioned bounds' observed precision/cost tradeoff are reported in the
+[current evaluation](08_evaluation.md#multilayer-mechanism-diagnostics-no-admitted-m-b-or-m-c-benefit).
+The running B4 study tests the gate-decoupling cascade alone; its prefixes do
+not establish a complete-request advantage or a successful three-component
+algorithm.
 
 Finally, we separate evidence consistency from independent bound checking.
 A rational checker validates supplied HZ-to-LP projections, direct McCormick
@@ -103,8 +136,10 @@ The contributions are a relation-preserving organization of complete weighted
 MoE obligations, property-directed weighted verification with scoped fact
 reuse, and an evaluated implementation with an explicit numerical and evidence
 contract. Hybrid zonotopes, convexity, McCormick envelopes and proof reuse are
-not claimed as individually new. The executable version studied here covers
-eval-mode output-layer selected-softmax top-2 models on CPU/float64; the broader
-normalized top-k algebra is distinguished from that implementation scope.
-Cross-architecture benefits and high-accuracy deep-model strict certificates
-remain open empirical goals.
+not claimed as individually new. The historical HZ production comparison covers
+eval-mode output-layer selected-softmax top-2 models on CPU/float64. The later
+strong-engine frontend handles the explicitly registered multilayer MLP and
+residual configurations; this does not extend the old HZ result to arbitrary
+internal or token-level routing. The mathematical reductions and negative
+experiments are established separately from the still-unconfirmed competitive
+mechanism claim. Cross-family strict certificates remain open.

@@ -1,32 +1,42 @@
-# Abstract
+# Working abstract — 27 October 2026
 
-Robustness verification of a mixture-of-experts model must account for both
-data-dependent routing and the output of the selected experts. Requiring route
-invariance is sufficient but can exclude regions whose outputs remain safe
-across routing boundaries. We develop an ACT/HybridZ analysis for output-layer,
-normalized weighted MoE models that retains the relationship between the input,
-legal route guards and expert outputs. It combines guarded expert-wise proofs
-with property-directed weighted obligations, reuses facts under explicit domain
-containment, and schedules residual solving according to route complexity.
-On 100 new verification inputs and three fixed same-family top-2 models, the
-scheduled implementation gains 23 policy-accepted safety results over a matched monolithic
-configuration without losing any, under equal request budgets; all gains involve
-multiple recorded legal routes. A retrospective input-containment audit finds
-small inward-rounding gaps, so these counts are empirical policy outcomes,
-not source-complete real-network certificates. A separate shared-input ablation supports the role of
-retained correlation. An executable ACT-fronted CROWN comparison is cheaper and
-produces more numerical positive filters overall, while leaving complementary
-ACT-only results. A separate repaired MetaMoE author-checkpoint comparison
-favors the author sufficient path: nine numerical filters versus four ACT
-policy acceptances, with no ACT-only positive. Compatibility repair does not
-establish a new certificate. We also reconstruct weighted LP obligations in rational
-arithmetic and independently check their bounds; the positive stored proofs
-retain explicit upstream assumptions. A separate declared-source checker
-covers a complete convolutional enclosure but yields no positive request on
-its new matrices. These proof links cannot be combined across sources.
-A separately fixed convolutional
-family yields no additional HZ-policy safety results, and a new-input evidence
-mode fails to reproduce a postselected complete proof. The results establish scoped benefits
-of relational verification and expose limits in coverage, proof cost and model
-generality; they do not establish universal backend superiority or strict
-certification of high-accuracy deep MoE models.
+Input perturbations can change a mixture-of-experts (MoE) program's route
+without violating its output property. We study verification rules that cover
+every tie-legal route while retaining the dependence between input, router,
+guards and weighted expert outputs. An ACT/HybridZ implementation combines
+guarded expert facts, property-directed weighted obligations, scoped reuse
+and structural scheduling. A later frontend specializes multilayer histories
+for a general nonlinear branch-and-bound engine.
+
+The evidence separates internal benefits from external competitiveness. On
+100 new verification inputs and three fixed same-family models, the historical
+scheduler gains 23 numerical-policy acceptances over matched monolithic solving
+without losses. A subsequent input-containment audit prevents interpreting
+those results as source-complete certificates. With disclosed compatibility
+adaptations, the stronger guarded GenBaB path obtains numerical positives on
+all 60 selected historical-success requests and 17 of 41 historical-failure
+requests. These selected, separately
+executed studies do not establish a population win rate or matched speedup.
+In a separate 600-call multilayer comparison, pruned GenBaB obtains 108 of 180
+multilayer positives, whereas ACT v1 and naive enumeration obtain none.
+
+We then test two MoE-specific candidates: guard-dual bounds and closed margin
+partitions with gate-decoupled endpoint analysis. Neither adds a complete
+history closure on its registered diagnostic cohort. Some partitioned initial
+bounds improve, but at greater cost and without full closure. A complete-request
+comparison of the gate-decoupling cascade alone is in progress; no final
+performance advantage or successful three-component algorithm is claimed.
+
+Separately, rational checking closes stored conditional proofs, while the new
+source-checked convolutional construction has no complete positive output on
+its own matrices. Those proof links cannot be combined across sources. The
+current findings support complete obligation reductions and document limits
+of relational precision, execution cost and proof trust. They do not establish
+stable superiority over strong external verifiers or source-complete
+high-accuracy MoE certification.
+
+Evidence anchors for this working draft: [historical internal comparison](sections/08_evaluation.md#historical-evaluation-scope),
+[success-selected strong-backend diagnosis](../docs/advantage_region_results_20261021.md),
+[failure-selected diagnosis](../docs/b2_observed_results_20261021.md),
+[completed multilayer comparison](../docs/multilayer_stage1_20261022.md), and
+[completed mechanism diagnostics](sections/08_evaluation.md#multilayer-mechanism-diagnostics-no-admitted-m-b-or-m-c-benefit).
