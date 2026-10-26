@@ -1,5 +1,13 @@
 # MoE project handoff — current entry point
 
+## B4 first complete input block: identical coverage outcomes 2026-10-27
+
+Real increment6 since last24:30/1080calls,firstinput1742complete across15models;eacharm4POSITIVE/11TIMEOUT,gain/loss0/0;PID710019continues nextinput.
+[Record](moe_aware_b4_records_20261027.json)`first_input_review`:all30original source/engine/coverage/deadline/cascade checks pass,no publicreplayedunsafe conflict;not numericalreproof.
+Foursharedpositives=L2E16seeds0/1/2,R2E8seed1;on9verifiedhistories allV2positive,no fallback,no actualroute-changing proof inferred.
+Allrequest sums off/on3326.685/3375.565s,medians294.234/294.253s;auxiliary separatelycharged;offline review2.730sincludingimport separate.
+[Prefix interpretation](moe_aware_b4_20261026.md):oneof20inputblocks,notCI/admission;fixedqueue/T1/quotas unchanged,no newmechanism.G1–G6OPEN.
+
 ## B4 first shared positive: M-A closes but costs more 2026-10-27
 
 Real increment7 since lastturn10:17/1080calls=12TIMEOUT+5numericalPOSITIVE at snapshot;PID710019live;notfinalpairedgain decision.
