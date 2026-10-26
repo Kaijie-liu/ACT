@@ -1,5 +1,13 @@
 # MoE project handoff — current entry point
 
+## B4 first complete pair: both TIMEOUT 2026-10-27
+
+Real increment2 full calls:2/1080,31auxiliary complete;L2E8seed0/index1742 off/on TIMEOUT294.234/294.184s,0gain/loss;PID710019live onnextobject.
+[Record](moe_aware_b4_records_20261027.json):frozen4a93175c5 audits both originalterminals/files/model/input/property andsameR7 environment;no offline positive upgrade.
+Both preserve398pruned/1verified histories in savedprefix;on retains2unfinishedV2phase terminals,not accepted evidence or fullrequest proof.
+Firstpair is a runtime/receipt check,not B4 efficacy decision;all600/120/240/120plannedcalls remain,no settings orquota changes.
+Next monitor fixedqueue/final pairedaudit;G1–G6OPEN.
+
 ## Completed mechanism failures integrated into manuscript 2026-10-27
 
 Real increment0 complete B4requests at edit;PID710019live,registered auxiliary census proceeds;no numerical configuration change.

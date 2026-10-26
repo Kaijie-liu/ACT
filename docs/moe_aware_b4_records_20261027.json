@@ -27,7 +27,7 @@
   "source_models": 18,
   "excluded_count": 2329,
   "backend_identity": "40246f43aa290511811410e962b2db9e24f0467c76a2aa900aeb5f7685a6209a",
-  "scientific_complete_calls": 0,
+  "scientific_complete_calls": 2,
   "numerical_positive_complete_requests": 0,
   "source_complete_certificates": 0,
   "limits": "M-A-only test after both new mechanisms failed5a; not a successful three-mechanism algorithm claim; numerical results not G3 proof",
@@ -104,10 +104,134 @@
     "review": "All frozen exclusion indices, ascending scan completeness, common clean-correct selection and44 published file identities checked; no model forward rerun, not numerical bound reproof."
   },
   "observed": {
-    "at": 1793042418.478552,
-    "auxiliary_completed": 11,
-    "verification_completed": 0,
+    "at": 1793043319.370144,
+    "auxiliary_completed": 31,
+    "verification_completed": 2,
     "pid_live": true,
     "stopped": false
+  },
+  "first_pair_review": {
+    "at": 1793043319.3698754,
+    "status": "PASS_RECORD_BINDING",
+    "frozen_execution_commit": "4a93175c5044528a3e7a5f9c4f6a964621fe8010",
+    "rows": [
+      {
+        "part": "main",
+        "model": "L2E8_seed0",
+        "index": 1742,
+        "rank": 0,
+        "arm": "off",
+        "status": "TIMEOUT",
+        "accepted": false,
+        "seconds": 294.23409760557115,
+        "coverage": null,
+        "guarantee": null
+      },
+      {
+        "part": "main",
+        "model": "L2E8_seed0",
+        "index": 1742,
+        "rank": 0,
+        "arm": "on",
+        "status": "TIMEOUT",
+        "accepted": false,
+        "seconds": 294.1836039852351,
+        "coverage": null,
+        "guarantee": null
+      }
+    ],
+    "details": [
+      {
+        "id": "main_verify_0000",
+        "ledger_sha256": "2a5771b0e7332829f6f0ed1dbe7b2b43b7f6432aab093d704fef17bf4076321b",
+        "environment_sha256": "313fcf9f323ed64658c64d602e5aa716a36c24001683125a779925b413e1cdc9",
+        "observed_coverage": {
+          "active": {
+            "entered": 11891249.108555049,
+            "phase": "history_solver",
+            "prefix": [
+              [
+                2,
+                4
+              ],
+              [
+                1,
+                3
+              ]
+            ]
+          },
+          "attempted": 3,
+          "expected": 784,
+          "in_flight": 1,
+          "never_started": 383,
+          "prefix_attempts": 2,
+          "prefix_returns": 2,
+          "proof_complete": false,
+          "proof_unclosed": 385,
+          "pruned": 398,
+          "returned": 2,
+          "returned_unproved": 1,
+          "traversal_complete": false,
+          "verified": 1
+        }
+      },
+      {
+        "id": "main_verify_0001",
+        "ledger_sha256": "56bd39b24970c17fe7074d08bf58dea6d34fead40d454265d5636e4544fb7e50",
+        "environment_sha256": "313fcf9f323ed64658c64d602e5aa716a36c24001683125a779925b413e1cdc9",
+        "observed_coverage": {
+          "active": {
+            "entered": 11891461.740208352,
+            "phase": "history_solver",
+            "prefix": [
+              [
+                2,
+                4
+              ],
+              [
+                1,
+                2
+              ]
+            ]
+          },
+          "attempted": 2,
+          "expected": 784,
+          "in_flight": 1,
+          "never_started": 384,
+          "prefix_attempts": 2,
+          "prefix_returns": 2,
+          "proof_complete": false,
+          "proof_unclosed": 385,
+          "pruned": 398,
+          "returned": 1,
+          "returned_unproved": 0,
+          "traversal_complete": false,
+          "verified": 1
+        }
+      }
+    ],
+    "optional_phase_terminals": [
+      {
+        "path": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1/main_verify_0001/v2_history_0000/phase_terminal.json",
+        "sha256": "09dfb15f14e4108ddf97b51089e078752b64d05f647a95cc8d966ffc984fdf5d",
+        "status": "TIMEOUT",
+        "accepted": false,
+        "seconds": 115.23351288028061
+      },
+      {
+        "path": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1/main_verify_0001/v2_history_0001/phase_terminal.json",
+        "sha256": "f355cc76424c9924ac4fb2071b2a0e355b5c021b33971890b2b38efaa94af714",
+        "status": "TIMEOUT",
+        "accepted": false,
+        "seconds": 78.45783220045269
+      }
+    ],
+    "seconds": 0.01589711382985115,
+    "numerical_bound_reproof": false,
+    "online_verdict_changes": 0,
+    "interpretation": "Both full requests TIMEOUT; same engine/input/property and prefix policy. Incomplete V2 phases were not accepted. No paired gain/loss or general efficacy inference.",
+    "seconds_scope": "record checking after frozen-module import",
+    "process_wall_seconds_observed": 3.107952291,
+    "process_cost_scope": "tool-observed whole audit/document process including imports; separate from online requests"
   }
 }
