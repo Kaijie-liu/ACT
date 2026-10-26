@@ -1,6 +1,16 @@
 # Manuscript reading order
 
-Current claim disposition (2026-09-23): read the
+Current research extension (2026-10-27): the
+[multilayer method section](sections/03_path_conditioned_method.md#multilayer-strong-engine-extension-research-candidate)
+now separates original-execution embedding, last-gate endpoints, guard duality,
+closed margin coverage and pointwise error estimates for M-A/M-B/M-C.
+It is a candidate-method addition, not a completed performance claim: M-B's
+frozen diagnostic has no closure gain, M-C is unfinished, and B4 has not run.
+The short technical-review paper and its tables below remain the earlier
+single-layer/conditional-evidence draft; they are not the current seventh-revision
+evaluation. Use [the handoff](../docs/CODEX_HANDOFF.md) for live evidence.
+
+Historical claim disposition (2026-09-23): read the
 [competition and guarantee response](../docs/competition_guarantee_disposition_20260923.md).
 The repaired MetaMoE full comparison is complete: ACT 4 policy acceptances
 versus 9 author numerical filters, 0 ACT-only positives. All 23 historical

@@ -1,5 +1,11 @@
 # Path-conditioned verification of routed models
 
+The sections preceding the multilayer extension describe the historical
+output-layer ACT/HZ method and its registered experiments. The
+[multilayer extension below](#multilayer-strong-engine-extension-research-candidate)
+states the current strong-engine candidate separately; it does not retrofit
+that candidate into the historical results or establish a new performance claim.
+
 Routed models are piecewise programs. Their output is determined not only by
 the numerical values computed inside a neural network, but also by the path
 chosen by a data-dependent dispatch operation. A conventional reduction first
@@ -326,3 +332,187 @@ that source, but has not supplied positive bounds for every output obligation.
 It cannot discharge those premises for a different, older positive proof.
 The [source contracts](05_soundness_engineering.md#source-checking-and-non-transferable-certificates)
 make this distinction explicit without changing the composition rule.
+
+## Multilayer strong-engine extension (research candidate)
+
+This extension implements the seventh-revision research contract, rather than
+claiming a completed improvement over GenBaB. Its mathematical premises and
+current numerical implementation are different guarantee levels. The
+[M-A contract](../../docs/gate_cascade_20261026.md) and
+[M-B/M-C contract and results](../../docs/moe_aware_bab_20261026.md)
+bind the implementation; the complete Stage5a decision and subsequent B4
+comparison determine which components can support an empirical claim.
+
+### A fixed history and its original execution
+
+Let a canonical history be \(S=(S_1,\ldots,S_L)\), with
+\(S_l=\{a_l,b_l\}\). The static graph follows this history even at inputs
+where it is not selected. At layer \(l\), write
+
+\[
+ A_l(h,t)=\rho_l h+(1-t)E_{b_l,l}(h)+tE_{a_l,l}(h),\qquad
+ m_l(h)=r_{a_l,l}(h)-r_{b_l,l}(h),
+\]
+
+where \(\rho_l=0\) or \(1\) for the registered ordinary or residual layer.
+The original trajectory uses \(h_l=A_l(h_{l-1},\sigma(m_l(h_{l-1})))\).
+The stem and final affine head are unchanged. The legal domain \(D_S\) is
+the subset of the declared input box satisfying every selected-versus-outside
+guard \(g_j(x)\ge0\), evaluated along this same original trajectory. These
+guards include ties. An output property \(p_k\) is affine in the final
+output, not necessarily affine in the input.
+
+Full-request acceptance requires every legal history and every property.
+An unresolved history cannot be removed because another history is positive.
+Prefix pruning must prove a necessary guard impossible on the corresponding
+prefix domain; a strictly negative upper bound can do so, whereas an upper
+bound of zero cannot discard a tie.
+
+### M-A: independent gates and last-layer endpoint reduction
+
+For each layer, let \(I_l=[\ell_l,u_l]\subseteq[0,1]\) contain the gate
+of every original execution in the relevant history/prefix domain. Replace
+the gate equation by an independent variable \(t_l\in I_l\), retaining
+the routers, experts, stem, head and history guards on the resulting joint
+graph. Denote the resulting guarded relation by \(\widetilde D_S\).
+
+**Proposition (original-execution embedding).** Every original legal
+execution has an assignment in \(\widetilde D_S\) with the same states
+and output, provided the input and gate enclosures are valid.
+
+**Proof.** Fix an original legal input and set each independent variable to
+its original gate. Induction over the layers gives identical intermediate
+states. Each gate is in its registered interval and every original guard is
+preserved. Hence the original output belongs to the relaxed relation. The
+intervals need not enclose router gates at all additional relaxed states:
+the inclusion uses the original assignment, not a reverse correspondence. ∎
+
+For fixed input and inner gates, the final layer followed by the registered
+affine head makes each property affine in \(t_L\). All history guards and
+the supported margin-cell guards depend on states before the last gate.
+Consequently, they are independent of \(t_L\). If both last-gate endpoints
+prove a property strictly positive for **all** guarded upstream assignments,
+affine interpolation proves it on all of \(I_L\). The same source,
+upstream domain and property must be used at both endpoints; a zero-width
+interval is a single endpoint. Together with the embedding proposition this
+is a sufficient proof for the original history.
+
+This endpoint argument is not applied to inner gates. Subsequent experts or
+routers contain nonlinearities, so their output need not be affine in an inner
+gate. The relaxed multilayer graph still has inner gate--expert products; it
+is not generally a pure ReLU network. An unsafe relaxed assignment is not an
+original counterexample without full dynamic-model replay.
+
+### M-B: guard-conditioned lower bounds
+
+For any nonnegative multipliers \(\beta_j\) and a valid lower-bound
+procedure \(\mathcal L\) on the same graph and box,
+
+\[
+ \inf_{x\in D_S}p_k(x)
+ \ \ge\ \inf_{x\in X}\left(p_k(x)-\sum_j\beta_j g_j(x)\right)
+ \ \ge\ \mathcal L\left(p_k-\sum_j\beta_j g_j\right).
+\]
+
+**Proof.** At a legal point every subtracted term is nonnegative, so the
+penalized objective is no greater than the original property. Its lower bound
+on the larger box therefore bounds the property on the legal subset. No
+convexity of the neural graph or strong-duality assumption is needed. ∎
+
+For an upper bound, apply the rule to the negated objective and negate the
+result. A next-layer margin query may use guards of the already selected
+prefix, not guards of the next route whose feasibility it is deciding. A
+conditional bound remains bound to that prefix and cannot be relabelled as a
+whole-box bound or reused for an unrelated history.
+
+Taking the maximum of valid lower bounds from several multiplier candidates
+is sound. Retaining a computed zero-multiplier candidate only dominates that
+particular candidate; it does not dominate a separately optimized baseline
+under a finite budget. The implementation optimizes CROWN alpha parameters
+and nonnegative guard multipliers, but the guard multipliers are not themselves
+an independently checked dual certificate. They are also distinct from the
+backend's ReLU-split beta parameters.
+
+Output-constraint dual optimization is established prior work, including
+[INVPROP](https://arxiv.org/abs/2302.01404). Our research question concerns its
+organization around MoE history guards and its measured interaction with gate
+relaxation and splitting, not the invention of weak duality.
+
+### M-C: closed margin cells and a conditional error estimate
+
+Cover a valid margin range \([a,b]\) by closed intervals \([a_i,b_i]\).
+Each cell adds \(m-a_i\ge0\) and \(b_i-m\ge0\) on the same joint graph
+and uses the corresponding gate enclosure. Every original execution embeds
+in at least one cell, including boundary ties. Thus strictly positive proofs
+for all properties in all cells, with both required last-gate endpoints,
+prove the original history. Merely shrinking a gate interval without adding
+its margin condition is not this rule. Conditional ranges are not global
+ranges. Failure to finish a cell prevents acceptance of the whole history.
+
+At one fixed state and for any two gates in \(I_l\), the projected change
+is bounded by \(\operatorname{width}(I_l)\sup|q^\top(E_{a_l,l}-E_{b_l,l})|\).
+The absolute magnitude is essential: a constant nonzero expert difference has
+zero oscillation but can still produce nonzero gate-replacement error.
+
+For a multilayer pointwise bound, compare an original legal trajectory and an
+independent-gate trajectory at the same input. Suppose \(D_l\) bounds the
+expert-difference norm on original states, and \(K_l\) is a uniform
+state-Lipschitz bound for \(A_l(\cdot,t)\), \(t\in I_l\), on a domain
+containing both compared states. Inserting the intermediate value
+\(A_l(h_{l-1}^{\rm original},t_l^{\rm relaxed})\) gives
+
+\[
+ \delta_l\le K_l\delta_{l-1}+\operatorname{width}(I_l)D_l,
+ \qquad
+ \delta_L\le\sum_{j=1}^L\operatorname{width}(I_j)D_j
+                       \prod_{k=j+1}^L K_k .
+\]
+
+Multiplying by the dual norm of the property composed with the affine head
+gives a scalar estimate. Residual connections contribute to \(K_l\).
+This comparison requires no router Lipschitz term because the inserted term
+keeps the relaxed gate fixed and the remaining gate difference is measured
+at the original state. It does **not** bound the difference between optima
+over different guard-feasible domains, nor establish a constant approximation
+ratio for the verifier. The implementation's unverified floating estimates
+are used only to rank candidate layers, never to accept an output proof.
+
+The current complete-request implementation selects one layer and applies a
+finite two- or four-cell partition before coupled fallback. It is not a
+recursive, complete margin-BaB algorithm. Stage5a separately freezes first-layer
+partitions as its mechanism diagnostic. Nested exact sets need not yield
+monotone bounds or more solved requests under the same finite runtime.
+
+### Backend composition and claims that still require experiments
+
+A backend without explicit input-side constraints may instead prove the
+strict whole-box specification
+\(\max(p_k,-g_1,\ldots,-g_J)>0\). On the legal subset all guard atoms are
+nonpositive, so strict positivity forces \(p_k>0\), including at ties.
+Using non-strict acceptance would invalidate this inference. A nonpositive
+lower bound on this maximum is not a conditional lower bound on \(p_k\).
+Endpoint sufficiency follows by restricting to the legal subset and then
+interpolating the original affine property, not from convexity of the maximum.
+
+[GenBaB](https://arxiv.org/abs/2405.21063) already branches over general
+nonlinear computation graphs, including sigmoid and multiplication nodes.
+It is therefore the coupled comparator, not a tool assumed unable to exploit
+those operations. The current M-B frontend does not install guard multipliers
+at every internal GenBaB node. All code adaptations are disclosed and bound
+to each comparison's engine identity; compatibility is not a method gain.
+
+The optional history phase has the frozen cap \(T_1=120\) seconds, inside
+the complete request's original 300-second deadline. Construction, range
+queries, all cells/endpoints, checking and cleanup consume that budget. An
+unfinished optional phase falls back only with time still remaining; it does
+not receive a fresh deadline. Only complete route coverage and all properties
+produce a request-level positive. Public counterexample search and local
+positive counts cannot substitute for this paired endpoint.
+
+At this writing M-B's frozen 11-pair diagnostic has no additional complete
+history closure; M-C's 27-object diagnostic is still running. B4 has not run.
+The rules above establish conditional mathematical reductions, not a measured
+MoE-aware advantage. CROWN/GenBaB positives retain their numerical-policy
+grade. Source containment, conversion, all-route coverage and independently
+checked output evidence remain separate G3 premises; the historical 23 gains'
+source gaps are not repaired by this extension.

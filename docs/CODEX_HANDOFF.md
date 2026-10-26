@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## Multilayer candidate proof rules integrated into manuscript 2026-10-27
+
+Real increment1 this turn:5a50/103scientific entries/55physical attempts;PID1766832live;full-request gains0.
+[Method](../paper/sections/03_path_conditioned_method.md#multilayer-strong-engine-extension-research-candidate) separates original embedding, last-gate endpoints, guard duality, closed cells and pointwise multilayer error.
+Explicit limits:inner gates not endpoint-exact;finite optimization not dominance;guard-max scores not conditional property bounds;finite frontend not recursive completeness.
+INVPROP/GenBaB primary references checked;28local links/math delimiters and diff check pass;manual derivations matched current contracts/code,not independent source-proof certification.
+[Reading guide](../paper/README.md) marks old short paper/tables as historical;new candidate has no B4 performance claim. No new native calls/config changes.
+Next complete fixed5a,independent final audit,then actual-admission B4freeze1320/110h;current R5 receipt2c5dbf0c.G1–G6OPEN.
+
 ## 5a third M-C object: tighter initial bound, no closure 2026-10-26
 
 Real increment4 since archived28:32/103scientific entries,37physical attempts;full-request gains0;PID1766832live on fifthR3call.
