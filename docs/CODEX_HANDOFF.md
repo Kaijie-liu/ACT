@@ -1,5 +1,16 @@
 # MoE project handoff — current entry point
 
+## Seventh revision active; M-B/M-C frontend controls 2026-10-26
+
+Real increment22 since archived4: supplement26/194 at snapshot; M-B/M-C real0, full-request gains0; PID2231367 unchanged immutable d89b2b60b.
+Goal service nowactive; user resolved B4 to1320/110h:600+360+240+120, no transfers; singlelayer boundary remains. [Current contract](ALGORITHM_RESEARCH_GOAL.md).
+[M-B/M-C contract](moe_aware_bab_20261026.md), default-off frontend and7ordinary tests (5graph/math+2native) completed; no production dispatcher changed.
+Author INVPROP direct/intermediate wiring and zero-C-gradient attempts failed, retained; differentiable C=[I,-beta] with author alpha passes fixed controls, no author patch.
+Analytic bound -0.9→0.099999991; ReLU-guard -0.9→-0.425 remains open; two-layer numerical interface passes. Synthetic, not model advantage/G3.
+[Records](moe_aware_bab_records_20261026.json):11/169multilayer objects have two sampled-native histories;158one-observed are not proven stable; original27V3-only fixed.
+Next connect existing diagnostic worker/deadline/receipt, define contemporaneous bound endpoint and freeze5a<=200/17h; no new supervisor/interface audit suite. Real5a not started.
+Supplement continues; finalize its audit separately, do not relabel oldGRAY or reconstructed histories. G1–G6OPEN.
+
 ## Supplement running from immutable revision 2026-10-26
 
 Real increment4:4/194local terminals(1V2positive/2V3diagnostic/1V2TIMEOUT),5thstarted;zero full-request gains.PID2231367 detached/live at snapshot.
