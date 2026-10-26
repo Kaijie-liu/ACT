@@ -1,5 +1,13 @@
 # MoE project handoff — current entry point
 
+## 5a R4 startup metadata omission retained; R5 continuation ready 2026-10-27
+
+Real increment0:65/103scientific entries,70diagnostic attempts;R4controller stopped before any worker/model load,missing `.frozen_commit`.
+[Record](moe_aware_stage5a_results_20261026.json) binds launch/log/failure;146.756862s through observed exit conservatively charged,not exact process cost;failed copy remains.
+[R5freeze](moe_aware_stage5a_freeze_20261027_r5.json)7675fce4 only adds startup cost;R6backend/code/control57c463b5/scientific queue unchanged,no control rerun.
+64retained+39remaining;70prior/13568.771039s/7446056bytes;original200/17h/128MiB unchanged.
+Next commit/push,archive with required frozen commit marker,freshresource launch;confirm former native fault then full5a/B4actualadmission1320/110h.G1–G6OPEN.
+
 ## 5a R3 error retained; R6 identity-map repair and continuation frozen 2026-10-27
 
 Real increment15 since archived50:65/103scientific entries,70physical attempts;14completeMCtriples0closures;full-request gains0.
