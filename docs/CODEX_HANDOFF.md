@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## 5a complete: both new mechanisms negative; proceed with M-A B4 2026-10-27
+
+Real increment33 since archived70:103/103scientific entries,111physical attempts inclerrors/probes;27completeMCtriples0closures;full-request gains0.
+[Final record](moe_aware_stage5a_results_20261026.json)/[analysis](moe_aware_bab_20261026.md):MB0gain/median−2.410982;MC2/4 both0gain,complete-score medians+.149568/+.427032 on25/19of27.
+Frozen-source independent audit+raw103recount/initialaggregation/exact stored-float arithmetic PASS;not numerical/source reproof,no offline upgrade.
+Same19 complete-table objects initialcost medians62.240/123.406/207.825s;ratio medians1.941/3.574;all27 request medians~294.26s.
+Execution includingfinalaudit25424.108s,independentreview1.097s;original12148885bytes+review,111/200attempts;allfailures preserved.PID3432421exited.
+M-B/MC excluded by unchangedgate;authorizedB4 onlyM-A,not three-mechanism validation or G1closure.No retune/newmechanism.
+Next freeze actualB4 withR7receipt7c630be0,1320/110h four nontransferable caps;M-A-only directory1080calls,unused240ablation not transferred;G1–G6OPEN.
+
 ## 5a first residual object: bound improvement with cost, no closure 2026-10-27
 
 Real increment3 since archived67:70/103scientific entries,78physical attempts;16completeMCtriples0history closures;full-request gains0.

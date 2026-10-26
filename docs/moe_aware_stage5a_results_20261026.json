@@ -17,14 +17,22 @@
     "mem_available_kib": 85623688
   },
   "root": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r1",
-  "status": "R6_RUNNING",
+  "status": "COMPLETED_AND_INDEPENDENTLY_AUDITED",
   "launch_receipt_sha256": "bcd696407e297ef5618617d9fdd9388f6a5000082d313f1d74b8be673f586621",
   "planned_variants": {
     "M-B": 22,
     "M-C": 81
   },
   "complete_request_gains": 0,
-  "admission": "PENDING_103_CALL_FINAL_AUDIT",
+  "admission": {
+    "M-B": false,
+    "M-C-2": false,
+    "M-C-4": false,
+    "B4_components": [
+      "M-A"
+    ],
+    "basis": "all103 complete; original gains>=5 AND median>0; no changed gate"
+  },
   "initial_snapshot": {
     "completed": 6,
     "states": {
@@ -287,7 +295,7 @@
     "retained_calls": 64,
     "root": "/data1/Kane/MOE/results/moe_aware_stage5a_20261027_r6",
     "launch_receipt_sha256": "1d07b084e7e4717cd754298c7c7419b5157562aedefa051d9392960659719906",
-    "status": "RUNNING",
+    "status": "COMPLETE",
     "first_terminal": {
       "path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261027_r6/ledger_000.json",
       "sha256": "752f16ab1b31328c6ce563148bd7db5b01eea1d36a01065c2800ae15cfa0f9d9",
@@ -311,11 +319,11 @@
       "scope": "former error now accepted UNKNOWN;106 native domains; no numerical reproof or new certificate"
     },
     "latest_snapshot": {
-      "new_completed_calls": 6,
-      "scientific_entries": 70,
-      "physical_attempts": 78,
-      "checked_first_residual_files_and_initial_aggregation": true,
-      "observed_at": 1793032073.1722069
+      "new_completed_calls": 39,
+      "scientific_entries": 103,
+      "physical_attempts": 111,
+      "independent_final_review": "PASS",
+      "observed_at": 1793041836.9861047
     }
   },
   "mb_property_followup": {
@@ -2728,5 +2736,130 @@
     "checks": "original ledger-bound files, shared parent domain/source, all initial endpoint tables and row-wise aggregation, exact stored-float differences; no new bound evaluation",
     "interpretation": "MC4 improves saved initial guarded-spec score but initial-bound cost increases and complete history still TIMEOUT; MC2 score worsens, so finite optimization is not monotone under refinement",
     "limits": "saved initial guarded-spec scores, not pure conditional property lower bounds; timeouts have no accepted complete evidence; no source-complete/numerical reproof, no unique cause claim and no admission change"
+  },
+  "final_review": {
+    "scientific_calls": 103,
+    "physical_attempts_including_errors_and_probes": 111,
+    "complete_mc_objects": 27,
+    "admitted_mechanisms": [],
+    "decision": "M-B and both frozen first-margin M-C resolutions fail; retain M-A only for authorized paired B4",
+    "comparisons": {
+      "mb": {
+        "population": 11,
+        "gained": 0,
+        "lost": 0,
+        "complete_score_pairs": 11,
+        "score_improved": 3,
+        "score_unchanged": 0,
+        "score_declined": 8,
+        "paired_median_score_difference": -2.410981742744866,
+        "exact_stored_float_median_difference": "-21207219684029/8796093022208",
+        "passes": false
+      },
+      "mc2": {
+        "population": 27,
+        "gained": 0,
+        "lost": 0,
+        "complete_score_pairs": 25,
+        "score_improved": 20,
+        "score_unchanged": 3,
+        "score_declined": 2,
+        "paired_median_score_difference": 0.1495675387256572,
+        "exact_stored_float_median_difference": "84199038958949/562949953421312",
+        "passes": false
+      },
+      "mc4": {
+        "population": 27,
+        "gained": 0,
+        "lost": 0,
+        "complete_score_pairs": 19,
+        "score_improved": 17,
+        "score_unchanged": 2,
+        "score_declined": 0,
+        "paired_median_score_difference": 0.4270317783960623,
+        "exact_stored_float_median_difference": "3846360316119733/9007199254740992",
+        "passes": false
+      }
+    },
+    "status_counts": {
+      "MB_OFF": {
+        "UNKNOWN": 11
+      },
+      "MB_ON": {
+        "UNKNOWN": 11
+      },
+      "MC_2": {
+        "TIMEOUT": 26,
+        "UNKNOWN": 1
+      },
+      "MC_4": {
+        "TIMEOUT": 26,
+        "UNKNOWN": 1
+      },
+      "MC_BASE": {
+        "UNKNOWN": 3,
+        "TIMEOUT": 24
+      }
+    },
+    "complete_request_gains": 0,
+    "evidence_grade": "numerical-policy local diagnostics; no complete request, no G3 source proof",
+    "complete_initial_tables": {
+      "MC_BASE": 27,
+      "MC_2": 25,
+      "MC_4": 19
+    },
+    "paired_initial_cost": {
+      "common_objects": 19,
+      "scope": "same objects with all initial tables complete; excludes missing tables, not whole-population speedup",
+      "initial_seconds_median": {
+        "MC_BASE": 62.24021706916392,
+        "MC_2": 123.4064276162535,
+        "MC_4": 207.82458672858775
+      },
+      "median_per_object_initial_cost_ratio": {
+        "MC_2": 1.941051690705576,
+        "MC_4": 3.573892556916075
+      }
+    },
+    "terminal_seconds": {
+      "MB_OFF": 282.3139473218471,
+      "MB_ON": 277.7281024809927,
+      "MC_BASE": 7944.544737944379,
+      "MC_2": 7944.622631214559,
+      "MC_4": 7944.35975157842
+    },
+    "terminal_seconds_median": {
+      "MB_OFF": 28.612939519807696,
+      "MB_ON": 28.229389211162925,
+      "MC_BASE": 294.2781007476151,
+      "MC_2": 294.2601898573339,
+      "MC_4": 294.2567976526916
+    },
+    "cumulative_execution_through_final_audit_seconds": 25424.10750812106,
+    "offline_review_seconds": 1.0972843896597624,
+    "execution_plus_review_seconds": 25425.204792510718,
+    "cumulative_original_artifact_bytes": 12148885,
+    "additional_review_bytes": 37860,
+    "independent_audit": {
+      "path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261027_r6_review/independent_audit.json",
+      "sha256": "3f9065057b6348a3bf697d7d78f0b3498eb9d607de40542ab56c02f2120a534a"
+    },
+    "receipt": {
+      "path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261027_r6_review/receipt.json",
+      "sha256": "7fde8a89ba126d7c827843a31733d718217bde70dbe45a0736b3d7dca8630868"
+    },
+    "raw_recount": {
+      "path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261027_r6_review/raw_recount.json",
+      "sha256": "d3fb9bf21b4b26f9a229df72f1261ae9ab74e49b4dfacde8b8fdaaa808ed4476"
+    },
+    "original_audit": {
+      "path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261027_r6/audit.json",
+      "sha256": "7a120fa31fa3ec40757967aad690bfbda1af873371a069ecfa2ee222debc270d"
+    },
+    "final_accounting": {
+      "path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261027_r6/final_accounting.json",
+      "sha256": "60e5f44a547ac6dc6aa78bc75f2f0fc3498f01f50aa4fbc7e197124887e9c500"
+    },
+    "limits": "complete-score medians exclude2/8 missing pairs and are not whole-population score estimates; M-B conditional property bounds and M-C guarded-spec initial scores are different; no timeout upgraded; finite frozen mechanisms only"
   }
 }
