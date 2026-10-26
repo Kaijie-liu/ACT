@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## Any-layer M-C operators and scoped M-B/M-A composition 2026-10-26
+
+Real increment11 since archived124:supplement135/194(11V2positive/57V3diagnostic),PID2231367 live;5a/B4 real0,full-request gains0.
+[M-C contract/results](moe_aware_bab_20261026.md):any-layer closed margin endpoint preserves original embedding/ties;inner gates remain variables;downstream/residual score is heuristic only.
+Fixed constant-difference residual control selects layer2 with4x contribution;not a performance result or independently checked error bound.
+Found/fixed M-B→M-A scope rejection:explicit prior-guard range acceptance with subject/target/beta checks;never relabel conditional as whole-box.
+Three new ordinary controls plus native combination and3affected regressions pass;native16.954565s,V2phase7.991499s;no real data/GPU.
+5a immutable9b7db404e stays first-layer fixed diagnostic;full M-C worker/minus-M-A coupled-cell path not yet implemented or admitted.
+Next supplement final audit,serial5a,then admitted B4 dispatcher/queue/audit/freeze;1320/110h,G1–G6OPEN unchanged.
+
 ## M-B prior-guard complete-request callbacks connected 2026-10-26
 
 Real increment4 since archived120:supplement124/194(11V2positive/51V3diagnostic),PID2231367 live;5a/B4 real0,full-request gains0.

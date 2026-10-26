@@ -29,6 +29,16 @@ def identity(source_request, history, records, backend_identity):
                          backend=backend_identity, method='M_A_V2_ENDPOINTS_V1'))
 
 
+def scoped_domain(G, source_request, history, records, sid, backend_identity, deadline):
+    conditional = any(r.get('guarantee') == 'GUARD_CONDITIONAL_CROWN_NUMERICAL_UPPER' for r in records)
+    if conditional:
+        from moe_aware_frontend import audit_result
+        audit_result(dict(prefix_bounds=records, histories=[]), source_request, backend_identity, deadline)
+    return G.domain_from_prefix_bounds(history,
+        [source_request['model']['architecture']['experts']]*len(history), records,
+        source_id=sid, expected_source_id=sid, allow_conditional=conditional)
+
+
 def receive_phase(folder, request, value, domain, deadline):
     from moe_aware_diagnostics import gate_module
     G = gate_module()
@@ -67,8 +77,8 @@ def phase_worker(folder):
         from b2_observed_worker import verify_graph
         experts = [len(layer.experts) for layer in model.layers]
         history = G.canonical_history(request['history'], experts)
-        domain = G.domain_from_prefix_bounds(history, experts, request['prefix_bounds'],
-            source_id=sid, expected_source_id=sid)
+        domain = scoped_domain(G, request['source_request'], history, request['prefix_bounds'], sid,
+                               request['backend_identity'], deadline)
         W.require(G.domain_digest(domain) == request['domain_sha256']
             and len(tensors['rows']) == request['properties'], 'same gate ranges and all output properties')
         pixels = tensors['center'][0].numel()
@@ -131,7 +141,7 @@ def run_phase(folder, source_request, history, records, properties, backend_iden
         if any(pairs.get(key) is None or not math.isfinite(pairs[key]) for key in ((a, b), (b, a))):
             return dict(status='GATE_RANGE_UNAVAILABLE', accepted=False, evidence=None,
                         seconds=time.monotonic()-began, source_id=sid)
-    domain = G.domain_from_prefix_bounds(history, experts, records, source_id=sid, expected_source_id=sid)
+    domain = scoped_domain(G, source_request, history, records, sid, backend_identity, end)
     if end-time.monotonic() <= 6:
         return dict(status='NO_PHASE_BUDGET', accepted=False, evidence=None,
                     seconds=time.monotonic()-began, source_id=sid)
@@ -249,9 +259,8 @@ def audit_files(folder, result, source_request, deadline):
             and value['request_sha256'] == sha(child/'phase_request.json')
             and value['clock'] < request['worker_deadline'] and publication['clock'] < request['worker_deadline'],
             'owned on-time phase evidence')
-        domain = G.domain_from_prefix_bounds(row['history'],
-            [expected['model']['architecture']['experts']]*len(row['history']), request['prefix_bounds'],
-            source_id=request['source_id'], expected_source_id=request['source_id'])
+        domain = scoped_domain(G, expected, row['history'], request['prefix_bounds'],
+            request['source_id'], request['backend_identity'], deadline)
         receive_phase(child, request, value['value'], domain, deadline)
         W.require(value['value']['closed'], 'every skipped coupled query has complete endpoint closure')
 

@@ -175,22 +175,38 @@ def sliced_endpoint(model, domain, rows, thresholds, cell, *, variant,
 The domain's first range is conditional on the returned graph's cell guards.
 Never publish it as an unconditional original-prefix CROWN range.
 """
+    if not isinstance(cell, MarginCell) or cell.layer != 0:
+        raise ValueError('first-layer V2 endpoint diagnostic only')
+    return margin_endpoint(model, domain, rows, thresholds, cell, variant=variant,
+        input_features=input_features, expected_source_id=expected_source_id)
+
+
+def margin_endpoint(model, domain, rows, thresholds, cell, *, variant,
+                    input_features, expected_source_id):
+    """Any-layer closed cell, on the SAME relaxed execution's router state.
+
+    An original execution embeds with its original inner gate values. Only the
+    last gate is endpointized: every router/cell guard precedes that gate.
+    Earlier independent gates remain variables even when branching later.
+    """
     from .gate_decoupling import (GateDomain, validate_domain, sigmoid_interval,
                                  build_graph, domain_digest)
     import hashlib
     import json
     validate_domain(domain, domain.history, expected_source_id=expected_source_id)
-    if variant not in ('V2_LO', 'V2_HI') or not isinstance(cell, MarginCell) or cell.layer != 0:
-        raise ValueError('first-layer V2 endpoint diagnostic only')
-    lo, hi = max(cell.lower, domain.margins[0][0]), min(cell.upper, domain.margins[0][1])
+    if (variant not in ('V2_LO', 'V2_HI') or not isinstance(cell, MarginCell)
+            or cell.layer >= len(domain.history)):
+        raise ValueError('existing-layer V2 endpoint cell')
+    layer = cell.layer
+    lo, hi = max(cell.lower, domain.margins[layer][0]), min(cell.upper, domain.margins[layer][1])
     if lo > hi:
         raise ValueError('cell outside parent range')
-    cell = MarginCell(0, lo, hi)
-    identity = dict(parent=domain_digest(domain), layer=0, lower=lo, upper=hi,
+    cell = MarginCell(layer, lo, hi)
+    identity = dict(parent=domain_digest(domain), layer=layer, lower=lo, upper=hi,
                     mode='MARGIN_CONDITIONAL_V2')
     sid = hashlib.sha256(json.dumps(identity, sort_keys=True, allow_nan=False).encode()).hexdigest()
-    margins = ((lo, hi), *domain.margins[1:])
-    conditional = GateDomain(sid, domain.history, margins,
+    margins = list(domain.margins); margins[layer] = (lo, hi)
+    conditional = GateDomain(sid, domain.history, tuple(margins),
                              tuple(sigmoid_interval(*m) for m in margins))
     body = build_graph(model, domain.history, rows, thresholds, conditional,
                        variant=variant, input_features=input_features, expected_source_id=sid)
@@ -200,6 +216,66 @@ Never publish it as an unconditional original-prefix CROWN range.
     graph.parent_domain_sha256 = domain_digest(domain)
     graph.variant = variant
     return graph, conditional
+
+
+def margin_priority(model, domain, lower, upper, rows, *, deadline):
+    """Cheap numerical error contributions for ordering only, never acceptance.
+
+    IBP covers the independent-gate state boxes in real arithmetic; float64
+    operations here are NOT outward certified. D uses absolute difference
+    amplitude, K includes residual connections, and suffix includes the head.
+    A nonfinite/unsupported score must cause a caller fallback, not a proof.
+    """
+    from .gate_decoupling import validate_domain, domain_digest
+    validate_domain(domain, domain.history, expected_source_id=domain.source_id)
+    tick(deadline)
+    if (len(domain.history) != len(model.layers) or any(m.training for m in model.modules())
+            or lower.shape != upper.shape or lower.shape[0] != 1
+            or any(t.dtype != torch.float64 or t.device.type != 'cpu' or not torch.isfinite(t).all()
+                   for t in (lower, upper, rows)) or (lower > upper).any()
+            or rows.ndim != 2 or not len(rows)):
+        raise ValueError('same finite eval CPU/float64 source')
+    def interval(module, lo, hi):
+        tick(deadline)
+        if module is None or type(module) is nn.Identity:
+            return lo, hi, 1.
+        if type(module) is nn.Sequential:
+            lip = 1.
+            for child in module:
+                lo, hi, value = interval(child, lo, hi); lip *= value
+            return lo, hi, lip
+        if type(module) is nn.Flatten:
+            return module(lo), module(hi), 1.
+        if type(module) is nn.ReLU:
+            return lo.clamp_min(0), hi.clamp_min(0), 1.
+        if type(module) is nn.Linear:
+            w = module.weight.detach(); pos, neg = w.clamp_min(0), w.clamp_max(0)
+            low = torch.nn.functional.linear(lo, pos, module.bias)+torch.nn.functional.linear(hi, neg)
+            high = torch.nn.functional.linear(hi, pos, module.bias)+torch.nn.functional.linear(lo, neg)
+            return low, high, float(w.abs().sum(1).max())
+        raise ValueError('unsupported priority operator; do not invent a score')
+    widths = [hi-lo for lo, hi in domain.intervals]
+    differences, lipschitz = [], []
+    with torch.no_grad():
+        lo, hi, _ = interval(getattr(model, 'stem', None), lower.flatten(1), upper.flatten(1))
+        for layer, (a, b), (gate_lo, gate_hi) in zip(model.layers, domain.history, domain.intervals):
+            tick(deadline)
+            al, ah, ka = interval(layer.experts[a], lo, hi)
+            bl, bh, kb = interval(layer.experts[b], lo, hi)
+            differences.append(float(torch.maximum((al-bh).abs(), (ah-bl).abs()).max()))
+            lipschitz.append(max(ka, kb)+(1. if getattr(model, 'residual', False) else 0.))
+            ml = torch.minimum(gate_lo*al+(1-gate_lo)*bl, gate_hi*al+(1-gate_hi)*bl)
+            mh = torch.maximum(gate_lo*ah+(1-gate_lo)*bh, gate_hi*ah+(1-gate_hi)*bh)
+            lo, hi = (lo+ml, hi+mh) if getattr(model, 'residual', False) else (ml, mh)
+        _, _, head_lip = interval(getattr(model, 'head', None), lo, hi)
+        norm = float(rows.abs().sum(1).max())*head_lip
+    scores = propagated_gate_scores(widths, differences, lipschitz, norm)
+    selected = max(range(len(scores)), key=lambda i: (scores[i], -i))
+    tick(deadline)
+    return dict(source_id=domain.source_id, parent_domain_sha256=domain_digest(domain),
+        widths=widths, difference_absolute_amplitudes=differences,
+        layer_lipschitz=lipschitz, property_head_norm=norm, scores=list(scores), selected_layer=selected,
+        tie_rule='lowest layer index', heuristic_only=True, certified_error_bound=False)
 
 
 def conditional_bounds(graph, center, lower, upper, *, deadline,

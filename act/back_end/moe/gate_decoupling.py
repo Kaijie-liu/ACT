@@ -55,7 +55,8 @@ class GateDomain:
     intervals: tuple
 
 
-def domain_from_prefix_bounds(history, experts, records, *, source_id, expected_source_id):
+def domain_from_prefix_bounds(history, experts, records, *, source_id, expected_source_id,
+                              allow_conditional=False):
     """Bind same-request prefix CROWN bounds to canonical first-expert weights.
 
     ``source_id`` binds checkpoint/input/property/source-version at the caller.
@@ -66,6 +67,8 @@ def domain_from_prefix_bounds(history, experts, records, *, source_id, expected_
             or any(c not in '0123456789abcdef' for c in source_id)
             or source_id != expected_source_id):
         raise ValueError('same-object prefix source binding')
+    if type(allow_conditional) is not bool:
+        raise ValueError('explicit conditional-prefix policy')
     history = canonical_history(history, experts)
     prefixes = {}
     for record in records:
@@ -76,7 +79,17 @@ def domain_from_prefix_bounds(history, experts, records, *, source_id, expected_
     margins = []
     for layer, (a, b) in enumerate(history):
         record = prefixes.get(history[:layer])
-        if record is None or record.get('guarantee') != 'WHOLE_BOX_CROWN_NUMERICAL_UPPER':
+        if record is None:
+            raise ValueError('missing or incompatible original-prefix range')
+        if record.get('guarantee') == 'GUARD_CONDITIONAL_CROWN_NUMERICAL_UPPER' and allow_conditional:
+            # The complete original history satisfies every prior guard. The
+            # caller additionally checks model/input/backend support binding;
+            # do not relabel a conditional bound as a whole-box bound.
+            support = record.get('guard_support', {})
+            if (not layer or tuple(map(tuple, support.get('history', ()))) != history[:layer]
+                    or support.get('cells') != [] or support.get('use_guards') is not True):
+                raise ValueError('conditional range must use exactly prior history guards')
+        elif record.get('guarantee') != 'WHOLE_BOX_CROWN_NUMERICAL_UPPER':
             raise ValueError('missing or incompatible original-prefix range')
         values = {}
         for i, j, value in record['upper']:
