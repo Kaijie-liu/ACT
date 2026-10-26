@@ -41,3 +41,57 @@ The initial3-call prefix audit passed in0.151898s offline, without numerical rep
 [Launch/prefix record](gate_decoupling_supplement_records_20261026.json); live result ledgers supersede this snapshot.
 No B4 call or new complete-request certificate yet. Tools cannot resume/edit the old blocked
 application goal; the sixth-revision contract and explicitly authorized background run are active.
+
+## Final result and independent review
+
+The running snapshot above is historical. All194 registered calls completed with
+`ALL_REGISTERED_CALLS_EXECUTED`, no failed start or unexecuted suffix. The frozen
+auditor and a separate raw-ledger/domain recount agree; this is record/coverage
+review, **not numerical bound reproof**. The seventh-revision goal is active.
+
+| New97-object supplement | Positive/diagnostic closure | TIMEOUT | UNKNOWN |
+| --- | ---: | ---: | ---: |
+| V2 original-history relaxation | 15 | 82 | 0 |
+| V3 changed-function diagnosis | 84 | 8 | 5 |
+
+| Updated descriptive view | Objects | Both closed | V3 only | Neither |
+| --- | ---: | ---: | ---: | ---: |
+| All | 193 | 53 | 103 | 37 |
+| Multilayer | 169 | 49 | 96 | 24 |
+| Single layer | 24 | 4 | 7 | 13 |
+
+No V2-only closure was observed. This view has386 unique object/variant rows;
+the physical history remains250+194=444calls, including58 old SOURCE_MISSING
+attempts and their costs. The **original250-call GRAY stays unchanged**.
+The completed supplemental view meets old descriptive ruleC (103/193 V3-only),
+not ruleB: both-closed Wilson95% is[21.65%,34.15%]. RuleC is not a proof of a
+unique gate-coupling cause: V3 changes the function, known original witnesses
+remain labeled, and V2 timeouts do not establish an optimal nonpositive bound.
+Entry to Stage5 still follows the user's explicit sixth/seventh decisions.
+
+All97 pairs have equal saved raw gate domains, including timeout records whose
+top-level accepted outcome is absent. Of the15 new V2 positives, **10 use newly
+reconstructed canonical histories and5 retain original history IDs**; do not
+call these15 contemporaneous wins on known failed coupled queries. Eleven close
+at initial bounds; nine complete their entire local call within120s. Neither
+count determines hard120s cascade success or changes fixedT1. The original27
+M-C diagnostic objects are not expanded to the new96 multilayer V3-only objects.
+
+Online cost through final audit/accounting: **33726.827895s (9.368563h)**;
+sum of194 terminal costs33697.626178s. Original-stage costs remain separate;
+the merged view's cost cannot erase the old source-missing attempts. Recorded
+stage bytes including controller console are15,306,672; the offline independent
+review is1.436213s and is not charged back as online successful verification.
+All fifteen positives are local numerical filters; **new complete-request
+certificates/gains=0**.
+
+[Final compact record](gate_decoupling_supplement_records_20261026.json) preserves
+the initial snapshot, all new ledger hashes, positive source provenance and
+the independent recount. Independent recordSHA256:
+`2cb67f0396a671e668198af29242cfcf59f015dc57ef7c369c799f16a6a976be`.
+Original online auditSHA256:
+`99d8726292ac55d71866e9c901f1ba4b6b66f08123e41537ec61c6edf21e8cfc`.
+
+After review and fresh CPU/memory/disk inspection, the immutable103-call Stage5a
+queue was launched; [launch/result record](moe_aware_stage5a_results_20261026.json).
+No B4 execution or mechanism admission is implied by this supplement.

@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## Supplement final reviewed; immutable5a running 2026-10-26
+
+Real increment34 since archived160:supplement194/194complete(15V2positive/84V3diagnostic);5a6/103UNKNOWN,PID1665199live,full-request gains0.
+[Supplement result](gate_decoupling_supplement_20261026.md)/[record](gate_decoupling_supplement_records_20261026.json):raw recount+frozen auditorPASS,97/97domains equal;15positives=10new canonical/5original IDs.
+Updated193=53both/103V3only/37neither;oldruleC descriptive,original250GRAY preserved;Stage5entry remains user decision,not a passed old gate.
+Online33726.827895s/15,306,672bytes;offline1.436213s;all444physical old+new attempts retained,386unique-view rows,no numerical reproof.
+[5a launch](moe_aware_stage5a_results_20261026.json):immutable9b7db404e,103calls22M-B+81M-C,source/engine matched;fresh~82GiB available/20CPUs,no GPU.
+Fixed120s unchanged;11/15supplement positives initial-only,9/15local calls<=120s,neither predicts full cascade wins.
+Next monitor/final-audit5a,admit onlyregistered>=5gain+positive median,then finalB4freeze/run1320/110h four nontransferable parts.G1–G6OPEN.
+
 ## B4 complete batch and independent recount connected 2026-10-26
 
 Real increment12 since archived148:supplement160/194(13V2positive/68V3diagnostic),PID2231367 live;5a/B4real0,full-request gains0.
