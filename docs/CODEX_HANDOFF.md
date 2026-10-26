@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## B4 first contemporaneous complete-request gain 2026-10-27
+
+Real increment2 since archived30:32/1080calls,16completepairs,gain/loss1/0;PID710019continues fixedqueue.
+[Record](moe_aware_b4_records_20261027.json)`first_gain_review`:L2E8seed0/1743 onPOSITIVE222.396s,offTIMEOUT294.213s,sameR7/model/domain/properties.
+On779pruned+5verified cover784histories;all10endpoint analyses close at initialalpha-CROWN,no BaB/fallback;off stops in firstsamehistory.
+Frozen source/coverage/deadline/cascade audit PASS,2.562sincludingimports separate,no newsolvercall/numericalreproof;no publiccounterexample conflict.
+[Interpretation](moe_aware_b4_20261026.md):singlepaired signal,notpopulationadvantage;one observedroute only,notcheckedroute-changing/G3certificate.
+Next continue fixedB4/finalpairedanalysis;negativeMB/MC,T1,1320/110h nontransferable caps unchanged.G1–G6OPEN.
+
 ## B4 first complete input block: identical coverage outcomes 2026-10-27
 
 Real increment6 since last24:30/1080calls,firstinput1742complete across15models;eacharm4POSITIVE/11TIMEOUT,gain/loss0/0;PID710019continues nextinput.

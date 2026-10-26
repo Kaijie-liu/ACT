@@ -1089,5 +1089,382 @@
     "interpretation": "One complete input block out of20; no bootstrap or admission decision. Original numerical positives and timeouts unchanged; no public-counterexample conflict observed. Same-source engine/coverage/cascade receipt audit is not source-complete proof.",
     "process_wall_seconds_observed": 3.299290144,
     "process_cost_scope": "tool-observed whole record review including imports and writing, separate from original online requests"
+  },
+  "first_gain_review": {
+    "status": "PASS_FROZEN_RECORD_AUDIT",
+    "at": 1793050162.84997,
+    "model": "L2E8_seed0",
+    "index": 1743,
+    "rank": 1,
+    "execution_commit": "4a93175c5044528a3e7a5f9c4f6a964621fe8010",
+    "manifest_sha256": "72023737a889717e4cf5c4f266b47b51b8d183f5067ae12ceefbcc4242452b24",
+    "backend_identity": "40246f43aa290511811410e962b2db9e24f0467c76a2aa900aeb5f7685a6209a",
+    "rows": [
+      {
+        "part": "main",
+        "model": "L2E8_seed0",
+        "index": 1743,
+        "rank": 1,
+        "arm": "on",
+        "status": "POSITIVE",
+        "accepted": true,
+        "seconds": 222.3956657666713,
+        "coverage": {
+          "active": null,
+          "attempted": 5,
+          "expected": 784,
+          "in_flight": 0,
+          "never_started": 0,
+          "prefix_attempts": 2,
+          "prefix_returns": 2,
+          "proof_complete": true,
+          "proof_unclosed": 0,
+          "pruned": 779,
+          "returned": 5,
+          "returned_unproved": 0,
+          "traversal_complete": true,
+          "verified": 5
+        },
+        "guarantee": "GENBAB_NUMERICAL_FILTER"
+      },
+      {
+        "part": "main",
+        "model": "L2E8_seed0",
+        "index": 1743,
+        "rank": 1,
+        "arm": "off",
+        "status": "TIMEOUT",
+        "accepted": false,
+        "seconds": 294.2125119585544,
+        "coverage": null,
+        "guarantee": null
+      }
+    ],
+    "bindings": [
+      {
+        "id": "main_verify_0030",
+        "ledger_sha256": "f8d6550cc57942ac2f39843f05e30056433b22b65f3dbffacf889decef7a2dd7",
+        "request_sha256": "395b120f02923173f4f097f2f49384e400faf46a0bfc4bc32a8e946acc3fcc9c",
+        "environment_sha256": "313fcf9f323ed64658c64d602e5aa716a36c24001683125a779925b413e1cdc9"
+      },
+      {
+        "id": "main_verify_0031",
+        "ledger_sha256": "1eb70d262c8ee9c027f263e6720cb0bc9c3685cca28349dda217ea64800a57f3",
+        "request_sha256": "925d92e015b04461d657003041e9f87c4684f8cf51ec5d33b706bb259f212537",
+        "environment_sha256": "313fcf9f323ed64658c64d602e5aa716a36c24001683125a779925b413e1cdc9"
+      }
+    ],
+    "cascade_histories": [
+      {
+        "history": [
+          [
+            0,
+            6
+          ],
+          [
+            1,
+            6
+          ]
+        ],
+        "cascade": {
+          "method": "M_A_HARD120_V2_THEN_REMAINING_COUPLED",
+          "phase_folder": "v2_history_0000",
+          "phase_seconds": 71.92101684585214,
+          "phase_status": "POSITIVE",
+          "source_id": "7c98e65762bfe7b79c9584b61bb1157ced572d5ae9828036376cf8be1ad436ee",
+          "used_fallback": false
+        },
+        "phase_terminal_sha256": "b66df4793ee480a8917071de809ff6d6a7b74ccc9fc0baea76ef0687cde384c7",
+        "endpoints": [
+          {
+            "variant": "V2_LO",
+            "source_id": "7c98e65762bfe7b79c9584b61bb1157ced572d5ae9828036376cf8be1ad436ee",
+            "domain_sha256": "8419b085e76a4721607333fa824416cdb2d58896b773b01b970fe3103523ef04",
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 58.54099255613983,
+            "property_rows": 9,
+            "bab_calls": 0
+          },
+          {
+            "variant": "V2_HI",
+            "source_id": "7c98e65762bfe7b79c9584b61bb1157ced572d5ae9828036376cf8be1ad436ee",
+            "domain_sha256": "8419b085e76a4721607333fa824416cdb2d58896b773b01b970fe3103523ef04",
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 8.178505012765527,
+            "property_rows": 9,
+            "bab_calls": 0
+          }
+        ]
+      },
+      {
+        "history": [
+          [
+            0,
+            6
+          ],
+          [
+            1,
+            7
+          ]
+        ],
+        "cascade": {
+          "method": "M_A_HARD120_V2_THEN_REMAINING_COUPLED",
+          "phase_folder": "v2_history_0001",
+          "phase_seconds": 24.570839375257492,
+          "phase_status": "POSITIVE",
+          "source_id": "f2e46be2c241b60c1490ff14ff5c153051045f794e452d28684a01c696f4a29f",
+          "used_fallback": false
+        },
+        "phase_terminal_sha256": "a07ffe30fe3919ddbdb91b5cbc0a50d2dd71e2ae16e9d0481a5cab125858539b",
+        "endpoints": [
+          {
+            "variant": "V2_LO",
+            "source_id": "f2e46be2c241b60c1490ff14ff5c153051045f794e452d28684a01c696f4a29f",
+            "domain_sha256": "5f287cf99bf710af9325097b1d0662a6f68b234d55345194d3726c29c6669c08",
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 11.08920413441956,
+            "property_rows": 9,
+            "bab_calls": 0
+          },
+          {
+            "variant": "V2_HI",
+            "source_id": "f2e46be2c241b60c1490ff14ff5c153051045f794e452d28684a01c696f4a29f",
+            "domain_sha256": "5f287cf99bf710af9325097b1d0662a6f68b234d55345194d3726c29c6669c08",
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 8.39837416447699,
+            "property_rows": 9,
+            "bab_calls": 0
+          }
+        ]
+      },
+      {
+        "history": [
+          [
+            0,
+            6
+          ],
+          [
+            2,
+            6
+          ]
+        ],
+        "cascade": {
+          "method": "M_A_HARD120_V2_THEN_REMAINING_COUPLED",
+          "phase_folder": "v2_history_0002",
+          "phase_seconds": 48.340231070294976,
+          "phase_status": "POSITIVE",
+          "source_id": "b13e5ccbdf0c47630f84674c0aa2a6ac53a768b549dc5d6482623a069f134a8e",
+          "used_fallback": false
+        },
+        "phase_terminal_sha256": "a18b51789b1efd771b1e7d84b5c47e26c2716b5f94757fc2acac372ce67569be",
+        "endpoints": [
+          {
+            "variant": "V2_LO",
+            "source_id": "b13e5ccbdf0c47630f84674c0aa2a6ac53a768b549dc5d6482623a069f134a8e",
+            "domain_sha256": "8dcc3cc5d2d89fffd9e6730c922c3ddb6e8e32135d11026e8fd00df8370f774d",
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 21.619522511959076,
+            "property_rows": 9,
+            "bab_calls": 0
+          },
+          {
+            "variant": "V2_HI",
+            "source_id": "b13e5ccbdf0c47630f84674c0aa2a6ac53a768b549dc5d6482623a069f134a8e",
+            "domain_sha256": "8dcc3cc5d2d89fffd9e6730c922c3ddb6e8e32135d11026e8fd00df8370f774d",
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 21.434933679178357,
+            "property_rows": 9,
+            "bab_calls": 0
+          }
+        ]
+      },
+      {
+        "history": [
+          [
+            0,
+            6
+          ],
+          [
+            3,
+            6
+          ]
+        ],
+        "cascade": {
+          "method": "M_A_HARD120_V2_THEN_REMAINING_COUPLED",
+          "phase_folder": "v2_history_0003",
+          "phase_seconds": 33.331458846107125,
+          "phase_status": "POSITIVE",
+          "source_id": "497a253b5c707da05b7e3f6b8172f9c4bedeedebe79d403980321886a0bf1979",
+          "used_fallback": false
+        },
+        "phase_terminal_sha256": "89d25cb649b7b5ca8fd8c2868142ae2fc9ac1061f259f2081763337d0974b8ea",
+        "endpoints": [
+          {
+            "variant": "V2_LO",
+            "source_id": "497a253b5c707da05b7e3f6b8172f9c4bedeedebe79d403980321886a0bf1979",
+            "domain_sha256": "ca32aa2da3ad00cd71b99b94aad7c9341da2e5006b618040f35ffa5bca1c7883",
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 14.035862615332007,
+            "property_rows": 9,
+            "bab_calls": 0
+          },
+          {
+            "variant": "V2_HI",
+            "source_id": "497a253b5c707da05b7e3f6b8172f9c4bedeedebe79d403980321886a0bf1979",
+            "domain_sha256": "ca32aa2da3ad00cd71b99b94aad7c9341da2e5006b618040f35ffa5bca1c7883",
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 14.113332459703088,
+            "property_rows": 9,
+            "bab_calls": 0
+          }
+        ]
+      },
+      {
+        "history": [
+          [
+            0,
+            6
+          ],
+          [
+            6,
+            7
+          ]
+        ],
+        "cascade": {
+          "method": "M_A_HARD120_V2_THEN_REMAINING_COUPLED",
+          "phase_folder": "v2_history_0004",
+          "phase_seconds": 38.446588104590774,
+          "phase_status": "POSITIVE",
+          "source_id": "7ecc3935421d782bff96847b5c20040f54c565902b0fad1c566d7c7f5441f110",
+          "used_fallback": false
+        },
+        "phase_terminal_sha256": "3e0f39f005b97fc2992d04cf83e18ef12c50db3c77ebe2e4311d539fbe9855e5",
+        "endpoints": [
+          {
+            "variant": "V2_LO",
+            "source_id": "7ecc3935421d782bff96847b5c20040f54c565902b0fad1c566d7c7f5441f110",
+            "domain_sha256": "0583da71625184562b955c1112a27884864b8607e160e66c853f2731f48f10be",
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 10.022700492292643,
+            "property_rows": 9,
+            "bab_calls": 0
+          },
+          {
+            "variant": "V2_HI",
+            "source_id": "7ecc3935421d782bff96847b5c20040f54c565902b0fad1c566d7c7f5441f110",
+            "domain_sha256": "0583da71625184562b955c1112a27884864b8607e160e66c853f2731f48f10be",
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 23.239015879109502,
+            "property_rows": 9,
+            "bab_calls": 0
+          }
+        ]
+      }
+    ],
+    "off_partial": {
+      "active_phase_since": 11897887.062221425,
+      "clock": 11897887.062221425,
+      "coverage": {
+        "active": {
+          "entered": 11897887.06222034,
+          "phase": "history_solver",
+          "prefix": [
+            [
+              0,
+              6
+            ],
+            [
+              1,
+              6
+            ]
+          ]
+        },
+        "attempted": 1,
+        "expected": 784,
+        "in_flight": 1,
+        "never_started": 632,
+        "prefix_attempts": 2,
+        "prefix_returns": 2,
+        "proof_complete": false,
+        "proof_unclosed": 633,
+        "pruned": 151,
+        "returned": 0,
+        "returned_unproved": 0,
+        "traversal_complete": false,
+        "verified": 0
+      },
+      "last_query_start": {
+        "entered": 11897887.06222034,
+        "phase": "history_solver",
+        "prefix": [
+          [
+            0,
+            6
+          ],
+          [
+            1,
+            6
+          ]
+        ],
+        "published_clock": 11897887.062221425
+      },
+      "max_completed_history_solver_seconds": null,
+      "phase_seconds": {
+        "between_queries": 0.01356007531285286,
+        "history_compile": 0.0010650604963302612,
+        "prefix_CROWN": 0.4202106446027756
+      },
+      "publications": 23,
+      "telemetry_schema": "query-boundary-v2"
+    },
+    "public": {
+      "pgd": {
+        "path": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1/main_pgd_L2E8_seed0/domain_002.json",
+        "sha256": "7b31685baa112f2574f11373c0b5c452eefec55d621f22a64bcb58f58d76d707",
+        "result": {
+          "status": "NO_REPLAYED_COUNTEREXAMPLE",
+          "minimum_observed_margin": 9.53877955719679,
+          "witness": null
+        }
+      },
+      "census": {
+        "path": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1/main_census_L2E8_seed0/domain_005.json",
+        "sha256": "ddbf82edb2b967a54369d1408c2a4fb49cf5f25dce66b234e04817e81df145be",
+        "result": {
+          "observed_lower": 1,
+          "observed_histories": [
+            [
+              [
+                0,
+                6
+              ],
+              [
+                1,
+                6
+              ]
+            ]
+          ],
+          "candidate_upper": 28,
+          "exact_legal_count": null
+        }
+      }
+    },
+    "cost_on_minus_off": -71.81684619188309,
+    "interpretation": "First contemporaneous complete-request M-A-only numerical positive against coupled timeout. Five histories close through ten initial alpha-CROWN endpoint analyses without BaB or coupled fallback. Baseline stopped in its first common history. Different partial pruning counts reflect traversal progress, not a pruning-algorithm change. No population advantage, independently proved route change, or G3 source-complete certificate is inferred.",
+    "numerical_bound_reproof": false,
+    "new_online_verdicts": 0,
+    "review_seconds_including_import": 2.5617609843611717,
+    "process_wall_seconds_observed": 3.089305602,
+    "process_cost_scope": "tool-observed whole review process including imports and record write; separate from online calls"
   }
 }
