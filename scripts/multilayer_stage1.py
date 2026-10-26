@@ -295,8 +295,20 @@ def verify(folder,request,model,tensors,deadline,torch):
     else:
         from act.back_end.moe.multilayer_external import verify_histories
         from b2_observed_worker import verify_graph
+        cascade=None
+        if request.get('gate_cascade',False):
+            require(request['gate_cascade'] is True and arm=='genbab_pruned','optional cascade on common pruned frontend')
+            from gate_cascade import GateCascade
+            from gate_decoupling_worker import digest
+            cascade=GateCascade(model,tensors,request,folder,digest(backend.source_identity()),
+                lambda:ARTIFACT_LIMIT-size(ARTIFACT_ROOT)-65536)
         result=verify_histories(model,**tensors,pruning=arm=='genbab_pruned',deadline=deadline,
-            verify_graph=verify_graph,publish=progress)
+            verify_graph=verify_graph,publish=progress,history_solver=cascade)
+        if cascade is not None:
+            from gate_cascade import audit_files
+            result['cascade_files']={str(p.relative_to(folder)):sha(p)
+                for child in sorted(folder.glob('v2_history_*')) for p in child.rglob('*') if p.is_file()}
+            audit_files(folder,result,request,deadline)
         audit=external_audit(result,experts,len(tensors['rows']))
     replayed=False
     if result['status']=='UNSAFE_REPLAYED':

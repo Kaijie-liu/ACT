@@ -5,6 +5,11 @@ full-request mechanism, not evidence of a complete-request improvement. All
 reported positive solver results retain the numerical-policy grade. HZ/source
 checking remains a separate G3 obligation.
 
+The seventh revision supersedes the experimental queue sizes at the end of this
+sixth-revision document: B4 now has1320calls/110h in four nontransferable parts.
+The mathematics and frozen120s cap below remain current. M-B/M-C admission is
+decided separately by their fixed Stage5a diagnostic, not by these controls.
+
 ## Containment and last-gate endpoints
 
 Fix one canonical, tie-legal history S and the original input box X. At layer l,
@@ -131,3 +136,51 @@ Separate27-object2/4-slice diagnostic:54 planned calls, cap60/5h. All slices per
 configuration share300s, cover first-layer margin with closed endpoints, retain
 original source and guard. This factor is excluded from B4 on. No slicing code
 or real run is asserted complete by this contract.
+
+## Optional complete-request implementation and necessary controls
+
+`verify_histories` now accepts an optional whole-history callback; default
+enumeration, original-prefix pruning, tie coverage and full-model replay remain
+the same. The request worker selects `GateCascade` only for explicit
+`gate_cascade=true` on the pruned arm. A V2 child reloads the same bound model and
+materialized tensors; this cost is deliberately included. It receives only
+the parent's own prefix bounds and has no access to another arm's answers.
+Both last endpoints and all properties must pass before skipping coupled work.
+
+The existing owned process-group executor keeps the child inside the outer
+request session, kills/reaps it at the phase limit and permits fallback only
+after cleanup. Its optional development-policy mode makes missing RSS telemetry
+explicit and does not use RSS as an acceptance gate; per-process8GiB address
+space and the outer request's kernel usage accounting remain unchanged.
+No new supervisor is introduced. Parent reception/serialization/cleanup share
+the120s phase allowance and original request deadline. A nonfinite gate range
+cannot authorize V2 but allows the unchanged coupled fallback.
+
+Pre-execution control plan: four ordinary controls (nine-history coverage and
+same-deadline fallback; partial/expired result; unavailable gate interval; actual
+owned child cutoff/foreign-session rejection), then one fixed native two-layer
+three-expert/three-class synthetic request through the production verify entry.
+This request has analytically positive outputs and eight strictly excluded
+histories plus one V2-closed history. Its weights are constructed, not trained,
+and its input is synthetic. Include missing endpoint and late reception
+mutations. One cumulative300s control allowance, original mathematical and
+resource gates, retained tool errors; no real model queue or parameter tuning.
+
+Control result: PASS, seven distinct tests (four ordinary, one native integration,
+two unchanged-baseline regressions). The native test called the actual complete
+request entry: nine histories covered, eight pruned, one closed by both V2
+endpoints; no coupled fallback needed in this constructed example. Missing
+endpoint and late reception mutations were rejected. Separate ordinary controls
+exercise actual child cutoff/cleanup and fallback with the original deadline.
+The native controller took14.660995s, including its14.587278s owned session;
+the V2 phase took7.032251s. The cumulative preassigned control envelope was270s
+(60ordinary+180native+30regressions), within300s. These are interface/control
+measurements, not trained-model speedups, new full-request research certificates,
+or an independent proof of solver bounds. No trained model/data/GPU was used.
+
+The retained logs/receipt are in
+`/data1/Kane/MOE/results/gate_cascade_controls_20261026_r1/complete.json`, SHA256
+`e435ed97a115027b48b13593548cbbedead7b090918947ac6fd25488c07aa0b5`.
+The public dispatcher still defaults off. B4 requires its later fixed paired
+catalog, admitted M-B/M-C choices and offline complete-queue audit; these controls
+do not authorize skipping that scientific comparison or change its endpoints.

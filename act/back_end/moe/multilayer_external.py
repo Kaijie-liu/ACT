@@ -120,7 +120,8 @@ def excluded_pair(pair, experts, bounds, tolerance=1e-9):
 
 
 def verify_histories(model, *, center, lower, upper, rows, thresholds, pruning, deadline,
-                     verify_graph, bound_router=router_upper_bounds, publish=lambda _: None):
+                     verify_graph, bound_router=router_upper_bounds, publish=lambda _: None,
+                     history_solver=None):
     """One shared request budget, complete prefix-tree coverage or explicit missing."""
     from act.back_end.moe.class_separated_top1 import validate_replay
     if type(pruning) is not bool:
@@ -142,11 +143,17 @@ def verify_histories(model, *, center, lower, upper, rows, thresholds, pruning, 
         if depth == len(experts):
             result['active'] = dict(phase='history_compile', prefix=[list(p) for p in prefix], entered=time.monotonic())
             publish(result)
-            graph = GuardedHistory(model, prefix, rows, thresholds).eval()
+            # The optional complete-history solver must return the same full
+            # property specification. All-history enumeration/pruning and the
+            # original-model replay below remain shared with the baseline.
+            graph = GuardedHistory(model, prefix, rows, thresholds).eval() if history_solver is None else None
             result['attempted_histories'] += 1
             result['active'] = dict(phase='history_solver', prefix=[list(p) for p in prefix], entered=time.monotonic())
             publish(result)
-            outcome, attacks = verify_graph(graph, lower, upper, len(rows), deadline)
+            if history_solver is None:
+                outcome, attacks = verify_graph(graph, lower, upper, len(rows), deadline)
+            else:
+                outcome, attacks = history_solver(prefix, result['prefix_bounds'], deadline)
             tick()
             result['returned_histories'] += 1
             result['active'] = None

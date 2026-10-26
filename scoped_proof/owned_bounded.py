@@ -15,7 +15,7 @@ from scoped_proof.io import ROOT
 
 
 def observe(pgid):
-    live, zombies, rss = [], [], 0
+    live, zombies, rss, missing = [], [], 0, []
     for path in Path('/proc').iterdir():
         if not path.name.isdecimal():
             continue
@@ -24,12 +24,17 @@ def observe(pgid):
             if int(fields[2]) != pgid:
                 continue
             (zombies if fields[0] == 'Z' else live).append(int(path.name))
+            found = False
             for line in (path/'status').read_text().splitlines():
                 if line.startswith('VmRSS:'):
                     rss += int(line.split()[1])*1024
+                    found = True
+            if not found:
+                missing.append(int(path.name))
         except (FileNotFoundError, ProcessLookupError):
             continue  # a vanished entry, not a permission/parse failure
-    return {'live': sorted(live), 'zombies': sorted(zombies), 'rss': rss}
+    return {'live': sorted(live), 'zombies': sorted(zombies), 'rss': rss,
+            'rss_missing_pids': sorted(missing)}
 
 
 def parent_rss():
@@ -56,8 +61,11 @@ def bounded_reap(process, deadline):
 
 
 def execute(command, log, *, run_deadline, cleanup_deadline, env, rss_limit, bounded_errors=False,
-            owner_session=None):
+            owner_session=None, development_policy=None):
+    from scoped_source.development_work import POLICY
     start = time.monotonic()
+    if development_policy not in (None, POLICY) or (development_policy and rss_limit is not None):
+        raise ValueError('development RSS is telemetry only')
     if run_deadline > cleanup_deadline:
         raise ValueError('cleanup must fit inside the phase deadline')
     if owner_session is not None and (type(owner_session) is not int or owner_session<=0
@@ -68,6 +76,7 @@ def execute(command, log, *, run_deadline, cleanup_deadline, env, rss_limit, bou
     before_cleanup = start
     final = {'live': [], 'zombies': [], 'rss': 0}
     descendant, exit_observed = False, None
+    incomplete_rss, complete_rss_samples = 0, 0
     try:
         if start >= run_deadline:
             raise TimeoutError('no launch budget')
@@ -82,8 +91,19 @@ def execute(command, log, *, run_deadline, cleanup_deadline, env, rss_limit, bou
                     status = 'TIMEOUT'
                     break
                 group = observe(p.pid)
-                peak = max(peak, group['rss']+parent_rss())
-                if peak > rss_limit:
+                if development_policy:
+                    try:
+                        parent = parent_rss()
+                    except ValueError:
+                        parent = None
+                    if group['rss_missing_pids'] or parent is None:
+                        incomplete_rss += 1
+                    else:
+                        peak = max(peak, group['rss']+parent)
+                        complete_rss_samples += 1
+                else:
+                    peak = max(peak, group['rss']+parent_rss())
+                if not development_policy and peak > rss_limit:
                     status = 'RESOURCE_LIMIT'
                     break
                 exit_info = exited_unreaped(p.pid)
@@ -129,7 +149,11 @@ def execute(command, log, *, run_deadline, cleanup_deadline, env, rss_limit, bou
             'cleanup_seconds': end-before_cleanup, 'cleanup_status': cleanup,
             'remaining_group': final, 'descendant_on_leader_exit': descendant,
             'exit_observed_at': exit_observed,
-            'sampled_peak_rss': peak, 'run_deadline': run_deadline,
+            'sampled_peak_rss': (None if development_policy and not complete_rss_samples else peak),
+            'run_deadline': run_deadline,
             'cleanup_deadline': cleanup_deadline,
             **({} if owner_session is None else {'owner_session':owner_session}),
+            **({} if not development_policy else dict(development_policy=development_policy,
+                rss_acceptance_gate=False, incomplete_rss_observations=incomplete_rss,
+                rss_scope='COMPLETE_SAMPLES_OF_PHASE_GROUP_PLUS_PARENT_NOT_REQUEST_PEAK')),
             'escaped_descendants_or_driver_cleanup': False}

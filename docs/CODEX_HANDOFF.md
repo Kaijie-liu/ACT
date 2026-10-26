@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## Optional M-A complete-request cascade connected 2026-10-26
+
+Real increment12 since archived104: supplement116/194(11V2positive/47V3diagnostic),PID2231367 live;M-B/M-C real0,full-request gains0.
+Default-off M-A uses existing enumeration/pruning/replay and owned group executor;hard120s includes reload/check/cleanup,then coupled fallback on original300s deadline.
+[Contract/control result](gate_cascade_20261026.md):seven distinct tests pass;synthetic9histories=8pruned+1V2closed,native controller14.661s;not real speedup/G3.
+Missing endpoints/late acceptance rejected;actual child cutoff and unchanged-baseline regressions pass;no new supervisor or numerical acceptance relaxation.
+Frozen103-call5a copy at`executions/moe_aware_stage5a_20261026_r1` binds9b7db404e;not launched,not changed by current M-A code.
+Next finish supplement audit and run5a serially after fresh resources;B4 paired catalog/admitted components/offline audit remain to freeze,1320/110h unchanged.
+OldGRAY,all failed attempts,T1=120 and G1–G6OPEN preserved;no trained-model mechanism or complete-request advantage asserted.
+
 ## Stage5a103-call diagnostic freeze ready 2026-10-26
 
 Real increment78 since archived26: supplement104/194 snapshot(10V2positive/42V3diagnostic),PID2231367 live;M-B/M-C real0,full-request gains0.
