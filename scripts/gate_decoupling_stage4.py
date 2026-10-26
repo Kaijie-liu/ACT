@@ -126,6 +126,46 @@ def freeze(path, catalog, control):
         no_result_dependent_changes=True))
 
 
+def freeze_supplement(path, catalog, control, prior_manifest, prior_root, review):
+    from gate_decoupling_control import CODE
+    from gate_decoupling_followup import supplement_objects, frozen_t1
+    original = load(prior_manifest)
+    inventory = load(catalog); old = load(review)['final_review']
+    worker.require(old['primary_decision'] == 'GRAY_REPORT' and old['completed_calls'] == 250,
+        'preserved original gray and completed250')
+    worker.require(old['manifest_sha256'] == sha(prior_manifest)
+        and original['catalog']['sha256'] == sha(catalog), 'original frozen population')
+    previous = {str(p.resolve()): sha(p) for p in sorted(prior_root.glob('ledger_*.json'))}
+    worker.require(len(previous) == 250, 'all250 original terminals')
+    rows = [load(p, h) for p, h in previous.items()]
+    chosen = supplement_objects(inventory['objects'], rows)
+    worker.require(len(chosen) == 97 and sum(o['history'] is None for o in chosen) == 44,
+        'original68 unexecuted plus29 source-missing,44 missing history IDs overall')
+    ids = {o['id'] for o in chosen}
+    table = [c for c in original['calls'] if c['object_id'] in ids]
+    worker.require(len(table) == 194, 'two variants in retained original order')
+    passed = load(control)
+    worker.require(passed['status'] == 'PASS', 'reconstruction and reception controls')
+    checked = load(control.parent/'manifest.json', passed['manifest_sha256'])
+    worker.require(all(sha(ROOT/p) == h for p, h in checked['source_files'].items()), 'controlled sources')
+    sources = tuple(dict.fromkeys((*CODE, 'scripts/gate_decoupling_catalog.py',
+        'scripts/gate_decoupling_followup.py', 'tests/test_gate_decoupling_followup.py')))
+    save(path, dict(schema='gate-decoupling-stage4-supplement-v1', policy=POLICY,
+        source_files={p: sha(ROOT/p) for p in sources},
+        backend_identity=worker.digest(worker.backend.source_identity()), genbab_config=worker.backend.CONFIG,
+        catalog=dict(path=str(catalog.resolve()), sha256=sha(catalog)),
+        control=dict(path=str(control.resolve()), sha256=sha(control)), calls=table,
+        reconstruct_missing_history=True, prior_ledgers=previous,
+        prior_manifest=dict(path=str(prior_manifest.resolve()), sha256=sha(prior_manifest)),
+        prior_review=dict(path=str(review.resolve()), sha256=sha(review)),
+        original_decision='GRAY_REPORT', entry_to_stage5='USER_APPROVED_NOT_GATE_PASSED',
+        cascade_t1=frozen_t1(old['positives']),
+        budgets=dict(local_calls=200, request=300, stage=17*3600, artifacts=128*2**20, as_bytes=8*2**30),
+        ordering='filter original call table for68unexecuted+29missing; no variant or object reorder',
+        reconstruction='canonical first CROWN-unexcluded history, not recovery of missing old unproved ID',
+        endpoint='full193 supplementary descriptive table; old gray and user decision remain unchanged'))
+
+
 def execute_queue(folder, spec, manifest, deadline, *, invoke=worker.invoke):
     """Straight-line queue; tool errors retain their prefix for authorized repair."""
     rows = []; reason = 'ALL_REGISTERED_CALLS_EXECUTED'
@@ -200,7 +240,7 @@ def audit(folder, manifest, *, deadline=None):
                     group['status_counts'][variant]['UNEXECUTED'] -= 1
                     counts = group['status_counts'][variant]
                     counts['STARTED_NO_TERMINAL'] = counts.get('STARTED_NO_TERMINAL', 0)+1
-    worker.require(len(rows) <= len(starts) <= min(250, len(rows)+1)
+    worker.require(len(rows) <= len(starts) <= min(spec['budgets'].get('local_calls', 250), len(rows)+1)
         and result['bytes'] <= spec['budgets']['artifacts'], 'stage quota')
     if end:
         worker.require(end['calls'] == len(rows) and end['seconds'] <= spec['budgets']['stage'], 'terminal accounting')
@@ -214,15 +254,27 @@ def audit(folder, manifest, *, deadline=None):
     result['recorded_cost_scope'] = ('THROUGH_FINAL_AUDIT_ACCOUNTING' if full else
         'THROUGH_BATCH_STOP_NOT_FINAL_AUDIT' if end or stopped else 'LIVE_PREFIX_ONLY')
     result['sum_terminal_cost_excludes_unfinished_call'] = len(starts) != len(rows)
+    if spec.get('schema') == 'gate-decoupling-stage4-supplement-v1':
+        # Explicit new view; never alter or relabel a historical terminal.
+        old = [load(p, h) for p, h in spec['prior_ledgers'].items()]
+        merged = {(r['object_id'], r['variant']): r for r in old}
+        for row in rows:
+            merged[row['object_id'], row['variant']] = row
+        result['supplementary_full193'] = summarize(inventory['objects'], list(merged.values()), terminal=terminal)
+        result['original_decision'] = spec['original_decision']
+        result['entry_to_stage5'] = spec['entry_to_stage5']
+        result['new_history_provenance'] = {o['id']: 'RECONSTRUCTED_NOT_OLD_UNPROVED_ID'
+            for o in inventory['objects'] if o['history'] is None and any(c['object_id'] == o['id'] for c in spec['calls'])}
     return result
 
 
 def batch(folder, manifest):
     spec = load(manifest)
-    worker.require(spec['schema'] == 'gate-decoupling-stage4-v1' and spec['policy'] == POLICY, 'frozen stage4')
+    worker.require(spec['schema'] in worker.SCHEMAS and spec['policy'] == POLICY, 'frozen stage4')
     worker.require(ROOT != Path('/data1/Kane/MOE/ACT') and (ROOT/'.frozen_commit').is_file(), 'immutable execution copy')
     worker.require(all(sha(ROOT/p) == h for p, h in spec['source_files'].items()), 'source identity')
-    worker.require(spec['budgets'] == dict(local_calls=250, request=300, stage=21*3600,
+    supplementary = spec['schema'] == worker.SCHEMAS[1]
+    worker.require(spec['budgets'] == dict(local_calls=200 if supplementary else 250, request=300, stage=(17 if supplementary else 21)*3600,
         artifacts=128*2**20, as_bytes=8*2**30), 'registered unchanged quotas')
     resource.setrlimit(resource.RLIMIT_AS, (8*2**30, 8*2**30)); os.nice(10)
     folder.mkdir(); deadline = ENTRY+spec['budgets']['stage']
@@ -245,10 +297,12 @@ def batch(folder, manifest):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(); parser.add_argument('mode', choices=('freeze', 'batch', 'audit'))
+    parser = argparse.ArgumentParser(); parser.add_argument('mode', choices=('freeze', 'freeze-supplement', 'batch', 'audit'))
     parser.add_argument('folder', type=Path); parser.add_argument('--manifest', type=Path)
     parser.add_argument('--catalog', type=Path); parser.add_argument('--control', type=Path)
-    a = parser.parse_args()
+    parser.add_argument('--prior-manifest', type=Path); parser.add_argument('--prior-root', type=Path)
+    parser.add_argument('--review', type=Path); a = parser.parse_args()
     if a.mode == 'freeze': freeze(a.folder, a.catalog, a.control)
+    elif a.mode == 'freeze-supplement': freeze_supplement(a.folder, a.catalog, a.control, a.prior_manifest, a.prior_root, a.review)
     elif a.mode == 'batch': batch(a.folder, a.manifest)
     else: print(audit(a.folder, a.manifest))

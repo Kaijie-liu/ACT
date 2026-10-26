@@ -26,6 +26,11 @@ from scoped_source.development_work import POLICY
 import genbab_cpu_ready as backend
 
 CAP = 128*2**20
+SCHEMAS = ('gate-decoupling-stage4-v1', 'gate-decoupling-stage4-supplement-v1')
+
+
+def reconstruct_enabled(spec):
+    return spec.get('schema') == SCHEMAS[1] and spec.get('reconstruct_missing_history') is True
 
 
 def digest(value):
@@ -112,7 +117,19 @@ def check_received(folder, value, spec, call, deadline):
     obj = source_object(spec, call)
     source_id = digest(dict(object=obj, sources=spec['source_files'], backend=spec['backend_identity']))
     require(value['source_id'] == source_id and value['group'] == call['variant'], 'received object/variant binding')
-    if obj['history'] is None:
+    history = obj['history']
+    if history is None and reconstruct_enabled(spec):
+        from gate_decoupling_followup import check_selection, MODE
+        selection = load(folder/'history_selection.json')
+        history = check_selection(selection, obj['experts'], source_id, deadline)
+        require(value['history_origin'] == MODE and value['selection_sha256'] == sha(folder/'history_selection.json'),
+            'new history provenance; never an old recovered failure')
+        if history is None:
+            require(value['status'] == 'NO_UNEXCLUDED_HISTORY' and not value['closed']
+                and not value['original_history_closed'] and not value['formal_SAFE']
+                and not value['complete_MoE'] and not value['endpoints'], 'no local history to accept')
+            return
+    elif history is None:
         require(value['status'] == 'SOURCE_MISSING' and not value['closed']
             and not value['original_history_closed'] and not value['formal_SAFE']
             and not value['complete_MoE'] and not value['endpoints'], 'missing-source nonacceptance')
@@ -124,7 +141,9 @@ def check_received(folder, value, spec, call, deadline):
     saved = load(folder/'domain.json')
     domain = gate.GateDomain(saved['source_id'], tuple(map(tuple, saved['history'])),
         tuple(map(tuple, saved['margins'])), tuple(map(tuple, saved['intervals'])))
-    require(domain.history == tuple(map(tuple, obj['history'])), 'received exact history')
+    require(domain.history == tuple(map(tuple, history)), 'received exact original or explicitly rebuilt history')
+    if reconstruct_enabled(spec):
+        require(value['history'] == history, 'new receipt history binding')
     properties = (len(obj['properties']) if obj['source_kind'] == 'output_mlp'
         else obj['original_request']['model']['architecture']['classes']-1)
     require(value['property_count'] == properties and value['domain_sha256'] == gate.domain_digest(domain)
@@ -187,13 +206,36 @@ def original_ranges(obj, model, tensors, deadline, journal):
     return records, 'REBUILT_ORIGINAL_PREFIX_CROWN_CHARGED'
 
 
+def reconstruct_history(obj, model, tensors, source_id, deadline, journal):
+    from gate_decoupling_followup import first_unexcluded
+    from act.back_end.moe.multilayer_external import router_upper_bounds
+    require(obj['source_kind'] == 'multilayer', 'registered missing identities are multilayer')
+    count = 0
+    def bound(prefix, end):
+        nonlocal count
+        index = count; count += 1
+        entered = time.monotonic()
+        upper = journal.call(f'reconstruct_range:{index}', lambda: router_upper_bounds(model,
+            prefix, tensors['center'], tensors['lower'], tensors['upper'], end))
+        import math
+        row = dict(prefix=[list(p) for p in prefix],
+            upper=[[i, j, v if math.isfinite(v) else None] for (i, j), v in sorted(upper.items())],
+            seconds=time.monotonic()-entered, guarantee='WHOLE_BOX_CROWN_NUMERICAL_UPPER')
+        journal.put(f'reconstruct_range_{index:04d}.json', row)
+        return row
+    selection = first_unexcluded(obj['experts'], bound, deadline)
+    selection['source_id'] = source_id
+    journal.put('history_selection.json', selection)
+    return selection
+
+
 def diagnose(obj, group, spec, deadline, journal):
     for binding in obj['original_sources']:
         tick(deadline)
         require(sha(binding['path']) == binding['sha256'], 'original request/history evidence binding')
     source_id = digest(dict(object=obj, sources=spec['source_files'], backend=spec['backend_identity']))
     journal.put('source.json', dict(object=obj, source_id=source_id, group=group))
-    if obj['history'] is None:
+    if obj['history'] is None and not reconstruct_enabled(spec):
         return dict(status='SOURCE_MISSING', closed=False, original_history_closed=False,
             complete_MoE=False, formal_SAFE=False, reason='first unclosed history identity unavailable',
             source_id=source_id, group=group, endpoints=[])
@@ -207,9 +249,23 @@ def diagnose(obj, group, spec, deadline, journal):
     from b2_observed_worker import verify_graph
     from act.back_end.moe.class_separated_top1 import validate_replay
     model, tensors = journal.call('load_object', lambda: load_object(obj, torch))
-    history = gate.canonical_history(obj['history'], obj['experts'])
-    records, origin = journal.call('gate_ranges',
-        lambda: original_ranges(obj, model, tensors, deadline, journal))
+    provenance = dict(history_origin=obj['history_source_kind'])
+    if obj['history'] is None:
+        selection = journal.call('reconstruct_history',
+            lambda: reconstruct_history(obj, model, tensors, source_id, deadline, journal))
+        provenance = dict(history_origin=selection['mode'], selection_sha256=sha(journal.folder/'history_selection.json'))
+        if selection['history'] is None:
+            return dict(status='NO_UNEXCLUDED_HISTORY', closed=False, original_history_closed=False,
+                complete_MoE=False, formal_SAFE=False, source_id=source_id, group=group,
+                endpoints=[], **provenance)
+        history = gate.canonical_history(selection['history'], obj['experts'])
+        wanted = {tuple(history[:d]) for d in range(len(history))}
+        records = [r for r in selection['prefix_records'] if tuple(map(tuple, r['prefix'])) in wanted]
+        origin = 'REBUILT_ORIGINAL_PREFIX_CROWN_CHARGED_NEW_HISTORY'
+    else:
+        history = gate.canonical_history(obj['history'], obj['experts'])
+        records, origin = journal.call('gate_ranges',
+            lambda: original_ranges(obj, model, tensors, deadline, journal))
     domain = gate.domain_from_prefix_bounds(history, obj['experts'], records,
         source_id=source_id, expected_source_id=source_id)
     journal.put('domain.json', dict(source_id=source_id, history=domain.history,
@@ -239,7 +295,7 @@ def diagnose(obj, group, spec, deadline, journal):
     result = endpoints(gate, domain, group, len(tensors['rows']), deadline,
         prepare=prepare, verify=verify_graph, replay=replay, journal=journal)
     return dict(**result, source_id=source_id, domain_sha256=gate.domain_digest(domain),
-        range_origin=origin, property_count=len(tensors['rows']), history=history)
+        range_origin=origin, property_count=len(tensors['rows']), history=[list(p) for p in history], **provenance)
 
 
 def worker(folder):
@@ -250,7 +306,7 @@ def worker(folder):
     fd = os.open(os.devnull, os.O_WRONLY); os.dup2(fd, 1); os.dup2(fd, 2); os.close(fd)
     try:
         spec = load(request['manifest'], request['manifest_sha256'])
-        require(spec['schema'] == 'gate-decoupling-stage4-v1' and spec['policy'] == POLICY, 'frozen stage4 policy')
+        require(spec['schema'] in SCHEMAS and spec['policy'] == POLICY, 'frozen stage4 policy')
         require(all(sha(ROOT/p) == h for p, h in spec['source_files'].items()), 'execution source identity')
         require(spec['genbab_config'] == backend.CONFIG, 'unchanged engine configuration')
         call = spec['calls'][request['call_index']]
@@ -277,7 +333,7 @@ def invoke(folder, manifest, call_index, *, stage_deadline):
     require(end <= stage_deadline, 'insufficient remaining stage time; suffix unexecuted')
     resource.setrlimit(resource.RLIMIT_AS, (8*2**30, 8*2**30))
     spec = load(manifest)
-    require(spec['schema'] == 'gate-decoupling-stage4-v1' and spec['policy'] == POLICY, 'stage4 freeze required')
+    require(spec['schema'] in SCHEMAS and spec['policy'] == POLICY, 'stage4 freeze required')
     require(ROOT != Path('/data1/Kane/MOE/ACT') and (ROOT/'.frozen_commit').is_file(), 'immutable execution copy')
     require(all(sha(ROOT/p) == h for p, h in spec['source_files'].items()), 'frozen execution sources')
     control = load(spec['control']['path'], spec['control']['sha256'])

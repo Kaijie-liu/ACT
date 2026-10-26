@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## Sixth revision: user-approved complete-request cascade study 2026-10-26
+
+Real increment0;old250/250 andGRAY remain unchanged.User explicitly entersstage5;not a retroactivegate pass.
+[Current contract](ALGORITHM_RESEARCH_GOAL.md)/[summary](ALGORITHM_RESEARCH_GOAL_SUMMARY_20261026.txt):194supplement calls≤200/17h;B4twoarms720/60h;separate27-object2/4slice diagnostic≤60/5h.
+T1=120s:old38positive fullcall nearest-rankp90=241.00177495367825,capped120;no supplement refit.
+Missing historyIDs require newly labeled canonical prefix reconstruction,not invented oldfailureidentity;all reconstructioncharged.
+Next necessary supplement controls/freeze/execution;cascade math/default-off integration in parallel,serial numerical queues.No new supervisororapprovalgate.
+G1–G6OPEN;local positives/singlelayercounts do not prove fullrequestgain or uniqueReLUcause.
+
 ## Stage4 final:250 local terminals,registered gray 2026-10-26
 
 Real increment34 since216 observed:250/250local terminals,0new complete-request certificates;PID425771 exited normally at LOCAL_CALL_CAP,immutable9bf3eacd6.

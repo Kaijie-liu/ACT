@@ -31,13 +31,28 @@ CODE = ('scripts/gate_decoupling_control.py', 'tests/test_gate_decoupling.py',
     'scoped_proof/io.py', 'scoped_proof/owned_session.py', 'scoped_source/development_work.py')
 
 
-def freeze(path, prior=None):
+def freeze(path, prior=None, followup=False):
     retained = None
     if prior is not None:
         old = load(prior)
         assert old['status'] == 'FAIL'
         retained = dict(path=str(prior.resolve()), sha256=sha(prior), seconds=old['seconds'],
             files={str(p.relative_to(prior.parent)): sha(p) for p in prior.parent.rglob('*') if p.is_file()})
+    if followup:
+        code = (*CODE, 'scripts/gate_decoupling_followup.py', 'tests/test_gate_decoupling_followup.py')
+        save(path, dict(schema='gate-decoupling-followup-control-v1', policy=POLICY,
+            retained_control=retained, seconds=300, artifacts=128*2**20, as_bytes=8*2**30,
+            source_files={p: sha(ROOT/p) for p in code}, native_python=str(backend.ENVIRONMENT/'bin/python'),
+            trained_models=0, real_diagnostic_calls=0, solver_calls=3, prefix_crown_calls=2, gpu=False,
+            suites=['test_gate_decoupling_followup.FollowupControls',
+                'test_gate_decoupling.WorkerControls.test_receiver_source_and_counterfactual_scope',
+                'test_gate_decoupling_stage4.BatchControls.test_audit_binds_raw_terminal_and_failed_attempt'],
+            cases=['fixed supplementary selection/T1', 'canonical prefix exclusion/ties',
+                'source/history/missing/extra/malformed record mutation', 'partial/expired reconstruction',
+                'legacy missing unchanged', 'native two-prefix reconstruction + three endpoint API calls',
+                'new/legacy reception and original ledger audit regression'],
+            acceptance='all new provenance/receipt controls and declared native calls pass; no scientific gain claim'))
+        return
     save(path, dict(schema='gate-decoupling-synthetic-v4', policy=POLICY,
         retained_control=retained,
         seconds=300, artifacts=128*2**20, as_bytes=8*2**30,
@@ -132,7 +147,7 @@ def run(folder, manifest):
 if __name__ == '__main__':
     p = argparse.ArgumentParser(); p.add_argument('mode', choices=('freeze', 'run', 'worker'))
     p.add_argument('path', type=Path); p.add_argument('--manifest', type=Path)
-    p.add_argument('--prior', type=Path); a = p.parse_args()
-    if a.mode == 'freeze': freeze(a.path, a.prior)
+    p.add_argument('--prior', type=Path); p.add_argument('--followup', action='store_true'); a = p.parse_args()
+    if a.mode == 'freeze': freeze(a.path, a.prior, a.followup)
     elif a.mode == 'worker': worker(a.path)
     else: run(a.path, a.manifest)
