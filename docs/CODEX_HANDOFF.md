@@ -1,14 +1,14 @@
 # MoE project handoff — current entry point
 
-## 5a R4 compatibility repaired; same fixed M-C continuation frozen 2026-10-26
+## 5a R4 continuation running; first failed call now completes UNKNOWN 2026-10-26
 
-Real increment1 tool-only HI probe:24physical attempts total=23R1+1probe;22M-B UNKNOWN,1M-C ERROR;no new scientific positive.
-[Record](moe_aware_stage5a_results_20261026.json)/[contract](moe_aware_bab_20261026.md):missing final-alpha allocation identified;isolatedr4 adds ordinary final target before optimization,all original checks/config retained.
-Allocator regression and same-function affine-ReLU/BaB control pass;bare-input BBPS failure and console-cap failure retained;7receipt+7B4 regressions pass.
-[Continuation freeze](moe_aware_stage5a_freeze_20261026_r2.json):81M-C calls=failedbase rerun+80originalunexecuted;22completedM-B retained under originalr3 identity,not rerun.
-Shared200/17h/128MiB predebit736.430854s/2144511bytes incl10s/64KiB bookkeeping reserve;expected105physical/103unique;no quota reset.
-M-B gate fails0closures/median−2.410981743;M-C undecided.FinalB4stillawaits complete5a;G1–G6OPEN.
-Next immutable continuation copy/fresh resources/launch,then final5a audit and admitted B4 freeze1320/110h.No new permission needed.
+Real increment1 since repair freeze:R2firstMC_BASE acceptedUNKNOWN293.311539s;25physical attempts cumulative incl olderror/probe,23unique results;full-request gains0.
+[Record](moe_aware_stage5a_results_20261026.json):PID3499742live,immutable9ce68c568;81M-Ccalls planned,firstinitialbound vector unchanged fromR1;no permission/threshold/iteration change.
+[Repair/freeze](moe_aware_bab_20261026.md):r4 final-alpha allocation before optimization;allocator/affine-ReLU controls pass,old bare-input/console failures retained;7receipt+7B4 regressions pass.
+22M-B calls retain originalr3 identity and negativegate0closures/median−2.410981743;all M-C arms use r4,not comparison against olderror.
+Shared200/17h/128MiB predebit736.430854s/2144511bytes incl10s/64KiB reserve;planned105physical/103unique;no quota reset.
+Continuation manifesta53404fb;repair receipt5302e5ce also binds current B4 sources after r4 change;old B4 control receipt predates repair.
+Next monitor3499742/final5aaudit,then admittedB4freeze1320/110h;use repair receipt or current affected control binding.G1–G6OPEN.
 
 ## 5a M-B negative; first M-C tool error retained 2026-10-26
 
