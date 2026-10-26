@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## 5a M-C two objects complete; prefix cost explanation saved 2026-10-26
+
+Real increment3 since archived3:R2MC6/81=1UNKNOWN+5TIMEOUT;28unique5aresults/30physical attempts incl olderror/probe;full-request gains0.
+[Record](moe_aware_stage5a_results_20261026.json):PID3499742live on seventhcall,immutable9ce68c568/r4;no newtoolerror or execution change.
+[Cost interpretation](moe_aware_bab_20261026.md):firstbase initial2endpoints104.906s,2cell4endpoints199.710s,same minimum;bothfirstobjects4cell stop5/8initial endpoints.
+No complete4cell bound inferred;completed-phase costs avoid nestedrange double-counting;unallocated startup/unfinished/cleanup cost stays unassigned.
+Read-only prefix analysis,not all27object conclusion/not numericalreproof;fixedqueue and200/17h/128MiB continue unchanged.
+Next complete5aaudit then actualadmissionB4freeze1320/110h;repairreceipt5302e5ce binds currentexecution.G1–G6OPEN.
+
 ## 5a first M-C object complete; M-B property-level effect separated 2026-10-26
 
 Real increment2 since last archived1:R2MC3/81=1UNKNOWN+2TIMEOUT;25unique5aresults/27physical attempts incl olderror/probe;full-request gains0.

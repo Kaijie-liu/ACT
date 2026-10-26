@@ -342,6 +342,64 @@
       "completed_physical_attempts": 27,
       "whole_request_positive_gains": 0,
       "admission_made": false
+    },
+    "six_call_snapshot": {
+      "observed_at": 1793015992.130306,
+      "completed": 6,
+      "started": 7,
+      "unique_scientific_results": 28,
+      "physical_attempts_completed": 30,
+      "full_request_gains": 0,
+      "rows": [
+        {
+          "object_id": "1a:L2E16_seed0:1476",
+          "variant": "MC_BASE",
+          "status": "UNKNOWN",
+          "seconds": 293.3115390036255,
+          "path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r2/ledger_000.json",
+          "sha256": "c3a39a0b7eb31ee1cc1a9f3ee0275dbf1bdd020c5cf2e1f1d7ac70cc145de17e"
+        },
+        {
+          "object_id": "1a:L2E16_seed0:1476",
+          "variant": "MC_2",
+          "status": "TIMEOUT",
+          "seconds": 294.27804952673614,
+          "path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r2/ledger_001.json",
+          "sha256": "4c33f2e016eee823dafe0a5e1586decc185f65db66b109918ce29f6da929116e"
+        },
+        {
+          "object_id": "1a:L2E16_seed0:1476",
+          "variant": "MC_4",
+          "status": "TIMEOUT",
+          "seconds": 294.3170395921916,
+          "path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r2/ledger_002.json",
+          "sha256": "bec351e9946b4db83f43a92d1a3bdcd383821d06884e65146b8e8b224b6031a5"
+        },
+        {
+          "object_id": "1a:L2E16_seed0:1483",
+          "variant": "MC_2",
+          "status": "TIMEOUT",
+          "seconds": 294.24531077593565,
+          "path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r2/ledger_003.json",
+          "sha256": "e19486cb736e42f833c2ed2349fc85585b5184fded75e628de99fd4ed2b977a9"
+        },
+        {
+          "object_id": "1a:L2E16_seed0:1483",
+          "variant": "MC_4",
+          "status": "TIMEOUT",
+          "seconds": 294.2818468809128,
+          "path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r2/ledger_004.json",
+          "sha256": "7da969e45ba47d52da066ce606bdf4b990403c88a781dbb87ca7ea7fd10a8a9f"
+        },
+        {
+          "object_id": "1a:L2E16_seed0:1483",
+          "variant": "MC_BASE",
+          "status": "TIMEOUT",
+          "seconds": 294.2317253705114,
+          "path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r2/ledger_005.json",
+          "sha256": "591f2af8c9ee69e7fa786bf5ad05e33ebb35bef77f0390401196963b161c32c6"
+        }
+      ]
     }
   },
   "mb_property_followup": {
@@ -1417,5 +1475,139 @@
       }
     ],
     "offline_analysis_seconds": 0.004620011895895004
+  },
+  "mc_initial_cost_prefix": {
+    "scope": "READ_ONLY_FIRST_FIVE_TERMINALS_NO_SOLVES_NO_ADMISSION",
+    "exact_numerical_proof": false,
+    "rows": [
+      {
+        "object_id": "1a:L2E16_seed0:1476",
+        "variant": "MC_BASE",
+        "status": "UNKNOWN",
+        "ledger_path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r2/ledger_000.json",
+        "ledger_sha256": "c3a39a0b7eb31ee1cc1a9f3ee0275dbf1bdd020c5cf2e1f1d7ac70cc145de17e",
+        "request_seconds": 293.3115390036255,
+        "completed_phase_seconds": {
+          "preparation": 2.656956559047103,
+          "construct_and_reconstruct": 0.012292642146348953,
+          "completed_initial_bounds": 104.90569411963224,
+          "completed_solve": 181.97323898039758
+        },
+        "unallocated_seconds": 3.763356702402234,
+        "unallocated_includes": "in-progress phase if any, startup, capture, reception, cleanup and publication; not assigned to a unique bottleneck",
+        "last_phase": {
+          "clock": 11862804.397072596,
+          "phase": "cell_0_V2_HI:solve",
+          "seconds": 181.97323898039758,
+          "state": "RETURN"
+        },
+        "initial_rows_completed": 2,
+        "initial_rows_expected": 2,
+        "initial_complete": true,
+        "initial_score": -0.00622588760983539
+      },
+      {
+        "object_id": "1a:L2E16_seed0:1476",
+        "variant": "MC_2",
+        "status": "TIMEOUT",
+        "ledger_path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r2/ledger_001.json",
+        "ledger_sha256": "4c33f2e016eee823dafe0a5e1586decc185f65db66b109918ce29f6da929116e",
+        "request_seconds": 294.27804952673614,
+        "completed_phase_seconds": {
+          "preparation": 2.958157939836383,
+          "construct_and_reconstruct": 0.0187369454652071,
+          "completed_initial_bounds": 199.7102745231241,
+          "completed_solve": 0
+        },
+        "unallocated_seconds": 91.59088011831045,
+        "unallocated_includes": "in-progress phase if any, startup, capture, reception, cleanup and publication; not assigned to a unique bottleneck",
+        "last_phase": {
+          "clock": 11863011.048919348,
+          "phase": "cell_0_V2_HI:solve",
+          "state": "ENTER"
+        },
+        "initial_rows_completed": 4,
+        "initial_rows_expected": 4,
+        "initial_complete": true,
+        "initial_score": -0.00622588760983539
+      },
+      {
+        "object_id": "1a:L2E16_seed0:1476",
+        "variant": "MC_4",
+        "status": "TIMEOUT",
+        "ledger_path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r2/ledger_002.json",
+        "ledger_sha256": "bec351e9946b4db83f43a92d1a3bdcd383821d06884e65146b8e8b224b6031a5",
+        "request_seconds": 294.3170395921916,
+        "completed_phase_seconds": {
+          "preparation": 2.644993383437395,
+          "construct_and_reconstruct": 0.02437654510140419,
+          "completed_initial_bounds": 227.7170658390969,
+          "completed_solve": 0
+        },
+        "unallocated_seconds": 63.930603824555874,
+        "unallocated_includes": "in-progress phase if any, startup, capture, reception, cleanup and publication; not assigned to a unique bottleneck",
+        "last_phase": {
+          "clock": 11863333.11367272,
+          "phase": "cell_2_V2_HI:initial",
+          "state": "ENTER"
+        },
+        "initial_rows_completed": 5,
+        "initial_rows_expected": 8,
+        "initial_complete": false,
+        "initial_score": null
+      },
+      {
+        "object_id": "1a:L2E16_seed0:1483",
+        "variant": "MC_2",
+        "status": "TIMEOUT",
+        "ledger_path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r2/ledger_003.json",
+        "ledger_sha256": "e19486cb736e42f833c2ed2349fc85585b5184fded75e628de99fd4ed2b977a9",
+        "request_seconds": 294.24531077593565,
+        "completed_phase_seconds": {
+          "preparation": 3.0239671748131514,
+          "construct_and_reconstruct": 0.02034020982682705,
+          "completed_initial_bounds": 234.45691909268498,
+          "completed_solve": 0
+        },
+        "unallocated_seconds": 56.74408429861069,
+        "unallocated_includes": "in-progress phase if any, startup, capture, reception, cleanup and publication; not assigned to a unique bottleneck",
+        "last_phase": {
+          "clock": 11863634.254780788,
+          "phase": "cell_0_V2_LO:solve",
+          "state": "ENTER"
+        },
+        "initial_rows_completed": 4,
+        "initial_rows_expected": 4,
+        "initial_complete": true,
+        "initial_score": -0.08284679681333096
+      },
+      {
+        "object_id": "1a:L2E16_seed0:1483",
+        "variant": "MC_4",
+        "status": "TIMEOUT",
+        "ledger_path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r2/ledger_004.json",
+        "ledger_sha256": "7da969e45ba47d52da066ce606bdf4b990403c88a781dbb87ca7ea7fd10a8a9f",
+        "request_seconds": 294.2818468809128,
+        "completed_phase_seconds": {
+          "preparation": 2.586219282820821,
+          "construct_and_reconstruct": 0.022420868277549744,
+          "completed_initial_bounds": 266.00159113295376,
+          "completed_solve": 0
+        },
+        "unallocated_seconds": 25.671615596860647,
+        "unallocated_includes": "in-progress phase if any, startup, capture, reception, cleanup and publication; not assigned to a unique bottleneck",
+        "last_phase": {
+          "clock": 11863959.480114132,
+          "phase": "cell_2_V2_HI:initial",
+          "state": "ENTER"
+        },
+        "initial_rows_completed": 5,
+        "initial_rows_expected": 8,
+        "initial_complete": false,
+        "initial_score": null
+      }
+    ],
+    "offline_analysis_seconds": 0.008485764265060425,
+    "interpretation": "Observed repeated initial bound cost and incomplete eight-endpoint tables; no unique global bottleneck or full-cohort conclusion."
   }
 }
