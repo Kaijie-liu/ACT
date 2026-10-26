@@ -21,6 +21,101 @@ def admission():
 
 
 class Paired(unittest.TestCase):
+    def test_public_partial_domains_use_original_receipt_only(self):
+        with tempfile.TemporaryDirectory(dir=ROOT.parent/'results') as tmp:
+            folder=Path(tmp);manifest=folder/'manifest.json';save(manifest,dict(census_multipliers=[.5,1.,2.]))
+            query=dict(kind='census',model=dict(id='m'),samples=[dict(index=5000)])
+            expected=dict(query=query,seconds=300)
+            save(folder/'request.json',dict(**query,manifest_sha256=sha(manifest),worker_deadline=294.))
+            def domain(multiplier):
+                return dict(index=5000,multiplier=multiplier,request_sha256=sha(folder/'request.json'),
+                    accepted=True,clock=30.,deadline=31.,seconds=2.,result=dict(observed_lower=2,candidate_upper=99))
+            save(folder/'domain_001.json',domain(.5))
+            terminal=dict(accepted=False,status='TIMEOUT',through_reception_seconds=295.,hard_budget=300,
+                files={p.name:sha(p) for p in folder.iterdir()})
+            save(folder/'terminal.json',terminal)
+            ledger=dict(**terminal,seconds=296.,terminal_sha256=sha(folder/'terminal.json'))
+            save(folder/'domain_002.json',domain(1.))  # absent from the original terminal snapshot
+            result=B.audit_aux(folder,expected,ledger,manifest,time.monotonic()+5)
+            self.assertEqual(len(result['domains']),1)
+            self.assertEqual(result['unreceived_domains'],[[5000,1.],[5000,2.]])
+            with self.assertRaises(ValueError):B.audit_aux(folder,dict(expected,seconds=100),ledger,manifest,time.monotonic()+5)
+
+    def test_public_route_strata_and_conflicting_replay(self):
+        rows=[dict(model='m',index=i,arm=arm,status='POSITIVE' if arm=='on' else 'TIMEOUT')
+              for i in (1,2,3) for arm in ('off','on')]
+        aux=[dict(kind='census',domains=[dict(model='m',index=i,multiplier=1,
+            result=dict(observed_lower=i,candidate_upper=99)) for i in (1,2)]),
+            dict(kind='pgd',domains=[dict(model='m',index=2,multiplier=1,result=dict(status='UNSAFE_REPLAYED'))])]
+        value=B.explain_rows(rows,aux)
+        self.assertEqual(value['public_positive_conflicts'],[['m',2]])
+        self.assertEqual(value['strata']['ONE_OBSERVED_NOT_PROVEN_STABLE']['gained'],1)
+        self.assertEqual(value['strata']['OBSERVED_MULTIPLE']['gained'],1)
+        self.assertEqual(value['strata']['NO_USABLE_WITNESS_COUNT']['gained'],1)
+        self.assertIsNone(value['strata']['OBSERVED_MULTIPLE']['observed'][0]['exact_legal_count'])
+
+    def test_independent_full_catalog_audit_keeps_stopped_prefix(self):
+        from gate_decoupling_worker import digest
+        with tempfile.TemporaryDirectory(dir=ROOT.parent/'results') as tmp:
+            base=Path(tmp);root=base/'result';root.mkdir();selection=root/'selection';selection.mkdir()
+            prior=base/'synthetic5a';prior.mkdir();prior_manifest=base/'prior_manifest.json';save(prior_manifest,dict(synthetic=True))
+            summary=admission();save(prior/'audit.json',summary)
+            save(prior/'start.json',dict(manifest_sha256=sha(prior_manifest)))
+            save(prior/'final_accounting.json',dict(audit_sha256=sha(prior/'audit.json')))
+            control=base/'control.json';save(control,dict(status='PASS',synthetic=True))
+            excluded=list(range(5000));models=[dict(id=m,architecture=dict(experts=2,layers=1,classes=3))
+                for m in B.S.MULTILAYER+B.S.SINGLELAYER]
+            spec=dict(schema=B.SCHEMA,policy=B.POLICY,models=models,excluded_ranges=[[0,4999]],
+                history_union_sha256=B.hashlib.sha256(json.dumps(excluded,separators=(',',':')).encode()).hexdigest(),
+                stage5a_summary=summary,admission=B.admitted(summary),
+                stage5a=dict(root=str(prior),manifest=str(prior_manifest),manifest_sha256=sha(prior_manifest),
+                    start_sha256=sha(prior/'start.json'),audit_sha256=sha(prior/'audit.json'),final_sha256=sha(prior/'final_accounting.json')),
+                part_caps={p:dict(slots=n,seconds=t) for p,(n,t) in B.S.CAPS.items()},
+                budgets=dict(request=300,stage=110*3600,slots=1320,selection=300,pgd_model=100,census_model=300,artifacts=B.Q.CAP),
+                source_files={p:sha(ROOT/p) for p in B.sources()},genbab_config=B.Q.backend.CONFIG,
+                backend_identity=digest(B.Q.backend.source_identity()),source_manifests=[],historical_cohorts=[],
+                control=dict(path=str(control),sha256=sha(control)),census_multipliers=[.5,1.,2.])
+            manifest=base/'manifest.json';save(manifest,spec);save(root/'start.json',dict(manifest_sha256=sha(manifest)))
+            request=dict(kind='selection',manifest_sha256=sha(manifest),worker_deadline=100.)
+            save(selection/'request.json',request);samples=[]
+            for rank,index in enumerate(range(5000,5020)):
+                one=dict(index=index,rank=rank,label=0,file=f'{index}.pt',tensors=dict(center='c',rows='q',thresholds='t'))
+                (selection/one['file']).write_text('synthetic materialization placeholder')
+                one['sha256']=sha(selection/one['file']);extra=copy.deepcopy(one);extra['file']=f'{index}_4.pt'
+                (selection/extra['file']).write_text('synthetic larger box placeholder');extra['sha256']=sha(selection/extra['file'])
+                one['additional_domains']={'4/255':extra};samples.append(one)
+            value=dict(status='COMPLETE',samples=samples,scanned=[dict(index=s['index'],label=0,predictions=[0]*18) for s in samples])
+            with gzip.open(selection/'outcome.json.gz','wt') as f:json.dump(dict(value=value,clock=50.,request_sha256=sha(selection/'request.json')),f)
+            save(selection/'published.json',dict(clock=51.,sha256=sha(selection/'outcome.json.gz')))
+            save(selection/'session.json',dict(status='COMPLETED',returncode=0,execution_error=None,cleanup_error=None,
+                cleanup_status='LEADER_REAPED_NO_LIVE_SESSION'))
+            terminal=dict(status='COMPLETE',accepted=True,through_reception_seconds=52.,hard_budget=300,
+                files={p.name:sha(p) for p in selection.iterdir() if p.is_file()})
+            save(selection/'terminal.json',terminal)
+            save(root/'selection_ledger.json',dict(**terminal,seconds=53.,terminal_sha256=sha(selection/'terminal.json')))
+            table=B.catalog(spec,samples,selection)
+            save(root/'catalog.json',dict(manifest_sha256=sha(manifest),entries=table,
+                selection_outcome_sha256=sha(selection/'outcome.json.gz')))
+            item=table[0];name='main_verify_0000';child=root/name;child.mkdir()
+            save(root/(name+'_started.json'),dict(index=0,part='main',entry=item,clock=60.))
+            save(child/'request.json',dict(**item['query'],manifest_sha256=sha(manifest),worker_deadline=360.))
+            t=dict(status='TIMEOUT',accepted=False,through_reception_seconds=294.,hard_budget=300,
+                files={'request.json':sha(child/'request.json')})
+            save(child/'terminal.json',t)
+            save(root/(name+'_ledger.json'),dict(**t,id=name,seconds=295.,terminal_sha256=sha(child/'terminal.json')))
+            result=B.audit(root,manifest)
+            self.assertEqual(result['status'],'PASS_RETAINED_PREFIX');self.assertEqual(result['full_calls'],1)
+            self.assertEqual(result['reports']['main']['summary']['contrast']['decision'],'PENDING_INCOMPLETE_QUEUE')
+            self.assertEqual(result['reports']['boundary']['checked']['planned'],120)
+            self.assertEqual(len(result['reports']['main']['checked']['unexecuted']),599)
+            # A late positive-looking file cannot change original TIMEOUT.
+            with gzip.open(child/'outcome.json.gz','wt') as f:json.dump(dict(value=dict(status='POSITIVE')),f)
+            again=B.audit(root,manifest);self.assertEqual(again['full_calls'],1)
+            self.assertEqual(again['reports']['main']['checked']['rows'][0]['status'],'TIMEOUT')
+            path=root/'catalog.json';bad=load(path);bad['entries'][0]['query']['guard_dual']=True
+            path.write_text(json.dumps(bad))
+            with self.assertRaises(ValueError):B.audit(root,manifest)
+
     def test_admission_and_paired_subjects(self):
         summary=admission();self.assertEqual(B.admitted(summary)['margin_pieces'],2)
         for key,value in [('completed_calls',102),('started_without_terminal',1),('admitted_mechanisms',['M-C-4'])]:

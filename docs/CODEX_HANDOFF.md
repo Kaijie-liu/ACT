@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## B4 complete batch and independent recount connected 2026-10-26
+
+Real increment12 since archived148:supplement160/194(13V2positive/68V3diagnostic),PID2231367 live;5a/B4real0,full-request gains0.
+[B4](moe_aware_b4_20261026.md):existing invoker connects four nontransferable parts1320/110h,public costs,all terminals/missing domains and input-block contrasts.
+Independent record audit preserves stopped prefixes/late positives,source/engine/arm bindings and public counterexample conflicts;no new supervisor or numerical reproof.
+Three new ordinary controls plus budget regression pass6.431651s processcap60s;synthetic1320catalog only,no native solver/model/GPU;control receipt linked in doc.
+Final freeze requires actual complete103-call5a;synthetic fixtures are not admission.No new inputs selected and no B4 call.
+Supplement new-history V2positive272.151194s does not establish120s cascade gain;fixedT1 unchanged.
+Next finish supplement audit,serial immutable5a9b7db404e,then admitted components/finalB4freeze.G1–G6OPEN.
+
 ## B4 paired input/catalog and request audit prepared 2026-10-26
 
 Real increment5 since archived143:supplement148/194(11V2positive/62V3diagnostic),PID2231367 live;5a/B4real0,full-request gains0.
