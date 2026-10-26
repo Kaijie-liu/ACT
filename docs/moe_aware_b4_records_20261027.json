@@ -1,5 +1,5 @@
 {
-  "status": "FROZEN_NOT_STARTED",
+  "status": "RUNNING",
   "manifest": "/data1/Kane/MOE/ACT/docs/moe_aware_b4_freeze_20261027_r1.json",
   "manifest_sha256": "72023737a889717e4cf5c4f266b47b51b8d183f5067ae12ceefbcc4242452b24",
   "preparation": {
@@ -30,5 +30,84 @@
   "scientific_complete_calls": 0,
   "numerical_positive_complete_requests": 0,
   "source_complete_certificates": 0,
-  "limits": "M-A-only test after both new mechanisms failed5a; not a successful three-mechanism algorithm claim; numerical results not G3 proof"
+  "limits": "M-A-only test after both new mechanisms failed5a; not a successful three-mechanism algorithm claim; numerical results not G3 proof",
+  "launch": {
+    "path": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1_launch.json",
+    "sha256": "765fdc21b94f58d6d309b506af800dd28a0e3a0d7186fbec5e7ee1a9fda81547",
+    "pid": 710019,
+    "started_at": 1793042269.0677943,
+    "commit": "4a93175c5044528a3e7a5f9c4f6a964621fe8010",
+    "execution_root": "/data1/Kane/MOE/executions/moe_aware_b4_20261027_r1",
+    "result_root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1",
+    "manifest": "/data1/Kane/MOE/executions/moe_aware_b4_20261027_r1/docs/moe_aware_b4_freeze_20261027_r1.json",
+    "manifest_sha256": "72023737a889717e4cf5c4f266b47b51b8d183f5067ae12ceefbcc4242452b24",
+    "resources": {
+      "load": [
+        22.462890625,
+        28.0068359375,
+        30.67724609375
+      ],
+      "cpu_count": 20,
+      "mem_available_kib": 102456400,
+      "disk_free_bytes": 467296055296
+    },
+    "command": [
+      "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+      "-B",
+      "/data1/Kane/MOE/executions/moe_aware_b4_20261027_r1/scripts/moe_aware_b4.py",
+      "batch",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1",
+      "--manifest",
+      "/data1/Kane/MOE/executions/moe_aware_b4_20261027_r1/docs/moe_aware_b4_freeze_20261027_r1.json"
+    ],
+    "copy_and_launch_seconds": 0.5252069123089314,
+    "planned_complete_calls": 1080,
+    "components": [
+      "M-A"
+    ],
+    "scope": "immutable snapshot preparation and launch; controller records online stage execution separately; no second writer"
+  },
+  "selection": {
+    "status": "COMPLETE",
+    "seconds": 31.72781856916845,
+    "indices": [
+      1742,
+      1743,
+      1748,
+      1754,
+      1776,
+      1778,
+      1781,
+      1826,
+      1851,
+      1856,
+      1866,
+      1875,
+      1900,
+      1949,
+      1956,
+      1959,
+      1965,
+      1976,
+      2241,
+      2265
+    ],
+    "scanned": 435,
+    "source_models": 18,
+    "files_checked": 44,
+    "bindings": {
+      "start.json": "f70cdcd8a81977e2d036a88e4acbb72a1118c00c0669137cea167ece05c0c8f9",
+      "selection_ledger.json": "10411cd65f524a06029f07714c1a019a31c38326f63751bf06ba3d1290a54eb5",
+      "selection/outcome.json.gz": "f842b6607eccd3598ae3a819a54693a051ada1ebdeaa844b958a5777a42715fe",
+      "catalog.json": "027c4a8c82d8db7ef8efa45f68264d5d610e4e494c9f04f5611615ed2e6875f0"
+    },
+    "review": "All frozen exclusion indices, ascending scan completeness, common clean-correct selection and44 published file identities checked; no model forward rerun, not numerical bound reproof."
+  },
+  "observed": {
+    "at": 1793042418.478552,
+    "auxiliary_completed": 11,
+    "verification_completed": 0,
+    "pid_live": true,
+    "stopped": false
+  }
 }

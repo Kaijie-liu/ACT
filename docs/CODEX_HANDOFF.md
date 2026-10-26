@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## B4 M-A-only queue running from immutable source 2026-10-27
+
+Real increment0 complete verifications;20common new inputs selected in31.728s,publicPGD/census now running,not verification positives.
+[Record](moe_aware_b4_records_20261027.json):PID710019,immutable4a93175c5,manifest72023737,18models,1080planned calls;detached CPU1/nice10/AS8GiB.
+All44 selection files/source/request/terminal bindings,2329 exclusions and complete ascending clean-correct scan checked;indices1742–2265,no route/outcome selection.
+600main+120ablation+240radius+120boundary;1320/110h nontransferable caps unchanged;240unused ablation slots not moved. OnlyM-A admitted.
+Launch/copy0.525s and staticpreparation3.255s separate;online selection/PGD/census/allrequests/reception/cleanup/audits charged by controller.
+Monitor `/data1/Kane/MOE/results/moe_aware_b4_20261027_r1`;toolerror preserve/fix/continue,scientific gates unchanged,no retune.G1–G6OPEN.
+
 ## B4 actual M-A-only execution frozen 2026-10-27
 
 Real increment0 B4calls;5a103/103and111physical final independentlyreviewed;bothMB/MCnegative,allfailures retained.
