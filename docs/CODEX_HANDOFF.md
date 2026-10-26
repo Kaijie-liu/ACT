@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## 5a former failure object now complete; zero-width first margin 2026-10-27
+
+Real increment2:67/103scientific entries,75physical attempts inclfailures/probes;15completeMCtriples0history closures;full-request gains0.
+[Record](moe_aware_stage5a_results_20261026.json):L3E8seed2:1557 MC4/BASE/2 allUNKNOWN,293.424/294.097/293.544s,sameR7engine/source/domain.
+First margin lower=upper=−0.002294868230819702;allvariants collapse to1cell/2endpoints,initialscore0;no first-layer refinement space here,kept in original27 denominator.
+All3 original terminals/files/online receipts rechecked;not numerical reproof or a statement about other-layer/full-request robustness.
+PID3432421live,immutable0abd00721,36calls remain;no newqueries/config edits.B4 statistics/cost code read-only checked,no change needed.
+Next complete fixed5a/independent audit,then actual-admissionB4freeze1320/110h;R7receipt7c630be0.G1–G6OPEN.
+
 ## 5a R7 real fault crossed; fixed queue continuing 2026-10-27
 
 Real increment1:R6firstMC4 acceptedUNKNOWN293.423904s;73completeddiagnostic attempts inclerrors/probes,65retained/current scientific rows;full-request gains0.
