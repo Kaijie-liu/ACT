@@ -13,6 +13,34 @@ sys.path[:0]=[str(ROOT),str(ROOT/'scripts')]
 
 @unittest.skipUnless(os.environ.get('MOE_DIAGNOSTIC_NATIVE')=='1','isolated native control')
 class AlphaStartCompatibility(unittest.TestCase):
+    def test_missing_stable_start_is_exact_without_new_parameters(self):
+        import torch
+        from auto_LiRPA.operators.relu import BoundRelu
+        torch.set_default_dtype(torch.float64);torch.set_num_threads(1)
+        inp=SimpleNamespace(lower=torch.tensor([[-2.,1.,0.,-1.],[-3.,2.,0.,-2.]]),
+                            upper=torch.tensor([[-1.,2.,0.,0.],[-1.,3.,0.,0.]]))
+        relu=BoundRelu(inputs=[inp],options={});relu.shape=(4,);relu.opt_stage='opt'
+        relu.alpha_indices=(torch.empty(0,dtype=torch.long),)
+        relu.alpha={'existing':torch.empty(2,9,2,0)};relu.alpha_lookup_idx={'existing':None}
+        old=SimpleNamespace(name='existing',output_shape=(2,9))
+        new=SimpleNamespace(name='missing',output_shape=(2,9))
+        for indices in (None,torch.tensor([0,2])):
+            n=9 if indices is None else len(indices)
+            a=torch.ones(n,2,4)
+            expected=relu._backward_relaxation(a,-a,inp,old,indices)
+            actual=relu._backward_relaxation(a,-a,inp,new,indices)
+            for x,y in zip(expected,actual):
+                if isinstance(x,torch.Tensor):
+                    x,y=torch.broadcast_tensors(x,y);torch.testing.assert_close(x,y,rtol=0,atol=0)
+                else:self.assertEqual(x,y)
+            self.assertEqual(set(relu.alpha),{'existing'})
+            self.assertEqual(set(relu.alpha_lookup_idx),{'existing'})
+        # A missing start with a genuinely unstable CURRENT bound must still
+        # fail; zero-sized stored alpha alone is not sufficient evidence.
+        inp.lower[0,1]=-1.
+        with self.assertRaises(KeyError):
+            relu._backward_relaxation(a,-a,inp,new,None)
+
     def test_zero_path_final_allocation_and_unchanged_existing_specs(self):
         import torch
         import auto_LiRPA.backward_bound as B

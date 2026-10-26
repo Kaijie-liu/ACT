@@ -400,7 +400,9 @@
           "sha256": "591f2af8c9ee69e7fa786bf5ad05e33ebb35bef77f0390401196963b161c32c6"
         }
       ]
-    }
+    },
+    "status": "STOPPED_TOOL_ERROR",
+    "final_sha256": "42ff20edf5b15d8f2d31bbdf14fad71bf4ac831b353d8975d48f5aca7b5ef877"
   },
   "mb_property_followup": {
     "scope": "READ_ONLY_SAVED_PROPERTY_COMPARISON_NO_NEW_SOLVES",
@@ -1609,5 +1611,53 @@
     ],
     "offline_analysis_seconds": 0.008485764265060425,
     "interpretation": "Observed repeated initial bound cost and incomplete eight-endpoint tables; no unique global bottleneck or full-cohort conclusion."
+  },
+  "stopped_r2": {
+    "root": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r2",
+    "complete": {
+      "calls": 7,
+      "clock": 11864293.599367764,
+      "seconds": 1781.532930308953,
+      "stop_reason": "TOOL_OR_RECEPTION_ERROR"
+    },
+    "final": {
+      "audit_sha256": "447570d22af2c2d45639e9b7007326d3881c5437f77845690d5eb687b5b5225e",
+      "bytes_before_receipt": 736908,
+      "clock": 11864293.982316509,
+      "seconds": 1781.9097863174975
+    },
+    "independent_audit": {
+      "path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r2_review/stopped_audit.json",
+      "sha256": "455bf45aab1ac7b3abc125be41e21341d0ab79917ddadb8f5b7a5a3f74820d4d"
+    },
+    "error": {
+      "path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r2/call_006/error.json",
+      "sha256": "9eb032f36aac237b32e335f9cdb8156935b744dabb2c42e361fdf0e5b0886840"
+    },
+    "local_calls": 7,
+    "unique_results_including_current_error": 29,
+    "unchanged_complete_families": 28
+  },
+  "repair_r5": {
+    "control": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r2_review/repair_control.json",
+    "control_sha256": "2c5dbf0c666ce6c723869eecfa26a00a81aba8584172261721d5bd067652dfa4",
+    "backend_identity": "ae81aacbe3bb6520524b700e12ed8658478958ef2c6890d08cc8f70e5747f6b8",
+    "native_tests": 3,
+    "ordinary_tests": 18,
+    "fault_probes": 2,
+    "scope": "current-bound rechecked all-stable sparse ReLU, empty alpha via ordinary reconstruction; unstable missing alpha still errors",
+    "real_repair_confirmation": "pending first resumed call, synthetic controls only"
+  },
+  "continuation_r3_ready": {
+    "manifest": "docs/moe_aware_stage5a_freeze_20261026_r3.json",
+    "manifest_sha256": "fd32e1896abd07e903c9d93b98ec50fc4dfd6723940a54c6d2fe7f5c1a1b58c1",
+    "retained": 28,
+    "new_calls": 75,
+    "prior": {
+      "attempts": 33,
+      "seconds": 2571.5175167564303,
+      "bytes": 3202126
+    },
+    "cumulative_max_planned_attempts": 108
   }
 }

@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## 5a R2 stopped; R5 stable-ReLU repair and continuation frozen 2026-10-26
+
+Real increment1:R2MC7/81=1UNKNOWN+5TIMEOUT+1ERROR;29unique inclcurrenterror/33physical incl2newfaultprobes;full-request gains0.
+[Record](moe_aware_stage5a_results_20261026.json):oldPID3499742gone,R2final1781.909786s,independent frozen audit455bf45a;74unexecuted retained.
+[Repair](moe_aware_bab_20261026.md):R5 missing-intermediate alpha bypass only for empty-feature/currently all-stable ReLU,ordinary exactmask;unstable still errors.
+3native controls/18ordinary regressions pass;probe domain-type and4fixture-env failures retained;no query/threshold/iteration retune.
+[R3freeze](moe_aware_stage5a_freeze_20261026_r3.json)fd32e189:retain22MB+6MC whole families,75newcalls allR5,no crossengine withinobject;planned108physical/103unique.
+Prior33/2571.517517s/3202126bytes incl10s/64KiB reserve,original200/17h/128MiB unchanged;current repair receipt2c5dbf0c also bindsB4.
+Next commit/push then freshresource/immutableR3launch;firstcall must confirm native repair,then final5aaudit/B4actualadmission1320/110h.G1–G6OPEN.
+
 ## 5a M-C two objects complete; prefix cost explanation saved 2026-10-26
 
 Real increment3 since archived3:R2MC6/81=1UNKNOWN+5TIMEOUT;28unique5aresults/30physical attempts incl olderror/probe;full-request gains0.

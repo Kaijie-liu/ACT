@@ -29,7 +29,7 @@ from scoped_proof.owned_session import execute
 ACT = '/data1/Kane/miniconda3/envs/act-py312/bin/python'
 ENVIRONMENT = Path('/data1/Kane/MOE/envs/genbab-cpu-20261021-v1')
 TOOL = Path('/data1/Kane/MOE/baselines/alpha-beta-CROWN')
-COMPAT = Path('/data1/Kane/MOE/baselines/adaptations/genbab_cpu_20261026_r4')
+COMPAT = Path('/data1/Kane/MOE/baselines/adaptations/genbab_cpu_20261026_r5')
 LIRPA = COMPAT/'auto_LiRPA'
 LIRPA_ALPHA_START_EDIT = (
     '    return start_nodes\n',
@@ -43,6 +43,28 @@ LIRPA_ALPHA_START_EDIT = (
     '        size_final = self[final_node_name].output_shape[1:] if c is None else c.size(1)\n'
     '        start_nodes.append((final_node_name, size_final, None, True))\n'
     '    return start_nodes\n')
+LIRPA_STABLE_RELU_EDIT = (
+    '            # Alpha-CROWN.\n'
+    '            lower_d = None\n'
+    '            selected_alpha, alpha_lookup_idx = self.select_alpha_by_idx(\n'
+    '                last_lA, last_uA, unstable_idx, start_node)\n',
+    '            # Alpha-CROWN.\n'
+    '            lower_d = None\n'
+    '            # ACT compatibility: an all-stable sparse-feature ReLU has no\n'
+    '            # alpha variables. A later intermediate start may be absent\n'
+    '            # from its lookup. Recheck stability on CURRENT bounds and use\n'
+    '            # an empty shared-spec tensor; ordinary reconstruction/masks\n'
+    '            # below recover the exact linear map. No parameter or bound is\n'
+    '            # invented, and unstable missing starts retain the native error.\n'
+    '            if (start_node.name not in self.alpha\n'
+    '                    and self.alpha_indices is not None\n'
+    '                    and self.alpha_indices[0].numel() == 0\n'
+    '                    and bool(torch.all(lower <= upper))\n'
+    '                    and bool(torch.all((lower >= 0) | (upper <= 0)))):\n'
+    '                selected_alpha = lower.new_empty((self.alpha_size, 1, lower.shape[0], 0))\n'
+    '            else:\n'
+    '                selected_alpha, alpha_lookup_idx = self.select_alpha_by_idx(\n'
+    '                    last_lA, last_uA, unstable_idx, start_node)\n')
 LIRPA_EDIT = (
     '            elif type(last_A) == Tensor:\n',
     '            elif type(last_A) == Tensor:\n'
@@ -164,6 +186,10 @@ def source_identity():
             before, after = (s.encode() for s in LIRPA_ALPHA_START_EDIT)
             require(expected.count(before)==1, 'LiRPA alpha start patch exact context')
             expected=expected.replace(before,after,1)
+        if name == 'auto_LiRPA/operators/relu.py':
+            before, after = (s.encode() for s in LIRPA_STABLE_RELU_EDIT)
+            require(expected.count(before)==1, 'LiRPA stable ReLU patch exact context')
+            expected=expected.replace(before,after,1)
         require(actual.read_bytes()==expected, 'isolated LiRPA source: '+name)
         lirpa_hashes[name]=hashlib.sha256(expected).hexdigest()
     require({str(p.relative_to(LIRPA)) for p in LIRPA.rglob('*.py')} ==
@@ -171,7 +197,8 @@ def source_identity():
     return dict(author_commits=SOURCES, compatibility_directory=str(COMPAT),
                 compatibility_edits=COMPAT_EDITS, files=hashes,
                 lirpa_files=lirpa_hashes, lirpa_edit=LIRPA_EDIT,
-                lirpa_alpha_start_edit=LIRPA_ALPHA_START_EDIT)
+                lirpa_alpha_start_edit=LIRPA_ALPHA_START_EDIT,
+                lirpa_stable_relu_edit=LIRPA_STABLE_RELU_EDIT)
 
 
 def normalized(name):

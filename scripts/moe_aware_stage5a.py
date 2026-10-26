@@ -139,12 +139,13 @@ def observed_row(folder, index, row, spec):
     return result
 
 
-def retained_mb(spec, deadline):
-    """Recheck the completed M-B arm pairs; keep failed M-C in physical costs.
+def retained_calls(spec, deadline):
+    """Recheck completed arm families across retained tool-error prefixes.
 
-    The compatibility repair changes the engine for ALL subsequent M-C arms.
-    No comparison mixes an old M-C error with a newly successful arm. Parent
-    M-B pairs retain their original engine/source identity and negative result.
+    A compatibility repair cannot mix engine identities within an object's
+    comparison. Completed MB pairs / MC triples remain on their original
+    engine; a failed new object and all its remaining arms use the repaired
+    engine. Errors and probes remain in cumulative physical costs.
     """
     if 'continuation' not in spec:
         return {}
@@ -154,38 +155,54 @@ def retained_mb(spec, deadline):
     start = load(root/'start.json', parent['start_sha256'])
     final = load(root/'final_accounting.json', parent['final_sha256'])
     audit = load(root/'audit.json', parent['audit_sha256'])
+    indexed = retained_calls(original, deadline)
+    kept = parent.get('completed_prefix', 22)
+    W.require(isinstance(kept, int) and 0 <= kept < len(original['calls']),
+        'completed parent prefix within frozen calls')
     W.require(final['audit_sha256'] == parent['audit_sha256']
         and start['manifest_sha256'] == parent['manifest_sha256']
-        and audit['completed_calls'] == 23 and audit['stop_reason'] == 'TOOL_OR_RECEPTION_ERROR',
-        'bound stopped23 parent')
+        and audit['completed_calls'] == kept+1+len(indexed)
+        and audit['stop_reason'] == 'TOOL_OR_RECEPTION_ERROR', 'bound stopped parent including error')
     W.require(all(sha(Path(start['execution_root'])/p) == h for p,h in original['source_files'].items()),
         'unchanged parent verifier sources')
-    W.require(spec['calls'] == original['calls'][22:]
+    W.require(spec['calls'] == original['calls'][kept:]
         and all(spec[k] == original[k] for k in ('mb_objects','mc_objects','mb','mc','decision','budgets','catalog')),
-        'same fixed remaining81 calls and endpoints; no scientific change')
-    indexed = {}
-    W.require(len(parent['ledger_sha256']) == 23, 'all old attempts, including error')
-    for i in range(23):
+        'same fixed remaining calls and endpoints; no scientific change')
+    family = lambda c: (c['object_id'], 'MB' if c['variant'].startswith('MB_') else 'MC')
+    W.require(not ({family(c) for c in original['calls'][:kept]}
+                   & {family(c) for c in spec['calls']}),
+        'retain whole same-engine arm families, never split a paired comparison')
+    W.require(len(parent['ledger_sha256']) == kept+1, 'all old attempts, including error')
+    for i in range(kept+1):
         tick(deadline);row = load(root/f'ledger_{i:03d}.json', parent['ledger_sha256'][f'ledger_{i:03d}.json'])
         child = root/f'call_{i:03d}';terminal = load(child/'terminal.json', row['terminal_sha256'])
         W.require(all(row[k] == v for k,v in terminal.items()), 'parent original terminal')
         W.require(all(sha(child/p) == h for p,h in row['files'].items()), 'parent original files')
-        if i == 22:
+        if i == kept:
             W.require(row['status'] == 'ERROR' and not row['accepted'], 'old error never upgraded')
             continue
-        W.require(row['accepted'] and row['status'] == 'UNKNOWN' and session_ok(load(child/'session.json')),
-            'completed same-engine M-B negative pairs only')
         call = original['calls'][i]
-        W.check_received(child, row['evidence'], original, call, deadline)
-        indexed[row['object_id'],row['variant']] = observed_row(root,i,row,original)
-    W.require(spec['prior_accounting']['attempts'] >= 23
-        and spec['prior_accounting']['seconds'] >= final['seconds'], 'all prior costs retained')
+        W.require((row['object_id'],row['variant']) == (call['object_id'],call['variant'])
+            and row['status'] not in ('ERROR','UNSUPPORTED'), 'original completed call, no error upgrade')
+        if row['accepted']:
+            W.require(session_ok(load(child/'session.json')), 'accepted parent session')
+            W.check_received(child, row['evidence'], original, call, deadline)
+        else:
+            W.require(row['status']=='TIMEOUT', 'unaccepted parent remains timeout')
+        key=(row['object_id'],row['variant'])
+        W.require(key not in indexed, 'no duplicate completed parent calls')
+        indexed[key] = observed_row(root,i,row,original)
+    prior=original.get('prior_accounting', {})
+    W.require(spec['prior_accounting']['attempts'] >= kept+1+prior.get('attempts',0)
+        and spec['prior_accounting']['seconds'] >= final['seconds']+prior.get('seconds',0)
+        and spec['prior_accounting']['bytes'] >= final['bytes_before_receipt']+prior.get('bytes',0),
+        'all prior costs retained, including previous continuation')
     return indexed
 
 
 def summarizer(folder, spec):
     def summarize(_inventory, rows, *, terminal):
-        prior = retained_mb(spec, time.monotonic()+60)
+        prior = retained_calls(spec, time.monotonic()+60)
         indexed = dict(prior)
         for i,r in enumerate(rows):
             key = (r['object_id'], r['variant'])
@@ -198,8 +215,9 @@ def summarizer(folder, spec):
         return dict(groups={}, completed_calls=len(rows)+len(prior), planned_calls=len(spec['calls'])+len(prior),
             status_counts=dict(Counter(key[1]+':'+r['status'] for key,r in indexed.items())),
             seconds=sum(r['seconds'] for r in rows), mb=mb, mc2=mc2, mc4=mc4,
-            result_view='unique fixed103; old failed M-C and fault probe remain in physical-attempt/cost ledger',
-            parent_M_B_count=len(prior),
+            result_view='unique fixed103; old errors and fault probes remain in physical-attempt/cost ledger',
+            parent_M_B_count=sum(key[1].startswith('MB_') for key in prior),
+            retained_completed_calls=len(prior),
             admitted_mechanisms=([*(['M-B'] if mb['passes'] else []),
                 *(['M-C-2'] if mc2['passes'] else ['M-C-4'] if mc4['passes'] else [])] if complete else None),
             primary_decision='COMPLETE_FIXED_MECHANISM_GATE' if complete else 'PENDING',
