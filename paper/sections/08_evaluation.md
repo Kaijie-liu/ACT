@@ -1,5 +1,58 @@
 # Evaluation
 
+## Multilayer mechanism diagnostics: no admitted M-B or M-C benefit
+
+The completed seventh-revision diagnostic tests two optional mechanisms before
+any complete-request performance claim. M-B compares guard-dual optimization
+with its zero-guard comparator on 11 fixed histories. M-C compares no partition,
+two closed first-margin cells, and four cells on 27 fixed multilayer histories
+where the earlier gate-frozen diagnostic closed but gate decoupling did not.
+These are observed diagnostic cohorts, not new-input confirmation. Each call
+has one 300-second total budget, including all cells and last-gate endpoints.
+The registered admission rule requires at least five additional complete
+history closures **and** a positive paired median score improvement.
+
+| Comparison | Paired histories | Closure gain / loss | Complete score pairs | Median paired score difference | Admission |
+|---|---:|---:|---:|---:|---|
+| M-B / zero-guard | 11 | 0 / 0 | 11 | −2.410982 | Fail |
+| M-C two cells / no partition | 27 | 0 / 0 | 25 | +0.149568 | Fail |
+| M-C four cells / no partition | 27 | 0 / 0 | 19 | +0.427032 | Fail |
+
+All 103 registered scientific entries are retained and complete. Accounting
+includes 111 physical attempts, including preserved tool errors and diagnostic
+probes; no failed attempt is used as a comparator outcome. Paired variants use
+the same engine within each object, with disclosed compatibility repairs across
+execution continuations. Every M-B call returns UNKNOWN. M-C's three arms return
+3/1/1 UNKNOWN and 24/26/26 TIMEOUT respectively, with zero complete history
+closures. The audit reproduces identities, counts, coverage bookkeeping and
+arithmetic on stored scores; it does not independently prove CROWN's bounds.
+
+M-B scores are conditional property lower bounds. M-C scores are minima over
+complete initial tables for the guarded maximum specifications, cells and
+endpoints; they are not conditional property bounds. The two score types are
+not compared numerically. M-C's positive medians concern the 25 and 19 observed
+pairs only: the missing 2 and 8 score pairs remain missing, not zero. On the
+same 19 objects with all three initial tables complete, median initial-bound
+costs are 62.240, 123.406 and 207.825 seconds. Median per-object cost ratios are
+1.941 and 3.574. All-request median costs on the full 27-object cohort are
+approximately 294.26 seconds in every arm. Thus improved initial scores did
+not translate into complete proofs or end-to-end speedups under this budget.
+The observed costs suggest a tradeoff, not a proof of the unique bottleneck.
+
+Both mechanisms fail the unchanged admission rule and are excluded from B4.
+This stops these finite implementations without claiming that all guard-dual
+methods or all margin partitions are ineffective. The authorized complete-
+request comparison now tests **M-A alone**, with the single-layer boundary and
+double-radius cohorts preserved. It has started but has no final result; it
+cannot validate a successful three-component algorithm. The historical studies
+below keep their original cohorts, guarantees and outcomes.
+
+Evidence: [final result, source bindings and independent recount](../../docs/moe_aware_stage5a_results_20261026.json),
+[mechanism analysis](../../docs/moe_aware_bab_20261026.md), and
+[frozen B4 design](../../docs/moe_aware_b4_20261026.md).
+
+## Historical evaluation scope
+
 We evaluate four distinct questions: whether the frozen method improves complete
 request outcomes on new inputs; whether shared-input relationships contribute;
 how an executable external-backend path compares; and what a separately checked

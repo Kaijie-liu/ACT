@@ -509,8 +509,10 @@ not receive a fresh deadline. Only complete route coverage and all properties
 produce a request-level positive. Public counterexample search and local
 positive counts cannot substitute for this paired endpoint.
 
-At this writing M-B's frozen 11-pair diagnostic has no additional complete
-history closure; M-C's 27-object diagnostic is still running. B4 has not run.
+The completed M-B 11-pair and M-C 27-object diagnostics have no additional
+complete history closure and fail their registered admission rules; see
+[the results and cost limits](08_evaluation.md#multilayer-mechanism-diagnostics-no-admitted-m-b-or-m-c-benefit).
+B4 has started with M-A alone; its full-request result remains pending.
 The rules above establish conditional mathematical reductions, not a measured
 MoE-aware advantage. CROWN/GenBaB positives retain their numerical-policy
 grade. Source containment, conversion, all-route coverage and independently

@@ -1,5 +1,13 @@
 # MoE project handoff — current entry point
 
+## Completed mechanism failures integrated into manuscript 2026-10-27
+
+Real increment0 complete B4requests at edit;PID710019live,registered auxiliary census proceeds;no numerical configuration change.
+[Evaluation](../paper/sections/08_evaluation.md#multilayer-mechanism-diagnostics-no-admitted-m-b-or-m-c-benefit) now reports103/103,zeroMB/MCclosures,missing-score denominators and same19cost tradeoff.
+README/method remove obsolete“MCunfinished”;M-A-only B4 pending,not successfulthree-component algorithm or G1closure;historical tables preserved.
+All reportedcounts/roundedmedians checked against bound rawrecount,local links and diff check pass;no trainedforward/newsolvercall.
+Next monitor immutable4a93175c5 B4 and audit actualpairedresults;G1–G6OPEN.
+
 ## B4 M-A-only queue running from immutable source 2026-10-27
 
 Real increment0 complete verifications;20common new inputs selected in31.728s,publicPGD/census now running,not verification positives.

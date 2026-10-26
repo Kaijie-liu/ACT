@@ -4,8 +4,12 @@ Current research extension (2026-10-27): the
 [multilayer method section](sections/03_path_conditioned_method.md#multilayer-strong-engine-extension-research-candidate)
 now separates original-execution embedding, last-gate endpoints, guard duality,
 closed margin coverage and pointwise error estimates for M-A/M-B/M-C.
-It is a candidate-method addition, not a completed performance claim: M-B's
-frozen diagnostic has no closure gain, M-C is unfinished, and B4 has not run.
+The [completed mechanism diagnostic](sections/08_evaluation.md#multilayer-mechanism-diagnostics-no-admitted-m-b-or-m-c-benefit)
+has zero closure gains for both M-B and M-C; both fail their registered admission
+rule. Some complete M-C initial tables improve, at greater cost, without closing
+a history. B4 has started with M-A alone and has no final performance result.
+The conditional proof rules therefore remain candidate-method results, not an
+experimentally successful three-component algorithm.
 The short technical-review paper and its tables below remain the earlier
 single-layer/conditional-evidence draft; they are not the current seventh-revision
 evaluation. Use [the handoff](../docs/CODEX_HANDOFF.md) for live evidence.
