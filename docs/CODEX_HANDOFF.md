@@ -1,5 +1,13 @@
 # MoE project handoff — current entry point
 
+## B4 second complete input block audited 2026-10-27
+
+Real increment22 audited calls since archived38:first60complete,30pairs,gain/loss2/0;actualqueue62/1080at review,PID710019continues rank2.
+[Record](moe_aware_b4_records_20261027.json)`second_input_review`:1743 off6POSITIVE/9TIMEOUT,on8/7;all30original identity/coverage/receipt audits PASS,no publicreplay conflict.
+Secondblock allrequest sums off/on2747.416/2614.795s,medians294.241/222.396;auxiliary separate;review2.860sincludingimports,priorpartialreviewcost retained.
+Gains onlyL2E8seed0/1;R2E8/R3E8 all6models bothTIMEOUT;on22verifiedhistories,43initial+1BaBendpoint,no fallback,notroute-changing/G3proof.
+[Table](moe_aware_b4_20261026.md) covers2of20inputblocks,no interimbootstrap/admission;fixedqueue/T1/components/quotas unchanged.G1–G6OPEN.
+
 ## B4 second gain shares the same input 2026-10-27
 
 Real increment6 since archived32:38/1080calls,19completepairs,gain/loss2/0;PID710019continues fixedqueue.
