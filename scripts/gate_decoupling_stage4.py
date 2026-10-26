@@ -168,13 +168,19 @@ def freeze_supplement(path, catalog, control, prior_manifest, prior_root, review
 
 def execute_queue(folder, spec, manifest, deadline, *, invoke=worker.invoke):
     """Straight-line queue; tool errors retain their prefix for authorized repair."""
+    prior = spec.get('prior_accounting', {})
+    if prior:
+        worker.require(type(prior.get('attempts')) is int and prior['attempts'] >= 0
+            and type(prior.get('bytes')) is int and prior['bytes'] >= 0
+            and type(prior.get('seconds')) in (int,float) and math.isfinite(prior['seconds'])
+            and prior['seconds'] >= 0, 'valid cumulative prior costs before any launch')
     rows = []; reason = 'ALL_REGISTERED_CALLS_EXECUTED'
     for index, call in enumerate(spec['calls']):
-        if index >= spec['budgets']['local_calls']:
+        if index+prior.get('attempts', 0) >= spec['budgets']['local_calls']:
             reason = 'LOCAL_CALL_CAP'; break
         if time.monotonic()+300 > deadline:
             reason = 'STAGE_TIME_CAP'; break
-        if worker.size(folder)+256*1024 >= spec['budgets']['artifacts']:
+        if worker.size(folder)+prior.get('bytes', 0)+256*1024 >= spec['budgets']['artifacts']:
             reason = 'ARTIFACT_CAP'; break
         save(folder/f'started_{index:03d}.json', dict(index=index, call=call, clock=time.monotonic()))
         row = invoke(folder/f'call_{index:03d}', manifest, index, stage_deadline=deadline)
@@ -254,6 +260,17 @@ def audit(folder, manifest, *, deadline=None, summarizer=None):
     result['recorded_cost_scope'] = ('THROUGH_FINAL_AUDIT_ACCOUNTING' if full else
         'THROUGH_BATCH_STOP_NOT_FINAL_AUDIT' if end or stopped else 'LIVE_PREFIX_ONLY')
     result['sum_terminal_cost_excludes_unfinished_call'] = len(starts) != len(rows)
+    prior = spec.get('prior_accounting', {})
+    if prior:
+        worker.require(all(type(prior.get(k)) in (int, float) and prior[k] >= 0
+            for k in ('attempts', 'seconds', 'bytes')), 'nonnegative retained prior cost')
+        result['physical_attempts_including_prior'] = len(starts)+prior['attempts']
+        result['cumulative_stage_seconds'] = (result['recorded_stage_seconds'] or 0)+prior['seconds']
+        result['cumulative_artifact_bytes'] = result['bytes']+prior['bytes']
+        worker.require(result['physical_attempts_including_prior'] <= spec['budgets']['local_calls']
+            and result['cumulative_stage_seconds'] <= spec['budgets']['stage']
+            and result['cumulative_artifact_bytes'] <= spec['budgets']['artifacts'],
+            'continuation cannot reset any stage quota')
     if spec.get('schema') == 'gate-decoupling-stage4-supplement-v1':
         # Explicit new view; never alter or relabel a historical terminal.
         old = [load(p, h) for p, h in spec['prior_ledgers'].items()]
@@ -278,7 +295,8 @@ def batch(folder, manifest, *, summarizer=None, entry=None):
     worker.require(spec['budgets'] == dict(local_calls=200 if supplementary else 250, request=300, stage=(17 if supplementary else 21)*3600,
         artifacts=128*2**20, as_bytes=8*2**30), 'registered unchanged quotas')
     resource.setrlimit(resource.RLIMIT_AS, (8*2**30, 8*2**30)); os.nice(10)
-    folder.mkdir(); deadline = entry+spec['budgets']['stage']
+    prior = spec.get('prior_accounting', {})
+    folder.mkdir(); deadline = entry+spec['budgets']['stage']-prior.get('seconds', 0)
     save(folder/'start.json', dict(entry=entry, deadline=deadline, pid=os.getpid(),
         commit=(ROOT/'.frozen_commit').read_text().strip(), manifest_sha256=sha(manifest),
         execution_root=str(ROOT), started_at=time.time()))
@@ -287,7 +305,8 @@ def batch(folder, manifest, *, summarizer=None, entry=None):
         save(folder/'complete.json', dict(calls=len(rows), stop_reason=reason,
             seconds=time.monotonic()-entry, clock=time.monotonic()))
         result = audit(folder, manifest, deadline=deadline-2, summarizer=summarizer); save(folder/'audit.json', result)
-        worker.require(time.monotonic() < deadline and worker.size(folder)+65536 < worker.CAP, 'audit cost within stage')
+        worker.require(time.monotonic() < deadline
+            and worker.size(folder)+prior.get('bytes', 0)+65536 < worker.CAP, 'audit cost within stage')
         save(folder/'final_accounting.json', dict(seconds=time.monotonic()-entry,
             bytes_before_receipt=worker.size(folder), audit_sha256=sha(folder/'audit.json'), clock=time.monotonic()))
     except BaseException as error:

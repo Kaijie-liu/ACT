@@ -29,8 +29,20 @@ from scoped_proof.owned_session import execute
 ACT = '/data1/Kane/miniconda3/envs/act-py312/bin/python'
 ENVIRONMENT = Path('/data1/Kane/MOE/envs/genbab-cpu-20261021-v1')
 TOOL = Path('/data1/Kane/MOE/baselines/alpha-beta-CROWN')
-COMPAT = Path('/data1/Kane/MOE/baselines/adaptations/genbab_cpu_20261022_r3')
+COMPAT = Path('/data1/Kane/MOE/baselines/adaptations/genbab_cpu_20261026_r4')
 LIRPA = COMPAT/'auto_LiRPA'
+LIRPA_ALPHA_START_EDIT = (
+    '    return start_nodes\n',
+    '    # ACT compatibility: zero initial A can omit the final objective even\n'
+    '    # though this activation supports its intermediate ancestors. Alpha\n'
+    '    # optimization can make that path nonzero. Allocate the ordinary final\n'
+    '    # alpha now, before optimizer/pruning setup; never invent a bound or\n'
+    '    # suppress a missing-key error during backward propagation.\n'
+    '    if (start_nodes and final_node_name is not None and node.used\n'
+    '            and not any(s[0] == final_node_name for s in start_nodes)):\n'
+    '        size_final = self[final_node_name].output_shape[1:] if c is None else c.size(1)\n'
+    '        start_nodes.append((final_node_name, size_final, None, True))\n'
+    '    return start_nodes\n')
 LIRPA_EDIT = (
     '            elif type(last_A) == Tensor:\n',
     '            elif type(last_A) == Tensor:\n'
@@ -148,13 +160,18 @@ def source_identity():
             before, after = (s.encode() for s in LIRPA_EDIT)
             require(expected.count(before)==1, 'LiRPA patch exact context')
             expected=expected.replace(before,after,1)
+        if name == 'auto_LiRPA/backward_bound.py':
+            before, after = (s.encode() for s in LIRPA_ALPHA_START_EDIT)
+            require(expected.count(before)==1, 'LiRPA alpha start patch exact context')
+            expected=expected.replace(before,after,1)
         require(actual.read_bytes()==expected, 'isolated LiRPA source: '+name)
         lirpa_hashes[name]=hashlib.sha256(expected).hexdigest()
     require({str(p.relative_to(LIRPA)) for p in LIRPA.rglob('*.py')} ==
             {n for n in lirpa_hashes if n.endswith('.py')}, 'no extra LiRPA Python source')
     return dict(author_commits=SOURCES, compatibility_directory=str(COMPAT),
                 compatibility_edits=COMPAT_EDITS, files=hashes,
-                lirpa_files=lirpa_hashes, lirpa_edit=LIRPA_EDIT)
+                lirpa_files=lirpa_hashes, lirpa_edit=LIRPA_EDIT,
+                lirpa_alpha_start_edit=LIRPA_ALPHA_START_EDIT)
 
 
 def normalized(name):

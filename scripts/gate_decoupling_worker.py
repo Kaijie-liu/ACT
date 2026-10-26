@@ -348,7 +348,7 @@ def invoke(folder, manifest, call_index, *, stage_deadline):
     control = load(spec['control']['path'], spec['control']['sha256'])
     require(control['status'] == 'PASS', 'frozen integration control receipt')
     call = spec['calls'][call_index]
-    remaining = CAP-size(folder.parent)
+    remaining = CAP-size(folder.parent)-spec.get('prior_accounting', {}).get('bytes', 0)
     require(remaining > 256*1024, 'remaining cumulative stage artifact allowance')
     folder.mkdir(); (folder/'tmp').mkdir(); (folder/'cache').mkdir()
     journal = Journal(folder, end, remaining)

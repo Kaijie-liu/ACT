@@ -223,5 +223,42 @@
     "review": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r1_review/stopped_audit.json",
     "review_sha256": "195a4c06e5cbfc6be4c8154a83de61b7506e917b9ecd0ccb1de535a98e07758b",
     "numerical_reproof": false
+  },
+  "repair": {
+    "engine": "/data1/Kane/MOE/baselines/adaptations/genbab_cpu_20261026_r4",
+    "mechanism": "allocate final objective alpha for used activations with intermediate support but missing final support; before optimizer and pruning",
+    "isolated_snapshot": true,
+    "author_repository_unchanged": true,
+    "configuration_unchanged": true,
+    "reproduction": {
+      "root": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r1_review/tool_repro",
+      "seconds": 16.47807646729052,
+      "local_attempts": 1
+    },
+    "control": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r1_review/repair_control.json",
+    "control_sha256": "5302e5ce23be83ba26ae43ea724095569f06be8bdfa276f72d2330a955f23155",
+    "failures_retained": [
+      "native bare-input ReLU BBPS /0 key",
+      "native console exceeded supervisor output cap"
+    ],
+    "passed": [
+      "missing-final-alpha regression",
+      "same negative function with registered affine-ReLU topology and original pruning/BaB",
+      "prior source/queue/cost mutations",
+      "cumulative quotas",
+      "B4 reception regression"
+    ],
+    "scientific_gain": 0
+  },
+  "continuation_ready": {
+    "manifest": "docs/moe_aware_stage5a_freeze_20261026_r2.json",
+    "sha256": "a53404fbc6377227f437fd83bfbb24bfc53c9ad07450ccbf940cdc240e7b7b07",
+    "new_calls": 81,
+    "reused_mb_calls": 22,
+    "prior_physical_attempts": 24,
+    "planned_cumulative_physical_attempts": 105,
+    "prior_seconds_charged": 736.43085398525,
+    "prior_bytes_charged": 2144511,
+    "launch": false
   }
 }

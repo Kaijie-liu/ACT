@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## 5a R4 compatibility repaired; same fixed M-C continuation frozen 2026-10-26
+
+Real increment1 tool-only HI probe:24physical attempts total=23R1+1probe;22M-B UNKNOWN,1M-C ERROR;no new scientific positive.
+[Record](moe_aware_stage5a_results_20261026.json)/[contract](moe_aware_bab_20261026.md):missing final-alpha allocation identified;isolatedr4 adds ordinary final target before optimization,all original checks/config retained.
+Allocator regression and same-function affine-ReLU/BaB control pass;bare-input BBPS failure and console-cap failure retained;7receipt+7B4 regressions pass.
+[Continuation freeze](moe_aware_stage5a_freeze_20261026_r2.json):81M-C calls=failedbase rerun+80originalunexecuted;22completedM-B retained under originalr3 identity,not rerun.
+Shared200/17h/128MiB predebit736.430854s/2144511bytes incl10s/64KiB bookkeeping reserve;expected105physical/103unique;no quota reset.
+M-B gate fails0closures/median−2.410981743;M-C undecided.FinalB4stillawaits complete5a;G1–G6OPEN.
+Next immutable continuation copy/fresh resources/launch,then final5a audit and admitted B4 freeze1320/110h.No new permission needed.
+
 ## 5a M-B negative; first M-C tool error retained 2026-10-26
 
 Real increment17 since archived6:5a23/103=22M-B UNKNOWN+1M-C ERROR;full-request gains0;PID1665199 exited normally after error stop.

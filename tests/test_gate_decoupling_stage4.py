@@ -84,6 +84,27 @@ class BatchControls(unittest.TestCase):
         self.assertEqual(len(list(root.glob('started_*.json'))), 1)
         self.assertFalse(list(root.glob('ledger_*.json')))
 
+    def test_continuation_counts_old_attempts_and_artifacts(self):
+        obs=objects(3);plan=stage.calls(obs)
+        root=Path(os.environ['GATE_CONTROL_ROOT'])/self._testMethodName;root.mkdir()
+        spec=dict(calls=plan,budgets=dict(local_calls=4,artifacts=1024*1024),
+                  prior_accounting=dict(attempts=3,bytes=0,seconds=10))
+        def invoke(child,manifest,index,*,stage_deadline):
+            return row(obs[0],plan[index]['variant'],'UNKNOWN')
+        first=root/'attempts';first.mkdir()
+        with contextlib.redirect_stdout(io.StringIO()):
+            rows,reason=stage.execute_queue(first,spec,None,time.monotonic()+600,invoke=invoke)
+        self.assertEqual((len(rows),reason),(1,'LOCAL_CALL_CAP'))
+        second=root/'bytes';second.mkdir();spec['prior_accounting']['bytes']=900*1024
+        rows,reason=stage.execute_queue(second,spec,None,time.monotonic()+600,
+            invoke=lambda *a,**kw:self.fail('must account for archived bytes before launching'))
+        self.assertEqual((rows,reason),([],'ARTIFACT_CAP'))
+        for key,value in (('seconds',-1),('attempts',-1),('bytes',-1),('seconds',float('nan'))):
+            bad=dict(spec,prior_accounting=dict(spec['prior_accounting'],**{key:value}))
+            with self.assertRaises(ValueError):
+                stage.execute_queue(second,bad,None,time.monotonic()+600,
+                    invoke=lambda *a,**kw:self.fail('invalid prior cost must not launch'))
+
     def test_audit_binds_raw_terminal_and_failed_attempt(self):
         root = Path(os.environ['GATE_CONTROL_ROOT'])/self._testMethodName; root.mkdir()
         w = stage.worker; obj = dict(id='missing', group='singlelayer', history=None)
