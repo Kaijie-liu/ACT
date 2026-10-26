@@ -1,5 +1,13 @@
 # MoE project handoff — current entry point
 
+## 5a R7 real fault crossed; fixed queue continuing 2026-10-27
+
+Real increment1:R6firstMC4 acceptedUNKNOWN293.423904s;73completeddiagnostic attempts inclerrors/probes,65retained/current scientific rows;full-request gains0.
+[Record](moe_aware_stage5a_results_20261026.json):PID3432421live,immutable0abd00721,R6manifest a67781d1;38calls remain after first,no configuration change.
+Previously failing L3E8seed2:1557 now visits106native BaBdomains;initial vectors equal failedR5,strict zero remainsUNKNOWN;ordinary receipt checked,not numericalreproof.
+Allerrors/startup/probe costs retained;original200/17h/128MiB,109/111 earlier planned attempts remain historical;current fullplan111physical/103unique.
+Next complete fixed5a/independent audit,then actual-admissionB4freeze1320/110h four nontransferable parts;currentR7receipt7c630be0.G1–G6OPEN.
+
 ## 5a R5 failure localized; R7 zero-bound cache repair frozen 2026-10-27
 
 Real increment2 attempts/no newscientificidentity:R5error+oneprobe;65/103entries,72physical,14completeMCtriples0closures;full-request gains0.

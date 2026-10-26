@@ -17,7 +17,7 @@
     "mem_available_kib": 85623688
   },
   "root": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r1",
-  "status": "R5_STOPPED_R6_FROZEN_NOT_LAUNCHED",
+  "status": "R6_RUNNING",
   "launch_receipt_sha256": "bcd696407e297ef5618617d9fdd9388f6a5000082d313f1d74b8be673f586621",
   "planned_variants": {
     "M-B": 22,
@@ -262,32 +262,54 @@
     "launch": true
   },
   "active_execution": {
-    "execution_commit": "0aa04f134e4d6967f73310f195d3276a2c793741",
-    "execution_root": "/data1/Kane/MOE/executions/moe_aware_stage5a_20261027_r5",
-    "launched_at": 1793029114.7815123,
-    "manifest": "/data1/Kane/MOE/executions/moe_aware_stage5a_20261027_r5/docs/moe_aware_stage5a_freeze_20261027_r5.json",
-    "manifest_sha256": "7675fce45fec37abbb5a4bd72a755279f26177898c0205ca02bb02a0323927bb",
+    "execution_commit": "0abd007212bf5d0b266c175d55e25b7f0881a511",
+    "execution_root": "/data1/Kane/MOE/executions/moe_aware_stage5a_20261027_r6",
+    "launched_at": 1793030147.1426053,
+    "manifest": "/data1/Kane/MOE/executions/moe_aware_stage5a_20261027_r6/docs/moe_aware_stage5a_freeze_20261027_r6.json",
+    "manifest_sha256": "a67781d1c24a8a2bb906192c59e26fd64cb153956fda5071f7cdb62d8f06c346",
     "new_calls": 39,
-    "pid": 2686338,
+    "pid": 3432421,
     "prior": {
-      "attempts": 70,
-      "bytes": 7446056,
-      "seconds": 13568.771039176732
+      "attempts": 72,
+      "bytes": 7989252,
+      "seconds": 13946.457392297685
     },
     "resource": {
-      "disk_free_bytes": 468297277440,
+      "disk_free_bytes": 467970035712,
       "loadavg": [
-        6.265625,
-        7.20849609375,
-        9.98291015625
+        6.1201171875,
+        6.6083984375,
+        7.90234375
       ],
       "logical_cpus": 20,
-      "mem_available_kib": 94235252
+      "mem_available_kib": 92171560
     },
     "retained_calls": 64,
-    "root": "/data1/Kane/MOE/results/moe_aware_stage5a_20261027_r5",
-    "launch_receipt_sha256": "453200818ddeb1cb6a0e54e014d971280e29df482214ff0edad75399c1b94640",
-    "status": "STOPPED_TOOL_ERROR"
+    "root": "/data1/Kane/MOE/results/moe_aware_stage5a_20261027_r6",
+    "launch_receipt_sha256": "1d07b084e7e4717cd754298c7c7419b5157562aedefa051d9392960659719906",
+    "status": "RUNNING",
+    "first_terminal": {
+      "path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261027_r6/ledger_000.json",
+      "sha256": "752f16ab1b31328c6ce563148bd7db5b01eea1d36a01065c2800ae15cfa0f9d9",
+      "terminal_sha256": "38e5813d571ecc6da3f85959984a54267f366b9b60746ec8c6df547f8eb389f0",
+      "status": "UNKNOWN",
+      "seconds": 293.4239036105573,
+      "initial_vectors_equal_old_failure": {
+        "cell_0_V2_LO_initial.json": true,
+        "cell_0_V2_HI_initial.json": true
+      },
+      "native_bab": [
+        [
+          0,
+          0.0,
+          106,
+          60.8648042678833
+        ]
+      ],
+      "offline_receipt_seconds": 0.01728040724992752,
+      "full_history_closed": false,
+      "scope": "former error now accepted UNKNOWN;106 native domains; no numerical reproof or new certificate"
+    }
   },
   "mb_property_followup": {
     "scope": "READ_ONLY_SAVED_PROPERTY_COMPARISON_NO_NEW_SOLVES",
@@ -2495,7 +2517,28 @@
     "fix": "cache prep uses existing stop_criterion_func(lb), same numerical acceptance; ordinary precompute_A supplies missing maps",
     "native_tests": 2,
     "ordinary_tests_reused": 18,
-    "real_confirmation": "PENDING_FIRST_CONTINUATION",
+    "real_confirmation": {
+      "path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261027_r6/ledger_000.json",
+      "sha256": "752f16ab1b31328c6ce563148bd7db5b01eea1d36a01065c2800ae15cfa0f9d9",
+      "terminal_sha256": "38e5813d571ecc6da3f85959984a54267f366b9b60746ec8c6df547f8eb389f0",
+      "status": "UNKNOWN",
+      "seconds": 293.4239036105573,
+      "initial_vectors_equal_old_failure": {
+        "cell_0_V2_LO_initial.json": true,
+        "cell_0_V2_HI_initial.json": true
+      },
+      "native_bab": [
+        [
+          0,
+          0.0,
+          106,
+          60.8648042678833
+        ]
+      ],
+      "offline_receipt_seconds": 0.01728040724992752,
+      "full_history_closed": false,
+      "scope": "former error now accepted UNKNOWN;106 native domains; no numerical reproof or new certificate"
+    },
     "complete_request_gains": 0
   },
   "continuation_r6_ready": {
