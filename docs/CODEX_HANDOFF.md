@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## 5a third M-C object: tighter initial bound, no closure 2026-10-26
+
+Real increment4 since archived28:32/103scientific entries,37physical attempts;full-request gains0;PID1766832live on fifthR3call.
+[Record](moe_aware_stage5a_results_20261026.json):L2E16seed1:1431 baseUNKNOWN/2cellTIMEOUT/4cellTIMEOUT;allthreesameR5engine/originalsource/domain.
+2cell initialscore improves0.000265717574 but completedinitialcost98.360772s→196.304433s;4cell5/8endpoints only,no completebound.
+Readonly hash/aggregate/difference check,not numericalreproof;initialanalysis cell-ID equality mistake corrected to originalsource binding,retained in record.
+M-Bnegativeunchanged;first3M-Cobjects0closures does not decide all27;fixedqueue continues without settings/budget changes.
+Next final5aaudit then actualcomponentB4freeze1320/110h;currentR5repairreceipt2c5dbf0c bindsB4.G1–G6OPEN.
+
 ## 5a R3 running; former stable-ReLU failure point crossed 2026-10-26
 
 Real increment:firstR3endpoint completed initialbounds,not terminal/certificate;33completedphysical attempts inclerrors/probes,28retained scientific entries;full-request gains0.

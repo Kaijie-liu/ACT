@@ -1695,5 +1695,83 @@
     },
     "status": "STOPPED_TOOL_ERROR",
     "final_sha256": "42ff20edf5b15d8f2d31bbdf14fad71bf4ac831b353d8975d48f5aca7b5ef877"
+  },
+  "mc_third_object_followup": {
+    "scope": "READ_ONLY_THIRD_COMPLETE_OBJECT_NO_NEW_SOLVES_NO_ADMISSION",
+    "rows": [
+      {
+        "object_id": "1a:L2E16_seed1:1431",
+        "variant": "MC_4",
+        "status": "TIMEOUT",
+        "ledger_path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_000.json",
+        "ledger_sha256": "20e5fa8f6561f7196c14bb9de6ff8959f1f1eaf2551060609a5c5fd625e83b44",
+        "request_seconds": 294.26347205229104,
+        "completed_initial_seconds": 249.39126313850284,
+        "completed_solve_seconds": 0,
+        "initial_rows_completed": 5,
+        "initial_rows_expected": 8,
+        "initial_score": null,
+        "original_source_id": "3feab669bf022707350dd4a6a3974cc57346a61962712ab520fc2987190a2afd",
+        "cell_source_ids": [
+          "57100e6d312611d6e15efaaca1822f379d656ffad4d5d92e12efd90b3e402bb0",
+          "b170393a3a505d4172b4be30df3eaaad1d04c400bf479e89ac5e31f424c93f3e",
+          "b59947580ba8f3a2c62332b98e4aa806ed0fe364e0c0d30ba575e680b9cc0b13"
+        ],
+        "parent_domain_sha256": [
+          "ed56890923b255a91fc1bdaa5761a76616a0ebe0d3dd5ea08c822d2e995a3477"
+        ],
+        "engine_identity": "ae81aacbe3bb6520524b700e12ed8658478958ef2c6890d08cc8f70e5747f6b8"
+      },
+      {
+        "object_id": "1a:L2E16_seed1:1431",
+        "variant": "MC_BASE",
+        "status": "UNKNOWN",
+        "ledger_path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_001.json",
+        "ledger_sha256": "a78e8cf29c38d3e62390e03017aaa783e7511ea9d54756850d9a7d43e2ebe6c7",
+        "request_seconds": 293.9283416606486,
+        "completed_initial_seconds": 98.36077234894037,
+        "completed_solve_seconds": 188.2065854985267,
+        "initial_rows_completed": 2,
+        "initial_rows_expected": 2,
+        "initial_score": -0.010899398801956315,
+        "original_source_id": "3feab669bf022707350dd4a6a3974cc57346a61962712ab520fc2987190a2afd",
+        "cell_source_ids": [
+          "ac2aa46c202e2c8e66c6ca69302e4a837328cc0f8aa3c95f005c93b276933026"
+        ],
+        "parent_domain_sha256": [
+          "ed56890923b255a91fc1bdaa5761a76616a0ebe0d3dd5ea08c822d2e995a3477"
+        ],
+        "engine_identity": "ae81aacbe3bb6520524b700e12ed8658478958ef2c6890d08cc8f70e5747f6b8"
+      },
+      {
+        "object_id": "1a:L2E16_seed1:1431",
+        "variant": "MC_2",
+        "status": "TIMEOUT",
+        "ledger_path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_002.json",
+        "ledger_sha256": "b61cc0872d4f15bcd2c6643896cfada27cffe9feabe267d12b4778a39f38e81c",
+        "request_seconds": 294.2141051944345,
+        "completed_initial_seconds": 196.3044331651181,
+        "completed_solve_seconds": 91.82340983860195,
+        "initial_rows_completed": 4,
+        "initial_rows_expected": 4,
+        "initial_score": -0.010633681227534005,
+        "original_source_id": "3feab669bf022707350dd4a6a3974cc57346a61962712ab520fc2987190a2afd",
+        "cell_source_ids": [
+          "5fe2d4b57a080dcba14f4571d28b799f80df954bc092e168d0c223e8ddd9ff84",
+          "e3809e875e2ed1471da5f0255d3c096c0055c4925a4ad93d2d2b2985b361634c"
+        ],
+        "parent_domain_sha256": [
+          "ed56890923b255a91fc1bdaa5761a76616a0ebe0d3dd5ea08c822d2e995a3477"
+        ],
+        "engine_identity": "ae81aacbe3bb6520524b700e12ed8658478958ef2c6890d08cc8f70e5747f6b8"
+      }
+    ],
+    "mc2_minus_base_initial_score": 0.00026571757442231045,
+    "stored_float_difference_exact": "76587876425863/288230376151711744",
+    "closed_gain": 0,
+    "exact_numerical_proof": false,
+    "check": "Original source, parent domain and engine match; ledger file hashes checked; completed initial vectors independently reduced; timeout status retained. Cell sources intentionally differ with partition.",
+    "analysis_harness_note": "Initial read-only comparison incorrectly expected equal cell-source IDs and stopped; corrected to original source plus parent domain and same engine. No experiment or receipt was changed.",
+    "offline_analysis_seconds": 0.010605329647660255
   }
 }
