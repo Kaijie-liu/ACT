@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## 5a R3 error retained; R6 identity-map repair and continuation frozen 2026-10-27
+
+Real increment15 since archived50:65/103scientific entries,70physical attempts;14completeMCtriples0closures;full-request gains0.
+[Record](moe_aware_stage5a_results_20261026.json):R3stopped at L3E8seed2:1557/MC4,BBPS missing input-to-itself A;226.281129s error retained,65-record frozen audit passes.
+[Repair](moe_aware_bab_20261026.md):primary input exact identity/zero bias only;2native/18ordinary tests and64retained-record checks pass;pre-spawn harness error kept/charged.
+[R4freeze](moe_aware_stage5a_freeze_20261027_r4.json)eb1cb942:64retained,39remaining allR6,no crossengine withinobject;70/13422.014177s/7444049bytes predebit,109plannedphysical/103unique.
+Original200/17h/128MiB/T1/queries unchanged;R6receipt57c463b5 also bindsB4;no newtrainedprobe,no scientific gain claimed.
+Next commit/push,freshresource/immutableR4launch,confirm firstfaultsite,then final5aaudit and actual-admissionB4freeze1320/110h.G1–G6OPEN.
+
 ## Multilayer candidate proof rules integrated into manuscript 2026-10-27
 
 Real increment1 this turn:5a50/103scientific entries/55physical attempts;PID1766832live;full-request gains0.

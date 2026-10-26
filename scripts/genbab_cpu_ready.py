@@ -29,8 +29,27 @@ from scoped_proof.owned_session import execute
 ACT = '/data1/Kane/miniconda3/envs/act-py312/bin/python'
 ENVIRONMENT = Path('/data1/Kane/MOE/envs/genbab-cpu-20261021-v1')
 TOOL = Path('/data1/Kane/MOE/baselines/alpha-beta-CROWN')
-COMPAT = Path('/data1/Kane/MOE/baselines/adaptations/genbab_cpu_20261026_r5')
+COMPAT = Path('/data1/Kane/MOE/baselines/adaptations/genbab_cpu_20261027_r6')
 LIRPA = COMPAT/'auto_LiRPA'
+BBPS_ROOT_INPUT_EDIT = (
+    "                A_saved = self.net.A_saved[node_pre.name][self.model.input_name[0]]\n",
+    '                # ACT compatibility: the primary input has no saved A to\n'
+    '                # itself. Its exact map is identity, with zero bias. Keep\n'
+    '                # each branched coordinate separate, as the ordinary\n'
+    '                # cached path does; this only forms a branching score.\n'
+    '                if (node_pre is self.roots[0] and isinstance(node_pre, BoundInput)\n'
+    '                        and node_pre.name == self.model.input_name[0]):\n'
+    '                    A_ = A[i][0]\n'
+    '                    assert isinstance(A_, torch.Tensor)\n'
+    '                    A_ = A_.reshape(A_.shape[0], A_.shape[1], -1)\n'
+    '                    bound_ = bound_.reshape(bound_.shape[0], bound_.shape[1], -1)\n'
+    '                    A_root_ = torch.diag_embed(A_)\n'
+    '                    if A_root is not None:\n'
+    '                        assert A_root.shape == A_root_.shape\n'
+    '                    A_root = A_root_ if A_root is None else A_root + A_root_\n'
+    '                    bound = bound_ if bound is None else bound + bound_\n'
+    '                    continue\n'
+    '                A_saved = self.net.A_saved[node_pre.name][self.model.input_name[0]]\n')
 LIRPA_ALPHA_START_EDIT = (
     '    return start_nodes\n',
     '    # ACT compatibility: zero initial A can omit the final objective even\n'
@@ -165,6 +184,10 @@ def source_identity():
             expected = original.replace(before, after, 1)
         else:
             expected = original
+        if relative == 'heuristics/nonlinear/bbps.py':
+            before, after = (s.encode() for s in BBPS_ROOT_INPUT_EDIT)
+            require(expected.count(before) == 1, 'BBPS root input exact patch context')
+            expected = expected.replace(before, after, 1)
         actual = (COMPAT/name).read_bytes()
         require(actual == expected, 'isolated compatibility source: '+name)
         hashes[name] = hashlib.sha256(actual).hexdigest()
@@ -196,6 +219,7 @@ def source_identity():
             {n for n in lirpa_hashes if n.endswith('.py')}, 'no extra LiRPA Python source')
     return dict(author_commits=SOURCES, compatibility_directory=str(COMPAT),
                 compatibility_edits=COMPAT_EDITS, files=hashes,
+                bbps_root_input_edit=BBPS_ROOT_INPUT_EDIT,
                 lirpa_files=lirpa_hashes, lirpa_edit=LIRPA_EDIT,
                 lirpa_alpha_start_edit=LIRPA_ALPHA_START_EDIT,
                 lirpa_stable_relu_edit=LIRPA_STABLE_RELU_EDIT)

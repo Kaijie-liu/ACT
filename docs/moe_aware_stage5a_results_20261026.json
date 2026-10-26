@@ -17,7 +17,7 @@
     "mem_available_kib": 85623688
   },
   "root": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r1",
-  "status": "RUNNING_R2_WITH_RETAINED_R1",
+  "status": "R3_STOPPED_R4_FROZEN_NOT_LAUNCHED",
   "launch_receipt_sha256": "bcd696407e297ef5618617d9fdd9388f6a5000082d313f1d74b8be673f586621",
   "planned_variants": {
     "M-B": 22,
@@ -287,7 +287,7 @@
     "retained_calls": 28,
     "root": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3",
     "launch_receipt_sha256": "5ea787c1e9e7ba4f38b8127a004736adcd41b45a05190f2c392b6012dcc67b14",
-    "status": "RUNNING",
+    "status": "STOPPED_TOOL_OR_RECEPTION_ERROR",
     "fault_site_crossed": {
       "path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/call_000/cell_0_V2_LO_initial.json",
       "sha256": "b631a68cdd723cf2d517f4d1e334009a79e01c01ecf03478b903d1d841a03119",
@@ -1773,5 +1773,95 @@
     "check": "Original source, parent domain and engine match; ledger file hashes checked; completed initial vectors independently reduced; timeout status retained. Cell sources intentionally differ with partition.",
     "analysis_harness_note": "Initial read-only comparison incorrectly expected equal cell-source IDs and stopped; corrected to original source plus parent domain and same engine. No experiment or receipt was changed.",
     "offline_analysis_seconds": 0.010605329647660255
+  },
+  "continuation_r3_execution": {
+    "execution_commit": "1d8f9021d55cc475569c5f7d78bb6784871caa03",
+    "execution_root": "/data1/Kane/MOE/executions/moe_aware_stage5a_20261026_r3",
+    "launched_at": 1793017336.9439678,
+    "manifest": "/data1/Kane/MOE/executions/moe_aware_stage5a_20261026_r3/docs/moe_aware_stage5a_freeze_20261026_r3.json",
+    "manifest_sha256": "fd32e1896abd07e903c9d93b98ec50fc4dfd6723940a54c6d2fe7f5c1a1b58c1",
+    "new_calls": 75,
+    "pid": 1766832,
+    "prior": {
+      "attempts": 33,
+      "bytes": 3202126,
+      "seconds": 2571.5175167564303
+    },
+    "resource": {
+      "disk_free_bytes": 474394476544,
+      "loadavg": [
+        8.76904296875,
+        9.3310546875,
+        9.8916015625
+      ],
+      "logical_cpus": 20,
+      "mem_available_kib": 80869548
+    },
+    "retained_calls": 28,
+    "root": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3",
+    "launch_receipt_sha256": "5ea787c1e9e7ba4f38b8127a004736adcd41b45a05190f2c392b6012dcc67b14",
+    "status": "STOPPED_TOOL_OR_RECEPTION_ERROR",
+    "fault_site_crossed": {
+      "path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/call_000/cell_0_V2_LO_initial.json",
+      "sha256": "b631a68cdd723cf2d517f4d1e334009a79e01c01ecf03478b903d1d841a03119",
+      "minimum_initial_bound": -0.0027248497004890787,
+      "terminal": false,
+      "complete_history_closed": false,
+      "observed_at": 1793017464.481689
+    }
+  },
+  "stopped_r3": {
+    "root": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3",
+    "completed_scientific": 65,
+    "physical_attempts": 70,
+    "new_calls": 37,
+    "completed_mc_triples": 14,
+    "full_request_gains": 0,
+    "failed": {
+      "object_id": "1a:L3E8_seed2:1557",
+      "variant": "MC_4",
+      "index": 36,
+      "error": "KeyError /input at BBPS cached input-to-itself A lookup",
+      "seconds": 226.28112936019897,
+      "terminal_sha256": "e2b718f2b0a9ae0f19d9439399c66b1d3a5bc8538387ab77b6ee9044e0ff2bf3",
+      "error_sha256": "1e3090f947f1257a4be8e4d50fedd64a5a5d36433a9c1fff4f7f42e916dceabe"
+    },
+    "audit_sha256": "1a22873573336ccc3711b826d3feea004b57bda54f575966553e17888d659479",
+    "final_accounting": {
+      "audit_sha256": "1a22873573336ccc3711b826d3feea004b57bda54f575966553e17888d659479",
+      "bytes_before_receipt": 3964701,
+      "clock": 11876485.412861664,
+      "seconds": 10821.790667392313
+    },
+    "independent_review": {
+      "path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3_review/stopped_audit.json",
+      "sha256": "35171d897a5212236970b660f34988163c5a56ae9f808e10b02c602805563285"
+    },
+    "interpretation": "tool failure;14 complete MC triples have0 history closures; positive median prefix score changes do not pass closure gate"
+  },
+  "repair_r6": {
+    "control": {
+      "path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3_review/repair_control.json",
+      "sha256": "57c463b54a769fcd7e18009ae38cc4c25b2c1cb8410262c30a20d888a8324b36"
+    },
+    "backend_identity": "d46b742d8aa37e8b2d4f2178b53ccec8d9d5a0ae69abdc1d4efaed66ca20124e",
+    "native_tests": 2,
+    "ordinary_tests": 18,
+    "retained": 64,
+    "scope": "primary BoundInput BBPS exact identity diagonal, zero bias; differential against previous cached identity; nonroot missing cache still errors",
+    "first_fault_site_real_confirmation": "PENDING_UNEXECUTED",
+    "no_new_trained_probe": true
+  },
+  "continuation_r4_ready": {
+    "manifest": "docs/moe_aware_stage5a_freeze_20261027_r4.json",
+    "manifest_sha256": "eb1cb94274a8b79974c4ead24d3153fec745f5998b4c58439c0b6488be18017e",
+    "retained": 64,
+    "new_calls": 39,
+    "prior": {
+      "attempts": 70,
+      "bytes": 7444049,
+      "seconds": 13422.01417677477
+    },
+    "cumulative_max_planned_attempts": 109
   }
 }
