@@ -1,5 +1,13 @@
 # MoE project handoff — current entry point
 
+## B4 public main cohort characterized without new solving 2026-10-27
+
+Real increment0 newqueries for thisanalysis;6/1080completeverifications,allTIMEOUT,PID710019live;31auxiliarydone.
+[Record](moe_aware_b4_records_20261027.json)`public_main_review`:300PGD/900censusdomains complete,30originalreceipts audited,326.003sonline+31.728sselection;review2.732sincludingimport separate.
+26saved full-model replayed counterexamples;sampledmultiple histories12/300at2/255,25/300at4/255. Oneobserved notstability,all exactlegalcounts unknown.
+[Table](moe_aware_b4_20261026.md) separates numerical candidate uppercounts fromsampledhistories;4/255columnall15models auxiliary,not sixmodel formalradiusresult.
+No newforwards/replay,selection/denominator/configuration change;no offline certificate upgrade.Next frozenB4/finalpairedaudit;G1–G6OPEN.
+
 ## B4 first complete pair: both TIMEOUT 2026-10-27
 
 Real increment2 full calls:2/1080,31auxiliary complete;L2E8seed0/index1742 off/on TIMEOUT294.234/294.184s,0gain/loss;PID710019live onnextobject.
