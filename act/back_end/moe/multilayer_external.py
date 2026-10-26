@@ -180,9 +180,13 @@ def verify_histories(model, *, center, lower, upper, rows, thresholds, pruning, 
             tick()
             result['prefix_queries'] += 1
             result['active'] = None
+            source_record = getattr(bounds, 'guard_support', None)
             result['prefix_bounds'].append(dict(prefix=[list(p) for p in prefix],
                 upper=[[i,j,value if math.isfinite(value) else None] for (i,j),value in bounds.items()],
-                seconds=time.monotonic()-before, guarantee='WHOLE_BOX_CROWN_NUMERICAL_UPPER'))
+                seconds=time.monotonic()-before,
+                guarantee=('GUARD_CONDITIONAL_CROWN_NUMERICAL_UPPER' if source_record is not None
+                           else 'WHOLE_BOX_CROWN_NUMERICAL_UPPER'),
+                **({} if source_record is None else {'guard_support':source_record})))
             publish(result)
         for pair in itertools.combinations(range(experts[depth]), 2):
             tick()

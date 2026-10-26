@@ -293,7 +293,7 @@ def verify(folder,request,model,tensors,deadline,torch):
         if 'request_id' in result:require(audit['status']=='PASS','ACT coverage audit '+str(audit))
         require(result['identity']['tensors']==request['sample']['tensors'],'ACT materialized identity')
     else:
-        from act.back_end.moe.multilayer_external import verify_histories
+        from act.back_end.moe.multilayer_external import verify_histories, router_upper_bounds
         from b2_observed_worker import verify_graph
         cascade=None
         if request.get('gate_cascade',False):
@@ -302,8 +302,19 @@ def verify(folder,request,model,tensors,deadline,torch):
             from gate_decoupling_worker import digest
             cascade=GateCascade(model,tensors,request,folder,digest(backend.source_identity()),
                 lambda:ARTIFACT_LIMIT-size(ARTIFACT_ROOT)-65536)
+        conditional=None
+        if request.get('guard_dual',False):
+            require(request['guard_dual'] is True and arm=='genbab_pruned','optional guarded conditional frontend')
+            from moe_aware_frontend import GuardDual
+            from gate_decoupling_worker import digest
+            conditional=GuardDual(model,tensors,request,digest(backend.source_identity()),history_fallback=cascade)
         result=verify_histories(model,**tensors,pruning=arm=='genbab_pruned',deadline=deadline,
-            verify_graph=verify_graph,publish=progress,history_solver=cascade)
+            verify_graph=verify_graph,publish=progress,
+            history_solver=conditional.history if conditional else cascade,
+            bound_router=conditional.prefix if conditional else router_upper_bounds)
+        if conditional is not None:
+            from moe_aware_frontend import audit_result
+            audit_result(result,request,conditional.backend,deadline)
         if cascade is not None:
             from gate_cascade import audit_files
             result['cascade_files']={str(p.relative_to(folder)):sha(p)

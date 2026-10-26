@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## M-B prior-guard complete-request callbacks connected 2026-10-26
+
+Real increment4 since archived120:supplement124/194(11V2positive/51V3diagnostic),PID2231367 live;5a/B4 real0,full-request gains0.
+Defaultoff`guard_dual`conditions next-margin bounds on prior guards only,records conditional scope;full-property support then original-deadline M-A/coupled fallback.
+[M-B contract/results](moe_aware_bab_20261026.md):analytic whole-box upper0.9 versus guarded−0.099999991(exact−0.1);9histories=6pruned+3closed.
+Four new tests including actual native whole request plus4affected regressions pass;source/sign/beta rejection and unchanged-deadline fallback covered;no new supervisor.
+Native control11.961899s,synthetic only,numericalpolicy;guard duality itself not novel,and no trained-model benefit claimed.
+Frozen5a103calls still9b7db404e immutable,serial after supplement;current defaultoff production callbacks are futureB4 code,not a silent5a change.
+Next final supplement audit,5a diagnostic,then bind admitted components to B4 queue/audit/freeze;1320/110h and G1–G6OPEN unchanged.
+
 ## B4 paired design and analysis prepared 2026-10-26
 
 Real increment4 since archived116:supplement120/194(11V2positive/49V3diagnostic),PID2231367 live;5a/B4 real0,full-request gains0.
