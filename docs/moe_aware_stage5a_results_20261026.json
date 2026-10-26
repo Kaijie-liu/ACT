@@ -311,11 +311,11 @@
       "scope": "former error now accepted UNKNOWN;106 native domains; no numerical reproof or new certificate"
     },
     "latest_snapshot": {
-      "new_completed_calls": 3,
-      "scientific_entries": 67,
-      "physical_attempts": 75,
-      "checked_first3": true,
-      "observed_at": 1793031134.9314828
+      "new_completed_calls": 6,
+      "scientific_entries": 70,
+      "physical_attempts": 78,
+      "checked_first_residual_files_and_initial_aggregation": true,
+      "observed_at": 1793032073.1722069
     }
   },
   "mb_property_followup": {
@@ -2619,5 +2619,114 @@
     "analysis_seconds": 0.0036210082471370697,
     "interpretation": "zero-width first-margin domain: BASE/2/4 all use one actual cell/two last-gate endpoints; no first-layer refinement leverage on this object; keep original27 denominator and negative result",
     "limits": "numerical range/filters; not source-complete proof, not a finding about other layers or complete requests"
+  },
+  "mc_first_residual_followup": {
+    "object_id": "1b:R2E8_seed0:1271",
+    "arms": [
+      {
+        "variant": "MC_BASE",
+        "status": "TIMEOUT",
+        "seconds": 294.2781007476151,
+        "ledger": {
+          "path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261027_r6/ledger_003.json",
+          "sha256": "e1c8ec93b2006ff910db3aec3dcc6420a1e5d1664d76925d506be6de80463b30"
+        },
+        "domain_sha256": "61cc401f95ec8fea0749f5f4f374625279a0df6172f41497e37e795a4b0566de",
+        "source_id": "b7547ea32fdcc5a904bea65da2decf06d6b65202ee6a3f6fab24d7750870cace",
+        "initial_score": -1.3136517090471063,
+        "initial_scores": [
+          -1.3113985701071267,
+          -1.3136517090471063,
+          -1.3132045157868006,
+          -1.3120690888200173,
+          -1.3104757784411154,
+          -1.3108460888556064,
+          -1.3125580789493254,
+          -1.3121080283224158,
+          -1.3126368585391455
+        ],
+        "positive_saved_initial_scores": 0,
+        "expected_endpoints": 2,
+        "completed_phase_seconds": {
+          "initial": 46.3657119050622,
+          "gate_ranges": 0.441237136721611
+        },
+        "last_phase": "cell_0_V2_HI:solve"
+      },
+      {
+        "variant": "MC_2",
+        "status": "TIMEOUT",
+        "seconds": 294.24967122636735,
+        "ledger": {
+          "path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261027_r6/ledger_004.json",
+          "sha256": "2bfda197b9943a09715c5a01b3de4f9fa62dadf2384280d767b35f1fdaa25adb"
+        },
+        "domain_sha256": "61cc401f95ec8fea0749f5f4f374625279a0df6172f41497e37e795a4b0566de",
+        "source_id": "b7547ea32fdcc5a904bea65da2decf06d6b65202ee6a3f6fab24d7750870cace",
+        "initial_score": -1.7077356237940127,
+        "initial_scores": [
+          -1.7021979591330012,
+          -1.3473065003956632,
+          -1.7077356237940127,
+          -1.5060562396932522,
+          -1.594578473838701,
+          -0.3457114026055166,
+          -0.7204708269017028,
+          -0.6700137513320907,
+          -1.3489001515392511
+        ],
+        "positive_saved_initial_scores": 0,
+        "expected_endpoints": 4,
+        "completed_phase_seconds": {
+          "initial": 92.47216981463134,
+          "gate_ranges": 0.4178815335035324
+        },
+        "last_phase": "cell_0_V2_HI:solve",
+        "exact_stored_float_score_difference_from_base": "-887398085803437/2251799813685248",
+        "score_difference_from_base": -0.3940839147469064
+      },
+      {
+        "variant": "MC_4",
+        "status": "TIMEOUT",
+        "seconds": 294.22950189746916,
+        "ledger": {
+          "path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261027_r6/ledger_005.json",
+          "sha256": "82394b4ddaf67d635127b94f3e8278736be87f2120e10d32b0d9aa767866c476"
+        },
+        "domain_sha256": "61cc401f95ec8fea0749f5f4f374625279a0df6172f41497e37e795a4b0566de",
+        "source_id": "b7547ea32fdcc5a904bea65da2decf06d6b65202ee6a3f6fab24d7750870cace",
+        "initial_score": -0.3373413559707171,
+        "initial_scores": [
+          -0.3297703671603427,
+          2.52900654333466,
+          -0.2733359356058292,
+          2.8337149134999464,
+          -0.2534772735192762,
+          5.416514761212689,
+          4.8276476741849494,
+          4.9636634648933295,
+          -0.3373413559707171
+        ],
+        "positive_saved_initial_scores": 5,
+        "expected_endpoints": 8,
+        "completed_phase_seconds": {
+          "initial": 204.29154887795448,
+          "gate_ranges": 0.4816599115729332
+        },
+        "last_phase": "cell_0_V2_LO:solve",
+        "exact_stored_float_score_difference_from_base": "8793821884625567/9007199254740992",
+        "score_difference_from_base": 0.9763103530763891
+      }
+    ],
+    "scientific_entries_at_snapshot": 70,
+    "physical_attempts_at_snapshot": 78,
+    "complete_mc_triples": 16,
+    "local_history_closures": 0,
+    "first_gate_width": 0.3211096295753002,
+    "last_gate_width": 0.9428373315903079,
+    "analysis_seconds": 0.010105954483151436,
+    "checks": "original ledger-bound files, shared parent domain/source, all initial endpoint tables and row-wise aggregation, exact stored-float differences; no new bound evaluation",
+    "interpretation": "MC4 improves saved initial guarded-spec score but initial-bound cost increases and complete history still TIMEOUT; MC2 score worsens, so finite optimization is not monotone under refinement",
+    "limits": "saved initial guarded-spec scores, not pure conditional property lower bounds; timeouts have no accepted complete evidence; no source-complete/numerical reproof, no unique cause claim and no admission change"
   }
 }

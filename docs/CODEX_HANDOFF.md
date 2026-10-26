@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## 5a first residual object: bound improvement with cost, no closure 2026-10-27
+
+Real increment3 since archived67:70/103scientific entries,78physical attempts;16completeMCtriples0history closures;full-request gains0.
+[Record](moe_aware_stage5a_results_20261026.json):R2E8seed0:1271 BASE/2/4 allTIMEOUT~294.2s,sameR7/source/domain.
+Saved initial guarded-spec minima−1.313652/−1.707736/−0.337341;initialcost46.366/92.472/204.292s;MC4+0.976310,MC2−0.394084.
+MC4 has5/9positive initial rows,not full closure/pureproperty bounds;no offline acceptance,no unique-cause claim or changed27denominator.
+Original file hashes/sharedsource/rowaggregation/stored-float differences checked;no newqueries. PID3432421live on nextobject.
+Next finish fixed5a/independent audit then actual-admissionB4freeze1320/110h;R7receipt7c630be0;G1–G6OPEN.
+
 ## 5a former failure object now complete; zero-width first margin 2026-10-27
 
 Real increment2:67/103scientific entries,75physical attempts inclfailures/probes;15completeMCtriples0history closures;full-request gains0.
