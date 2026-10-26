@@ -1466,5 +1466,167 @@
     "review_seconds_including_import": 2.5617609843611717,
     "process_wall_seconds_observed": 3.089305602,
     "process_cost_scope": "tool-observed whole review process including imports and record write; separate from online calls"
+  },
+  "second_gain_review": {
+    "status": "PASS_FROZEN_RECORD_AUDIT",
+    "at": 1793050451.2102814,
+    "model": "L2E8_seed1",
+    "index": 1743,
+    "rows": [
+      {
+        "id": "main_verify_0032",
+        "model": "L2E8_seed1",
+        "index": 1743,
+        "arm": "off",
+        "status": "TIMEOUT",
+        "accepted": false,
+        "seconds": 294.2809533793479,
+        "ledger_sha256": "d946a8aa7b6ba2da3dc4ae43e864f64ad393f9d2b4c33e7f52587441577c7b6c",
+        "terminal_sha256": "6650365c06452b0a52415d495fee57fbbda6686fdf789392641c494b2ff975b8"
+      },
+      {
+        "id": "main_verify_0033",
+        "model": "L2E8_seed1",
+        "index": 1743,
+        "arm": "on",
+        "status": "POSITIVE",
+        "accepted": true,
+        "seconds": 138.8670805618167,
+        "ledger_sha256": "4ca7893da95e5aa46b3f916a4a39d13f935705bd684b4cc591ab48cd037fae61",
+        "terminal_sha256": "0ecfdba9ac965ade9406e6aee1a19b257b7c6ea8ee30600b419e614e5f4aa330"
+      }
+    ],
+    "coverage": {
+      "active": null,
+      "attempted": 3,
+      "expected": 784,
+      "in_flight": 0,
+      "never_started": 0,
+      "prefix_attempts": 2,
+      "prefix_returns": 2,
+      "proof_complete": true,
+      "proof_unclosed": 0,
+      "pruned": 781,
+      "returned": 3,
+      "returned_unproved": 0,
+      "traversal_complete": true,
+      "verified": 3
+    },
+    "phases": [
+      {
+        "history": [
+          [
+            5,
+            7
+          ],
+          [
+            0,
+            2
+          ]
+        ],
+        "source_id": "d5423c36478b5f0bb945841b621db18182d4084a8c6fade1d9f9b8635e4d9ae2",
+        "phase_seconds": 9.601418364793062,
+        "used_fallback": false,
+        "phase_terminal_sha256": "b5937145fafe48a269edfcc8ff7368b750ab83f273d74fe16af0f4bb1c06726c",
+        "endpoints": [
+          {
+            "variant": "V2_LO",
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 3.395933920517564,
+            "bab": []
+          },
+          {
+            "variant": "V2_HI",
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 1.132540250197053,
+            "bab": []
+          }
+        ]
+      },
+      {
+        "history": [
+          [
+            5,
+            7
+          ],
+          [
+            0,
+            3
+          ]
+        ],
+        "source_id": "46cde72faecbdee8ed03bd688254d3467ec889071c0dc3a6b8416ae253855d3b",
+        "phase_seconds": 21.304688999429345,
+        "used_fallback": false,
+        "phase_terminal_sha256": "b6138ad55baf59058204acfbd27f28ff1bd4626b72c720399a12d699671e666a",
+        "endpoints": [
+          {
+            "variant": "V2_LO",
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 14.948543271049857,
+            "bab": []
+          },
+          {
+            "variant": "V2_HI",
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 1.1316890567541122,
+            "bab": []
+          }
+        ]
+      },
+      {
+        "history": [
+          [
+            5,
+            7
+          ],
+          [
+            2,
+            3
+          ]
+        ],
+        "source_id": "50a6f3523d2191dda27e6c20eee3dcf526be6c02bda545465b8282080483f319",
+        "phase_seconds": 102.2777613978833,
+        "used_fallback": false,
+        "phase_terminal_sha256": "9c181efeedf5b9cb81ab705863117b4701888fcc6ea13ff416600b852afc308c",
+        "endpoints": [
+          {
+            "variant": "V2_LO",
+            "status": "verified",
+            "stage": "nonlinear_bab",
+            "seconds": 93.08233578503132,
+            "bab": [
+              [
+                0,
+                1e-07,
+                2,
+                0.24210262298583984
+              ]
+            ]
+          },
+          {
+            "variant": "V2_HI",
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 4.2103709522634745,
+            "bab": []
+          }
+        ]
+      }
+    ],
+    "public_pgd": {
+      "path": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1/main_pgd_L2E8_seed1/domain_002.json",
+      "sha256": "b7da2a1b607c9d909cf3d5fb07f484b993dbccf55bdf2e4ab52d23ce87bb4da2",
+      "status": "NO_REPLAYED_COUNTEREXAMPLE"
+    },
+    "review_seconds_including_import": 2.5963813718408346,
+    "process_wall_seconds_observed": 3.151573749,
+    "process_cost_scope": "read-only frozen source audit including imports; separate from online calls",
+    "numerical_bound_reproof": false,
+    "new_online_verdicts": 0,
+    "interpretation": "Second paired gain occurs on the same input1743, not a second independent input. All three histories close in V2; five endpoints at initial alpha-CROWN and one through nonlinear BaB. Off times out on the first shared history. No full-study or strict-proof conclusion."
   }
 }

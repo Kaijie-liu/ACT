@@ -1,5 +1,13 @@
 # MoE project handoff — current entry point
 
+## B4 second gain shares the same input 2026-10-27
+
+Real increment6 since archived32:38/1080calls,19completepairs,gain/loss2/0;PID710019continues fixedqueue.
+[Record](moe_aware_b4_records_20261027.json)`second_gain_review`:L2E8seed1/1743 onPOSITIVE138.867s,offTIMEOUT294.281s;source/coverage/receipt audit PASS.
+On781pruned+3verified cover784histories;five endpoints initialalpha-CROWN,one nonlinearBaB;allV2,no coupled fallback;off stalls firstsamehistory.
+Review2.596sincludingimports separatelycharged,no newsolvercall/numericalreproof;two gains share oneinput,notindependentinput confirmation.
+Next complete originalB4/finalpairedanalysis;no retune/newmechanism;G1–G6OPEN.
+
 ## B4 first contemporaneous complete-request gain 2026-10-27
 
 Real increment2 since archived30:32/1080calls,16completepairs,gain/loss1/0;PID710019continues fixedqueue.
