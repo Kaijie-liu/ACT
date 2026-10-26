@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## Supplement running from immutable revision 2026-10-26
+
+Real increment4:4/194local terminals(1V2positive/2V3diagnostic/1V2TIMEOUT),5thstarted;zero full-request gains.PID2231367 detached/live at snapshot.
+Execution`d89b2b60b`,root`/data1/Kane/MOE/results/gate_decoupling_supplement_20261026_r1`;[record](gate_decoupling_supplement_records_20261026.json).Live ledgers supersede snapshot.
+Initial3-call frozen prefix auditPASS0.151898s offline,no numerical reproof;old250/GRAY and known-witness labels unchanged.
+Next monitor/final-audit supplement;implement complete-request cascade with fixed120sV2 and same remaining300s,then B4 freeze/controls.27-object slicing remains separate,not implemented/run.
+Existing owned_bounded.execute(owner_session=...) supports a same-session child group for hard V2 cutoff;do not nest a new session escaping outer cleanup.No new supervisor needed.
+Goal service still oldblocked and tools cannot resume/edit it;do not falsify completion to replace it.User sixth-revision authority is recorded and execution continues.G1–G6OPEN.
+
 ## Supplement controls passed and194-call queue frozen 2026-10-26
 
 Real increment0;[supplement](gate_decoupling_supplement_20261026.md) new194calls/97objects,≤200/17h,old250/GRAY preserved.

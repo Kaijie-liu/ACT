@@ -35,4 +35,9 @@ separate original/new costs and new-history provenance. No offline view upgrades
 old requests or changes the original GRAY. Numerical positives remain local
 policy filters, not formal or full-MoE SAFE.
 
-Status: frozen, ready to execute after fresh resource check. No B4 call yet.
+Status: detached execution started from `d89b2b60bd9e791c1a16221b88cfa780f4655fc5`, PID2231367.
+Initial snapshot4/194:1V2 local positive,2V3 diagnostic closures,1V2 timeout;5thstarted.
+The initial3-call prefix audit passed in0.151898s offline, without numerical reproof.
+[Launch/prefix record](gate_decoupling_supplement_records_20261026.json); live result ledgers supersede this snapshot.
+No B4 call or new complete-request certificate yet. Tools cannot resume/edit the old blocked
+application goal; the sixth-revision contract and explicitly authorized background run are active.
