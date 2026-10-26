@@ -26,7 +26,8 @@ from scoped_source.development_work import POLICY
 import genbab_cpu_ready as backend
 
 CAP = 128*2**20
-SCHEMAS = ('gate-decoupling-stage4-v1', 'gate-decoupling-stage4-supplement-v1')
+SCHEMAS = ('gate-decoupling-stage4-v1', 'gate-decoupling-stage4-supplement-v1',
+           'moe-aware-stage5a-v1')
 
 
 def reconstruct_enabled(spec):
@@ -108,12 +109,16 @@ def source_object(spec, call):
     inventory = load(spec['catalog']['path'], spec['catalog']['sha256'])
     matches = [o for o in inventory['objects'] if o['id'] == call['object_id']]
     require(len(matches) == 1, 'one bound hard-core object')
-    require(call['variant'] in ('V2', 'V3'), 'registered V2/V3 call')
+    variants = ('MB_OFF', 'MB_ON', 'MC_BASE', 'MC_2', 'MC_4') if spec.get('schema') == SCHEMAS[2] else ('V2', 'V3')
+    require(call['variant'] in variants, 'registered diagnostic variant')
     return matches[0]
 
 
 def check_received(folder, value, spec, call, deadline):
     """Recheck local scope/coverage without loading a model or numerical library."""
+    if spec.get('schema') == SCHEMAS[2]:
+        from moe_aware_diagnostics import check_received as receive_5a
+        return receive_5a(folder, value, spec, call, deadline)
     obj = source_object(spec, call)
     source_id = digest(dict(object=obj, sources=spec['source_files'], backend=spec['backend_identity']))
     require(value['source_id'] == source_id and value['group'] == call['variant'], 'received object/variant binding')
@@ -312,7 +317,11 @@ def worker(folder):
         call = spec['calls'][request['call_index']]
         require(digest(call) == request['call_sha256'], 'frozen call table')
         obj = journal.call('source_binding', lambda: source_object(spec, call))
-        value = diagnose(obj, call['variant'], spec, deadline, journal)
+        if spec['schema'] == SCHEMAS[2]:
+            from moe_aware_diagnostics import diagnose as diagnose_5a
+            value = diagnose_5a(obj, call['variant'], spec, deadline, journal)
+        else:
+            value = diagnose(obj, call['variant'], spec, deadline, journal)
         journal.put('outcome.json', dict(value=value, request_sha256=sha(folder/'request.json'),
             clock=time.monotonic(), worker_seconds=time.monotonic()-ENTRY))
         journal.put('published.json', dict(sha256=sha(folder/'outcome.json'), clock=time.monotonic()))

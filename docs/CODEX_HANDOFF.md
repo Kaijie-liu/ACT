@@ -1,5 +1,16 @@
 # MoE project handoff — current entry point
 
+## Stage5a103-call diagnostic freeze ready 2026-10-26
+
+Real increment78 since archived26: supplement104/194 snapshot(10V2positive/42V3diagnostic),PID2231367 live;M-B/M-C real0,full-request gains0.
+[5a freeze](moe_aware_stage5a_freeze_20261026_r1.json):11M-B×2 +27M-C×3=103calls,within200/17h/300s;current1320/110hB4 unchanged.
+Default-off diagnostics use existing worker/queue/deadline/reception;11distinct ordinary tests pass,retained DTO-type and harness failures;no new supervisor.
+M-B condition-property bounds;M-C all-cell/endpoints initial guard-spec bounds,not property bounds;all obligations and same-request residualGenBaB charged.
+Same-period uncut M-C reference;fixed2then4global gate,≥5gains+positive pairedmedian unchanged;missing never0,timeoutprefix neveronlinepositive.
+[Contract/results](moe_aware_bab_20261026.md),[records](moe_aware_bab_records_20261026.json) bind tests/populations;do not mutate freeze-bound population record.
+Next immutable5a copy and fresh resources,execute after supplement serially;finalize supplement separately without relabeling oldGRAY/new-history provenance.
+G1–G6OPEN;no trained-model mechanism evidence or full-request advantage claimed.
+
 ## Seventh revision active; M-B/M-C frontend controls 2026-10-26
 
 Real increment22 since archived4: supplement26/194 at snapshot; M-B/M-C real0, full-request gains0; PID2231367 unchanged immutable d89b2b60b.

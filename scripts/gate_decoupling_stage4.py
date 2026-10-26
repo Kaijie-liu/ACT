@@ -187,7 +187,7 @@ def execute_queue(folder, spec, manifest, deadline, *, invoke=worker.invoke):
     return rows, reason
 
 
-def audit(folder, manifest, *, deadline=None):
+def audit(folder, manifest, *, deadline=None, summarizer=None):
     from b1_observed_batch import session_ok
     deadline = time.monotonic()+300 if deadline is None else deadline
     spec = load(manifest); start = load(folder/'start.json')
@@ -219,7 +219,7 @@ def audit(folder, manifest, *, deadline=None):
     end_path = folder/'complete.json'
     end = load(end_path) if end_path.exists() else None
     terminal = bool(end and end['stop_reason'] in ('ALL_REGISTERED_CALLS_EXECUTED', 'LOCAL_CALL_CAP', 'STAGE_TIME_CAP', 'ARTIFACT_CAP'))
-    result = summarize(inventory['objects'], rows, terminal=terminal)
+    result = (summarizer or summarize)(inventory['objects'], rows, terminal=terminal)
     result.update(status='AUDITED_DIAGNOSTIC_TERMINALS' if end else 'AUDITED_PREFIX',
         stop_reason=None if end is None else end['stop_reason'],
         unexecuted=spec['calls'][len(rows):], bytes=worker.size(folder),
@@ -268,31 +268,32 @@ def audit(folder, manifest, *, deadline=None):
     return result
 
 
-def batch(folder, manifest):
+def batch(folder, manifest, *, summarizer=None, entry=None):
+    entry = ENTRY if entry is None else entry
     spec = load(manifest)
     worker.require(spec['schema'] in worker.SCHEMAS and spec['policy'] == POLICY, 'frozen stage4')
     worker.require(ROOT != Path('/data1/Kane/MOE/ACT') and (ROOT/'.frozen_commit').is_file(), 'immutable execution copy')
     worker.require(all(sha(ROOT/p) == h for p, h in spec['source_files'].items()), 'source identity')
-    supplementary = spec['schema'] == worker.SCHEMAS[1]
+    supplementary = spec['schema'] in worker.SCHEMAS[1:]
     worker.require(spec['budgets'] == dict(local_calls=200 if supplementary else 250, request=300, stage=(17 if supplementary else 21)*3600,
         artifacts=128*2**20, as_bytes=8*2**30), 'registered unchanged quotas')
     resource.setrlimit(resource.RLIMIT_AS, (8*2**30, 8*2**30)); os.nice(10)
-    folder.mkdir(); deadline = ENTRY+spec['budgets']['stage']
-    save(folder/'start.json', dict(entry=ENTRY, deadline=deadline, pid=os.getpid(),
+    folder.mkdir(); deadline = entry+spec['budgets']['stage']
+    save(folder/'start.json', dict(entry=entry, deadline=deadline, pid=os.getpid(),
         commit=(ROOT/'.frozen_commit').read_text().strip(), manifest_sha256=sha(manifest),
         execution_root=str(ROOT), started_at=time.time()))
     try:
         rows, reason = execute_queue(folder, spec, manifest, deadline)
         save(folder/'complete.json', dict(calls=len(rows), stop_reason=reason,
-            seconds=time.monotonic()-ENTRY, clock=time.monotonic()))
-        result = audit(folder, manifest, deadline=deadline-2); save(folder/'audit.json', result)
+            seconds=time.monotonic()-entry, clock=time.monotonic()))
+        result = audit(folder, manifest, deadline=deadline-2, summarizer=summarizer); save(folder/'audit.json', result)
         worker.require(time.monotonic() < deadline and worker.size(folder)+65536 < worker.CAP, 'audit cost within stage')
-        save(folder/'final_accounting.json', dict(seconds=time.monotonic()-ENTRY,
+        save(folder/'final_accounting.json', dict(seconds=time.monotonic()-entry,
             bytes_before_receipt=worker.size(folder), audit_sha256=sha(folder/'audit.json'), clock=time.monotonic()))
     except BaseException as error:
         save(folder/'stopped.json', dict(kind=type(error).__name__, message=str(error),
             started_calls=len(list(folder.glob('started_*.json'))),
-            seconds=time.monotonic()-ENTRY, clock=time.monotonic()))
+            seconds=time.monotonic()-entry, clock=time.monotonic()))
         raise
 
 

@@ -12,7 +12,7 @@
     "hours": 110,
     "transfer_allowed": false
   },
-  "status": "CONTRACT_AND_DEFAULT_OFF_FRONTEND_CONTROLS; STAGE5A_NOT_FROZEN_OR_RUN",
+  "status": "STAGE5A_DIAGNOSTICS_CONNECTED_AND_CONTROLLED; REAL0",
   "source_bindings": {
     "docs/gate_decoupling_sources_20261025_r2.json": "5bfe432aac6010bdfc24dbb8837849dcf323b4af85f6b85a5f4d3ef46b55d7de",
     "docs/gate_decoupling_stage4_records_20261025.json": "3412bf5a07c3ff92099f151cb7cc7f63648fc01244e79b6bf8e2c0f1b161743b"
@@ -665,9 +665,23 @@
     "root": "/data1/Kane/MOE/results/gate_decoupling_supplement_20261026_r1",
     "live_ledger_authoritative": true
   },
-  "next": "same-budget diagnostic worker/receipts, contemporaneous lower-bound metric and fixed5a call table; no new supervisor",
+  "next": "freeze fixed103-call5a table, immutable copy, serialize after running supplement; no new supervisor",
   "implementation_files": {
     "act/back_end/moe/moe_aware_bab.py": "25f686b60ac292aa42e1bc4d994cbc8075e1040bcb28a16d348b544b368596e8",
-    "tests/test_moe_aware_bab.py": "54239a675b798dbfed596fe51c420567f52990b7464c118e3e71ebaeb319dee1"
+    "tests/test_moe_aware_bab.py": "54239a675b798dbfed596fe51c420567f52990b7464c118e3e71ebaeb319dee1",
+    "scripts/gate_decoupling_worker.py": "896dfbbdd03b6a2f48c91aa4a82979e51364da1f41d7770b415bcb1ab1413817",
+    "scripts/gate_decoupling_stage4.py": "ed8ff7b30c1c4728eb1d91686b06f595adc69983b25b06e76dfb2fae5178c2eb",
+    "scripts/moe_aware_diagnostics.py": "dabedfc4f975407577b84b4dc130c54604d451fde1eb32ceea8b4bcdef4c900f",
+    "scripts/moe_aware_stage5a.py": "c50d297858529c83c7f9d5abb37b936128cd805f8d00e53ee5ce606b438247ec",
+    "tests/test_moe_aware_diagnostics.py": "dbf0093a21fc2df6ba6433cf5f941ef91faee26d08f703e386e19346b78b4e3b"
+  },
+  "diagnostic_integration": {
+    "path": "/data1/Kane/MOE/results/moe_aware_bab_controls_20261026_r1/diagnostic_integration_receipt.json",
+    "sha256": "356c07a994e893d967c69fd7fa8c8406e602bf43e6926faf53d23334c6cf5095",
+    "status": "PASS",
+    "ordinary_distinct_tests": 10,
+    "native_distinct_tests": 1,
+    "new_native_seconds": 23.253349078819156,
+    "cumulative_control_upper_seconds": 115.69448907881916
   }
 }
