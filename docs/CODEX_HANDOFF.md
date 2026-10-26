@@ -1,5 +1,13 @@
 # MoE project handoff — current entry point
 
+## Supplement controls passed and194-call queue frozen 2026-10-26
+
+Real increment0;[supplement](gate_decoupling_supplement_20261026.md) new194calls/97objects,≤200/17h,old250/GRAY preserved.
+[Controls](gate_decoupling_followup_controls_20261026.json)7distinct pass,14.685841s inclusive retainedR1FAIL;production checks unchanged,only testJSONboundary corrected.
+[Freeze](gate_decoupling_supplement_freeze_20261026_r1.json) binds original193/250ledgers/newcode/control/engine;44missingIDs get explicit new canonicalhistory provenance,not recovered failures.
+T1=120s fixedfromoriginal38;[math contract](gate_cascade_20261026.md) separates pointwise gate error from guard-domain optimum gaps.
+Next fresh resourcecheck and detachedimmutable execution;cascade integration proceeds without numerical concurrency.No B4 call or complete-request gain yet.G1–G6OPEN.
+
 ## Supplement control JSON boundary correction 2026-10-26
 
 Real increment0.R1 retainedFAIL7.492215s:four new standard-library controls pass;native two endpoints positive but test called receiver before JSON tuple→array conversion.
