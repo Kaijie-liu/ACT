@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## 5a first M-C object complete; M-B property-level effect separated 2026-10-26
+
+Real increment2 since last archived1:R2MC3/81=1UNKNOWN+2TIMEOUT;25unique5aresults/27physical attempts incl olderror/probe;full-request gains0.
+[Record](moe_aware_stage5a_results_20261026.json):PID3499742live on fourthcall;firstMC_BASE/2initialmin both−0.00622588761,MC4initialtable incomplete,no earlyadmission.
+[M-B analysis](moe_aware_bab_20261026.md):99properties=36improved/63declined;3newpositiveproperties in2objects,still1/9and3/9positive,0completeclosures.
+Stored-float difference signs independently rational-checked;no newsolvercalls/no numericalboundreproof;M-Bnegative gateunchanged.
+Currentimmutable9ce68c568/r4 queue continues originalfixedorder and200/17h/128MiB ledger;oldR1andallfailures retained.
+Next final5aaudit then actualcomponentB4freeze1320/110h;use currentrepairreceipt5302e5ce,not outdatedB4sourcebinding.G1–G6OPEN.
+
 ## 5a R4 continuation running; first failed call now completes UNKNOWN 2026-10-26
 
 Real increment1 since repair freeze:R2firstMC_BASE acceptedUNKNOWN293.311539s;25physical attempts cumulative incl olderror/probe,23unique results;full-request gains0.
