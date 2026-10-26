@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## B4 actual M-A-only execution frozen 2026-10-27
+
+Real increment0 B4calls;5a103/103and111physical final independentlyreviewed;bothMB/MCnegative,allfailures retained.
+[Freeze](moe_aware_b4_freeze_20261027_r1.json)72023737 bindsR7/control7c630be0/18models/2329excluded;onlyM-A,T1=120,same300s/engine/guards.
+Plan1080completecalls=600main+120ablation+240radius+120boundary;1320/110h fourcaps unchanged,unused240ablation not transferred.
+[Record](moe_aware_b4_records_20261027.json):staticfreeze3.255s separate,no model forward/selection yet;all execution auxiliary/receipt costs remain charged.
+Existing ordinarycontrol identity/current source/frozen metadata check PASS,no newcontrols,thresholds ormechanism.
+Next commit/push,immutable copy withmarker,freshresource check then launch approvedB4;no extraapproval needed.G1–G6OPEN.
+
 ## 5a complete: both new mechanisms negative; proceed with M-A B4 2026-10-27
 
 Real increment33 since archived70:103/103scientific entries,111physical attempts inclerrors/probes;27completeMCtriples0closures;full-request gains0.
