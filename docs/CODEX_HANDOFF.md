@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## 5a M-B negative; first M-C tool error retained 2026-10-26
+
+Real increment17 since archived6:5a23/103=22M-B UNKNOWN+1M-C ERROR;full-request gains0;PID1665199 exited normally after error stop.
+[M-B record](moe_aware_stage5a_results_20261026.json)/[interpretation](moe_aware_bab_20261026.md):11paired sources audited,0gain/loss,3bound improvements/8declines,median−2.410981743;fixedM-B gate fails.
+All11 initialzero candidates match/on retains them;313/3420 selectedbetas nonzero;finite optimization does not dominate optimizedoff.
+R1final681.628735s;ERROR firstMC_BASE is nativeReLU alpha_lookup_idx KeyError /1277,not M-C scientific failure;80unexecuted retained.
+One<=300s unchanged-engine HI fault probe is charged to same5a cap;no mechanism retune/no M-B rerun;tool repair then fixed queue continuation authorized.
+[B4](moe_aware_b4_20261026.md)predeclares G3 rank0/seed0 of all5multilayer configurations before B4 selection/outcomes;no extra execution or quota.
+Next finish bounded fault diagnosis/necessary control,archive repair/freeze immutable continuation;B4 awaits complete5a.G1–G6OPEN.
+
 ## Supplement final reviewed; immutable5a running 2026-10-26
 
 Real increment34 since archived160:supplement194/194complete(15V2positive/84V3diagnostic);5a6/103UNKNOWN,PID1665199live,full-request gains0.
