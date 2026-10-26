@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## 5a R3 running; former stable-ReLU failure point crossed 2026-10-26
+
+Real increment:firstR3endpoint completed initialbounds,not terminal/certificate;33completedphysical attempts inclerrors/probes,28retained scientific entries;full-request gains0.
+[Launch/record](moe_aware_stage5a_results_20261026.json):PID1766832live,immutable1d8f9021d,75newcalls,manifestfd32e189,prior33/2571.517517s/3202126bytes.
+Previously failing`L2E16_seed1:1431/MC_4`firstLO now returns9bounds(min−0.002724849700);nextHI running,no onlinepositive or remaining-request guarantee.
+R5 empty-alpha handling requires currentstable bounds;3native/18ordinary controls and raw28record continuation pass,alloldfailures retained.
+Same-object comparisons stay sameengine:old22MB R3,first2MCtriples R4,remainingMC R5;original103catalog/200attempts/17h/128MiB/T1 unchanged.
+Next monitor1766832/final5aaudit;B4freeze1320/110h uses actualadmission and repairreceipt2c5dbf0c(currentB4sourcebinding).G1–G6OPEN.
+
 ## 5a R2 stopped; R5 stable-ReLU repair and continuation frozen 2026-10-26
 
 Real increment1:R2MC7/81=1UNKNOWN+5TIMEOUT+1ERROR;29unique inclcurrenterror/33physical incl2newfaultprobes;full-request gains0.
