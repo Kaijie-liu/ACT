@@ -29,7 +29,7 @@ from scoped_proof.owned_session import execute
 ACT = '/data1/Kane/miniconda3/envs/act-py312/bin/python'
 ENVIRONMENT = Path('/data1/Kane/MOE/envs/genbab-cpu-20261021-v1')
 TOOL = Path('/data1/Kane/MOE/baselines/alpha-beta-CROWN')
-COMPAT = Path('/data1/Kane/MOE/baselines/adaptations/genbab_cpu_20261027_r6')
+COMPAT = Path('/data1/Kane/MOE/baselines/adaptations/genbab_cpu_20261027_r7')
 LIRPA = COMPAT/'auto_LiRPA'
 BBPS_ROOT_INPUT_EDIT = (
     "                A_saved = self.net.A_saved[node_pre.name][self.model.input_name[0]]\n",
@@ -101,6 +101,13 @@ LIRPA_EDIT = (
     '                        select_spec(value) for value in\n'
     '                        (alpha_pos, beta_pos, gamma_pos, alpha_neg, beta_neg, gamma_neg))\n')
 COMPAT_EDITS = {
+    'beta_CROWN_solver.py': (
+        '        if self.nonlinear_split and global_lb < 0 and self.return_A:\n',
+        '        # ACT compatibility: strict properties at equality remain open.\n'
+        '        # Prepare branching A with the same active-spec stop criterion,\n'
+        '        # including nonzero RHS, rather than testing a scalar against 0.\n'
+        '        if (self.nonlinear_split and self.return_A\n'
+        '                and not stop_criterion_func(lb).all().item()):\n'),
     'activation_split/stage_solve.py': (
         '    all_node_split_flag = torch.any(\n',
         '    # ACT compatibility: a nonlinear interval may need repeated splitting.\n'

@@ -13,6 +13,54 @@ sys.path[:0]=[str(ROOT),str(ROOT/'scripts')]
 
 @unittest.skipUnless(os.environ.get('MOE_DIAGNOSTIC_NATIVE')=='1','isolated native control')
 class AlphaStartCompatibility(unittest.TestCase):
+    def test_branch_cache_preparation_uses_native_strict_stop(self):
+        import torch
+        from auto_LiRPA.utils import stop_criterion_batch_any
+        import genbab_cpu_ready as b
+        # Execute the installed build method's actual cache-preparation branch
+        # privately; no library function is replaced. Check its calls against
+        # the public native strict predicate, including vector OR clauses/RHS.
+        tree=ast.parse((b.COMPAT/'complete_verifier/beta_CROWN_solver.py').read_text())
+        cls=next(n for n in tree.body if isinstance(n,ast.ClassDef) and n.name=='LiRPANet')
+        build=next(n for n in cls.body if isinstance(n,ast.FunctionDef) and n.name=='build')
+        node=next(n for n in build.body if isinstance(n,ast.If) and any(
+            isinstance(t,ast.Call) and isinstance(t.func,ast.Name) and t.func.id=='precompute_A'
+            for t in ast.walk(n)))
+        code=compile(ast.Module(body=[node],type_ignores=[]),'<installed-cache-branch>','exec')
+        for lower,rhs,expected in [([[0.]],[[0.]],True),([[-.1]],[[0.]],True),
+                ([[.1]],[[0.]],False),([[.1]],[[.2]],True),
+                ([[-.1]],[[-.2]],False),([[0.,.1]],[[0.,0.]],False),
+                ([[0.,0.]],[[0.,0.]],True)]:
+            for enabled,return_a in [(True,True),(False,True),(True,False)]:
+                calls=[];a={};x=object()
+                env=dict(self=SimpleNamespace(nonlinear_split=enabled,return_A=return_a,net=object()),
+                    lb=torch.tensor(lower),stop_criterion_func=stop_criterion_batch_any(torch.tensor(rhs)),
+                    total_batches=1,A=a,batch_x=x,batch_lb={'n':torch.tensor([0.])},
+                    batch_ub={'n':torch.tensor([1.])},
+                    precompute_A=lambda *args,**kw:calls.append((args,kw)))
+                exec(code,env)
+                self.assertEqual(len(calls),int(expected and enabled and return_a))
+                if calls:
+                    self.assertIs(calls[0][0][1],a);self.assertIs(calls[0][0][2],x)
+
+    def test_zero_bound_graph_stays_unaccepted_and_reaches_bab(self):
+        import torch
+        from b2_observed_worker import verify_graph
+        torch.set_default_dtype(torch.float64);torch.set_num_threads(1)
+        class Zero(torch.nn.Module):
+            def __init__(self):
+                super().__init__();self.affine=torch.nn.Linear(1,1)
+                with torch.no_grad():self.affine.weight.fill_(1.);self.affine.bias.zero_()
+            def forward(self,x):
+                p=.1*torch.relu(self.affine(x))-.25
+                return p+torch.relu(-p)
+        graph=Zero().eval();lo=torch.tensor([[-1.]]);hi=-lo
+        torch.testing.assert_close(graph(torch.tensor([[-1.],[0.],[1.]])),torch.zeros(3,1),rtol=0,atol=0)
+        record,_=verify_graph(graph,lo,hi,1,
+            min(float(os.environ['MOE_CONTROL_DEADLINE']),time.monotonic()+6))
+        self.assertIn(record['status'],('unknown','falsified'))
+        self.assertEqual(record['stage'],'nonlinear_bab')
+
     def test_root_input_scores_match_explicit_identity_cache(self):
         import torch
         from auto_LiRPA.bound_ops import BoundInput, BoundRelu

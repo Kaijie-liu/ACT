@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## 5a R5 failure localized; R7 zero-bound cache repair frozen 2026-10-27
+
+Real increment2 attempts/no newscientificidentity:R5error+oneprobe;65/103entries,72physical,14completeMCtriples0closures;full-request gains0.
+[Record](moe_aware_stage5a_results_20261026.json):real/input is BoundLinear,not root;withdraw earlier name-based diagnosis;R6 synthetic identity repair remains valid/disclosed.
+[Repair](moe_aware_bab_20261026.md):global bound0 skipped Aprecompute despite strict property open;R7 uses native active-spec stop criterion,acceptance unchanged.
+2new native tests pass7.607831s;18unchanged ordinary tests reused;frozen65record audit+64retained receipt pass;125.236481sprobe/error fully charged.
+[R6freeze](moe_aware_stage5a_freeze_20261027_r6.json)a67781d1:64retained/39remaining,R7withinobject;72/13946.457392s/7989252bytes prior;111plannedphysical/103unique.
+Existing14-object prefix:initial tables14/12/6complete,first gate widest1/14;exploratory cost limitation,not causal proof or gate change.
+Next commit/push,immutable marker+freshresource launch,firstactualfault confirmation,then final5a/B4actualadmission1320/110h;receipt7c630be0.G1–G6OPEN.
+
 ## 5a R4 startup metadata omission retained; R5 continuation ready 2026-10-27
 
 Real increment0:65/103scientific entries,70diagnostic attempts;R4controller stopped before any worker/model load,missing `.frozen_commit`.

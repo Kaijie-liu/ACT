@@ -17,7 +17,7 @@
     "mem_available_kib": 85623688
   },
   "root": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r1",
-  "status": "R4_STARTUP_ERROR_R5_FROZEN_NOT_LAUNCHED",
+  "status": "R5_STOPPED_R6_FROZEN_NOT_LAUNCHED",
   "launch_receipt_sha256": "bcd696407e297ef5618617d9fdd9388f6a5000082d313f1d74b8be673f586621",
   "planned_variants": {
     "M-B": 22,
@@ -262,40 +262,32 @@
     "launch": true
   },
   "active_execution": {
-    "execution_commit": "1d8f9021d55cc475569c5f7d78bb6784871caa03",
-    "execution_root": "/data1/Kane/MOE/executions/moe_aware_stage5a_20261026_r3",
-    "launched_at": 1793017336.9439678,
-    "manifest": "/data1/Kane/MOE/executions/moe_aware_stage5a_20261026_r3/docs/moe_aware_stage5a_freeze_20261026_r3.json",
-    "manifest_sha256": "fd32e1896abd07e903c9d93b98ec50fc4dfd6723940a54c6d2fe7f5c1a1b58c1",
-    "new_calls": 75,
-    "pid": 1766832,
+    "execution_commit": "0aa04f134e4d6967f73310f195d3276a2c793741",
+    "execution_root": "/data1/Kane/MOE/executions/moe_aware_stage5a_20261027_r5",
+    "launched_at": 1793029114.7815123,
+    "manifest": "/data1/Kane/MOE/executions/moe_aware_stage5a_20261027_r5/docs/moe_aware_stage5a_freeze_20261027_r5.json",
+    "manifest_sha256": "7675fce45fec37abbb5a4bd72a755279f26177898c0205ca02bb02a0323927bb",
+    "new_calls": 39,
+    "pid": 2686338,
     "prior": {
-      "attempts": 33,
-      "bytes": 3202126,
-      "seconds": 2571.5175167564303
+      "attempts": 70,
+      "bytes": 7446056,
+      "seconds": 13568.771039176732
     },
     "resource": {
-      "disk_free_bytes": 474394476544,
+      "disk_free_bytes": 468297277440,
       "loadavg": [
-        8.76904296875,
-        9.3310546875,
-        9.8916015625
+        6.265625,
+        7.20849609375,
+        9.98291015625
       ],
       "logical_cpus": 20,
-      "mem_available_kib": 80869548
+      "mem_available_kib": 94235252
     },
-    "retained_calls": 28,
-    "root": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3",
-    "launch_receipt_sha256": "5ea787c1e9e7ba4f38b8127a004736adcd41b45a05190f2c392b6012dcc67b14",
-    "status": "STOPPED_TOOL_OR_RECEPTION_ERROR",
-    "fault_site_crossed": {
-      "path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/call_000/cell_0_V2_LO_initial.json",
-      "sha256": "b631a68cdd723cf2d517f4d1e334009a79e01c01ecf03478b903d1d841a03119",
-      "minimum_initial_bound": -0.0027248497004890787,
-      "terminal": false,
-      "complete_history_closed": false,
-      "observed_at": 1793017464.481689
-    }
+    "retained_calls": 64,
+    "root": "/data1/Kane/MOE/results/moe_aware_stage5a_20261027_r5",
+    "launch_receipt_sha256": "453200818ddeb1cb6a0e54e014d971280e29df482214ff0edad75399c1b94640",
+    "status": "STOPPED_TOOL_ERROR"
   },
   "mb_property_followup": {
     "scope": "READ_ONLY_SAVED_PROPERTY_COMPARISON_NO_NEW_SOLVES",
@@ -1882,5 +1874,640 @@
       "seconds": 13568.771039176732
     },
     "cumulative_max_planned_attempts": 109
+  },
+  "mc_first14_saved_cost_analysis": {
+    "summary": {
+      "objects": 14,
+      "population": 27,
+      "first_gate_widest": 1,
+      "first_gate_width_median": 0.11386427295863047,
+      "last_gate_width_median": 0.4655145508802859,
+      "arms": {
+        "MC_BASE": {
+          "complete_initial": 14,
+          "median_completed_initial_seconds": 88.28704674262553,
+          "denominator": "only rows completing this arm initial table; not paired speedup"
+        },
+        "MC_2": {
+          "complete_initial": 12,
+          "median_completed_initial_seconds": 154.7474525719881,
+          "denominator": "only rows completing this arm initial table; not paired speedup"
+        },
+        "MC_4": {
+          "complete_initial": 6,
+          "median_completed_initial_seconds": 250.69094209000468,
+          "denominator": "only rows completing this arm initial table; not paired speedup"
+        }
+      }
+    },
+    "details": [
+      {
+        "object_id": "1a:L2E16_seed0:1476",
+        "gate_widths": [
+          0.0015561879138228374,
+          0.2859775642055543
+        ],
+        "first_gate_is_widest": false,
+        "arms": {
+          "MC_BASE": {
+            "status": "UNKNOWN",
+            "seconds": 293.3115390036255,
+            "complete_initial": true,
+            "score": -0.00622588760983539,
+            "completed_initial_endpoints": 2,
+            "completed_initial_seconds": 104.90569411963224
+          },
+          "MC_2": {
+            "status": "TIMEOUT",
+            "seconds": 294.27804952673614,
+            "complete_initial": true,
+            "score": -0.00622588760983539,
+            "completed_initial_endpoints": 4,
+            "completed_initial_seconds": 199.7102745231241
+          },
+          "MC_4": {
+            "status": "TIMEOUT",
+            "seconds": 294.3170395921916,
+            "complete_initial": false,
+            "score": null,
+            "completed_initial_endpoints": 5,
+            "completed_initial_seconds": 227.7170658390969
+          }
+        }
+      },
+      {
+        "object_id": "1a:L2E16_seed0:1483",
+        "gate_widths": [
+          0.04076817572932784,
+          0.08980834332563523
+        ],
+        "first_gate_is_widest": false,
+        "arms": {
+          "MC_2": {
+            "status": "TIMEOUT",
+            "seconds": 294.24531077593565,
+            "complete_initial": true,
+            "score": -0.08284679681333096,
+            "completed_initial_endpoints": 4,
+            "completed_initial_seconds": 234.45691909268498
+          },
+          "MC_4": {
+            "status": "TIMEOUT",
+            "seconds": 294.2818468809128,
+            "complete_initial": false,
+            "score": null,
+            "completed_initial_endpoints": 5,
+            "completed_initial_seconds": 266.00159113295376
+          },
+          "MC_BASE": {
+            "status": "TIMEOUT",
+            "seconds": 294.2317253705114,
+            "complete_initial": true,
+            "score": -0.15457742975840594,
+            "completed_initial_endpoints": 2,
+            "completed_initial_seconds": 125.88746733404696
+          }
+        }
+      },
+      {
+        "object_id": "1a:L2E16_seed1:1431",
+        "gate_widths": [
+          0.0027248224662406173,
+          0.10169146710068355
+        ],
+        "first_gate_is_widest": false,
+        "arms": {
+          "MC_4": {
+            "status": "TIMEOUT",
+            "seconds": 294.26347205229104,
+            "complete_initial": false,
+            "score": null,
+            "completed_initial_endpoints": 5,
+            "completed_initial_seconds": 249.39126313850284
+          },
+          "MC_BASE": {
+            "status": "UNKNOWN",
+            "seconds": 293.9283416606486,
+            "complete_initial": true,
+            "score": -0.010899398801956315,
+            "completed_initial_endpoints": 2,
+            "completed_initial_seconds": 98.36077234894037
+          },
+          "MC_2": {
+            "status": "TIMEOUT",
+            "seconds": 294.2141051944345,
+            "complete_initial": true,
+            "score": -0.010633681227534005,
+            "completed_initial_endpoints": 4,
+            "completed_initial_seconds": 196.3044331651181
+          }
+        }
+      },
+      {
+        "object_id": "1a:L2E8_seed0:1431",
+        "gate_widths": [
+          0.2163799567089839,
+          0.9469342574579416
+        ],
+        "first_gate_is_widest": false,
+        "arms": {
+          "MC_BASE": {
+            "status": "TIMEOUT",
+            "seconds": 294.28408982791007,
+            "complete_initial": true,
+            "score": -0.92460117143724,
+            "completed_initial_endpoints": 2,
+            "completed_initial_seconds": 61.9951312020421
+          },
+          "MC_2": {
+            "status": "TIMEOUT",
+            "seconds": 294.2601898573339,
+            "complete_initial": true,
+            "score": -0.4631480123913347,
+            "completed_initial_endpoints": 4,
+            "completed_initial_seconds": 143.93276448734105
+          },
+          "MC_4": {
+            "status": "TIMEOUT",
+            "seconds": 294.26725673675537,
+            "complete_initial": true,
+            "score": -0.4354637973015155,
+            "completed_initial_endpoints": 8,
+            "completed_initial_seconds": 275.85077233985066
+          }
+        }
+      },
+      {
+        "object_id": "1a:L2E8_seed0:1467",
+        "gate_widths": [
+          0.18092326428350664,
+          0.28144421389954166
+        ],
+        "first_gate_is_widest": false,
+        "arms": {
+          "MC_2": {
+            "status": "TIMEOUT",
+            "seconds": 294.2651490159333,
+            "complete_initial": true,
+            "score": -0.3316428814030956,
+            "completed_initial_endpoints": 4,
+            "completed_initial_seconds": 102.29755493998528
+          },
+          "MC_4": {
+            "status": "TIMEOUT",
+            "seconds": 294.21663690172136,
+            "complete_initial": true,
+            "score": -0.12406029307015616,
+            "completed_initial_endpoints": 8,
+            "completed_initial_seconds": 153.9300500769168
+          },
+          "MC_BASE": {
+            "status": "TIMEOUT",
+            "seconds": 294.1934478916228,
+            "complete_initial": true,
+            "score": -0.4086772874367186,
+            "completed_initial_endpoints": 2,
+            "completed_initial_seconds": 69.47264959476888
+          }
+        }
+      },
+      {
+        "object_id": "1a:L2E8_seed0:1483",
+        "gate_widths": [
+          0.13069431021611144,
+          0.7824950146864089
+        ],
+        "first_gate_is_widest": false,
+        "arms": {
+          "MC_4": {
+            "status": "TIMEOUT",
+            "seconds": 294.22022067941725,
+            "complete_initial": true,
+            "score": -0.2104763279993492,
+            "completed_initial_endpoints": 8,
+            "completed_initial_seconds": 274.2374971918762
+          },
+          "MC_BASE": {
+            "status": "TIMEOUT",
+            "seconds": 294.22588254883885,
+            "complete_initial": true,
+            "score": -0.5085160434242413,
+            "completed_initial_endpoints": 2,
+            "completed_initial_seconds": 78.2133211363107
+          },
+          "MC_2": {
+            "status": "TIMEOUT",
+            "seconds": 294.2185757663101,
+            "complete_initial": true,
+            "score": -0.26296254145566234,
+            "completed_initial_endpoints": 4,
+            "completed_initial_seconds": 149.51863895356655
+          }
+        }
+      },
+      {
+        "object_id": "1a:L2E8_seed0:1557",
+        "gate_widths": [
+          0.02959145674467456,
+          0.3873802001935571
+        ],
+        "first_gate_is_widest": false,
+        "arms": {
+          "MC_BASE": {
+            "status": "TIMEOUT",
+            "seconds": 294.348615931347,
+            "complete_initial": true,
+            "score": -0.1275140234697092,
+            "completed_initial_endpoints": 2,
+            "completed_initial_seconds": 61.693104296922684
+          },
+          "MC_2": {
+            "status": "TIMEOUT",
+            "seconds": 294.2152865808457,
+            "complete_initial": true,
+            "score": -0.1275140234697092,
+            "completed_initial_endpoints": 4,
+            "completed_initial_seconds": 119.74950440041721
+          },
+          "MC_4": {
+            "status": "TIMEOUT",
+            "seconds": 294.22446223162115,
+            "complete_initial": true,
+            "score": -0.1275140234697092,
+            "completed_initial_endpoints": 8,
+            "completed_initial_seconds": 237.1076731197536
+          }
+        }
+      },
+      {
+        "object_id": "1a:L2E8_seed1:1288",
+        "gate_widths": [
+          0.18664509994592066,
+          0.9986367839054185
+        ],
+        "first_gate_is_widest": false,
+        "arms": {
+          "MC_2": {
+            "status": "TIMEOUT",
+            "seconds": 294.20565195195377,
+            "complete_initial": true,
+            "score": -0.7117031685268597,
+            "completed_initial_endpoints": 4,
+            "completed_initial_seconds": 159.97626619040966
+          },
+          "MC_4": {
+            "status": "TIMEOUT",
+            "seconds": 294.243892416358,
+            "complete_initial": false,
+            "score": null,
+            "completed_initial_endpoints": 7,
+            "completed_initial_seconds": 266.2192785516381
+          },
+          "MC_BASE": {
+            "status": "TIMEOUT",
+            "seconds": 294.26811258867383,
+            "complete_initial": true,
+            "score": -0.8612707072525169,
+            "completed_initial_endpoints": 2,
+            "completed_initial_seconds": 66.07777790538967
+          }
+        }
+      },
+      {
+        "object_id": "1a:L2E8_seed2:1431",
+        "gate_widths": [
+          0.14067531688043955,
+          0.9600199012482226
+        ],
+        "first_gate_is_widest": false,
+        "arms": {
+          "MC_4": {
+            "status": "TIMEOUT",
+            "seconds": 294.1908286791295,
+            "complete_initial": true,
+            "score": -0.3429099108506163,
+            "completed_initial_endpoints": 8,
+            "completed_initial_seconds": 264.27421106025577
+          },
+          "MC_BASE": {
+            "status": "TIMEOUT",
+            "seconds": 294.25638165697455,
+            "complete_initial": true,
+            "score": -0.580033891667842,
+            "completed_initial_endpoints": 2,
+            "completed_initial_seconds": 73.94576273672283
+          },
+          "MC_2": {
+            "status": "TIMEOUT",
+            "seconds": 294.1997361462563,
+            "complete_initial": true,
+            "score": -0.48129653952851714,
+            "completed_initial_endpoints": 4,
+            "completed_initial_seconds": 117.23499794490635
+          }
+        }
+      },
+      {
+        "object_id": "1a:L2E8_seed2:1589",
+        "gate_widths": [
+          0.09703423570114948,
+          0.4869133850827452
+        ],
+        "first_gate_is_widest": false,
+        "arms": {
+          "MC_BASE": {
+            "status": "TIMEOUT",
+            "seconds": 294.2863629683852,
+            "complete_initial": true,
+            "score": -2.172102645955474,
+            "completed_initial_endpoints": 2,
+            "completed_initial_seconds": 62.24021706916392
+          },
+          "MC_2": {
+            "status": "TIMEOUT",
+            "seconds": 294.2597195357084,
+            "complete_initial": true,
+            "score": -0.3293788721040103,
+            "completed_initial_endpoints": 4,
+            "completed_initial_seconds": 130.54551711678505
+          },
+          "MC_4": {
+            "status": "TIMEOUT",
+            "seconds": 294.22951329499483,
+            "complete_initial": true,
+            "score": -0.19108709881639885,
+            "completed_initial_endpoints": 8,
+            "completed_initial_seconds": 207.82458672858775
+          }
+        }
+      },
+      {
+        "object_id": "1a:L3E8_seed0:1369",
+        "gate_widths": [
+          0.3018164410478017,
+          0.16221568777224388,
+          0.9274275800611268
+        ],
+        "first_gate_is_widest": false,
+        "arms": {
+          "MC_2": {
+            "status": "TIMEOUT",
+            "seconds": 294.3507310282439,
+            "complete_initial": false,
+            "score": null,
+            "completed_initial_endpoints": 3,
+            "completed_initial_seconds": 253.1526172310114
+          },
+          "MC_4": {
+            "status": "TIMEOUT",
+            "seconds": 294.29767945222557,
+            "complete_initial": false,
+            "score": null,
+            "completed_initial_endpoints": 3,
+            "completed_initial_seconds": 238.59242691099644
+          },
+          "MC_BASE": {
+            "status": "TIMEOUT",
+            "seconds": 294.34360777027905,
+            "complete_initial": true,
+            "score": -1.5950524071966685,
+            "completed_initial_endpoints": 2,
+            "completed_initial_seconds": 109.56377631984651
+          }
+        }
+      },
+      {
+        "object_id": "1a:L3E8_seed0:1431",
+        "gate_widths": [
+          0.04546133402574076,
+          0.1346243437841847,
+          0.999442502686597
+        ],
+        "first_gate_is_widest": false,
+        "arms": {
+          "MC_4": {
+            "status": "TIMEOUT",
+            "seconds": 294.36099275946617,
+            "complete_initial": false,
+            "score": null,
+            "completed_initial_endpoints": 3,
+            "completed_initial_seconds": 253.53460858762264
+          },
+          "MC_BASE": {
+            "status": "TIMEOUT",
+            "seconds": 294.34212632477283,
+            "complete_initial": true,
+            "score": -0.1821144266227982,
+            "completed_initial_endpoints": 2,
+            "completed_initial_seconds": 139.79127754829824
+          },
+          "MC_2": {
+            "status": "TIMEOUT",
+            "seconds": 294.4258617684245,
+            "complete_initial": false,
+            "score": null,
+            "completed_initial_endpoints": 3,
+            "completed_initial_seconds": 235.65901953540742
+          }
+        }
+      },
+      {
+        "object_id": "1a:L3E8_seed0:1557",
+        "gate_widths": [
+          0.14423901096558622,
+          0.11591119793217791,
+          0.1036333773801082
+        ],
+        "first_gate_is_widest": true,
+        "arms": {
+          "MC_BASE": {
+            "status": "TIMEOUT",
+            "seconds": 294.3189130667597,
+            "complete_initial": true,
+            "score": -0.31112059280232474,
+            "completed_initial_endpoints": 2,
+            "completed_initial_seconds": 147.3086540941149
+          },
+          "MC_2": {
+            "status": "TIMEOUT",
+            "seconds": 294.2950923703611,
+            "complete_initial": true,
+            "score": -0.17177764377924348,
+            "completed_initial_endpoints": 4,
+            "completed_initial_seconds": 277.33972575329244
+          },
+          "MC_4": {
+            "status": "TIMEOUT",
+            "seconds": 294.35178110376,
+            "complete_initial": false,
+            "score": null,
+            "completed_initial_endpoints": 4,
+            "completed_initial_seconds": 266.98515124060214
+          }
+        }
+      },
+      {
+        "object_id": "1a:L3E8_seed1:1431",
+        "gate_widths": [
+          0.06449807248458911,
+          0.25391140321803296,
+          0.4441157166778267
+        ],
+        "first_gate_is_widest": false,
+        "arms": {
+          "MC_2": {
+            "status": "TIMEOUT",
+            "seconds": 294.30848803929985,
+            "complete_initial": true,
+            "score": -0.1297496655412766,
+            "completed_initial_endpoints": 4,
+            "completed_initial_seconds": 227.608905242756
+          },
+          "MC_4": {
+            "status": "TIMEOUT",
+            "seconds": 294.3230151068419,
+            "complete_initial": false,
+            "score": null,
+            "completed_initial_endpoints": 4,
+            "completed_initial_seconds": 238.27424559928477
+          },
+          "MC_BASE": {
+            "status": "TIMEOUT",
+            "seconds": 294.2781959529966,
+            "complete_initial": true,
+            "score": -0.15267449750203566,
+            "completed_initial_endpoints": 2,
+            "completed_initial_seconds": 142.09210570901632
+          }
+        }
+      }
+    ],
+    "source_ledger_sha256": {
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r2/ledger_000.json": "c3a39a0b7eb31ee1cc1a9f3ee0275dbf1bdd020c5cf2e1f1d7ac70cc145de17e",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r2/ledger_001.json": "4c33f2e016eee823dafe0a5e1586decc185f65db66b109918ce29f6da929116e",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r2/ledger_002.json": "bec351e9946b4db83f43a92d1a3bdcd383821d06884e65146b8e8b224b6031a5",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r2/ledger_003.json": "e19486cb736e42f833c2ed2349fc85585b5184fded75e628de99fd4ed2b977a9",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r2/ledger_004.json": "7da969e45ba47d52da066ce606bdf4b990403c88a781dbb87ca7ea7fd10a8a9f",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r2/ledger_005.json": "591f2af8c9ee69e7fa786bf5ad05e33ebb35bef77f0390401196963b161c32c6",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_000.json": "20e5fa8f6561f7196c14bb9de6ff8959f1f1eaf2551060609a5c5fd625e83b44",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_001.json": "a78e8cf29c38d3e62390e03017aaa783e7511ea9d54756850d9a7d43e2ebe6c7",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_002.json": "b61cc0872d4f15bcd2c6643896cfada27cffe9feabe267d12b4778a39f38e81c",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_003.json": "491e095283b7c7eb8f3377c18913fbfb4a273a9df6a1128a63a8c21946d5d5ab",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_004.json": "8b3354ad867e33fa05db7e33828fbd64d334b1f248217eaea4bef2cc118d3de1",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_005.json": "6caa81877cb65d29015218140f0834b3e0a76692a033f565ef7ccf35e8f1b1a5",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_006.json": "a6784a5035f438dce3ca7d955e26239d4ee811369aa0785073409e77320d1dfe",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_007.json": "cd8ca33b5f12af49aab24636109fb669f9192da7ea2b9b462097e1a50cc5066b",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_008.json": "9257e6c2ea4b24d04eddc09ee75d8d63709a70e210000380080d74c9a4d9fca3",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_009.json": "fa18c1373f1a3a6d242c1d778caf7cb8dd6eae567499ad2bfedbdfbb9082c1a9",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_010.json": "da571930adfad7c77c75a0a40e6092b9d195b8c1a68ed04bb9e6146e4a303c3b",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_011.json": "b52dc5872e4af436c41d2851d761ecb77e606faa4c4a8d1f448969d2294cb5ae",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_012.json": "267f8a0566a720cc593d01b9b9f8f52f4d072ecef748ae7af46c1a754085fe40",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_013.json": "a385f19cc289fae40abf6079b0ec2eafd9dc3cac4f5922b923ed6a418c62b8a1",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_014.json": "70f08f698da128caad73d83412dc6082b68420aa5fa04b7a86ee0d3bc39f101f",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_015.json": "f5539b46e7a142b9bfb0b12cc80b81e461fa6f9e5e2ddbe419229011d15c7ef8",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_016.json": "4d5d09064e55cde551e098efecdb2d429abd2f243809f611bef39b6393d7ad7d",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_017.json": "58f124f235f76589a34a61c17875e9b425fd9600b80bce6cf52016523d98fb06",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_018.json": "eb22fe7717db657e9f57b0ff56301e157bf764c9c962d3a35bad20197e4e2ff9",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_019.json": "f6da3c1a7f0d924ab5becd8053768f0aee737550e65629943382c32f2f1eeaf9",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_020.json": "19f40a5bbf9d3734ed653af0f7cba2cd90cb45f4834f449d03e4094fd982b820",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_021.json": "135a0bc216d4ed9cdf470c2555b559efd237178724d0eea7d1aa0181373938f7",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_022.json": "68211b28f7a2fa4d9030c854130612cf4de16e3e911312aecd5a0a89bd7c4c4d",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_023.json": "4068ba8a79b1900b8d5a394d838c9a6719ea6012c069a744824d1dd2a24239e4",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_024.json": "4315a0f20a8c8886a8a269b456eb74db972f5ace13c46ddb11057cdab3408136",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_025.json": "c5c233035cc9a47316feab96b6541c4381ce9e4c4868118aaf44d2d255e04962",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_026.json": "d863c4a0b08763aa4d77fe3f8ba8ca7af47fd2f9657d51539834bd406a541f34",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_027.json": "fbfdae077ada8444da2181e8b466715b9ec7a3d0d23da9df054081b1be860087",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_028.json": "17b06aab12c9071af91c3fda81106a6bbc3ffa8d8d1de412f7d97147f6be110f",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_029.json": "48b01a4d391edb600909f755edbfae1b1726f25352430caf9e9d0e2eb8375e24",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_030.json": "e129bd65d59a2167c2b73aa6d87ddcab1810f8d3298abb0d3b7f7a4f53d5b32a",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_031.json": "73a922f659865a223642e362ac6527e383f2962a5f6755076bf6387b08c033d6",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_032.json": "995f40d702fb6958cb94e5afeb16ce9f37dade9c566a55078c91f35c0799df03",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_033.json": "a0784504d5221766d7d971c5b51a8b00af1418f7562f088f22b087299f115ca9",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_034.json": "d46aec847736066ad4f5f9fa343ff38788a74d3f5db96bee1304654d875a2e3c",
+      "/data1/Kane/MOE/results/moe_aware_stage5a_20261026_r3/ledger_035.json": "f45a98f931077795918772777f7725541338069c0ee644144d9ce27ae663816a"
+    },
+    "seconds": 0.10494202934205532,
+    "scope": "exploratory saved-record prefix analysis; no new query or numerical reproof",
+    "limits": "first-layer width alone omits expert differences/downstream sensitivity; does not establish unique failure cause, change the frozen first-layer diagnostic, or admit any-layer mechanism"
+  },
+  "continuation_r5_execution": {
+    "execution_commit": "0aa04f134e4d6967f73310f195d3276a2c793741",
+    "execution_root": "/data1/Kane/MOE/executions/moe_aware_stage5a_20261027_r5",
+    "launched_at": 1793029114.7815123,
+    "manifest": "/data1/Kane/MOE/executions/moe_aware_stage5a_20261027_r5/docs/moe_aware_stage5a_freeze_20261027_r5.json",
+    "manifest_sha256": "7675fce45fec37abbb5a4bd72a755279f26177898c0205ca02bb02a0323927bb",
+    "new_calls": 39,
+    "pid": 2686338,
+    "prior": {
+      "attempts": 70,
+      "bytes": 7446056,
+      "seconds": 13568.771039176732
+    },
+    "resource": {
+      "disk_free_bytes": 468297277440,
+      "loadavg": [
+        6.265625,
+        7.20849609375,
+        9.98291015625
+      ],
+      "logical_cpus": 20,
+      "mem_available_kib": 94235252
+    },
+    "retained_calls": 64,
+    "root": "/data1/Kane/MOE/results/moe_aware_stage5a_20261027_r5",
+    "launch_receipt_sha256": "453200818ddeb1cb6a0e54e014d971280e29df482214ff0edad75399c1b94640",
+    "status": "STOPPED_TOOL_ERROR"
+  },
+  "stopped_r5": {
+    "root": "/data1/Kane/MOE/results/moe_aware_stage5a_20261027_r5",
+    "new_calls": 1,
+    "scientific_entries": 65,
+    "physical_before_probe": 71,
+    "physical_after_probe": 72,
+    "failed_object": "1a:L3E8_seed2:1557",
+    "variant": "MC_4",
+    "error_sha256": "44caec8ccb4219bc6422a172408532ce351c04f047e273e766b8c4f07267e42b",
+    "terminal_sha256": "3aefe9db465990c4fc2189d85ae8f0d36e147de069d953d9f1fdcd46f5266e70",
+    "final_accounting": {
+      "audit_sha256": "9f0f48feecfe51b7f8f7afafce8ac52f877e82ee46208c23b6e7afcb19043eb3",
+      "bytes_before_receipt": 68603,
+      "clock": 11877674.3792252,
+      "seconds": 232.9370267558843
+    },
+    "independent_audit": {
+      "path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261027_r5_review/stopped_audit.json",
+      "sha256": "b34d921348cc19ae0eca816a3dc6cc9b5b5718db307103a59d486cf06bbc24e5"
+    }
+  },
+  "repair_r7": {
+    "control": {
+      "path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261027_r5_review/repair_control.json",
+      "sha256": "7c630be0a36cdc838adc7680659ccc374508da27241dee5c0150002951b9421a"
+    },
+    "backend_identity": "40246f43aa290511811410e962b2db9e24f0467c76a2aa900aeb5f7685a6209a",
+    "probe": {
+      "path": "/data1/Kane/MOE/results/moe_aware_stage5a_20261027_r5_review/tool_probe/observation.json",
+      "sha256": "d22fc39f588f98676dc7bc8d0c5a16108154bdec0da0a31fcc7687936c9d3efc",
+      "seconds": 125.23648082837462
+    },
+    "finding": "actual /input is BoundLinear,all128preactivations negative,current backprop A zero; initial global lower exactly0 skipped precompute_A despite strict property open",
+    "correction": "R6 primary-input identity fix was valid for synthetic control but did not explain real failure; earlier inference from node name withdrawn",
+    "fix": "cache prep uses existing stop_criterion_func(lb), same numerical acceptance; ordinary precompute_A supplies missing maps",
+    "native_tests": 2,
+    "ordinary_tests_reused": 18,
+    "real_confirmation": "PENDING_FIRST_CONTINUATION",
+    "complete_request_gains": 0
+  },
+  "continuation_r6_ready": {
+    "manifest": "docs/moe_aware_stage5a_freeze_20261027_r6.json",
+    "manifest_sha256": "a67781d1c24a8a2bb906192c59e26fd64cb153956fda5071f7cdb62d8f06c346",
+    "retained": 64,
+    "new_calls": 39,
+    "prior": {
+      "attempts": 72,
+      "bytes": 7989252,
+      "seconds": 13946.457392297685
+    },
+    "cumulative_max_planned_attempts": 111
   }
 }
