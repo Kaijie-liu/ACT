@@ -24,9 +24,13 @@ from scoped_source.development_work import POLICY
 T1 = 120.
 
 
-def identity(source_request, history, records, backend_identity):
-    return W.digest(dict(source=source_request, history=history, prefix_bounds=records,
-                         backend=backend_identity, method='M_A_V2_ENDPOINTS_V1'))
+def identity(source_request, history, records, backend_identity, margin_branch=None):
+    value = dict(source=source_request, history=history, prefix_bounds=records,
+                 backend=backend_identity, method='M_A_V2_ENDPOINTS_V1')
+    if margin_branch is not None:
+        from margin_cascade import options
+        value.update(method='M_C_MARGIN_CELLS_V1', margin_branch=options(margin_branch))
+    return W.digest(value)
 
 
 def scoped_domain(G, source_request, history, records, sid, backend_identity, deadline):
@@ -48,6 +52,11 @@ def receive_phase(folder, request, value, domain, deadline):
         and value['domain_sha256'] == G.domain_digest(domain), 'same cascade domain')
     W.require(value['property_count'] == request['properties'] and value['history'] == request['history'],
               'same complete history and all properties')
+    if request.get('margin_branch') is not None:
+        from margin_cascade import receive
+        receive(folder, request, value, domain, deadline)
+        tick(deadline)
+        return
     for row in value['endpoints']:
         W.require(load(folder/(row['variant']+'.json')) == row, 'bound endpoint result')
     aggregate = G.receive_diagnosis(domain, 'V2', value['endpoints'],
@@ -68,7 +77,8 @@ def phase_worker(folder):
         torch = journal.call('native_setup', lambda: setup(deadline))
         environment = journal.call('backend_import', W.backend.probe)
         W.require(W.digest(environment['sources']) == request['backend_identity'], 'same coupled engine')
-        sid = identity(request['source_request'], request['history'], request['prefix_bounds'], request['backend_identity'])
+        sid = identity(request['source_request'], request['history'], request['prefix_bounds'],
+                       request['backend_identity'], request.get('margin_branch'))
         W.require(sid == request['source_id'], 'parent history/range identity')
         obj = dict(source_kind='multilayer', original_request=request['source_request'])
         model, tensors = journal.call('load_same_source', lambda: W.load_object(obj, torch))
@@ -101,8 +111,12 @@ def phase_worker(folder):
                 result.append(dict(valid=valid, original_input=candidate.flatten().tolist() if valid else None,
                     dropped_independent_gates=width-pixels, scope='ORIGINAL_DYNAMIC_MODEL_REPLAY'))
             return result
-        result = W.endpoints(G, domain, 'V2', request['properties'], deadline,
-            prepare=prepare, verify=verify_graph, replay=replay, journal=journal)
+        if request.get('margin_branch') is not None:
+            from margin_cascade import solve
+            result = solve(model, tensors, domain, request['margin_branch'], deadline, journal, replay)
+        else:
+            result = W.endpoints(G, domain, 'V2', request['properties'], deadline,
+                prepare=prepare, verify=verify_graph, replay=replay, journal=journal)
         value = dict(**result, source_id=sid, history=request['history'],
             property_count=request['properties'], domain_sha256=G.domain_digest(domain))
         journal.put('outcome.json', dict(value=value, request_sha256=sha(folder/'phase_request.json'),
@@ -118,7 +132,7 @@ def phase_worker(folder):
 
 
 def run_phase(folder, source_request, history, records, properties, backend_identity,
-              deadline, artifact_limit, *, phase_seconds=T1, phase_started=None):
+              deadline, artifact_limit, *, phase_seconds=T1, phase_started=None, margin_branch=None):
     """Owner-session child group; no new session can escape the outer cutoff."""
     from act.back_end.moe import gate_decoupling as G
     began = time.monotonic() if phase_started is None else phase_started
@@ -126,7 +140,10 @@ def run_phase(folder, source_request, history, records, properties, backend_iden
     end = min(deadline, began+phase_seconds)
     W.require(math.isfinite(phase_seconds) and 0 < phase_seconds <= T1, 'phase cannot extend120s')
     tick(deadline)
-    sid = identity(source_request, history, records, backend_identity)
+    if margin_branch is not None:
+        from margin_cascade import options
+        margin_branch = options(margin_branch)
+    sid = identity(source_request, history, records, backend_identity, margin_branch)
     experts = [source_request['model']['architecture']['experts']]*len(history)
     G.canonical_history(history, experts)
     # Infinite/missing numerical margins cannot define a useful V2 domain.
@@ -152,6 +169,8 @@ def run_phase(folder, source_request, history, records, properties, backend_iden
         source_id=sid, domain_sha256=G.domain_digest(domain), backend_identity=backend_identity,
         request_deadline=deadline, phase_started=began, phase_deadline=end,
         worker_deadline=end-5, artifact_limit=artifact_limit-65536)
+    if margin_branch is not None:
+        request['margin_branch'] = margin_branch
     journal.put('phase_request.json', request)
     # The outer session owns this group; RLIMIT_AS is inherited and also set in
     # the child before native imports. Keep the caller's registered thread env.
@@ -177,7 +196,7 @@ def run_phase(folder, source_request, history, records, properties, backend_iden
     elif receipt['returncode'] == 124:
         status = 'TIMEOUT'
     elif status != 'TIMEOUT':
-        raise RuntimeError('V2 phase tool error; retain evidence before repair')
+        raise RuntimeError('bounded history phase tool error; retain evidence before repair')
     result = dict(status=status, accepted=accepted, evidence=value, source_id=sid,
         seconds=time.monotonic()-began, phase_deadline=end, request_deadline=deadline,
         session_sha256=sha(folder/'session.json'))
@@ -191,11 +210,15 @@ def run_phase(folder, source_request, history, records, properties, backend_iden
 class GateCascade:
     """Callback for verify_histories; no changes to canonical routing coverage."""
     def __init__(self, model, tensors, source_request, folder, backend_identity,
-                 artifact_remaining, *, phase_runner=run_phase, coupled=None):
+                 artifact_remaining, *, phase_runner=run_phase, coupled=None, margin_branch=None):
         self.model, self.tensors = model, tensors
         self.source = {k: source_request[k] for k in ('model', 'sample', 'selection_root')}
         self.folder, self.backend_identity = Path(folder), backend_identity
         self.remaining, self.phase_runner, self.coupled = artifact_remaining, phase_runner, coupled
+        if margin_branch is not None:
+            from margin_cascade import options
+            margin_branch = options(margin_branch)
+        self.margin_branch = margin_branch
         self.calls = []
 
     def __call__(self, history, prefix_records, deadline):
@@ -205,9 +228,10 @@ class GateCascade:
         tick(deadline); began = time.monotonic()
         wanted = {tuple(history[:d]) for d in range(len(history))}
         records = [r for r in prefix_records if tuple(map(tuple, r['prefix'])) in wanted]
+        extra = {} if self.margin_branch is None else dict(margin_branch=self.margin_branch)
         phase = self.phase_runner(self.folder/f'v2_history_{len(self.calls):04d}',
             self.source, history, records, len(self.tensors['rows']), self.backend_identity,
-            deadline, self.remaining(), phase_started=began)
+            deadline, self.remaining(), phase_started=began, **extra)
         tick(deadline)
         value = phase['evidence'] if phase['accepted'] else None
         attacks = None
@@ -218,6 +242,8 @@ class GateCascade:
         meta = dict(method='M_A_HARD120_V2_THEN_REMAINING_COUPLED', phase_status=phase['status'],
             phase_seconds=phase['seconds'], source_id=phase['source_id'], used_fallback=False,
             phase_folder=f'v2_history_{len(self.calls):04d}')
+        if self.margin_branch is not None:
+            meta.update(method='M_C_HARD120_CELLS_THEN_REMAINING_COUPLED', margin_branch=self.margin_branch)
         if value and (value['closed'] or attacks is not None):
             properties = len(self.tensors['rows'])
             outcome = dict(status='verified' if value['closed'] else 'unknown',
@@ -249,10 +275,17 @@ def audit_files(folder, result, source_request, deadline):
         if meta is None or meta['used_fallback'] or meta['phase_status'] != 'POSITIVE':
             continue
         child = folder/meta['phase_folder']; request = load(child/'phase_request.json')
+        config = request.get('margin_branch')
+        if config is not None:
+            W.require(config == meta['margin_branch'] == dict(pieces=source_request['margin_branch_pieces'],
+                decouple=source_request.get('gate_cascade', False), guards=source_request.get('guard_dual', False)),
+                'same request mechanism and minus-component settings')
+        else:
+            W.require(not source_request.get('margin_branch_pieces'), 'M-C cannot disappear from accepted evidence')
         W.require(request['source_request'] == expected and request['history'] == row['history'],
                   'same model/input and history in cascade result')
         W.require(request['source_id'] == meta['source_id'] == identity(expected, row['history'],
-            request['prefix_bounds'], request['backend_identity']), 'same range source')
+            request['prefix_bounds'], request['backend_identity'], config), 'same range source')
         receipt = load(child/'session.json'); publication = load(child/'published.json')
         value = load(child/'outcome.json', publication['sha256'])
         W.require(receipt['status'] == 'COMPLETED' and receipt['cleanup_status'] == 'LEADER_REAPED_NO_LIVE_GROUP'

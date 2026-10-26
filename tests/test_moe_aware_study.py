@@ -8,6 +8,17 @@ from act.pipeline.moe import moe_aware_study as S
 
 
 class Study(unittest.TestCase):
+    def test_component_dispatch_preserves_minus_ma_margin_branch(self):
+        self.assertEqual(S.execution_options((), margin_pieces=2),dict(gate_cascade=False,guard_dual=False))
+        self.assertEqual(S.execution_options(('M-B','M-C'),margin_pieces=2),
+            dict(gate_cascade=False,guard_dual=True,margin_branch_pieces=2))
+        self.assertEqual(S.execution_options(('M-A','M-C'),margin_pieces=4),
+            dict(gate_cascade=True,guard_dual=False,margin_branch_pieces=4))
+        self.assertEqual(S.execution_options(('M-A','M-B'),margin_pieces=2),
+            dict(gate_cascade=True,guard_dual=True))
+        with self.assertRaises(ValueError):S.execution_options(('M-C',))
+        with self.assertRaises(ValueError):S.execution_options(('M-B','M-B'))
+
     def test_four_budgets_and_no_transfer(self):
         rows = S.catalog(range(5000, 5020), S.MECHANISMS)
         self.assertEqual(len(rows), 1320)

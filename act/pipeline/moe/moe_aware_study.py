@@ -26,6 +26,22 @@ def require(ok, message):
         raise ValueError(message)
 
 
+def execution_options(components, *, margin_pieces=None):
+    """Map a frozen arm to default-off frontend flags; no admission decision.
+
+    In particular minus-M-A retains M-C on the original coupled cell graphs.
+    margin_pieces must come from the later bound Stage5a global decision.
+    """
+    components = tuple(components)
+    require(tuple(m for m in MECHANISMS if m in components) == components,
+            'ordered unique known mechanisms')
+    value = dict(gate_cascade='M-A' in components, guard_dual='M-B' in components)
+    if 'M-C' in components:
+        require(type(margin_pieces) is int and margin_pieces in (2, 4), 'bound admitted margin resolution')
+        value['margin_branch_pieces'] = margin_pieces
+    return value
+
+
 def catalog(indices, components):
     """Four disjoint budgets. Main on rows also serve as ablation references.
 

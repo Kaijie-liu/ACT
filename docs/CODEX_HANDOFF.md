@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## M-C complete-history path and minus-M-A connected 2026-10-26
+
+Real increment8 since archived135:supplement143/194(11V2positive/61V3diagnostic),PID2231367 live;5a/B4real0,full-request gains0.
+[M-C implementation/control](moe_aware_bab_20261026.md):defaultoff120s phase chooses one scored layer,all2/4closed cells,then original300s coupled fallback.
+Minus-M-A retains original coupled-cell graphs;M-B cell support stays conditional,not mixed numerically with guard-max bounds;no new supervisor.
+Fixed native whole request selects layer2:4endpoint nodes withM-A,2coupled nodes without;both9histories=8pruned+1closed,31.111965s total,not trained-model evidence.
+Four new ordinary tests including dispatch,one native test,three affected regressions pass;220s bounded control envelope,no GPU/data.
+5a immutable9b7db404e remains fixed first-layer diagnostic;not run/not modified;production M-C is finite one-layer partition,not recursive completeness.
+Next supplement final audit,serial5a,then admitted B4 queue/audit/freeze;1320/110h four nontransferable budgets,G1–G6OPEN.
+
 ## Any-layer M-C operators and scoped M-B/M-A composition 2026-10-26
 
 Real increment11 since archived124:supplement135/194(11V2positive/57V3diagnostic),PID2231367 live;5a/B4 real0,full-request gains0.

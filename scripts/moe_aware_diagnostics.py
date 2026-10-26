@@ -25,10 +25,11 @@ def gate_module():
     return sys.modules[name]
 
 
-def cells_for(domain, variant):
+def cells_for(domain, variant, *, layer=0):
     """Exact equal cuts, converted outward; no gap at a float64 tie boundary."""
     n = PIECES[variant]
-    lo, hi = domain.margins[0]
+    W.require(type(layer) is int and 0 <= layer < len(domain.history), 'existing margin layer')
+    lo, hi = domain.margins[layer]
     if lo == hi:
         return [[lo, hi]]
     a, b = Fraction(lo), Fraction(hi)
@@ -99,9 +100,9 @@ def aggregate_mc(parent, group, rows, properties, deadline):
         closed_endpoints=sum(closed), complete_initial_bounds=complete)
 
 
-def aggregate_mb(row, source_id, history, group, properties, guards, deadline):
+def aggregate_mb(row, source_id, history, group, properties, guards, deadline, *, cells=()):
     tick(deadline)
-    W.require(row['source_id'] == source_id and row['history'] == history and not row['cells']
+    W.require(row['source_id'] == source_id and row['history'] == history and row['cells'] == list(cells)
         and row['objective_count'] == properties and row['guard_count'] == guards
         and row['use_guards'] is (group == 'MB_ON'), 'conditional support identity and mode')
     lower, zero = vector(row['lower'], properties), vector(row['zero_lower'], properties)

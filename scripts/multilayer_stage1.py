@@ -296,12 +296,19 @@ def verify(folder,request,model,tensors,deadline,torch):
         from act.back_end.moe.multilayer_external import verify_histories, router_upper_bounds
         from b2_observed_worker import verify_graph
         cascade=None
-        if request.get('gate_cascade',False):
-            require(request['gate_cascade'] is True and arm=='genbab_pruned','optional cascade on common pruned frontend')
+        pieces=request.get('margin_branch_pieces')
+        if request.get('gate_cascade',False) or pieces is not None:
+            require(type(request.get('gate_cascade',False)) is bool and arm=='genbab_pruned',
+                'optional cascade on common pruned frontend')
+            branch=None
+            if pieces is not None:
+                from margin_cascade import options
+                branch=options(dict(pieces=pieces,decouple=request.get('gate_cascade',False),
+                    guards=request.get('guard_dual',False)))
             from gate_cascade import GateCascade
             from gate_decoupling_worker import digest
             cascade=GateCascade(model,tensors,request,folder,digest(backend.source_identity()),
-                lambda:ARTIFACT_LIMIT-size(ARTIFACT_ROOT)-65536)
+                lambda:ARTIFACT_LIMIT-size(ARTIFACT_ROOT)-65536,margin_branch=branch)
         conditional=None
         if request.get('guard_dual',False):
             require(request['guard_dual'] is True and arm=='genbab_pruned','optional guarded conditional frontend')
