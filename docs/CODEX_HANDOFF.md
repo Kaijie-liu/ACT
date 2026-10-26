@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## B4 paired input/catalog and request audit prepared 2026-10-26
+
+Real increment5 since archived143:supplement148/194(11V2positive/62V3diagnostic),PID2231367 live;5a/B4real0,full-request gains0.
+[B4 preparation](moe_aware_b4_20261026.md):18frozen weight identities,2329historical excluded indices;no model forward or new input selection.
+Samecenter/properties at2/255and4/255 separately materialized;all arms exactsame subject;minus-M-A keepsM-C,main-on reused as ablation reference.
+Existing300s invoker used perpart,no quota transfers;terminal audit preserves timeout/partial,binds engine/mechanisms/all coverage;no new supervisor.
+Four ordinary tests plus one affected regression pass4.201646s,total processcap60s;readonly source plan4.639078s,no solver/GPU.
+Full four-part batch/auxiliary aggregation and immutable freeze still need5a complete admission;1320/110h unchanged.
+Next finish supplement audit,serial immutable5a9b7db404e;complete B4 runner only with actual admission,not local prefix positives.G1–G6OPEN.
+
 ## M-C complete-history path and minus-M-A connected 2026-10-26
 
 Real increment8 since archived135:supplement143/194(11V2positive/61V3diagnostic),PID2231367 live;5a/B4real0,full-request gains0.

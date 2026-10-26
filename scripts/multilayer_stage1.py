@@ -165,6 +165,17 @@ def tensor_row(selection_root,sample,torch):
     return values
 
 
+def materialize_sample(folder,index,label,rank,x,props,epsilon,torch,*,suffix=''):
+    """One physical input/domain, shared only as input data across paired arms."""
+    tensors=dict(center=x,lower=(x-epsilon).clamp_min(0),upper=(x+epsilon).clamp_max(1),
+        rows=props,thresholds=torch.zeros(len(props),dtype=torch.float64))
+    file=f'input_{index}{suffix}.pt';buffer=io.BytesIO();torch.save(tensors,buffer)
+    raw=buffer.getvalue();room(len(raw))
+    with (folder/file).open('xb') as stream:stream.write(raw)
+    return dict(rank=rank,index=index,label=label,file=file,sha256=sha(folder/file),
+        tensors={k:fingerprint(v) for k,v in tensors.items()})
+
+
 def select_inputs(folder,spec,deadline,torch):
     from torchvision.datasets import CIFAR10
     from torchvision.transforms import ToTensor
@@ -185,13 +196,13 @@ def select_inputs(folder,spec,deadline,torch):
             if not all(p==label for p in predictions):continue
             props=torch.zeros((9,10),dtype=torch.float64)
             for k,c in enumerate(j for j in range(10) if j!=label):props[k,label]=1.;props[k,c]=-1.
-            tensors=dict(center=x,lower=(x-spec['epsilon']).clamp_min(0),upper=(x+spec['epsilon']).clamp_max(1),
-                rows=props,thresholds=torch.zeros(9,dtype=torch.float64))
-            file=f'input_{index}.pt';buffer=io.BytesIO();torch.save(tensors,buffer)
-            raw=buffer.getvalue();room(len(raw))
-            with (folder/file).open('xb') as stream:stream.write(raw)
-            rows.append(dict(rank=len(rows),index=index,label=label,file=file,sha256=sha(folder/file),
-                tensors={k:fingerprint(v) for k,v in tensors.items()}))
+            sample=materialize_sample(folder,index,label,len(rows),x,props,spec['epsilon'],torch)
+            extras=spec['selection'].get('additional_domains',{})
+            if extras:
+                require(extras=={'4/255':4/255} and spec['epsilon']==2/255,'registered paired radius domains')
+                sample['additional_domains']={key:materialize_sample(folder,index,label,len(rows),x,props,eps,
+                    torch,suffix='_radius4') for key,eps in extras.items()}
+            rows.append(sample)
             if len(rows)==spec['selection']['count']:break
     require(len(rows)==spec['selection']['count'],'insufficient common clean-correct cohort; no replacement')
     return dict(status='COMPLETE',samples=rows,scanned=scanned,full_test_telemetry_disclosed=True)
@@ -353,7 +364,9 @@ def worker(folder):
             environment=backend.probe()
             save(folder/'environment.json',dict(status='PASS',python=environment['python'],
                 torch=environment['torch'],sources_sha256=hashlib.sha256(json.dumps(
-                    environment['sources'],sort_keys=True).encode()).hexdigest(),modules=environment['modules']))
+                    environment['sources'],sort_keys=True).encode()).hexdigest(),
+                sources_canonical_sha256=hashlib.sha256(json.dumps(environment['sources'],sort_keys=True,
+                    separators=(',',':'),allow_nan=False).encode()).hexdigest(),modules=environment['modules']))
         spec=load(request['manifest'],request['manifest_sha256'])
         if request['kind']=='controls':
             import unittest
@@ -386,7 +399,7 @@ def worker(folder):
                             result=public_pgd(model,tensors,local_deadline,
                                 spec['public_pgd']['seed']+10000*request['model']['seed']+sample['index'])
                         else:
-                            center=tensors['center'];eps=spec['epsilon']*multiplier
+                            center=tensors['center'];eps=request.get('epsilon',spec['epsilon'])*multiplier
                             result=interval_census(model,center,(center-eps).clamp_min(0),(center+eps).clamp_max(1),
                                 local_deadline,spec['census']['seed']+sample['index'])
                         received=time.monotonic()
