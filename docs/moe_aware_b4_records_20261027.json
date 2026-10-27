@@ -5533,19 +5533,282 @@
     }
   },
   "observed_latest": {
-    "settled": 138,
-    "native_ledgers": 137,
+    "settled": 144,
+    "native_ledgers": 143,
     "states": {
-      "POSITIVE": 62,
-      "TIMEOUT": 72,
+      "POSITIVE": 65,
+      "TIMEOUT": 75,
       "ERROR": 2,
       "UNKNOWN": 2
     },
-    "complete_pairs": 69,
-    "gain": 2,
+    "complete_pairs": 72,
+    "gain": 3,
     "loss": 0,
-    "active_at_snapshot": "main_verify_0138 R2E8_seed0/1776/on",
+    "active_at_snapshot": "main_verify_0144 R3E8_seed0/1776/off",
     "controller_pid": 1286669
+  },
+  "third_gain_review": {
+    "status": "PASS",
+    "object": "R2E8_seed2 / 1776",
+    "execution_commit": "9d8081c486e4c758438a52aaaddcdc4e2dd09f5b",
+    "manifest_sha256": "72023737a889717e4cf5c4f266b47b51b8d183f5067ae12ceefbcc4242452b24",
+    "rows": [
+      {
+        "part": "main",
+        "model": "R2E8_seed2",
+        "index": 1776,
+        "rank": 4,
+        "arm": "on",
+        "status": "POSITIVE",
+        "accepted": true,
+        "seconds": 19.589171459898353,
+        "coverage": {
+          "active": null,
+          "attempted": 1,
+          "expected": 784,
+          "in_flight": 0,
+          "never_started": 0,
+          "prefix_attempts": 2,
+          "prefix_returns": 2,
+          "proof_complete": true,
+          "proof_unclosed": 0,
+          "pruned": 783,
+          "returned": 1,
+          "returned_unproved": 0,
+          "traversal_complete": true,
+          "verified": 1
+        },
+        "guarantee": "GENBAB_NUMERICAL_FILTER",
+        "id": "main_verify_0142",
+        "histories": [
+          {
+            "history": [
+              [
+                1,
+                6
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "status": "verified",
+            "stage": null,
+            "seconds": 13.798393907025456,
+            "cascade": {
+              "method": "M_A_HARD120_V2_THEN_REMAINING_COUPLED",
+              "phase_folder": "v2_history_0000",
+              "phase_seconds": 13.797643894329667,
+              "phase_status": "POSITIVE",
+              "source_id": "f966fce434da04f7779453cc4c8d5d376d750db517d386d5c1e15ad63220f3ae",
+              "used_fallback": false
+            },
+            "endpoints": [
+              {
+                "variant": "V2_LO",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 2.865993905812502
+              },
+              {
+                "variant": "V2_HI",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 5.132363827899098
+              }
+            ]
+          }
+        ],
+        "progress": {
+          "clock": 11919211.523138491,
+          "coverage": {
+            "expected": 784,
+            "attempted": 1,
+            "returned": 1,
+            "pruned": 783,
+            "verified": 1,
+            "never_started": 0,
+            "in_flight": 0,
+            "returned_unproved": 0,
+            "proof_unclosed": 0,
+            "traversal_complete": true,
+            "proof_complete": true,
+            "active": null,
+            "prefix_attempts": 2,
+            "prefix_returns": 2
+          },
+          "publications": 66,
+          "phase_seconds": {
+            "between_queries": 0.2459653876721859,
+            "prefix_CROWN": 0.4036790207028389,
+            "history_compile": 0.0008042939007282257,
+            "history_solver": 13.798845252022147
+          },
+          "active_phase_since": 11919211.516964158,
+          "last_query_start": {
+            "phase": "history_solver",
+            "prefix": [
+              [
+                1,
+                6
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "entered": 11919197.718117805,
+            "published_clock": 11919197.718118906
+          },
+          "max_completed_history_solver_seconds": 13.798393907025456,
+          "telemetry_schema": "query-boundary-v2"
+        }
+      },
+      {
+        "part": "main",
+        "model": "R2E8_seed2",
+        "index": 1776,
+        "rank": 4,
+        "arm": "off",
+        "status": "TIMEOUT",
+        "accepted": false,
+        "seconds": 288.28030139394104,
+        "coverage": null,
+        "guarantee": null,
+        "id": "main_verify_0143",
+        "histories": [],
+        "progress": {
+          "clock": 11919500.220799966,
+          "coverage": {
+            "expected": 784,
+            "attempted": 1,
+            "returned": 1,
+            "pruned": 783,
+            "verified": 0,
+            "never_started": 0,
+            "in_flight": 0,
+            "returned_unproved": 1,
+            "proof_unclosed": 1,
+            "traversal_complete": true,
+            "proof_complete": false,
+            "active": null,
+            "prefix_attempts": 2,
+            "prefix_returns": 2
+          },
+          "publications": 66,
+          "phase_seconds": {
+            "between_queries": 0.011587440967559814,
+            "prefix_CROWN": 0.397268608212471,
+            "history_compile": 0.001117100939154625,
+            "history_solver": 283.00126759149134
+          },
+          "active_phase_since": 11919500.219233813,
+          "last_query_start": {
+            "phase": "history_solver",
+            "prefix": [
+              [
+                1,
+                6
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "entered": 11919217.21796488,
+            "published_clock": 11919217.217966221
+          },
+          "max_completed_history_solver_seconds": 282.99829341471195,
+          "telemetry_schema": "query-boundary-v2"
+        }
+      }
+    ],
+    "files": {
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/main_verify_0142_ledger.json": "f2d4725e84d3b7b2ed207bcb9ae8d59d839f994f8d3f92cb9ebb5e5871e06ab7",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/main_verify_0142_started.json": "7e2ff951dc38ef34a946f04ee8beac18a36c7a4b7e47f11a5d46eac1c37f4d1e",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/main_verify_0142/request.json": "1e616cf89c89aec25be89fa19c173df55c4a3ca141190ec8ea8794be7f1c1363",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/main_verify_0142/terminal.json": "7fa0bbc68ace207d9f28fb9d5eaefe23e7f038379842d0a87d1441cd5ed7789a",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/main_verify_0142/progress.json": "dc3a6e02ed3995680722757f61a508d9f2a4bf7bc93204105add1edfc2b5996b",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/main_verify_0142/outcome.json.gz": "7bbadd07869bb8ad167a6f09f2cd62d8bdb11e741a513b5a91b6a73358a67d7d",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/main_verify_0143_ledger.json": "e40c8474aa7926b6fbb1b75ca9cc9ea45beba6004f3aa5acbfc1002567961068",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/main_verify_0143_started.json": "80cd980a6ae3bdfc799547a51ed7bdee1934f0e37aff30daeb8756d026491c34",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/main_verify_0143/request.json": "1b5abbc247943c5d59d9d34f42e066441fea7a6b24adbe7f83950f0ed0d03496",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/main_verify_0143/terminal.json": "cab13d66872b413aa9ce7598f0fdf02b3acf41008f0b78e5f63c6b33c64f7f7f",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/main_verify_0143/progress.json": "b63edb6bf41a4f01876c3a804156f41b9225ebd31bc2164d5e957f42de83420e",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/main_verify_0143/outcome.json.gz": "c22a3d6b57565aed7624274e37c4bac39b1bcadefbd761703a446822ed274ba7",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1/main_pgd_R2E8_seed2_ledger.json": "99df0aaf3365e8fc2e251b90d2375213882cd5a4a0959c0013f05b49d36b1abc",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1/main_pgd_R2E8_seed2/terminal.json": "960fc7a2b1f2eb9578b8a2e11c8c92b2d027b333d470f7fcd03a1d5063bc2863",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1/main_census_R2E8_seed2_ledger.json": "1526b685b3aef441fcc57f9202a6c4df5defa05514d29bbab55abf99a68a29f8",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1/main_census_R2E8_seed2/terminal.json": "a7ccf3165f13a05d6406773d66807cf93abbef4953fdae07cc5c867097828402"
+    },
+    "public": [
+      {
+        "kind": "pgd",
+        "status": "COMPLETE",
+        "seconds": 6.025387886911631,
+        "domains": [
+          {
+            "model": "R2E8_seed2",
+            "index": 1776,
+            "multiplier": 1,
+            "result": {
+              "completed_fixed_search": true,
+              "guarantee": "ATTACK_FAILURE_IS_NOT_SAFETY",
+              "iterations": 40,
+              "minimum_observed_margin": 3.942416588557686,
+              "seconds": 0.12304110825061798,
+              "status": "NO_REPLAYED_COUNTEREXAMPLE",
+              "witness": null
+            },
+            "seconds": 0.12315940856933594
+          }
+        ]
+      },
+      {
+        "kind": "census",
+        "status": "COMPLETE",
+        "seconds": 5.395907586440444,
+        "domains": [
+          {
+            "model": "R2E8_seed2",
+            "index": 1776,
+            "multiplier": 1,
+            "result": {
+              "candidate_upper": 784,
+              "exact_legal_count": null,
+              "first_exclusions": [],
+              "guarantee": "NUMERICAL_INTERVAL_OUTER_COUNT_AND_SAMPLED_NATIVE_HISTORIES_NOT_EXACT_PROOF",
+              "observed_histories": [
+                [
+                  [
+                    1,
+                    6
+                  ],
+                  [
+                    0,
+                    5
+                  ]
+                ]
+              ],
+              "observed_lower": 1,
+              "prefix_queries": 29,
+              "pruned_leaves": 0,
+              "retained_leaves": 784,
+              "seconds": 0.03063235618174076,
+              "structural": 784,
+              "traversal_complete": true
+            },
+            "seconds": 0.030734876170754433
+          }
+        ]
+      }
+    ],
+    "source_and_structural_audit": true,
+    "numerical_bound_reproof": false,
+    "new_solver_or_model_calls": 0,
+    "review_seconds_including_imports": 3.188642704859376,
+    "review_process_wall_seconds": 3.838590077,
+    "interpretation": "First contemporaneous B4 gain in the registered residual model family. On closes all784 conservative catalog histories through783numerical exclusions plus1verified history, with2initial V2 endpoint closures and no fallback. Off's final progress records the same history returned unproved but its original terminal is unaccepted TIMEOUT; offline telemetry does not upgrade it. One sampled native history only, exact reachability unknown; not route-changing or source-complete proof. Overall3gains/0losses across2inputs, not final B4 or general acceleration."
   },
   "joint_unknown_review": {
     "status": "PASS",

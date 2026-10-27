@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## B4 first residual-family paired gain audited 2026-10-27
+
+Real increment3since141:144settled=143native+1retainedpublicationERROR;65POSITIVE/75TIMEOUT/2UNKNOWN/2ERROR,72pairs,gain/loss3/0;PID1286669live.
+[Record](moe_aware_b4_records_20261027.json)`third_gain_review`:R2E8seed2/1776 onPOSITIVE19.589s/offTIMEOUT288.280s;firstregisteredresidual-familygain,nowgainsacross2inputs.
+On783pruned+1verified=784;history[(1,6),(0,5)]bothV2endpointsinitiallyclose,noBaB/fallback. Offprogressreturnsunproved,butunacceptedTIMEOUTunchanged.
+SameR7/source/input/properties/300s;frozenauditPASS3.189sinclimports/3.839sprocess,0newmodel/solvercall;publicPGDnoconflict,only1sampledhistory.
+Notroute-changing/G3prooforpopulationadvantage;[interpretation](moe_aware_b4_20261026.md). NextremainingfixedB4/finalpairedanalysis,noT1change.G1–G6OPEN.
+
+
 ## B4 paired complete UNKNOWNs locate one remaining history 2026-10-27
 
 Real increment11since127:138settled=137native+1retainedpublicationERROR;62POSITIVE/72TIMEOUT/2UNKNOWN/2ERROR,69pairs,gain/loss2/0;PID1286669live.
