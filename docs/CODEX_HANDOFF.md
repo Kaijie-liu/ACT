@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## B4 remaining suffix running after deadline-alarm repair 2026-10-27
+
+Real increment0completed/1started:118settled retained;newmain0118=R3E8seed2/1754/on;old0109/0117notretried.
+PID1286669,immutable9d8081c48,newroot`/data1/Kane/MOE/results/moe_aware_b4_20261027_r3`,binding615ab8fe;962remainingcalls.
+[Stage record](moe_aware_b4_records_20261027.json)`alarm_continuation_launch` bindsfreshresources/copylaunch0.618sseparate;main23101.986scarried,20.87MBpriorartifactsplusbinding.
+SameR7/T1/300s/12-10-5tails/pairedorder;onlyunaccepteddeadline-alarmphasehandlingchanged,no newmechanism or retrospectiveacceptance.
+Next finish fourthinputblockthenfixedB4/fullpairedanalysis;G1–G6OPEN.
+
+
 ## B4 deadline-alarm tooling error retained; minimal fallback repair controlled 2026-10-27
 
 Real increment6since112:118settled=117native+old1publicationERROR;48POSITIVE/68TIMEOUT/2ERROR,59pairs,gain/loss2/0;R2controller2993596exited.
