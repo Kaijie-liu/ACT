@@ -1,5 +1,5 @@
 {
-  "status": "TOOL_ERROR_RETAINED_CONTINUATION_FROZEN",
+  "status": "RUNNING_APPEND_ONLY_CONTINUATION",
   "manifest": "/data1/Kane/MOE/ACT/docs/moe_aware_b4_freeze_20261027_r1.json",
   "manifest_sha256": "72023737a889717e4cf5c4f266b47b51b8d183f5067ae12ceefbcc4242452b24",
   "preparation": {
@@ -3862,5 +3862,44 @@
       "no_frozen_results_models_or_environments_deleted": true
     },
     "result": "original109 receipts audited; one failed attempt cost retained; all scientific thresholds unchanged; no interim gate"
+  },
+  "continuation_launch": {
+    "path": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r2/launch.json",
+    "sha256": "7bac887125537ae2a5cda3261085c0e0ab8081b177de2ba9a892a737c71e1faf",
+    "command": [
+      "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+      "-B",
+      "/data1/Kane/MOE/executions/moe_aware_b4_20261027_r2/scripts/moe_aware_b4.py",
+      "resume",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r2",
+      "--manifest",
+      "/data1/Kane/MOE/executions/moe_aware_b4_20261027_r1/docs/moe_aware_b4_freeze_20261027_r1.json",
+      "--continuation",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r2_continuation.json"
+    ],
+    "commit": "1d0a02ee3e30a5fffba3ad062e595294623b9a55",
+    "continuation": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r2_continuation.json",
+    "continuation_sha256": "cefa3d52683e34337b68addff8781a1f7f81521e59c3110747dc608dfd75ef04",
+    "copy_and_launch_seconds": 1.3349381443113089,
+    "execution_root": "/data1/Kane/MOE/executions/moe_aware_b4_20261027_r2",
+    "first_new_call": 110,
+    "manifest": "/data1/Kane/MOE/executions/moe_aware_b4_20261027_r1/docs/moe_aware_b4_freeze_20261027_r1.json",
+    "manifest_sha256": "72023737a889717e4cf5c4f266b47b51b8d183f5067ae12ceefbcc4242452b24",
+    "pid": 2993596,
+    "planned_remaining_calls": 970,
+    "prior_attempts": 110,
+    "resources": {
+      "cpu_count": 20,
+      "disk_available_bytes": 489929936896,
+      "load": [
+        33.6455078125,
+        28.40185546875,
+        33.517578125
+      ],
+      "mem_available_kib": 72658804
+    },
+    "result_root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r2",
+    "scope": "immutable copy and detached launch measured separately; control and audit carried by controller",
+    "started_at": 1793065531.2919168
   }
 }

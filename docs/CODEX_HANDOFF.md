@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## B4 unexecuted suffix running from repaired immutable copy 2026-10-27
+
+Real increment0completed/1started:prior110settled retained;newmain0110=R2E8seed1/1754/on;failed0109notretried.
+PID2993596,immutable1d0a02ee3,newroot`/data1/Kane/MOE/results/moe_aware_b4_20261027_r2`;R7actualengine40246f43 import/identityPASS.
+[Stage record](moe_aware_b4_records_20261027.json)`continuation_launch` bindsfreshresources,copy/launch1.335sseparate,samecatalog/manifest72023737/continuationcefa3d52.
+Remaining970registeredcalls;prior109native+1toolERROR,allcosts/failuresand18.83MBpriorbytescarried plusbinding;internalworker288swithinunchanged300s.
+DetachedCPU1/nice10/AS8GiB;noGPU/newmechanism/controlrerun;monitorreceiptthenfixedqueue.G1–G6OPEN.
+
+
 ## B4 tool-error prefix retained; repaired continuation frozen 2026-10-27
 
 Real increment0 newcalls:110attempted,109nativeledgers(48POSITIVE/61TIMEOUT)+1ERROR;55settledpairs,gain/loss2/0;oldPID710019gone.
