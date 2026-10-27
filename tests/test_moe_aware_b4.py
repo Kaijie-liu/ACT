@@ -7,6 +7,8 @@ import sys
 import tempfile
 import time
 import unittest
+from types import SimpleNamespace
+from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT),str(ROOT/'scripts')]
 import moe_aware_b4 as B
@@ -115,6 +117,48 @@ class Paired(unittest.TestCase):
             path=root/'catalog.json';bad=load(path);bad['entries'][0]['query']['guard_dual']=True
             path.write_text(json.dumps(bad))
             with self.assertRaises(ValueError):B.audit(root,manifest)
+            path.write_text(json.dumps(dict(manifest_sha256=sha(manifest),entries=table,
+                selection_outcome_sha256=sha(selection/'outcome.json.gz'))))
+            save(root/'stopped.json',dict(seconds=400.))
+            controls=base/'controls';controls.mkdir()
+            failed_control=base/'failed_control';failed_control.mkdir()
+            save(failed_control/'complete.json',dict(status='FAIL',seconds=1.))
+            (failed_control/'log.txt').write_text('retained synthetic tooling failure')
+            receipt=controls/'complete.json';save(receipt,dict(status='PASS',trained_calls=0,seconds=3.,
+                source_files={p:sha(ROOT/p) for p in B.sources()},retained_control=dict(
+                    path=str(failed_control/'complete.json'),sha256=sha(failed_control/'complete.json'))))
+            binding=base/'continuation.json'
+            B.freeze_resume(binding,manifest,root,ROOT,receipt)
+            frozen=load(binding)
+            self.assertEqual(frozen['next_indices']['main'],1)
+            self.assertGreaterEqual(frozen['carried_part_seconds']['main'],403.)
+            self.assertGreaterEqual(frozen['prior_bytes'],B.Q.size(root)+receipt.stat().st_size+B.Q.size(failed_control))
+            self.assertIn(str(failed_control/'log.txt'),[r['path'] for r in frozen['external_records']])
+            later=base/'suffix';later.mkdir();save(later/'continuation.json',frozen)
+            pointer=dict(path=str(binding),sha256=sha(binding))
+            save(later/'start.json',dict(manifest_sha256=sha(manifest),execution_root=str(ROOT),execution_binding=pointer))
+            calls=[]
+            def invoke(folder,query,seconds,manifest,deadline):
+                calls.append(query);folder.mkdir()
+                save(folder/'request.json',dict(**query,manifest_sha256=sha(manifest),
+                    execution_binding=pointer,timing_reserve=list(B.RESUME_TIMING)))
+                terminal=dict(status='TIMEOUT',accepted=False,through_reception_seconds=3.,hard_budget=300,
+                    files={'request.json':sha(folder/'request.json')})
+                save(folder/'terminal.json',terminal)
+                return dict(**terminal,seconds=4.,terminal_sha256=sha(folder/'terminal.json')),None
+            B.execute_part(later,manifest,table[:3],part='main',deadline=time.monotonic()+1000,
+                start_index=1,invoke=invoke)
+            self.assertEqual(calls,[r['query'] for r in table[1:3]])
+            reviewed=B.audit(later,manifest)
+            self.assertEqual(reviewed['full_calls'],3)
+            self.assertEqual(reviewed['bytes'],B.Q.size(root)+B.Q.size(later)
+                +frozen['external_retained_bytes']+binding.stat().st_size)
+            self.assertTrue(all(sha(root/p)==h for p,h in frozen['parent_files'].items()))
+            save(later/'main_verify_0003_ledger.json',dict(id='orphan'))
+            with self.assertRaisesRegex(ValueError,'orphan'):B.audit(later,manifest)
+            (later/'main_verify_0003_ledger.json').unlink()
+            (root/'new_unbound_file').write_text('unregistered late parent change')
+            with self.assertRaisesRegex(ValueError,'unbound additions'):B.audit(later,manifest)
 
     def test_admission_and_paired_subjects(self):
         summary=admission();self.assertEqual(B.admitted(summary)['margin_pieces'],2)
@@ -204,6 +248,63 @@ class Paired(unittest.TestCase):
             for k in ('center','rows','thresholds'):torch.testing.assert_close(va[k],vb[k],rtol=0,atol=0)
             self.assertTrue(bool((vb['lower']<=va['lower']).all() and (vb['upper']>=va['upper']).all()))
             self.assertFalse(torch.equal(va['lower'],vb['lower']));self.assertNotEqual(a['sha256'],b['sha256'])
+
+    def test_repaired_tails_keep_cap_and_reject_late_publication(self):
+        with tempfile.TemporaryDirectory(dir=ROOT.parent/'results') as tmp:
+            root=Path(tmp);manifest=root/'manifest.json';save(manifest,dict(synthetic=True))
+            now=[100.];seen=[]
+            def execute(*args,**kwargs):
+                seen.append(kwargs);now[0]=394.
+                return dict(status='TIMEOUT',returncode=124,cleanup_status='LEADER_REAPED_NO_LIVE_SESSION')
+            with patch.object(B.Q,'time',SimpleNamespace(monotonic=lambda:now[0])), \
+                 patch.object(B.Q,'execute',side_effect=execute),patch.object(B.Q,'PRIOR_BYTES',0), \
+                 patch.object(B.Q,'ARTIFACT_ROOT',None),patch.object(B.Q,'EXECUTION_BINDING',None):
+                folder=root/'good'
+                row,value=B.Q.invoke(folder,dict(kind='verification',arm='genbab_pruned'),300,
+                    manifest,1000,timing_reserve=B.RESUME_TIMING)
+                self.assertEqual((row['status'],row['accepted'],row['seconds']),('TIMEOUT',False,294.))
+                self.assertIsNone(value)
+                self.assertEqual(load(folder/'request.json')['worker_deadline'],388.)
+                self.assertEqual((seen[0]['run_deadline'],seen[0]['cleanup_deadline']),(390.,395.))
+                now[0]=100.
+                def late(*args,**kwargs):
+                    result=execute(*args,**kwargs);now[0]=401.;return result
+                with patch.object(B.Q,'execute',side_effect=late):
+                    with self.assertRaisesRegex(ValueError,'complete request budget'):
+                        B.Q.invoke(root/'late',dict(kind='verification',arm='genbab_pruned'),300,
+                            manifest,1000,timing_reserve=B.RESUME_TIMING)
+                self.assertFalse(load(root/'late/terminal.json')['accepted'])
+
+    def test_failed_publication_is_charged_error_not_retried_or_accepted(self):
+        with tempfile.TemporaryDirectory(dir=ROOT.parent/'results') as tmp:
+            root=Path(tmp);manifest=root/'manifest.json';save(manifest,dict(synthetic=True))
+            name='main_verify_0000';child=root/name;child.mkdir()
+            item=dict(part='main',model='m',index=5000,rank=0,arm='on',query=dict(gate_cascade=True))
+            save(root/(name+'_started.json'),dict(entry=item,clock=10.))
+            save(root/(name+'_failed_start.json'),dict(clock=311.,kind='ValueError',message='budget'))
+            save(root/'start.json',dict(entry=0.));save(root/'stopped.json',dict(seconds=311.5))
+            save(child/'request.json',dict(**item['query'],manifest_sha256=sha(manifest)))
+            save(child/'terminal.json',dict(status='TIMEOUT',accepted=False,files={'request.json':sha(child/'request.json')}))
+            r=B.failed_attempt(root,name,item,manifest)
+            self.assertEqual((r['status'],r['accepted'],r['seconds']),('ERROR',False,301.5))
+            self.assertEqual(r['observed_terminal_status'],'TIMEOUT')
+            self.assertEqual(B.S.contrast([r],['m'],[5000])['states']['on'],{'ERROR':1})
+            for update in (dict(status='TIMEOUT'),dict(accepted=True),dict(accounting=''),dict(status='POSITIVE')):
+                with self.assertRaises(ValueError):B.S.contrast([dict(r,**update)],['m'],[5000])
+            (child/'terminal.json').unlink()  # Deliberately mutated synthetic receipt only.
+            save(child/'terminal.json',dict(status='POSITIVE',accepted=True,files={'request.json':sha(child/'request.json')}))
+            with self.assertRaisesRegex(ValueError,'cannot supply a positive'):B.failed_attempt(root,name,item,manifest)
+
+    def test_owned_deadline_reaps_only_synthetic_child(self):
+        from scoped_proof.owned_session import execute
+        began=time.monotonic()
+        result=execute([sys.executable,'-I','-S','-c','import time; time.sleep(30)'],
+            run_deadline=began+1.5,cleanup_deadline=began+6.5,
+            env={'PATH':'/usr/bin:/bin'},rss_limit=None,development_policy=B.POLICY)
+        self.assertNotEqual(result['status'],'COMPLETED')
+        self.assertEqual(result['cleanup_status'],'LEADER_REAPED_NO_LIVE_SESSION')
+        self.assertIsNone(result['cleanup_error'])
+        self.assertLess(time.monotonic()-began,6.5)
 
 
 if __name__=='__main__':unittest.main()

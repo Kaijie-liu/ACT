@@ -421,15 +421,18 @@ def worker(folder):
     return 0
 
 
-def invoke(folder,request,seconds,manifest,stage_deadline):
+def invoke(folder,request,seconds,manifest,stage_deadline,*,timing_reserve=(6,4,2)):
     from b1_observed_batch import session_ok
     began=time.monotonic();require(began+seconds<=stage_deadline,'insufficient remaining time; do not shorten full request')
     end=began+seconds
+    worker_tail,run_tail,cleanup_tail=timing_reserve
+    require(0<cleanup_tail<run_tail<worker_tail<seconds,'nested request timing reserves')
     folder.mkdir();(folder/'tmp').mkdir();(folder/'cache').mkdir()
     remaining=CAP-PRIOR_BYTES-size(folder.parent)
     require(remaining>256*1024,'remaining evidence/terminal capacity')
-    query=dict(**request,manifest=str(manifest),manifest_sha256=sha(manifest),worker_deadline=end-6,
+    query=dict(**request,manifest=str(manifest),manifest_sha256=sha(manifest),worker_deadline=end-worker_tail,
         artifact_limit=remaining-192*1024)
+    if timing_reserve!=(6,4,2):query['timing_reserve']=list(timing_reserve)
     if EXECUTION_BINDING is not None:
         query['execution_binding']=dict(path=str(EXECUTION_BINDING),sha256=sha(EXECUTION_BINDING))
     save(folder/'request.json',query)
@@ -439,7 +442,7 @@ def invoke(folder,request,seconds,manifest,stage_deadline):
         OMP_NUM_THREADS='1',OPENBLAS_NUM_THREADS='1',MKL_NUM_THREADS='1',NUMEXPR_NUM_THREADS='1',
         CUDA_VISIBLE_DEVICES='',TMPDIR=str(folder/'tmp'),XDG_CACHE_HOME=str(folder/'cache'))
     receipt=execute([python,'-I','-B',str(ROOT/'scripts/multilayer_stage1.py'),'worker',str(folder)],
-        run_deadline=end-4,cleanup_deadline=end-2,env=env,rss_limit=None,development_policy=POLICY)
+        run_deadline=end-run_tail,cleanup_deadline=end-cleanup_tail,env=env,rss_limit=None,development_policy=POLICY)
     save(folder/'session.json',receipt)
     value=None;status='ERROR';accepted=False
     if session_ok(receipt) and (folder/'published.json').is_file():
@@ -447,10 +450,10 @@ def invoke(folder,request,seconds,manifest,stage_deadline):
         require(publication['sha256']==sha(folder/'outcome.json.gz'),'published outcome identity')
         outcome=read_gzip(folder/'outcome.json.gz')
         require(outcome['request_sha256']==sha(folder/'request.json'),'request/result binding')
-        accepted=publication['clock']<end-6 and time.monotonic()<end
+        accepted=publication['clock']<end-worker_tail and time.monotonic()<end
         if accepted:value=outcome['value'];status=value['status']
         else:status='TIMEOUT'
-    elif (receipt.get('returncode')==124 or 'TIMEOUT' in receipt['status'] or time.monotonic()>=end-6):
+    elif (receipt.get('returncode')==124 or 'TIMEOUT' in receipt['status'] or time.monotonic()>=end-worker_tail):
         status='TIMEOUT'
     if not accepted and (folder/'progress.json').is_file():
         partial=load(folder/'progress.json')
@@ -462,8 +465,8 @@ def invoke(folder,request,seconds,manifest,stage_deadline):
     save(folder/'terminal.json',row)
     # The ledger adds this measured return cost, including terminal publication.
     # terminal.json deliberately reports only its pre-publication timestamp.
-    row['seconds']=time.monotonic()-began
     row['terminal_sha256']=sha(folder/'terminal.json')
+    row['seconds']=time.monotonic()-began
     require(row['seconds']<=seconds,'complete request budget exceeded')
     return row,value
 

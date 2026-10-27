@@ -113,8 +113,13 @@ def contrast(rows, models, indices, *, off='off', on='on', seed=20261026, replic
         key = (row['model'], row['index'], row['arm'])
         require(key not in by and key[0] in models and key[1] in indices and key[2] in (off, on),
                 'unique row within fixed paired cohort')
+        retained_overrun = (row['status'] == 'ERROR' and row['accepted'] is False
+            and row.get('accounting') == 'OFFLINE_TOOL_FAILURE_UPPER_COST_NOT_ONLINE_ACCEPTANCE')
+        # A failed publication is charged at its observed cost, never clipped
+        # into a compliant online result. audit_call still enforces300s.
         require(row['status'] in STATES and type(row['accepted']) is bool
-                and math.isfinite(row['seconds']) and 0 < row['seconds'] <= 300,
+                and math.isfinite(row['seconds']) and row['seconds'] > 0
+                and (row['seconds'] <= 300 or retained_overrun),
                 'known terminal and complete bounded cost')
         require(row['status'] not in ('POSITIVE', 'UNSAFE_REPLAYED') or row['accepted'],
                 'positive/replayed endpoint requires original online acceptance')

@@ -1,5 +1,16 @@
 # MoE project handoff — current entry point
 
+## B4 tool-error prefix retained; repaired continuation frozen 2026-10-27
+
+Real increment0 newcalls:110attempted,109nativeledgers(48POSITIVE/61TIMEOUT)+1ERROR;55settledpairs,gain/loss2/0;oldPID710019gone.
+[Stage record](moe_aware_b4_records_20261027.json)`continuation_review` binds0109(R2E8seed0/1754/on):cleanup/publicationoverrun,301.579scharged,no retry/offline acceptance.
+14ordinarycontrols+2targetedpasses,25.413scumulative incl retainedfixturefailure;0trained/solvercalls;old109receipts/source/coverageaudited.
+Same300s/T1=120/numericalgates;newworker/run/cleanup tails12/10/5vs6/4/2botharms,worker288vs294s;disclose executionboundary,not algorithm gain.
+Append-only bindingcefa3d52 starts mainindex110;main20944.131s carried,oldfailed/control/console/bindingbytescharged,othercapsunchanged.
+Diskavailability0duringrepair nowrestored;onlyrebuildablepyc removed,sourcefullyrestored,no frozen/model/environment deletion.
+Next commit/push,immutablecopy/freshresources,continue onlyunexecutedB4;no newmechanism/interimdecision.G1–G6OPEN.
+
+
 ## B4 third complete input block: shared positives and extra cascade cost 2026-10-27
 
 Real increment6 since prior84:90/1080calls,45completepairs,gain/loss2/0;PID710019continues rank3,all3archived blocks audited.

@@ -85,9 +85,11 @@ class Controls(unittest.TestCase):
         self.assertEqual(endpoint(rows,unsafe),primary)
 
     def test_boundary_reservation_stops_before_request_or_worker(self):
-        old=Path('/data1/Kane/MOE/executions/multilayer_stage1_20261022_r5/scripts/multilayer_stage1.py')
         method=lambda p:next(n for n in ast.parse(p.read_text()).body if isinstance(n,ast.FunctionDef) and n.name=='invoke')
-        self.assertEqual(ast.dump(method(old)),ast.dump(method(Path(stage.__file__))))
+        # The optional B4 repair adds larger internal tails; the legacy default
+        # remains6/4/2 and still refuses an existing request directory.
+        current=method(Path(stage.__file__))
+        self.assertEqual(ast.literal_eval(current.args.kw_defaults[0]),(6,4,2))
         with tempfile.TemporaryDirectory(dir='/data1/Kane/MOE/results',prefix='boundary_fixed_') as name:
             target=Path(name)/'verify_001';target.mkdir()
             with patch.object(stage,'execute',side_effect=AssertionError('must not launch')) as launch:

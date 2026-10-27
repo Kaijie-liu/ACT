@@ -21,6 +21,57 @@ import multilayer_stage1 as Q
 from scoped_source.development_work import POLICY
 
 SCHEMA='moe-aware-b4-20261026-v1'
+RESUME_TIMING=(12,10,5)  # worker, supervisor, cleanup tails inside the same300s
+
+
+def result_chain(folder,manifest,seen=None):
+    """Append-only execution roots; a repair never overwrites an old attempt."""
+    folder=Path(folder).resolve();seen=set() if seen is None else set(seen)
+    S.require(folder not in seen,'acyclic execution chain');seen.add(folder)
+    path=folder/'continuation.json'
+    if not path.exists():return [folder]
+    binding=load(path);parent=Path(binding['parent_root'])
+    S.require(binding['manifest_sha256']==sha(manifest),'same experiment after repair')
+    start=load(folder/'start.json');pointer=start['execution_binding']
+    S.require(pointer['sha256']==sha(path) and load(pointer['path'],pointer['sha256'])==binding,
+        'same execution and continuation identity')
+    S.require(all(sha(Path(start['execution_root'])/p)==h for p,h in binding['source_files'].items()),
+        'retained repaired execution source')
+    for row in binding['external_records']:
+        S.require(sha(row['path'])==row['sha256'] and Path(row['path']).stat().st_size==row['bytes'],
+            'retained repair evidence and console')
+    for name,h in binding['parent_files'].items():
+        S.require(not Path(name).is_absolute() and '..' not in Path(name).parts
+            and sha(parent/name)==h,'unchanged failed prefix')
+    S.require(set(binding['parent_files'])=={str(p.relative_to(parent)) for p in parent.rglob('*') if p.is_file()},
+        'no unbound additions to failed prefix')
+    return result_chain(parent,manifest,seen)+[folder]
+
+
+def owned_file(roots,name):
+    found=[r/name for r in roots if (r/name).exists()]
+    S.require(len(found)<=1,'no repeated call or overwritten evidence')
+    return found[0] if found else None
+
+
+def failed_attempt(owner,name,entry,manifest):
+    """Account for a stopped tooling attempt, never manufacture online acceptance."""
+    event=load(owner/(name+'_started.json'));failed=load(owner/(name+'_failed_start.json'))
+    stopped=load(owner/'stopped.json');start=load(owner/'start.json')
+    terminal=load(owner/name/'terminal.json');request=load(owner/name/'request.json')
+    S.require(event['entry']==entry and request['manifest_sha256']==sha(manifest)
+        and all(request.get(k)==v for k,v in entry['query'].items()),'failed object binding')
+    S.require(not terminal['accepted'] and terminal['status'] not in ('POSITIVE','UNSAFE_REPLAYED'),
+        'failed attempt cannot supply a positive')
+    for p,h in terminal['files'].items():
+        S.require(Path(p).name==p and sha(owner/name/p)==h,'failed original terminal files')
+    finish=start['entry']+stopped['seconds']
+    S.require(event['clock']<=failed['clock']<=finish,'measured stopped attempt interval')
+    return dict(part=entry['part'],model=entry['model'],index=entry['index'],rank=entry['rank'],
+        arm=entry['arm'],status='ERROR',accepted=False,seconds=finish-event['clock'],coverage=None,guarantee=None,
+        failure_kind=failed['kind'],failure_message=failed['message'],observed_terminal_status=terminal['status'],
+        accounting='OFFLINE_TOOL_FAILURE_UPPER_COST_NOT_ONLINE_ACCEPTANCE',
+        original_terminal_sha256=sha(owner/name/'terminal.json'),failed_start_sha256=sha(owner/(name+'_failed_start.json')))
 
 
 def sources():
@@ -215,7 +266,7 @@ def audit_call(folder,entry,ledger,manifest,backend_identity,deadline):
         guarantee=None if result is None else value['guarantee'])
 
 
-def execute_part(folder,manifest,entries,*,part,deadline,invoke=Q.invoke,clock=time.monotonic):
+def execute_part(folder,manifest,entries,*,part,deadline,invoke=Q.invoke,clock=time.monotonic,start_index=0):
     """Use the existing300s worker, keeping a contiguous stopped prefix.
 
     The enclosing stage sets the already charged part deadline and shared
@@ -224,7 +275,9 @@ def execute_part(folder,manifest,entries,*,part,deadline,invoke=Q.invoke,clock=t
     began=clock();S.require(part in S.CAPS and deadline-began<=S.CAPS[part][1],'own remaining part time')
     S.require(len(entries)<=S.CAPS[part][0] and all(e['part']==part for e in entries),'own part calls')
     ledgers=[];reason='ALL_REGISTERED_CALLS_EXECUTED'
-    for i,entry in enumerate(entries):
+    S.require(0<=start_index<=len(entries),'registered continuation offset')
+    for i in range(start_index,len(entries)):
+        entry=entries[i]
         if clock()+300>deadline:
             reason='PART_TIME_CAP';break
         name=f'{part}_verify_{i:04d}'
@@ -238,7 +291,7 @@ def execute_part(folder,manifest,entries,*,part,deadline,invoke=Q.invoke,clock=t
         Q.save(folder/(name+'_ledger.json'),row);ledgers.append(row)
         if terminal['status'] in ('ERROR','UNSUPPORTED'):
             reason='TOOL_OR_RECEPTION_ERROR';break
-    return dict(part=part,rows=ledgers,unexecuted=entries[len(ledgers):],stop_reason=reason,
+    return dict(part=part,rows=ledgers,unexecuted=entries[start_index+len(ledgers):],stop_reason=reason,
                 seconds=clock()-began)
 
 
@@ -276,35 +329,48 @@ def audit_aux(folder,expected,ledger,manifest,deadline):
                     if not any(r['index']==i and r['multiplier']==m for r in rows)])
 
 
-def audit_part(folder,manifest,entries,samples,*,part,deadline):
-    spec=load(manifest);selected=folder/'selection';rows=[];aux=[]
+def audit_part(folder,manifest,entries,samples,*,part,deadline,roots=None):
+    roots=[folder] if roots is None else roots
+    spec=load(manifest);selected=roots[0]/'selection';rows=[];aux=[];failures=[]
     S.require(all(e['part']==part for e in entries),'registered part catalog')
-    starts=sorted(folder.glob(part+'_verify_*_started.json'))
-    ledgers=sorted(folder.glob(part+'_verify_*_ledger.json'))
-    S.require(len(ledgers)<=len(starts)<=len(ledgers)+1<=len(entries)+1,'started/terminal prefix counts')
+    starts=sorted((p for r in roots for p in r.glob(part+'_verify_*_started.json')),key=lambda p:p.name)
+    S.require(len(starts)<=len(entries),'started prefix count')
+    S.require(all((p.parent/(p.name.removesuffix('_ledger.json')+'_started.json')).exists()
+        for r in roots for p in r.glob(part+'_verify_*_ledger.json')),'no orphan terminal ledger')
     for i,path in enumerate(starts):
         event=load(path);name=f'{part}_verify_{i:04d}'
         S.require(path.name==name+'_started.json' and event['index']==i and event['entry']==entries[i],
                   'fixed full-request attempt order')
-    for i,path in enumerate(ledgers):
-        name=f'{part}_verify_{i:04d}';row=load(path)
-        S.require(path.name==name+'_ledger.json' and row['id']==name,'fixed contiguous terminal prefix')
-        rows.append(audit_call(folder/name,entries[i],row,manifest,spec['backend_identity'],deadline))
+        ledger=owned_file(roots,name+'_ledger.json')
+        if ledger is not None:
+            row=load(ledger);S.require(row['id']==name and ledger.parent==path.parent,'same attempt terminal')
+            request=load(ledger.parent/name/'request.json')
+            if (ledger.parent/'continuation.json').exists():
+                b=load(ledger.parent/'continuation.json')
+                S.require(request.get('execution_binding')==load(ledger.parent/'start.json')['execution_binding']
+                    and request.get('timing_reserve')==b['timing_reserve'],'same repaired execution policy')
+            rows.append(audit_call(ledger.parent/name,entries[i],row,manifest,spec['backend_identity'],deadline))
+        elif (path.parent/(name+'_failed_start.json')).exists():
+            rows.append(failed_attempt(path.parent,name,entries[i],manifest));failures.append(name)
+        else:
+            S.require(i==len(starts)-1,'only the final attempt may be in flight')
     auxiliary_missing=[];auxiliary_started=[]
     for item in auxiliary(spec,samples,selected,part):
-        path=folder/(item['name']+'_ledger.json')
-        begin=folder/(item['name']+'_started.json')
-        if begin.exists():
+        path=owned_file(roots,item['name']+'_ledger.json')
+        begin=owned_file(roots,item['name']+'_started.json')
+        if begin is not None:
             S.require(load(begin)['item']==item,'fixed public query')
-        if path.exists():
-            S.require(begin.exists(),'public attempt before terminal')
-            aux.append(audit_aux(folder/item['name'],item,load(path),manifest,deadline))
-        elif begin.exists():auxiliary_started.append(item['name'])
+        if path is not None:
+            S.require(begin is not None and begin.parent==path.parent,'public attempt before terminal')
+            aux.append(audit_aux(path.parent/item['name'],item,load(path),manifest,deadline))
+        elif begin is not None:auxiliary_started.append(item['name'])
         else:auxiliary_missing.append(item['name'])
-    return dict(rows=rows,auxiliary=aux,completed=len(rows),planned=len(entries),
+    result=dict(rows=rows,auxiliary=aux,completed=len(rows),planned=len(entries),
         started=len(starts),started_without_terminal=entries[len(rows):len(starts)],
         unexecuted=entries[len(starts):],auxiliary_unexecuted=auxiliary_missing,
         auxiliary_started_without_terminal=auxiliary_started,mathematical_bound_reproof=False)
+    if failures:result['retained_failed_attempts']=failures
+    return result
 
 
 def explain_rows(rows,auxiliary_rows):
@@ -351,13 +417,16 @@ def part_summary(part,rows,auxiliary_rows,indices,components,main_rows):
     return dict(contrast=result,routing=explanation,primary_decision=part=='main')
 
 
-def audit(folder,manifest,*,deadline=None):
+def audit(folder,manifest,*,deadline=None,source_root=None):
     """Independent record pass; all old numerical verdicts remain unchanged."""
     from b1_observed_batch import session_ok
     deadline=time.monotonic()+300 if deadline is None else deadline
-    spec=load(manifest);check_frozen(spec);start=load(folder/'start.json')
+    roots=result_chain(folder,manifest);origin=roots[0]
+    binding=load(folder/'continuation.json') if (folder/'continuation.json').exists() else None
+    if binding:source_root=Path(binding['original_execution'])
+    spec=load(manifest);check_frozen(spec,source_root=source_root);start=load(folder/'start.json')
     S.require(start['manifest_sha256']==sha(manifest),'same B4 experiment')
-    selection=folder/'selection';ledger=load(folder/'selection_ledger.json')
+    selection=origin/'selection';ledger=load(origin/'selection_ledger.json')
     terminal=load(selection/'terminal.json',ledger['terminal_sha256'])
     S.require(ledger['accepted'] and ledger['status']=='COMPLETE'
         and all(ledger[k]==v for k,v in terminal.items()) and
@@ -371,7 +440,7 @@ def audit(folder,manifest,*,deadline=None):
         'original selection acceptance and timing')
     for name,h in terminal['files'].items():S.require(Path(name).name==name and sha(selection/name)==h,'selection file binding')
     samples=raw['value']['samples'];table=catalog(spec,samples,selection)
-    saved=load(folder/'catalog.json')
+    saved=load(origin/'catalog.json')
     S.require(saved['manifest_sha256']==sha(manifest) and saved['entries']==table
         and saved['selection_outcome_sha256']==sha(selection/'outcome.json.gz'),'exact paired call catalog')
     excluded={i for a,b in spec['excluded_ranges'] for i in range(a,b+1)}
@@ -388,21 +457,22 @@ def audit(folder,manifest,*,deadline=None):
     reports={};main=[];costs={}
     for part in S.CAPS:
         entries=[r for r in table if r['part']==part]
-        checked=audit_part(folder,manifest,entries,samples,part=part,deadline=deadline)
+        checked=audit_part(folder,manifest,entries,samples,part=part,deadline=deadline,roots=roots)
         summary=part_summary(part,checked['rows'],checked['auxiliary'],[s['index'] for s in samples],
             spec['admission']['components'],main)
         if part=='main':main=checked['rows']
         reports[part]=dict(checked=checked,summary=summary)
-        accounting=folder/(part+'_accounting.json')
-        if accounting.exists():
+        accounting=owned_file(roots,part+'_accounting.json')
+        if accounting is not None:
             record=load(accounting);costs[part]=record
+            owner=accounting.parent
             S.require(record['completed']==len(checked['rows']) and record['planned']==len(entries)
                 and 0<=record['seconds']<=S.CAPS[part][1]
-                and record['audit_sha256']==sha(folder/(part+'_audit.json'))
-                and record['result_sha256']==sha(folder/(part+'_result.json')),
+                and record['audit_sha256']==sha(owner/(part+'_audit.json'))
+                and record['result_sha256']==sha(owner/(part+'_result.json')),
                 'each part cost and original online audit')
-            S.require(load(folder/(part+'_audit.json'))==checked
-                and load(folder/(part+'_result.json'))==json.loads(json.dumps(summary)),
+            S.require(load(owner/(part+'_audit.json'))==checked
+                and load(owner/(part+'_result.json'))==json.loads(json.dumps(summary)),
                 'independent recount agrees with original result')
     full=folder/'final_accounting.json'
     if full.exists():
@@ -419,10 +489,11 @@ def audit(folder,manifest,*,deadline=None):
     return dict(status='PASS_COMPLETE' if full.exists() and all(r['checked']['completed']==r['checked']['planned'] for r in reports.values())
         else 'PASS_RETAINED_PREFIX',reports=reports,cost=costs,
         numerical_bound_reproof=False,new_verdicts=0,full_calls=sum(r['checked']['completed'] for r in reports.values()),
-        bytes=Q.size(folder))
+        bytes=sum(Q.size(r) for r in roots)+(0 if binding is None else
+            binding['external_retained_bytes']+Path(start['execution_binding']['path']).stat().st_size))
 
 
-def check_frozen(spec):
+def check_frozen(spec,*,source_root=None):
     from gate_decoupling_worker import digest
     S.require(spec['schema']==SCHEMA and spec['policy']==POLICY,'B4 registered numerical policy')
     S.require(spec['part_caps']=={p:dict(slots=n,seconds=t) for p,(n,t) in S.CAPS.items()}
@@ -435,8 +506,9 @@ def check_frozen(spec):
         and sha(root/'audit.json')==binding['audit_sha256']
         and sha(root/'final_accounting.json')==binding['final_sha256']
         and load(root/'audit.json')==spec['stage5a_summary'],'frozen diagnostic result')
+    source_root=ROOT if source_root is None else Path(source_root)
     S.require(set(spec['source_files'])==set(sources())
-        and all(sha(ROOT/p)==h for p,h in spec['source_files'].items()),'complete frozen numerical/acceptance source')
+        and all(sha(source_root/p)==h for p,h in spec['source_files'].items()),'complete frozen numerical/acceptance source')
     S.require(spec['genbab_config']==Q.backend.CONFIG and digest(Q.backend.source_identity())==spec['backend_identity'],
         'same strong coupled engine')
     for row in spec['source_manifests']+spec['historical_cohorts']:
@@ -444,76 +516,166 @@ def check_frozen(spec):
     S.require(load(spec['control']['path'],spec['control']['sha256'])['status']=='PASS','ordinary control binding')
 
 
-def batch(folder,manifest,*,entry=ENTRY):
+def freeze_resume(path,manifest,parent,original_execution,control):
+    """One compatibility continuation: same catalog, no failed-call retry."""
+    began=time.monotonic();parent=Path(parent).resolve();original_execution=Path(original_execution).resolve()
+    spec=load(manifest);check_frozen(spec,source_root=original_execution)
+    prefix=audit(parent,manifest,source_root=original_execution)
+    tested=load(control);S.require(tested['status']=='PASS' and tested['trained_calls']==0,'repair controls')
+    S.require(all(sha(ROOT/p)==h for p,h in tested['source_files'].items()),'controlled repair source')
+    roots=result_chain(parent,manifest);stop=load(parent/'stopped.json')
+    S.require(all(not p['checked']['started_without_terminal'] and
+        not p['checked']['auxiliary_started_without_terminal'] for p in prefix['reports'].values()),
+        'every original attempt retained before continuing')
+    carried=dict(stop.get('charged_part_seconds',dict(main=stop['seconds'])))
+    pending=[p for p in S.CAPS if prefix['reports'][p]['checked']['completed']<prefix['reports'][p]['checked']['planned']]
+    S.require(bool(pending),'unfinished registered queue');active=pending[0]
+    control_files={str(p.relative_to(control.parent)):sha(p) for p in control.parent.rglob('*') if p.is_file()}
+    prior_binding=load(parent/'continuation.json') if (parent/'continuation.json').exists() else None
+    external={r['path']:r for r in ([] if prior_binding is None else prior_binding['external_records'])}
+    paths=[control.parent/p for p in control_files]
+    if prior_binding:paths.append(Path(load(parent/'start.json')['execution_binding']['path']))
+    prior_control=tested.get('retained_control');seen_controls={str(control.resolve())}
+    while prior_control:
+        receipt=Path(prior_control['path']).resolve()
+        S.require(str(receipt) not in seen_controls,'acyclic retained control costs');seen_controls.add(str(receipt))
+        previous=load(receipt,prior_control['sha256'])
+        paths.extend(p for p in receipt.parent.rglob('*') if p.is_file())
+        prior_control=previous.get('retained_control')
+    paths += [parent.with_name(parent.name+suffix) for suffix in ('_controller.log','_launch.json','_preparation.json')]
+    for p in paths:
+        if p.is_file():external[str(p.resolve())]=dict(path=str(p.resolve()),sha256=sha(p),bytes=p.stat().st_size)
+    external_bytes=sum(r['bytes'] for r in external.values())
+    parent_files={str(p.relative_to(parent)):sha(p) for p in parent.rglob('*') if p.is_file()}
+    duration=time.monotonic()-began
+    # Control and this source/audit preparation consume the same unfinished part.
+    carried[active]=carried.get(active,0)+tested['seconds']+duration
+    S.require(all(0<=v<S.CAPS[p][1] for p,v in carried.items()),'remaining part time, no borrowing')
+    prior_bytes=sum(Q.size(r) for r in roots)+external_bytes
+    S.require(prior_bytes<Q.CAP,'remaining shared artifact budget')
+    Q.atomic_save(path,dict(schema='moe-aware-b4-continuation-v1',parent_root=str(parent),
+        parent_files=parent_files,manifest_sha256=sha(manifest),original_execution=str(original_execution),
+        source_files={p:sha(ROOT/p) for p in sources()},backend_identity=spec['backend_identity'],
+        timing_reserve=list(RESUME_TIMING),prior_bytes=prior_bytes,external_retained_bytes=external_bytes,
+        external_records=list(external.values()),
+        control=dict(path=str(control.resolve()),sha256=sha(control),files=control_files),
+        carried_part_seconds=carried,preparation_seconds=duration,repair_downtime_not_execution=True,
+        next_indices={p:r['checked']['started'] for p,r in prefix['reports'].items()},
+        prior_settled_calls=prefix['full_calls'],failed_attempts_remain_in_denominator=True))
+
+
+def batch(folder,manifest,*,entry=ENTRY,continuation=None):
     """Four study parts; all native execution remains Q.invoke/owned_session."""
     S.require(ROOT!=Path('/data1/Kane/MOE/ACT') and (ROOT/'.frozen_commit').is_file(),'immutable execution copy')
     S.require(not folder.exists(),'new B4 result root')
-    spec=load(manifest);check_frozen(spec)
+    spec=load(manifest);binding=None;roots=[];carried={}
+    if continuation is not None:
+        binding=load(continuation)
+        S.require(binding['manifest_sha256']==sha(manifest) and binding['timing_reserve']==list(RESUME_TIMING),
+            'fixed compatibility continuation')
+        check_frozen(spec,source_root=binding['original_execution'])
+        S.require(all(sha(ROOT/p)==h for p,h in binding['source_files'].items()),'new immutable execution identity')
+        S.require(load(binding['control']['path'],binding['control']['sha256'])['status']=='PASS','repair passed')
+        parent=Path(binding['parent_root']);roots=result_chain(parent,manifest)
+        S.require(set(binding['parent_files'])=={str(p.relative_to(parent)) for p in parent.rglob('*') if p.is_file()}
+            and all(sha(parent/p)==h for p,h in binding['parent_files'].items()),'unchanged parent before execution')
+        for row in binding['external_records']:
+            S.require(sha(row['path'])==row['sha256'] and Path(row['path']).stat().st_size==row['bytes'],
+                'same repair cost and evidence')
+        carried=dict(binding['carried_part_seconds'])
+    else:check_frozen(spec)
     resource.setrlimit(resource.RLIMIT_AS,(8*2**30,8*2**30));os.nice(10)
-    folder.mkdir();Q.ARTIFACT_ROOT=folder;Q.ARTIFACT_LIMIT=Q.CAP
-    Q.PRIOR_BYTES=0;Q.EXECUTION_BINDING=None
+    folder.mkdir();Q.ARTIFACT_ROOT=folder
+    Q.PRIOR_BYTES=0 if binding is None else binding['prior_bytes']+continuation.stat().st_size
+    Q.ARTIFACT_LIMIT=Q.CAP-Q.PRIOR_BYTES
+    Q.EXECUTION_BINDING=continuation
+    if binding:Q.save(folder/'continuation.json',binding)
+    roots=roots+[folder]
     Q.save(folder/'start.json',dict(entry=entry,pid=os.getpid(),started_at=time.time(),
-        commit=(ROOT/'.frozen_commit').read_text().strip(),manifest_sha256=sha(manifest)))
+        commit=(ROOT/'.frozen_commit').read_text().strip(),manifest_sha256=sha(manifest),execution_root=str(ROOT),
+        **({} if binding is None else dict(execution_binding=dict(path=str(continuation),sha256=sha(continuation)),
+            carried_part_seconds=carried))))
     parts={};samples=None;table=None;main_rows=[]
+    timing=(6,4,2) if binding is None else RESUME_TIMING
+    def invoke(*args):return Q.invoke(*args,timing_reserve=timing)
+    if binding:
+        samples=Q.read_gzip(roots[0]/'selection/outcome.json.gz')['value']['samples']
+        table=load(roots[0]/'catalog.json')['entries']
     def call(item,deadline):
         name=item['name'];Q.save(folder/(name+'_started.json'),dict(item=item,clock=time.monotonic()))
-        row,value=Q.invoke(folder/name,item['query'],item['seconds'],manifest,deadline)
+        row,value=invoke(folder/name,item['query'],item['seconds'],manifest,deadline)
         Q.save(folder/(name+'_ledger.json'),dict(id=name,part=item['part'],**row))
         if row['status'] in ('ERROR','UNSUPPORTED'):raise RuntimeError('retained tooling error '+name)
         return row,value
     try:
         for part,(_,seconds) in S.CAPS.items():
-            started=entry if part=='main' else time.monotonic();deadline=started+seconds
+            previous=owned_file(roots[:-1],part+'_accounting.json')
+            if previous is not None:
+                parts[part]=load(previous)
+                if part=='main':main_rows=load(previous.parent/'main_audit.json')['rows']
+                continue
+            started=entry if not parts else time.monotonic();deadline=started+seconds-carried.get(part,0)
             Q.save(folder/(part+'_start.json'),dict(entry=started,deadline=deadline))
             selection_seconds=0.
-            if part=='main':
+            if part=='main' and binding is None:
                 selected,value=call(dict(name='selection',part=part,seconds=300,query=dict(kind='selection')),deadline)
                 S.require(selected['accepted'] and value is not None and value['status']=='COMPLETE','complete registered input selection')
                 selection_seconds=selected['seconds'];samples=value['samples'];table=catalog(spec,samples,folder/'selection')
                 Q.save(folder/'catalog.json',dict(manifest_sha256=sha(manifest),entries=table,
                     selection_outcome_sha256=sha(folder/'selection/outcome.json.gz')))
-            for item in auxiliary(spec,samples,folder/'selection',part):
+            for item in auxiliary(spec,samples,roots[0]/'selection',part):
+                if owned_file(roots[:-1],item['name']+'_started.json') is not None:continue
                 if time.monotonic()+item['seconds']>deadline:break
                 call(item,deadline)
             entries=[r for r in table if r['part']==part]
-            executed=execute_part(folder,manifest,entries,part=part,deadline=deadline)
+            offset=0 if binding is None else binding['next_indices'][part]
+            executed=execute_part(folder,manifest,entries,part=part,deadline=deadline,invoke=invoke,start_index=offset)
             if executed['stop_reason']=='TOOL_OR_RECEPTION_ERROR':raise RuntimeError('retained verification tooling error '+part)
-            checked=audit_part(folder,manifest,entries,samples,part=part,deadline=deadline)
+            checked=audit_part(folder,manifest,entries,samples,part=part,deadline=deadline,roots=roots)
             summary=part_summary(part,checked['rows'],checked['auxiliary'],[s['index'] for s in samples],
                 spec['admission']['components'],main_rows)
             if part=='main':main_rows=checked['rows']
             Q.save(folder/(part+'_audit.json'),checked);Q.save(folder/(part+'_result.json'),summary)
             parts[part]=dict(completed=checked['completed'],planned=len(entries),started=checked['started'],
-                stop_reason=executed['stop_reason'],seconds=time.monotonic()-started,
+                stop_reason=executed['stop_reason'],seconds=carried.get(part,0)+time.monotonic()-started,
                 request_seconds=sum(r['seconds'] for r in checked['rows']),
-                auxiliary_seconds=selection_seconds+sum(r['seconds'] for r in checked['auxiliary']),
+                auxiliary_seconds=(load(roots[0]/'selection_ledger.json')['seconds'] if part=='main' else 0)
+                    +sum(r['seconds'] for r in checked['auxiliary']),
                 audit_sha256=sha(folder/(part+'_audit.json')),result_sha256=sha(folder/(part+'_result.json')))
             Q.save(folder/(part+'_accounting.json'),parts[part]);tick(deadline)
         # Final common publication is charged to the last part, not a new pool.
-        parts['boundary']['seconds']=time.monotonic()-started
-        Q.save(folder/'complete.json',dict(parts=parts,seconds=time.monotonic()-entry,
+        parts['boundary']['seconds']=carried.get('boundary',0)+time.monotonic()-started
+        Q.save(folder/'complete.json',dict(parts=parts,seconds=sum(carried.values())+time.monotonic()-entry,
             full_calls=sum(p['completed'] for p in parts.values()),
             status='COMPLETE' if all(p['completed']==p['planned'] for p in parts.values()) else 'REPORT_UNEXECUTED'))
         tick(deadline)
         through=time.monotonic();charged={p:r['seconds'] for p,r in parts.items()}
-        charged['boundary']=through-started
-        overhead=through-entry-sum(charged.values());charged['main']+=overhead
+        charged['boundary']=carried.get('boundary',0)+through-started
+        overhead=sum(carried.values())+through-entry-sum(charged.values());charged['main']+=overhead
         S.require(overhead>=0 and all(charged[p]<=S.CAPS[p][1] for p in S.CAPS),'common publication cost charged, no borrowing')
-        Q.save(folder/'final_accounting.json',dict(seconds=through-entry,charged_part_seconds=charged,
+        Q.save(folder/'final_accounting.json',dict(seconds=sum(carried.values())+through-entry,charged_part_seconds=charged,
             shared_boundary_bookkeeping_charged_main=overhead,
-            complete_sha256=sha(folder/'complete.json'),bytes_before_receipt=Q.size(folder)))
+            complete_sha256=sha(folder/'complete.json'),bytes_before_receipt=Q.PRIOR_BYTES+Q.size(folder)))
     except BaseException as error:
+        cost=dict(carried)
+        cost.update({p:v['seconds'] for p,v in parts.items()})
+        if 'started' in locals():cost[part]=carried.get(part,0)+time.monotonic()-started
         Q.save(folder/'stopped.json',dict(kind=type(error).__name__,message=str(error),seconds=time.monotonic()-entry,
+            charged_part_seconds=cost,
             completed_verification_ledgers=len(list(folder.glob('*_verify_*_ledger.json'))),
             started_verification_calls=len(list(folder.glob('*_verify_*_started.json')))))
         raise
 
 
 if __name__=='__main__':
-    parser=argparse.ArgumentParser();parser.add_argument('mode',choices=('freeze','batch','audit'))
+    parser=argparse.ArgumentParser();parser.add_argument('mode',choices=('freeze','batch','audit','freeze-resume','resume'))
     parser.add_argument('folder',type=Path);parser.add_argument('--manifest',type=Path)
     parser.add_argument('--diagnostic-root',type=Path);parser.add_argument('--diagnostic-manifest',type=Path)
-    parser.add_argument('--control',type=Path);args=parser.parse_args()
+    parser.add_argument('--control',type=Path);parser.add_argument('--parent',type=Path)
+    parser.add_argument('--original-execution',type=Path);parser.add_argument('--continuation',type=Path)
+    args=parser.parse_args()
     if args.mode=='freeze':freeze(args.folder,args.diagnostic_root,args.diagnostic_manifest,args.control)
     elif args.mode=='batch':batch(args.folder,args.manifest)
-    else:print(json.dumps(audit(args.folder,args.manifest),sort_keys=True))
+    elif args.mode=='resume':batch(args.folder,args.manifest,continuation=args.continuation)
+    elif args.mode=='freeze-resume':freeze_resume(args.folder,args.manifest,args.parent,args.original_execution,args.control)
+    else:print(json.dumps(audit(args.folder,args.manifest,source_root=args.original_execution),sort_keys=True))
