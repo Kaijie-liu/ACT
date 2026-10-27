@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## B4 paired complete UNKNOWNs locate one remaining history 2026-10-27
+
+Real increment11since127:138settled=137native+1retainedpublicationERROR;62POSITIVE/72TIMEOUT/2UNKNOWN/2ERROR,69pairs,gain/loss2/0;PID1286669live.
+[Record](moe_aware_b4_records_20261027.json)`joint_unknown_review`:L3E8seed2/1776on/offUNKNOWN288.155/287.247s;both21948pruned+3verified+1unproved=21952,traversalcomplete.
+Samefinalhistory[(1,5),(6,7),(0,4)]remainsunknown;onV2TIMEOUT115.174sthenremainingcoupledBaB,offnonlinearBaB271.961s;no newquery/T1change.
+Frozen source/coverage/receipt auditpassedtwice6.089sincludingimports;output-extractionfaultsand7.307sprocesscostretained,0scientificreruns/numericreproof.
+Notenumerationfailure,provennonpositiveoptimumorUNSAFE;[interpretation](moe_aware_b4_20261026.md)preservesthisboundary.NextfixedB4/fullpairedanalysis.G1–G6OPEN.
+
+
 ## B4 fourth input block audited: no gain, extra shared-positive cost 2026-10-27
 
 Real increment8since118:126settled=125native+1retainedpublicationERROR;54POSITIVE/70TIMEOUT/2ERROR,63pairs,gain/loss2/0;PID1286669runninginput1776.

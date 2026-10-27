@@ -5533,17 +5533,350 @@
     }
   },
   "observed_latest": {
-    "settled": 126,
-    "native_ledgers": 125,
+    "settled": 138,
+    "native_ledgers": 137,
     "states": {
-      "POSITIVE": 54,
-      "TIMEOUT": 70,
-      "ERROR": 2
+      "POSITIVE": 62,
+      "TIMEOUT": 72,
+      "ERROR": 2,
+      "UNKNOWN": 2
     },
-    "complete_pairs": 63,
+    "complete_pairs": 69,
     "gain": 2,
     "loss": 0,
-    "active_at_snapshot": "main_verify_0126 L3E8_seed0/1776/on",
+    "active_at_snapshot": "main_verify_0138 R2E8_seed0/1776/on",
     "controller_pid": 1286669
+  },
+  "joint_unknown_review": {
+    "status": "PASS",
+    "object": "L3E8_seed2 / 1776",
+    "execution_commit": "9d8081c486e4c758438a52aaaddcdc4e2dd09f5b",
+    "manifest_sha256": "72023737a889717e4cf5c4f266b47b51b8d183f5067ae12ceefbcc4242452b24",
+    "rows": [
+      {
+        "id": "main_verify_0130",
+        "part": "main",
+        "model": "L3E8_seed2",
+        "index": 1776,
+        "rank": 4,
+        "arm": "on",
+        "status": "UNKNOWN",
+        "accepted": true,
+        "seconds": 288.15536501444876,
+        "coverage": {
+          "active": null,
+          "attempted": 4,
+          "expected": 21952,
+          "in_flight": 0,
+          "never_started": 0,
+          "prefix_attempts": 5,
+          "prefix_returns": 5,
+          "proof_complete": false,
+          "proof_unclosed": 1,
+          "pruned": 21948,
+          "returned": 4,
+          "returned_unproved": 1,
+          "traversal_complete": true,
+          "verified": 3
+        },
+        "guarantee": "NONE",
+        "histories": [
+          {
+            "status": "verified",
+            "stage": null,
+            "seconds": 8.790580194443464,
+            "history": [
+              [
+                1,
+                5
+              ],
+              [
+                0,
+                6
+              ],
+              [
+                0,
+                7
+              ]
+            ],
+            "cascade": {
+              "method": "M_A_HARD120_V2_THEN_REMAINING_COUPLED",
+              "phase_folder": "v2_history_0000",
+              "phase_seconds": 8.789886474609375,
+              "phase_status": "POSITIVE",
+              "source_id": "e2894071c3dcf94a9806d336fc6b829d327efa4f2d7f73f5bbe0bf6d4e1d7597",
+              "used_fallback": false
+            },
+            "endpoints": [
+              {
+                "variant": "V2_LO",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 1.9540366251021624
+              },
+              {
+                "variant": "V2_HI",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 1.743456870317459
+              }
+            ]
+          },
+          {
+            "status": "verified",
+            "stage": null,
+            "seconds": 8.991961535066366,
+            "history": [
+              [
+                1,
+                5
+              ],
+              [
+                3,
+                6
+              ],
+              [
+                0,
+                1
+              ]
+            ],
+            "cascade": {
+              "method": "M_A_HARD120_V2_THEN_REMAINING_COUPLED",
+              "phase_folder": "v2_history_0001",
+              "phase_seconds": 8.991387555375695,
+              "phase_status": "POSITIVE",
+              "source_id": "f344bb6e7e80a7c63bd9fe5a9b3eae4ecfd420f16d3cb0732a553f02cfe7ee69",
+              "used_fallback": false
+            },
+            "endpoints": [
+              {
+                "variant": "V2_LO",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 2.0169910080730915
+              },
+              {
+                "variant": "V2_HI",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 1.8009365368634462
+              }
+            ]
+          },
+          {
+            "status": "verified",
+            "stage": null,
+            "seconds": 9.044624527916312,
+            "history": [
+              [
+                1,
+                5
+              ],
+              [
+                3,
+                6
+              ],
+              [
+                0,
+                7
+              ]
+            ],
+            "cascade": {
+              "method": "M_A_HARD120_V2_THEN_REMAINING_COUPLED",
+              "phase_folder": "v2_history_0002",
+              "phase_seconds": 9.044077761471272,
+              "phase_status": "POSITIVE",
+              "source_id": "6a251792bf56b4892a09febdfd171dc7c6e797c39edf0623727f04ec6fec359b",
+              "used_fallback": false
+            },
+            "endpoints": [
+              {
+                "variant": "V2_LO",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 2.027444399893284
+              },
+              {
+                "variant": "V2_HI",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 1.773182574659586
+              }
+            ]
+          },
+          {
+            "status": "unknown",
+            "stage": "nonlinear_bab",
+            "seconds": 253.08586648851633,
+            "history": [
+              [
+                1,
+                5
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                0,
+                4
+              ]
+            ],
+            "cascade": {
+              "method": "M_A_HARD120_V2_THEN_REMAINING_COUPLED",
+              "phase_folder": "v2_history_0003",
+              "phase_seconds": 115.17353954352438,
+              "phase_status": "TIMEOUT",
+              "source_id": "c09f84b25ac12ee407a7eead2df694005ef1db4fb822a7ef519e5b6bc1e52bba",
+              "used_fallback": true
+            },
+            "endpoints": [
+              {
+                "variant": "V2_LO",
+                "status": "unknown",
+                "stage": "nonlinear_bab",
+                "seconds": 109.8682968262583
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "main_verify_0131",
+        "part": "main",
+        "model": "L3E8_seed2",
+        "index": 1776,
+        "rank": 4,
+        "arm": "off",
+        "status": "UNKNOWN",
+        "accepted": true,
+        "seconds": 287.2471857499331,
+        "coverage": {
+          "active": null,
+          "attempted": 4,
+          "expected": 21952,
+          "in_flight": 0,
+          "never_started": 0,
+          "prefix_attempts": 5,
+          "prefix_returns": 5,
+          "proof_complete": false,
+          "proof_unclosed": 1,
+          "pruned": 21948,
+          "returned": 4,
+          "returned_unproved": 1,
+          "traversal_complete": true,
+          "verified": 3
+        },
+        "guarantee": "NONE",
+        "histories": [
+          {
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 2.3598320838063955,
+            "history": [
+              [
+                1,
+                5
+              ],
+              [
+                0,
+                6
+              ],
+              [
+                0,
+                7
+              ]
+            ],
+            "cascade": null
+          },
+          {
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 2.2741774767637253,
+            "history": [
+              [
+                1,
+                5
+              ],
+              [
+                3,
+                6
+              ],
+              [
+                0,
+                1
+              ]
+            ],
+            "cascade": null
+          },
+          {
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 2.2419098652899265,
+            "history": [
+              [
+                1,
+                5
+              ],
+              [
+                3,
+                6
+              ],
+              [
+                0,
+                7
+              ]
+            ],
+            "cascade": null
+          },
+          {
+            "status": "unknown",
+            "stage": "nonlinear_bab",
+            "seconds": 271.9610611181706,
+            "history": [
+              [
+                1,
+                5
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                0,
+                4
+              ]
+            ],
+            "cascade": null
+          }
+        ]
+      }
+    ],
+    "files": {
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/main_verify_0130_ledger.json": "c8a43313d2b73e7286ac26b1f64cb8d7866d695559dd9dfba644940b411205b5",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/main_verify_0130_started.json": "0adb3ad16402f014f36c60bbb53ddc0098fde13e1c5d958fabdb680aabd00e35",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/main_verify_0130/request.json": "56b8bf879bcb0cfe1eb7a269416c4c81e6ce586e37f6af222635264e94e44658",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/main_verify_0130/terminal.json": "e0c8ebe00e21771ee1e57e6f2106a858159f444d159d66ab893e1e43b19ad181",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/main_verify_0130/outcome.json.gz": "023e866ddecd4cdfef703b5b448a86f962d0a49bb9752b8bdbad7d3b526b9947",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/main_verify_0131_ledger.json": "57be22a281ee6c1a8c53021e84c51bd4c80efefd925eda8c487c95f8fc17bb86",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/main_verify_0131_started.json": "c6fffd10cc15a94fede961af2fe04a864089e2bf677604b03cc2ce26f8048f1e",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/main_verify_0131/request.json": "daefbbbcc193635a4d5dd3fedbdc6dcf76cb3f3944bdae957e05a9ca22e6dc85",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/main_verify_0131/terminal.json": "f5a808f0614baf7d5c562d13c8439582d583033feee4ea43bf6d65021a3e446c",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/main_verify_0131/outcome.json.gz": "8144436763aa41ab5bb5592d2db75bbf7113efcef3efe8bb7e4bd5f08d76309e"
+    },
+    "source_and_structural_audit": true,
+    "numerical_bound_reproof": false,
+    "new_solver_or_model_calls": 0,
+    "audit_seconds_including_imports": [
+      3.0438315086066723,
+      3.0456526931375265
+    ],
+    "audit_process_wall_seconds": [
+      3.68469268,
+      3.622674421
+    ],
+    "audit_repetition_reason": "First audit passed but console import notices prevented tool-output JSON parsing; second also passed but its tool output was truncated. Original audit outputs retained in thread. This standard-library collection binds unchanged original ledgers and records both review costs; no scientific call repeated.",
+    "collection_seconds": 0.004051532596349716,
+    "interpretation": "Both original on-time UNKNOWNs finish the same conservative route traversal:21948pruned+3verified+1unproved=21952. Same final history remains unclosed after V2 timeout/remaining coupled fallback on, and nonlinear BaB off. This is not a route-enumeration failure, a certified nonpositive optimum, an UNSAFE, or a complete positive. No counterfactual budget claim or T1 retuning."
   }
 }
