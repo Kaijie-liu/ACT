@@ -27,7 +27,7 @@
   "source_models": 18,
   "excluded_count": 2329,
   "backend_identity": "40246f43aa290511811410e962b2db9e24f0467c76a2aa900aeb5f7685a6209a",
-  "scientific_complete_calls": 109,
+  "scientific_complete_calls": 110,
   "numerical_positive_complete_requests": 48,
   "source_complete_certificates": 0,
   "limits": "M-A-only test after both new mechanisms failed5a; not a successful three-mechanism algorithm claim; numerical results not G3 proof",
@@ -3901,5 +3901,54 @@
     "result_root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r2",
     "scope": "immutable copy and detached launch measured separately; control and audit carried by controller",
     "started_at": 1793065531.2919168
+  },
+  "continuation_first_receipt_review": {
+    "status": "PASS",
+    "row": {
+      "part": "main",
+      "model": "R2E8_seed1",
+      "index": 1754,
+      "rank": 3,
+      "arm": "on",
+      "status": "TIMEOUT",
+      "accepted": false,
+      "seconds": 288.3060115836561,
+      "coverage": null,
+      "guarantee": null
+    },
+    "session": {
+      "status": "ERROR",
+      "cleanup_status": "LEADER_REAPED_NO_LIVE_SESSION",
+      "cleanup_error": null,
+      "returncode": 124,
+      "run_deadline": 11914153.136082577,
+      "cleanup_deadline": 11914158.136082577,
+      "finished_at": 11914151.433328016,
+      "sampled_session_plus_caller_rss": null,
+      "remaining_live": null,
+      "execution_error": null
+    },
+    "files": {
+      "main_verify_0110_started.json": "cd8a91baf232187e82a108669072148e7536ab0c4a529564fc0bcb9c585b0ac2",
+      "main_verify_0110_ledger.json": "615838d7ce81678c5d6836e1fbd212ba0d0b6fac96123fa790d147ba43e47d21",
+      "main_verify_0110/request.json": "67a5d08598e31e6d8c1297dc2ede95ddc7d1a9f8655e4727a60085ccbad13922",
+      "main_verify_0110/session.json": "17a2f70501884b99eb8fa702ed4a6dde628f2157bc683442a1f508275000c620",
+      "main_verify_0110/terminal.json": "c6b9b30d649a1974e206c217b63c4239b4c04e543d7d22b40b4de8d745cdbd1f",
+      "start.json": "b6d515fe4f0abf4cd7fb9f7ae52ab4aeb2168df18e9f66ce940618c905c560c7",
+      "continuation.json": "cefa3d52683e34337b68addff8781a1f7f81521e59c3110747dc608dfd75ef04"
+    },
+    "review_seconds_including_imports": 5.23458619043231,
+    "solver_calls": 0,
+    "new_positive_verdicts": 0,
+    "observed_totals": {
+      "settled_attempts": 111,
+      "native_ledgers": 110,
+      "states": {
+        "POSITIVE": 48,
+        "TIMEOUT": 62,
+        "ERROR": 1
+      },
+      "new_solver_calls_for_review": 0
+    }
   }
 }

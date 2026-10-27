@@ -1,5 +1,13 @@
 # MoE project handoff — current entry point
 
+## B4 first repaired receipt accepted as timeout, queue continues 2026-10-27
+
+Real increment1TIMEOUT:111settled=110native(48POSITIVE/62TIMEOUT)+old1ERROR;main0111/offrunning,PID2993596live.
+[Stage record](moe_aware_b4_records_20261027.json)`continuation_first_receipt_review`:0110R2E8seed1/1754/on288.306s,return124,cleanupreaped/no live session,execution/cleanuperrorsnull.
+Immutable1d0a02ee3/sourcebinding/receipt auditPASS5.235s includingimports,separate0solvercalls;no lateacceptance/newpositive/G3claim.
+Same300s/T1;repairtails12/10/5only,old0109notrerun;remainingfixedqueuecontinues.Next completeB4pairedanalysis,not furtherinterfacework.G1–G6OPEN.
+
+
 ## B4 unexecuted suffix running from repaired immutable copy 2026-10-27
 
 Real increment0completed/1started:prior110settled retained;newmain0110=R2E8seed1/1754/on;failed0109notretried.
