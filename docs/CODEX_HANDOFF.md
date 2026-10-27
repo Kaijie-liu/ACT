@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## B4 third complete input block: shared positives and extra cascade cost 2026-10-27
+
+Real increment6 since prior84:90/1080calls,45completepairs,gain/loss2/0;PID710019continues rank3,all3archived blocks audited.
+[Record](moe_aware_b4_records_20261027.json)`third_input_review`:1748 both9POSITIVE/6TIMEOUT,no publicreplay conflict;30frozen source/engine/coverage/deadline audits PASS.
+Allrequest sums off/on1948.182/2213.607s,medians28.879/79.723;R3E8seed1 sharedpositive,not a residual-family gain.
+On20verifiedhistories:19V2closures/38initialpositive endpoints,1coupled fallback after V2TIMEOUT;L2E8seed1 fullon192.573s/off78.134s,failedV2endpoint notpositive.
+Review3.703sincludingimports,wholeprocess4.382s separatelycharged,no model/solvercall/numericalreproof;[table](moe_aware_b4_20261026.md) now3of20blocks,no interimbootstrap/admission.
+Next complete originalB4/finalpairedanalysis;T1/configuration/quotas unchanged,G1–G6OPEN.
+
 ## Current manuscript aligned with completed strong-baseline evidence 2026-10-27
 
 Real increment3 since prior80:liveB4 83/1080,41completepairs,gain/loss2/0;PID710019continues fixedqueue,no newquery from thisedit.
