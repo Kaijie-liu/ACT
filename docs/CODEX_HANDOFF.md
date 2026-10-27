@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## B4 fifth input block complete: one gain, concentrated cost benefit 2026-10-27
+
+Real increment4since146:150settled=149native+1retainedpublicationERROR;67POSITIVE/79TIMEOUT/2UNKNOWN/2ERROR,75pairs,gain/loss3/0;PID1286669running1778.
+[Record](moe_aware_b4_records_20261027.json)`fifth_input_review`:1776off9POS/1UNKNOWN/5TO,on10/1/4,1gainR2E8seed2/0loss;all30receipt/source/coverageauditsPASS5.075s.
+Allcostoff/on1823.640/1700.335s,median15.229/29.096;shared9positivecost94.879/239.530s:singlehardgainoffsetsextracost,notuniversalacceleration.
+On18verifiedhistories/36initialendpoints/nofallback;off17initialhistories. PublicPGDL3E8seed2replayedunsafe,originalarmsUNKNOWNretained,no positiveconflict orarmcredit.
+[Table](moe_aware_b4_20261026.md)5of20blocks;0newsolver/model/replay,5.882sprocessseparate,nointerimbootstrap/admission.NextfixedB4.G1–G6OPEN.
+
+
 ## B4 first residual-family paired gain audited 2026-10-27
 
 Real increment3since141:144settled=143native+1retainedpublicationERROR;65POSITIVE/75TIMEOUT/2UNKNOWN/2ERROR,72pairs,gain/loss3/0;PID1286669live.
