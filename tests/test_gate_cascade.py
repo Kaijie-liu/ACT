@@ -2,11 +2,13 @@
 import copy
 import json
 import os
+import signal
 from pathlib import Path
 import sys
 import tempfile
 import time
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT/'scripts'), str(ROOT/'tests')]
@@ -96,6 +98,58 @@ class CascadeTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 execute([], root/'bad.log', run_deadline=before+2, cleanup_deadline=before+2,
                     env={}, rss_limit=None, owner_session=os.getsid(0)+1000000, development_policy=C.POLICY)
+
+    def test_deadline_alarm_is_timeout_only_after_worker_cutoff_and_cleanup(self):
+        receipt=dict(status='ERROR',returncode=-signal.SIGALRM,error=None,
+            cleanup_status='LEADER_REAPED_NO_LIVE_GROUP',exit_observed_at=100.,finished_at=100.1)
+        self.assertTrue(C.deadline_alarm(receipt,100.))
+        for change in (dict(exit_observed_at=99.9),dict(exit_observed_at=None),
+            dict(exit_observed_at=float('nan')),dict(finished_at=99.9),dict(returncode=-signal.SIGSEGV),
+            dict(returncode=-signal.SIGKILL),dict(returncode=1),dict(status='COMPLETED'),
+            dict(error='observation failed'),dict(cleanup_status='CLEANUP_INCOMPLETE')):
+            self.assertFalse(C.deadline_alarm(dict(receipt,**change),100.))
+
+    def test_native_default_alarm_keeps_owned_cleanup_and_discards_result(self):
+        from scoped_proof.owned_bounded import execute
+        with tempfile.TemporaryDirectory(dir=ROOT.parent/'results') as tmp:
+            before=time.monotonic();cutoff=before+.4;root=Path(tmp)
+            code=('import signal,time,sys; signal.signal(signal.SIGALRM,signal.SIG_DFL); '
+                'signal.setitimer(signal.ITIMER_REAL,max(.001,float(sys.argv[1])-time.monotonic())); '
+                'time.sleep(10)')
+            receipt=execute([sys.executable,'-I','-S','-c',code,str(cutoff)],root/'alarm.log',
+                run_deadline=before+2,cleanup_deadline=before+4,env=dict(os.environ),rss_limit=None,
+                owner_session=os.getsid(0),development_policy=C.POLICY)
+            self.assertEqual(receipt['returncode'],-signal.SIGALRM)
+            self.assertTrue(C.deadline_alarm(receipt,cutoff))
+            self.assertFalse(receipt['remaining_group']['live'])
+            self.assertLess(time.monotonic()-before,4.)
+
+    def test_alarm_phase_discards_even_published_positive_and_keeps_errors(self):
+        from test_gate_decoupling import prefix_records
+        with tempfile.TemporaryDirectory(dir=ROOT.parent/'results') as tmp:
+            root=Path(tmp);history=((0,1),(0,1));records=prefix_records(history)
+            source=dict(model=dict(architecture=dict(experts=3)))
+            for name,offset,cleanup in (('late',.1,'LEADER_REAPED_NO_LIVE_GROUP'),
+                ('early',-.1,'LEADER_REAPED_NO_LIVE_GROUP'),('unclean',.1,'CLEANUP_INCOMPLETE')):
+                child=root/name
+                def fake_execute(*args,**kwargs):
+                    q=load(child/'phase_request.json');cutoff=q['worker_deadline']
+                    self.assertEqual(kwargs['run_deadline'],q['phase_deadline']-4)
+                    self.assertEqual(kwargs['cleanup_deadline'],q['phase_deadline']-2)
+                    # Deliberately invalid positive-looking files must not be read.
+                    (child/'outcome.json').write_text(json.dumps(dict(closed=True)))
+                    (child/'published.json').write_text(json.dumps(dict(clock=cutoff-1)))
+                    return dict(status='ERROR',returncode=-signal.SIGALRM,error=None,
+                        cleanup_status=cleanup,exit_observed_at=cutoff+offset,finished_at=cutoff+.2)
+                with patch.object(C,'execute',side_effect=fake_execute):
+                    args=(child,source,history,records,2,'a'*64,time.monotonic()+40,C.W.CAP)
+                    if name=='late':
+                        result=C.run_phase(*args,phase_seconds=12)
+                        self.assertEqual(result['status'],'TIMEOUT')
+                        self.assertFalse(result['accepted']);self.assertIsNone(result['evidence'])
+                        self.assertLess(result['phase_deadline'],result['request_deadline'])
+                    else:
+                        with self.assertRaises((RuntimeError,ValueError)):C.run_phase(*args,phase_seconds=12)
 
     @unittest.skipUnless(os.environ.get('CASCADE_NATIVE') == '1', 'isolated author engine synthetic integration')
     def test_native_complete_request_and_phase_receipt(self):

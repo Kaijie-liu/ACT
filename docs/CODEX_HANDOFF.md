@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## B4 deadline-alarm tooling error retained; minimal fallback repair controlled 2026-10-27
+
+Real increment6since112:118settled=117native+old1publicationERROR;48POSITIVE/68TIMEOUT/2ERROR,59pairs,gain/loss2/0;R2controller2993596exited.
+[Record](moe_aware_b4_records_20261027.json)`alarm_continuation_review`:0117R3E8seed1/1754/on ERROR123.141s,local-SIGALRMobservedafterworkerdeadline,groupcleanupcomplete;partialendpointsverified/unknown,closedfalse.
+Newhandlingdiscardsallphaseevidence for thisdeadline-alarmcase and permits originalremaining-timefallback;early/other signals/observation/cleanup errorsstillfail. No causeuniquelyinferred.
+6ordinarycontrolsPASS8.170s,0model/solvercalls;118prefixattempts audited,old0109/0117notretried;T1/300s/math/numericgatesandR7unchanged.
+Binding615ab8fe starts mainindex118;main23101.986scarried,allfailed/control/artifactbytesretained. OriginalGRAY andMB/MCnegativeunchanged.
+Next commit/push,newimmutablecopy/freshresources,continue remainingB4;no newmechanism.G1–G6OPEN.
+
+
 ## B4 first repaired receipt accepted as timeout, queue continues 2026-10-27
 
 Real increment1TIMEOUT:111settled=110native(48POSITIVE/62TIMEOUT)+old1ERROR;main0111/offrunning,PID2993596live.

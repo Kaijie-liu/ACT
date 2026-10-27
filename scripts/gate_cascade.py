@@ -10,6 +10,7 @@ import argparse
 import json
 import math
 import os
+import signal
 from pathlib import Path
 import sys
 import traceback
@@ -22,6 +23,22 @@ from scoped_proof.owned_bounded import execute
 from scoped_source.development_work import POLICY
 
 T1 = 120.
+
+
+def deadline_alarm(receipt, worker_deadline):
+    """A deadline SIGALRM is a discarded phase, never accepted evidence.
+
+    Native/interpreter teardown can leave the timer with its default action.
+    The saved receipt must locate its exit at/after this worker's own cutoff;
+    an early signal or failed group cleanup remains a tooling error.
+    """
+    observed = receipt.get('exit_observed_at')
+    return (receipt.get('status') == 'ERROR'
+        and receipt.get('returncode') == -signal.SIGALRM
+        and receipt.get('error') is None
+        and receipt.get('cleanup_status') == 'LEADER_REAPED_NO_LIVE_GROUP'
+        and isinstance(observed, (float, int)) and math.isfinite(observed)
+        and worker_deadline <= observed <= receipt.get('finished_at', float('-inf')))
 
 
 def identity(source_request, history, records, backend_identity, margin_branch=None):
@@ -193,7 +210,7 @@ def run_phase(folder, source_request, history, records, properties, backend_iden
             accepted = True; status = value['status']
         else:
             status = 'TIMEOUT'
-    elif receipt['returncode'] == 124:
+    elif receipt['returncode'] == 124 or deadline_alarm(receipt, request['worker_deadline']):
         status = 'TIMEOUT'
     elif status != 'TIMEOUT':
         raise RuntimeError('bounded history phase tool error; retain evidence before repair')
