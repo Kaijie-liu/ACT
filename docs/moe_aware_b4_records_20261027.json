@@ -27,8 +27,8 @@
   "source_models": 18,
   "excluded_count": 2329,
   "backend_identity": "40246f43aa290511811410e962b2db9e24f0467c76a2aa900aeb5f7685a6209a",
-  "scientific_complete_calls": 117,
-  "numerical_positive_complete_requests": 48,
+  "scientific_complete_calls": 125,
+  "numerical_positive_complete_requests": 54,
   "source_complete_certificates": 0,
   "limits": "M-A-only test after both new mechanisms failed5a; not a successful three-mechanism algorithm claim; numerical results not G3 proof",
   "launch": {
@@ -4103,5 +4103,1447 @@
     "result_root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3",
     "scope": "immutable copy and detached launch separately measured; controller carries original budgets and failed attempts",
     "started_at": 1793068257.3122826
+  },
+  "fourth_input_review": {
+    "status": "PASS",
+    "index": 1754,
+    "rank": 3,
+    "attempts": 30,
+    "native_ledgers": 29,
+    "retained_publication_errors": 1,
+    "states": {
+      "off": {
+        "TIMEOUT": 11,
+        "POSITIVE": 4
+      },
+      "on": {
+        "TIMEOUT": 9,
+        "POSITIVE": 4,
+        "ERROR": 2
+      }
+    },
+    "gained": [],
+    "lost": [],
+    "shared": [
+      "L3E8_seed0",
+      "L2E16_seed0",
+      "L2E16_seed1",
+      "L2E16_seed2"
+    ],
+    "cost": {
+      "off": {
+        "total_seconds": 3477.0566541962326,
+        "median_seconds": 288.4215426594019,
+        "shared_positive_seconds": 262.2494620792568
+      },
+      "on": {
+        "total_seconds": 3551.7944410610944,
+        "median_seconds": 288.3214371725917,
+        "shared_positive_seconds": 498.1189683061093
+      }
+    },
+    "rows": [
+      {
+        "part": "main",
+        "model": "L2E8_seed0",
+        "index": 1754,
+        "rank": 3,
+        "arm": "on",
+        "status": "TIMEOUT",
+        "accepted": false,
+        "seconds": 295.24888766370714,
+        "coverage": null,
+        "guarantee": null,
+        "execution_commit": "4a93175c5044528a3e7a5f9c4f6a964621fe8010",
+        "timing_reserve": [
+          6,
+          4,
+          2
+        ]
+      },
+      {
+        "part": "main",
+        "model": "L2E8_seed0",
+        "index": 1754,
+        "rank": 3,
+        "arm": "off",
+        "status": "TIMEOUT",
+        "accepted": false,
+        "seconds": 295.36409029364586,
+        "coverage": null,
+        "guarantee": null,
+        "execution_commit": "4a93175c5044528a3e7a5f9c4f6a964621fe8010",
+        "timing_reserve": [
+          6,
+          4,
+          2
+        ]
+      },
+      {
+        "part": "main",
+        "model": "L2E8_seed1",
+        "index": 1754,
+        "rank": 3,
+        "arm": "off",
+        "status": "TIMEOUT",
+        "accepted": false,
+        "seconds": 295.6633814945817,
+        "coverage": null,
+        "guarantee": null,
+        "execution_commit": "4a93175c5044528a3e7a5f9c4f6a964621fe8010",
+        "timing_reserve": [
+          6,
+          4,
+          2
+        ]
+      },
+      {
+        "part": "main",
+        "model": "L2E8_seed1",
+        "index": 1754,
+        "rank": 3,
+        "arm": "on",
+        "status": "TIMEOUT",
+        "accepted": false,
+        "seconds": 294.57407913915813,
+        "coverage": null,
+        "guarantee": null,
+        "execution_commit": "4a93175c5044528a3e7a5f9c4f6a964621fe8010",
+        "timing_reserve": [
+          6,
+          4,
+          2
+        ]
+      },
+      {
+        "part": "main",
+        "model": "L2E8_seed2",
+        "index": 1754,
+        "rank": 3,
+        "arm": "on",
+        "status": "TIMEOUT",
+        "accepted": false,
+        "seconds": 295.23032538592815,
+        "coverage": null,
+        "guarantee": null,
+        "execution_commit": "4a93175c5044528a3e7a5f9c4f6a964621fe8010",
+        "timing_reserve": [
+          6,
+          4,
+          2
+        ]
+      },
+      {
+        "part": "main",
+        "model": "L2E8_seed2",
+        "index": 1754,
+        "rank": 3,
+        "arm": "off",
+        "status": "TIMEOUT",
+        "accepted": false,
+        "seconds": 295.37241995707154,
+        "coverage": null,
+        "guarantee": null,
+        "execution_commit": "4a93175c5044528a3e7a5f9c4f6a964621fe8010",
+        "timing_reserve": [
+          6,
+          4,
+          2
+        ]
+      },
+      {
+        "part": "main",
+        "model": "L3E8_seed0",
+        "index": 1754,
+        "rank": 3,
+        "arm": "off",
+        "status": "POSITIVE",
+        "accepted": true,
+        "seconds": 47.183770444244146,
+        "coverage": {
+          "active": null,
+          "attempted": 2,
+          "expected": 21952,
+          "in_flight": 0,
+          "never_started": 0,
+          "prefix_attempts": 4,
+          "prefix_returns": 4,
+          "proof_complete": true,
+          "proof_unclosed": 0,
+          "pruned": 21950,
+          "returned": 2,
+          "returned_unproved": 0,
+          "traversal_complete": true,
+          "verified": 2
+        },
+        "guarantee": "GENBAB_NUMERICAL_FILTER",
+        "execution_commit": "4a93175c5044528a3e7a5f9c4f6a964621fe8010",
+        "timing_reserve": [
+          6,
+          4,
+          2
+        ]
+      },
+      {
+        "part": "main",
+        "model": "L3E8_seed0",
+        "index": 1754,
+        "rank": 3,
+        "arm": "on",
+        "status": "POSITIVE",
+        "accepted": true,
+        "seconds": 94.69966624863446,
+        "coverage": {
+          "active": null,
+          "attempted": 2,
+          "expected": 21952,
+          "in_flight": 0,
+          "never_started": 0,
+          "prefix_attempts": 4,
+          "prefix_returns": 4,
+          "proof_complete": true,
+          "proof_unclosed": 0,
+          "pruned": 21950,
+          "returned": 2,
+          "returned_unproved": 0,
+          "traversal_complete": true,
+          "verified": 2
+        },
+        "guarantee": "GENBAB_NUMERICAL_FILTER",
+        "execution_commit": "4a93175c5044528a3e7a5f9c4f6a964621fe8010",
+        "timing_reserve": [
+          6,
+          4,
+          2
+        ]
+      },
+      {
+        "part": "main",
+        "model": "L3E8_seed1",
+        "index": 1754,
+        "rank": 3,
+        "arm": "on",
+        "status": "TIMEOUT",
+        "accepted": false,
+        "seconds": 295.30057724937797,
+        "coverage": null,
+        "guarantee": null,
+        "execution_commit": "4a93175c5044528a3e7a5f9c4f6a964621fe8010",
+        "timing_reserve": [
+          6,
+          4,
+          2
+        ]
+      },
+      {
+        "part": "main",
+        "model": "L3E8_seed1",
+        "index": 1754,
+        "rank": 3,
+        "arm": "off",
+        "status": "TIMEOUT",
+        "accepted": false,
+        "seconds": 295.3578736335039,
+        "coverage": null,
+        "guarantee": null,
+        "execution_commit": "4a93175c5044528a3e7a5f9c4f6a964621fe8010",
+        "timing_reserve": [
+          6,
+          4,
+          2
+        ]
+      },
+      {
+        "part": "main",
+        "model": "L3E8_seed2",
+        "index": 1754,
+        "rank": 3,
+        "arm": "off",
+        "status": "TIMEOUT",
+        "accepted": false,
+        "seconds": 295.5825777631253,
+        "coverage": null,
+        "guarantee": null,
+        "execution_commit": "4a93175c5044528a3e7a5f9c4f6a964621fe8010",
+        "timing_reserve": [
+          6,
+          4,
+          2
+        ]
+      },
+      {
+        "part": "main",
+        "model": "L3E8_seed2",
+        "index": 1754,
+        "rank": 3,
+        "arm": "on",
+        "status": "TIMEOUT",
+        "accepted": false,
+        "seconds": 295.06214060261846,
+        "coverage": null,
+        "guarantee": null,
+        "execution_commit": "4a93175c5044528a3e7a5f9c4f6a964621fe8010",
+        "timing_reserve": [
+          6,
+          4,
+          2
+        ]
+      },
+      {
+        "part": "main",
+        "model": "L2E16_seed0",
+        "index": 1754,
+        "rank": 3,
+        "arm": "on",
+        "status": "POSITIVE",
+        "accepted": true,
+        "seconds": 110.35492362082005,
+        "coverage": {
+          "active": null,
+          "attempted": 2,
+          "expected": 14400,
+          "in_flight": 0,
+          "never_started": 0,
+          "prefix_attempts": 2,
+          "prefix_returns": 2,
+          "proof_complete": true,
+          "proof_unclosed": 0,
+          "pruned": 14398,
+          "returned": 2,
+          "returned_unproved": 0,
+          "traversal_complete": true,
+          "verified": 2
+        },
+        "guarantee": "GENBAB_NUMERICAL_FILTER",
+        "execution_commit": "4a93175c5044528a3e7a5f9c4f6a964621fe8010",
+        "timing_reserve": [
+          6,
+          4,
+          2
+        ]
+      },
+      {
+        "part": "main",
+        "model": "L2E16_seed0",
+        "index": 1754,
+        "rank": 3,
+        "arm": "off",
+        "status": "POSITIVE",
+        "accepted": true,
+        "seconds": 40.13373513892293,
+        "coverage": {
+          "active": null,
+          "attempted": 2,
+          "expected": 14400,
+          "in_flight": 0,
+          "never_started": 0,
+          "prefix_attempts": 2,
+          "prefix_returns": 2,
+          "proof_complete": true,
+          "proof_unclosed": 0,
+          "pruned": 14398,
+          "returned": 2,
+          "returned_unproved": 0,
+          "traversal_complete": true,
+          "verified": 2
+        },
+        "guarantee": "GENBAB_NUMERICAL_FILTER",
+        "execution_commit": "4a93175c5044528a3e7a5f9c4f6a964621fe8010",
+        "timing_reserve": [
+          6,
+          4,
+          2
+        ]
+      },
+      {
+        "part": "main",
+        "model": "L2E16_seed1",
+        "index": 1754,
+        "rank": 3,
+        "arm": "off",
+        "status": "POSITIVE",
+        "accepted": true,
+        "seconds": 82.51457305252552,
+        "coverage": {
+          "active": null,
+          "attempted": 2,
+          "expected": 14400,
+          "in_flight": 0,
+          "never_started": 0,
+          "prefix_attempts": 2,
+          "prefix_returns": 2,
+          "proof_complete": true,
+          "proof_unclosed": 0,
+          "pruned": 14398,
+          "returned": 2,
+          "returned_unproved": 0,
+          "traversal_complete": true,
+          "verified": 2
+        },
+        "guarantee": "GENBAB_NUMERICAL_FILTER",
+        "execution_commit": "4a93175c5044528a3e7a5f9c4f6a964621fe8010",
+        "timing_reserve": [
+          6,
+          4,
+          2
+        ]
+      },
+      {
+        "part": "main",
+        "model": "L2E16_seed1",
+        "index": 1754,
+        "rank": 3,
+        "arm": "on",
+        "status": "POSITIVE",
+        "accepted": true,
+        "seconds": 134.68903387896717,
+        "coverage": {
+          "active": null,
+          "attempted": 2,
+          "expected": 14400,
+          "in_flight": 0,
+          "never_started": 0,
+          "prefix_attempts": 2,
+          "prefix_returns": 2,
+          "proof_complete": true,
+          "proof_unclosed": 0,
+          "pruned": 14398,
+          "returned": 2,
+          "returned_unproved": 0,
+          "traversal_complete": true,
+          "verified": 2
+        },
+        "guarantee": "GENBAB_NUMERICAL_FILTER",
+        "execution_commit": "4a93175c5044528a3e7a5f9c4f6a964621fe8010",
+        "timing_reserve": [
+          6,
+          4,
+          2
+        ]
+      },
+      {
+        "part": "main",
+        "model": "L2E16_seed2",
+        "index": 1754,
+        "rank": 3,
+        "arm": "on",
+        "status": "POSITIVE",
+        "accepted": true,
+        "seconds": 158.37534455768764,
+        "coverage": {
+          "active": null,
+          "attempted": 2,
+          "expected": 14400,
+          "in_flight": 0,
+          "never_started": 0,
+          "prefix_attempts": 2,
+          "prefix_returns": 2,
+          "proof_complete": true,
+          "proof_unclosed": 0,
+          "pruned": 14398,
+          "returned": 2,
+          "returned_unproved": 0,
+          "traversal_complete": true,
+          "verified": 2
+        },
+        "guarantee": "GENBAB_NUMERICAL_FILTER",
+        "execution_commit": "4a93175c5044528a3e7a5f9c4f6a964621fe8010",
+        "timing_reserve": [
+          6,
+          4,
+          2
+        ]
+      },
+      {
+        "part": "main",
+        "model": "L2E16_seed2",
+        "index": 1754,
+        "rank": 3,
+        "arm": "off",
+        "status": "POSITIVE",
+        "accepted": true,
+        "seconds": 92.41738344356418,
+        "coverage": {
+          "active": null,
+          "attempted": 2,
+          "expected": 14400,
+          "in_flight": 0,
+          "never_started": 0,
+          "prefix_attempts": 2,
+          "prefix_returns": 2,
+          "proof_complete": true,
+          "proof_unclosed": 0,
+          "pruned": 14398,
+          "returned": 2,
+          "returned_unproved": 0,
+          "traversal_complete": true,
+          "verified": 2
+        },
+        "guarantee": "GENBAB_NUMERICAL_FILTER",
+        "execution_commit": "4a93175c5044528a3e7a5f9c4f6a964621fe8010",
+        "timing_reserve": [
+          6,
+          4,
+          2
+        ]
+      },
+      {
+        "part": "main",
+        "model": "R2E8_seed0",
+        "index": 1754,
+        "rank": 3,
+        "arm": "off",
+        "status": "TIMEOUT",
+        "accepted": false,
+        "seconds": 295.5711949560791,
+        "coverage": null,
+        "guarantee": null,
+        "execution_commit": "4a93175c5044528a3e7a5f9c4f6a964621fe8010",
+        "timing_reserve": [
+          6,
+          4,
+          2
+        ]
+      },
+      {
+        "part": "main",
+        "model": "R2E8_seed0",
+        "index": 1754,
+        "rank": 3,
+        "arm": "on",
+        "status": "ERROR",
+        "accepted": false,
+        "seconds": 301.57856797613204,
+        "coverage": null,
+        "guarantee": null,
+        "failure_kind": "ValueError",
+        "failure_message": "complete request budget exceeded",
+        "observed_terminal_status": "TIMEOUT",
+        "accounting": "OFFLINE_TOOL_FAILURE_UPPER_COST_NOT_ONLINE_ACCEPTANCE",
+        "original_terminal_sha256": "64eef49b6f28724b1dcebd48a9af9f4b73a23ccba354f9b94f24cb948a2ab33a",
+        "failed_start_sha256": "72c41971601b1a25d15a4156a2574e4ad10195fa852c604a24b25ac379297ecc",
+        "execution_commit": "4a93175c5044528a3e7a5f9c4f6a964621fe8010",
+        "timing_reserve": [
+          6,
+          4,
+          2
+        ]
+      },
+      {
+        "part": "main",
+        "model": "R2E8_seed1",
+        "index": 1754,
+        "rank": 3,
+        "arm": "on",
+        "status": "TIMEOUT",
+        "accepted": false,
+        "seconds": 288.3060115836561,
+        "coverage": null,
+        "guarantee": null,
+        "execution_commit": "1d0a02ee3e30a5fffba3ad062e595294623b9a55",
+        "timing_reserve": [
+          12,
+          10,
+          5
+        ]
+      },
+      {
+        "part": "main",
+        "model": "R2E8_seed1",
+        "index": 1754,
+        "rank": 3,
+        "arm": "off",
+        "status": "TIMEOUT",
+        "accepted": false,
+        "seconds": 288.5451148916036,
+        "coverage": null,
+        "guarantee": null,
+        "execution_commit": "1d0a02ee3e30a5fffba3ad062e595294623b9a55",
+        "timing_reserve": [
+          12,
+          10,
+          5
+        ]
+      },
+      {
+        "part": "main",
+        "model": "R2E8_seed2",
+        "index": 1754,
+        "rank": 3,
+        "arm": "off",
+        "status": "TIMEOUT",
+        "accepted": false,
+        "seconds": 288.4215426594019,
+        "coverage": null,
+        "guarantee": null,
+        "execution_commit": "1d0a02ee3e30a5fffba3ad062e595294623b9a55",
+        "timing_reserve": [
+          12,
+          10,
+          5
+        ]
+      },
+      {
+        "part": "main",
+        "model": "R2E8_seed2",
+        "index": 1754,
+        "rank": 3,
+        "arm": "on",
+        "status": "TIMEOUT",
+        "accepted": false,
+        "seconds": 288.31131294742227,
+        "coverage": null,
+        "guarantee": null,
+        "execution_commit": "1d0a02ee3e30a5fffba3ad062e595294623b9a55",
+        "timing_reserve": [
+          12,
+          10,
+          5
+        ]
+      },
+      {
+        "part": "main",
+        "model": "R3E8_seed0",
+        "index": 1754,
+        "rank": 3,
+        "arm": "on",
+        "status": "TIMEOUT",
+        "accepted": false,
+        "seconds": 288.6007599681616,
+        "coverage": null,
+        "guarantee": null,
+        "execution_commit": "1d0a02ee3e30a5fffba3ad062e595294623b9a55",
+        "timing_reserve": [
+          12,
+          10,
+          5
+        ]
+      },
+      {
+        "part": "main",
+        "model": "R3E8_seed0",
+        "index": 1754,
+        "rank": 3,
+        "arm": "off",
+        "status": "TIMEOUT",
+        "accepted": false,
+        "seconds": 288.2778206523508,
+        "coverage": null,
+        "guarantee": null,
+        "execution_commit": "1d0a02ee3e30a5fffba3ad062e595294623b9a55",
+        "timing_reserve": [
+          12,
+          10,
+          5
+        ]
+      },
+      {
+        "part": "main",
+        "model": "R3E8_seed1",
+        "index": 1754,
+        "rank": 3,
+        "arm": "off",
+        "status": "TIMEOUT",
+        "accepted": false,
+        "seconds": 288.2994980234653,
+        "coverage": null,
+        "guarantee": null,
+        "execution_commit": "1d0a02ee3e30a5fffba3ad062e595294623b9a55",
+        "timing_reserve": [
+          12,
+          10,
+          5
+        ]
+      },
+      {
+        "part": "main",
+        "model": "R3E8_seed1",
+        "index": 1754,
+        "rank": 3,
+        "arm": "on",
+        "status": "ERROR",
+        "accepted": false,
+        "seconds": 123.14137306623161,
+        "coverage": null,
+        "guarantee": null,
+        "execution_commit": "1d0a02ee3e30a5fffba3ad062e595294623b9a55",
+        "timing_reserve": [
+          12,
+          10,
+          5
+        ]
+      },
+      {
+        "part": "main",
+        "model": "R3E8_seed2",
+        "index": 1754,
+        "rank": 3,
+        "arm": "on",
+        "status": "TIMEOUT",
+        "accepted": false,
+        "seconds": 288.3214371725917,
+        "coverage": null,
+        "guarantee": null,
+        "execution_commit": "9d8081c486e4c758438a52aaaddcdc4e2dd09f5b",
+        "timing_reserve": [
+          12,
+          10,
+          5
+        ]
+      },
+      {
+        "part": "main",
+        "model": "R3E8_seed2",
+        "index": 1754,
+        "rank": 3,
+        "arm": "off",
+        "status": "TIMEOUT",
+        "accepted": false,
+        "seconds": 288.3516777921468,
+        "coverage": null,
+        "guarantee": null,
+        "execution_commit": "9d8081c486e4c758438a52aaaddcdc4e2dd09f5b",
+        "timing_reserve": [
+          12,
+          10,
+          5
+        ]
+      }
+    ],
+    "bindings": [
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1",
+        "name": "main_verify_0090",
+        "ledger_sha256": "e7137617001531778aa349385e40045755904542fbc32f8f050ab14507a893eb",
+        "terminal_sha256": "bde6613ffb08b2ec08253a555897698478d6cdca23c5298a2576bfdbe1716de7"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1",
+        "name": "main_verify_0091",
+        "ledger_sha256": "864658be56fc4b1f1d3bcd434af09e1ed4a025df50c33a7a2065feff74e53fcf",
+        "terminal_sha256": "29febe2831170f3d971dc0e2b75178414e8158af8870f3091834cb4c29e4426a"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1",
+        "name": "main_verify_0092",
+        "ledger_sha256": "12b349fc45848bbed7ede17f60fea860ef03976f4200d0551d5a7625d7aa3f47",
+        "terminal_sha256": "9cb6272bb7c755a6e2e6561a3074290fb6f05d40cc8697ef198ae2f3e70a9066"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1",
+        "name": "main_verify_0093",
+        "ledger_sha256": "5fca97ba2f77e6f2be77ab22e39e62e3261f7b1eb39e0f4a6294124cf5646b4b",
+        "terminal_sha256": "7b2edfb4e51e3790b5774adc70aded14faf11cee148d1e6f5c457bca87118f2b"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1",
+        "name": "main_verify_0094",
+        "ledger_sha256": "257cda2290f4e0e21f3d4a9925a399f17c541c49e3c3b5a3c864b4134a997aaf",
+        "terminal_sha256": "fd4f138b33cbc309f5e157fa74c2b6526576d8dc9c7bead371e9cd30d79560cb"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1",
+        "name": "main_verify_0095",
+        "ledger_sha256": "c7a3f3c899718884f0c108ee1e18924d0d38d76e0292e2ea83731e356b2bcd33",
+        "terminal_sha256": "a8f94de0021379b63a75aaa35d29e37dd974e35f6b9ab7039d9f237f81e8c8f9"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1",
+        "name": "main_verify_0096",
+        "ledger_sha256": "ff1f1680f55e0aa716754e5192ae478c03cf609cd0f06ab6e259efac8770cbbb",
+        "terminal_sha256": "f616c15421c13581bede19cfa2cb7031e97ca70eda065f29faf86321d2a604e2"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1",
+        "name": "main_verify_0097",
+        "ledger_sha256": "977d03b423a0d0e12abd38a1ad58f10a8653d359dcdb610bac60e73eb4688a31",
+        "terminal_sha256": "b38f27b6a95191687573e368e096c2f90350d739b22e0bbee20455e2e2606ea6"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1",
+        "name": "main_verify_0098",
+        "ledger_sha256": "fff100bce3fcfe2dcbe37e6b02565e8980f3b628bf201fa42f4961b6b6c1cd5b",
+        "terminal_sha256": "913091759fe41a41d9aa82a2fe91dcf790a99ece56f2c25670749ec7f9dd5ce0"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1",
+        "name": "main_verify_0099",
+        "ledger_sha256": "976c14b648029be4f775c2f165a477e9cd97cac22a93b532fb48f89803616aa9",
+        "terminal_sha256": "90439b7aa899063769c5979f0c0698df19130cd1efd8f8fe4fe7a4b04269f87d"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1",
+        "name": "main_verify_0100",
+        "ledger_sha256": "3d8e85d530b4c81e222a34b215a46ea67a9dc02e6a20fa00f8e47acbe3e4ce60",
+        "terminal_sha256": "3f5253b093287aea2b6503f8f2345e3762af7751b2ebc38e1fe8611f7576def9"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1",
+        "name": "main_verify_0101",
+        "ledger_sha256": "b5cffbaf67ffc29b8c894c37d306229578ee2aa307dcbf5d8d5f3d726e08fb40",
+        "terminal_sha256": "122db01f1828dd7a59f2d01d657ec7f7728ed9fea26ad30160d72e602a84d51b"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1",
+        "name": "main_verify_0102",
+        "ledger_sha256": "38e8dd0a60cc0ac26a9db223aa2bb1a9126bf2dc8d73f9ab7cdca11765836fc7",
+        "terminal_sha256": "b3d56c5b98928e072cab99e921ca0c705d1f1a10977800612f5a200776bf6af5"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1",
+        "name": "main_verify_0103",
+        "ledger_sha256": "fca288ee7cc8e6abe3f48c6004b162db4b8cd658af740d9fd4de1427e7e0e234",
+        "terminal_sha256": "086deecaf07cf461819e9239168b8851371c86e763c412fc4d8249f75681d7f6"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1",
+        "name": "main_verify_0104",
+        "ledger_sha256": "7349b7ff7817e74df79bbc78f4e83da7eda01b5357a0131fd78e9983013a1e36",
+        "terminal_sha256": "43805d170ae9f0190930ff710242958568d5dee7954abb7b1171c0105d7daa86"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1",
+        "name": "main_verify_0105",
+        "ledger_sha256": "1277b25fd172da0ac8a15f85b2dd9c2ee44bffe1cc56a4cb6da7ba3ba3f49080",
+        "terminal_sha256": "249cfa73db53a2d85c9f74339723fabe45e02088dfe7fd7f34847019958dc7d8"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1",
+        "name": "main_verify_0106",
+        "ledger_sha256": "50e2339478e510edaa8d63d68c64e279e3ea81b77fc01959ebc7ede58931dcf7",
+        "terminal_sha256": "7ed73d6c60a1219dc4df72c05d07a4dff6bba291db2ec0f06d03766487a8499e"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1",
+        "name": "main_verify_0107",
+        "ledger_sha256": "219c335ea670760553d7dfa554e63414ba65036d50c44eafe377c163af694f19",
+        "terminal_sha256": "dc7e14e2a360e69a6d06afedf7587c5c711ec13a89069783f6d7850bf46569dc"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1",
+        "name": "main_verify_0108",
+        "ledger_sha256": "98ac23c174a58f58dc4a655261e664689bec6b6b775e2c27dcc7f9d401c820da",
+        "terminal_sha256": "5d67c3a06b3706f2f69119bab32fb61617a87bae7ff8c43b9a3dc29abeb57ac3"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1",
+        "name": "main_verify_0109",
+        "original_terminal_sha256": "64eef49b6f28724b1dcebd48a9af9f4b73a23ccba354f9b94f24cb948a2ab33a",
+        "retained_failed_start_sha256": "72c41971601b1a25d15a4156a2574e4ad10195fa852c604a24b25ac379297ecc"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r2",
+        "name": "main_verify_0110",
+        "ledger_sha256": "615838d7ce81678c5d6836e1fbd212ba0d0b6fac96123fa790d147ba43e47d21",
+        "terminal_sha256": "c6b9b30d649a1974e206c217b63c4239b4c04e543d7d22b40b4de8d745cdbd1f"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r2",
+        "name": "main_verify_0111",
+        "ledger_sha256": "eaf99c235cc0cbade6e4ed90ce50aec60109127f488f5c3b49fc2d60523a40b2",
+        "terminal_sha256": "76707b2a9ec92e9bb5c70620da9a72bfcf37f4529aa7330ddf48613459ada8f7"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r2",
+        "name": "main_verify_0112",
+        "ledger_sha256": "61494e916661b0fe4cf5a57d14a181bf6b70d9f22cef6fc56dbf78a95bc1554b",
+        "terminal_sha256": "b81c437f498f5212cf46992e18697e0c6135fb50ed10507ee63169a8c13cab71"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r2",
+        "name": "main_verify_0113",
+        "ledger_sha256": "5cc6708b034f11f421f70195a13435c56ec65b762cef012c7f9131ddbb354c1f",
+        "terminal_sha256": "ff6bef3d71b250ba4b7094b3ef7af3daa80b0aed1151d0f8cfee619e2453cf37"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r2",
+        "name": "main_verify_0114",
+        "ledger_sha256": "763e86dafc0622dd29fb1914dfef7c2f200c80805cfb96d3aabeb7a46893ef35",
+        "terminal_sha256": "1a43167d4265cd42d21d4f8526281b5cf22aa3c14aed23ea34c3b6a79ef2453c"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r2",
+        "name": "main_verify_0115",
+        "ledger_sha256": "54d9d949ecfae06ae883e19d1f92b55d3dc70d45d84e54dec6df8b7ef1189e8f",
+        "terminal_sha256": "7428536b6fcbd30f1a4ef70fae943ecc68b6d96b64003a234781c4a2e24e510d"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r2",
+        "name": "main_verify_0116",
+        "ledger_sha256": "95b1295687b37ce3d5c2ff4608256b8ed1c7a318c522842c37dd0ec105b946c4",
+        "terminal_sha256": "1822cd77479a41b3e2b4b64acc196b1c34a8040594a4e79e627ce4eabfc7186b"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r2",
+        "name": "main_verify_0117",
+        "ledger_sha256": "924c02e74543e7f10b4c3cba01b59c20ad7e86e25817dc47113096ed517b432b",
+        "terminal_sha256": "2f249067c429f03a2518dff29aace49cf328068b98255737a0952819972ee405"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3",
+        "name": "main_verify_0118",
+        "ledger_sha256": "f3cb8706c251e9447a0e8c02dcdcd7893d156bf49e5da141312dc06ad234762b",
+        "terminal_sha256": "e89f9eb701724730e2953374367879f75ba5ca4fc2c3c26b8a28d50291168232"
+      },
+      {
+        "root": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3",
+        "name": "main_verify_0119",
+        "ledger_sha256": "7ddb136e03e2c74605240500f5dbe8762ea2de1e5b6d5ae5956e0f172f7c8bc9",
+        "terminal_sha256": "c09641e2b38faea80616692340b8cb8fcbcb29fed55f59833a50686835c76768"
+      }
+    ],
+    "positive_details": [
+      {
+        "model": "L3E8_seed0",
+        "arm": "off",
+        "seconds": 47.183770444244146,
+        "verified": 2,
+        "pruned": 21950,
+        "expected": 21952,
+        "histories": [
+          {
+            "history": [
+              [
+                4,
+                7
+              ],
+              [
+                1,
+                4
+              ],
+              [
+                3,
+                6
+              ]
+            ],
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 5.6323068626224995,
+            "cascade": null
+          },
+          {
+            "history": [
+              [
+                4,
+                7
+              ],
+              [
+                4,
+                6
+              ],
+              [
+                3,
+                6
+              ]
+            ],
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 5.80098320543766,
+            "cascade": null
+          }
+        ]
+      },
+      {
+        "model": "L3E8_seed0",
+        "arm": "on",
+        "seconds": 94.69966624863446,
+        "verified": 2,
+        "pruned": 21950,
+        "expected": 21952,
+        "histories": [
+          {
+            "history": [
+              [
+                4,
+                7
+              ],
+              [
+                1,
+                4
+              ],
+              [
+                3,
+                6
+              ]
+            ],
+            "status": "verified",
+            "stage": null,
+            "seconds": 40.21212200820446,
+            "cascade": {
+              "method": "M_A_HARD120_V2_THEN_REMAINING_COUPLED",
+              "phase_folder": "v2_history_0000",
+              "phase_seconds": 40.21131361089647,
+              "phase_status": "POSITIVE",
+              "source_id": "9e22f82a4849c4e0d43f53ff11db225394af062fd228880d0cf34c292fc3a509",
+              "used_fallback": false
+            },
+            "endpoint_stages": [
+              {
+                "variant": "V2_LO",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 10.301221134141088
+              },
+              {
+                "variant": "V2_HI",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 7.573076367378235
+              }
+            ]
+          },
+          {
+            "history": [
+              [
+                4,
+                7
+              ],
+              [
+                4,
+                6
+              ],
+              [
+                3,
+                6
+              ]
+            ],
+            "status": "verified",
+            "stage": null,
+            "seconds": 29.265769485384226,
+            "cascade": {
+              "method": "M_A_HARD120_V2_THEN_REMAINING_COUPLED",
+              "phase_folder": "v2_history_0001",
+              "phase_seconds": 29.265088656917214,
+              "phase_status": "POSITIVE",
+              "source_id": "c9eb7f0c48c181bb0515f5b9b7b42e978697c82542e04ec65a3dd33c4e467163",
+              "used_fallback": false
+            },
+            "endpoint_stages": [
+              {
+                "variant": "V2_LO",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 5.913607243448496
+              },
+              {
+                "variant": "V2_HI",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 6.4273572992533445
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "model": "L2E16_seed0",
+        "arm": "on",
+        "seconds": 110.35492362082005,
+        "verified": 2,
+        "pruned": 14398,
+        "expected": 14400,
+        "histories": [
+          {
+            "history": [
+              [
+                0,
+                5
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "status": "verified",
+            "stage": null,
+            "seconds": 46.944500951096416,
+            "cascade": {
+              "method": "M_A_HARD120_V2_THEN_REMAINING_COUPLED",
+              "phase_folder": "v2_history_0000",
+              "phase_seconds": 46.94385017640889,
+              "phase_status": "POSITIVE",
+              "source_id": "9ccf0e66b02dd61aa05d93f3425b26e9aac2b7c12914282f7e6ce0b66183f3cf",
+              "used_fallback": false
+            },
+            "endpoint_stages": [
+              {
+                "variant": "V2_LO",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 12.65931406058371
+              },
+              {
+                "variant": "V2_HI",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 9.061505740508437
+              }
+            ]
+          },
+          {
+            "history": [
+              [
+                0,
+                5
+              ],
+              [
+                5,
+                12
+              ]
+            ],
+            "status": "verified",
+            "stage": null,
+            "seconds": 36.25264088250697,
+            "cascade": {
+              "method": "M_A_HARD120_V2_THEN_REMAINING_COUPLED",
+              "phase_folder": "v2_history_0001",
+              "phase_seconds": 36.23805576749146,
+              "phase_status": "POSITIVE",
+              "source_id": "11ec918df2e3779eabadd787e4fbbb2800ff44c25333532cdd75bfb6ec900f2e",
+              "used_fallback": false
+            },
+            "endpoint_stages": [
+              {
+                "variant": "V2_LO",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 11.511414026841521
+              },
+              {
+                "variant": "V2_HI",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 9.682868298143148
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "model": "L2E16_seed0",
+        "arm": "off",
+        "seconds": 40.13373513892293,
+        "verified": 2,
+        "pruned": 14398,
+        "expected": 14400,
+        "histories": [
+          {
+            "history": [
+              [
+                0,
+                5
+              ],
+              [
+                0,
+                5
+              ]
+            ],
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 11.51627459935844,
+            "cascade": null
+          },
+          {
+            "history": [
+              [
+                0,
+                5
+              ],
+              [
+                5,
+                12
+              ]
+            ],
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 8.049055272713304,
+            "cascade": null
+          }
+        ]
+      },
+      {
+        "model": "L2E16_seed1",
+        "arm": "off",
+        "seconds": 82.51457305252552,
+        "verified": 2,
+        "pruned": 14398,
+        "expected": 14400,
+        "histories": [
+          {
+            "history": [
+              [
+                2,
+                5
+              ],
+              [
+                4,
+                10
+              ]
+            ],
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 25.95369184203446,
+            "cascade": null
+          },
+          {
+            "history": [
+              [
+                2,
+                5
+              ],
+              [
+                4,
+                11
+              ]
+            ],
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 18.141997266560793,
+            "cascade": null
+          }
+        ]
+      },
+      {
+        "model": "L2E16_seed1",
+        "arm": "on",
+        "seconds": 134.68903387896717,
+        "verified": 2,
+        "pruned": 14398,
+        "expected": 14400,
+        "histories": [
+          {
+            "history": [
+              [
+                2,
+                5
+              ],
+              [
+                4,
+                10
+              ]
+            ],
+            "status": "verified",
+            "stage": null,
+            "seconds": 68.90666134096682,
+            "cascade": {
+              "method": "M_A_HARD120_V2_THEN_REMAINING_COUPLED",
+              "phase_folder": "v2_history_0000",
+              "phase_seconds": 68.90601567551494,
+              "phase_status": "POSITIVE",
+              "source_id": "ac8fc689a2dface4315fb3437e6d2f61c5d86773fcebe4e6701c6667e7875289",
+              "used_fallback": false
+            },
+            "endpoint_stages": [
+              {
+                "variant": "V2_LO",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 16.559610417112708
+              },
+              {
+                "variant": "V2_HI",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 9.815367061644793
+              }
+            ]
+          },
+          {
+            "history": [
+              [
+                2,
+                5
+              ],
+              [
+                4,
+                11
+              ]
+            ],
+            "status": "verified",
+            "stage": null,
+            "seconds": 44.1610247399658,
+            "cascade": {
+              "method": "M_A_HARD120_V2_THEN_REMAINING_COUPLED",
+              "phase_folder": "v2_history_0001",
+              "phase_seconds": 44.15565172210336,
+              "phase_status": "POSITIVE",
+              "source_id": "d2d2601b0ea6306ebe04e7118ea67f9c841ffc61d8bd3da135f64c14f3bf6609",
+              "used_fallback": false
+            },
+            "endpoint_stages": [
+              {
+                "variant": "V2_LO",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 16.79267381131649
+              },
+              {
+                "variant": "V2_HI",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 10.134387059137225
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "model": "L2E16_seed2",
+        "arm": "on",
+        "seconds": 158.37534455768764,
+        "verified": 2,
+        "pruned": 14398,
+        "expected": 14400,
+        "histories": [
+          {
+            "history": [
+              [
+                9,
+                10
+              ],
+              [
+                3,
+                6
+              ]
+            ],
+            "status": "verified",
+            "stage": null,
+            "seconds": 48.548564264550805,
+            "cascade": {
+              "method": "M_A_HARD120_V2_THEN_REMAINING_COUPLED",
+              "phase_folder": "v2_history_0000",
+              "phase_seconds": 48.548198498785496,
+              "phase_status": "POSITIVE",
+              "source_id": "e7fa4c3e22526e82195a6ce2bdbcf7b1976b5f4f104f7e481033769ab43f3808",
+              "used_fallback": false
+            },
+            "endpoint_stages": [
+              {
+                "variant": "V2_LO",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 7.2573485262691975
+              },
+              {
+                "variant": "V2_HI",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 13.808553842827678
+              }
+            ]
+          },
+          {
+            "history": [
+              [
+                9,
+                10
+              ],
+              [
+                6,
+                10
+              ]
+            ],
+            "status": "verified",
+            "stage": null,
+            "seconds": 81.55863541737199,
+            "cascade": {
+              "method": "M_A_HARD120_V2_THEN_REMAINING_COUPLED",
+              "phase_folder": "v2_history_0001",
+              "phase_seconds": 81.5580138694495,
+              "phase_status": "POSITIVE",
+              "source_id": "7ec03f4192a79aff7d5b8916435c2eb13c0ff1ab1a2dde562ee3e4791e3600fb",
+              "used_fallback": false
+            },
+            "endpoint_stages": [
+              {
+                "variant": "V2_LO",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 9.175227787345648
+              },
+              {
+                "variant": "V2_HI",
+                "status": "verified",
+                "stage": "incomplete_only",
+                "seconds": 33.26888939552009
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "model": "L2E16_seed2",
+        "arm": "off",
+        "seconds": 92.41738344356418,
+        "verified": 2,
+        "pruned": 14398,
+        "expected": 14400,
+        "histories": [
+          {
+            "history": [
+              [
+                9,
+                10
+              ],
+              [
+                3,
+                6
+              ]
+            ],
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 30.547088934108615,
+            "cascade": null
+          },
+          {
+            "history": [
+              [
+                9,
+                10
+              ],
+              [
+                6,
+                10
+              ]
+            ],
+            "status": "verified",
+            "stage": "incomplete_only",
+            "seconds": 18.806768119335175,
+            "cascade": null
+          }
+        ]
+      }
+    ],
+    "public_replayed_unsafe": [
+      "R3E8_seed1"
+    ],
+    "public_positive_conflicts": [],
+    "source_and_structural_audit": true,
+    "numerical_bound_reproof": false,
+    "new_solver_or_model_calls": 0,
+    "review_seconds_including_imports": 3.5725644920021296,
+    "mechanism_description": {
+      "on_positive_histories": 8,
+      "on_initial_positive_endpoints": 16,
+      "off_initial_positive_histories": 8,
+      "fallbacks_in_shared_positives": 0,
+      "all_request_on_minus_off_seconds": 74.73778686486185,
+      "shared_positive_on_minus_off_seconds": 235.86950622685254,
+      "interpretation": "both arms already close these histories initially; extra endpoints and complete phase execution cost, no saved BaB here. No unique attribution to one overhead and no global effect claim."
+    }
+  },
+  "observed_latest": {
+    "settled": 126,
+    "native_ledgers": 125,
+    "states": {
+      "POSITIVE": 54,
+      "TIMEOUT": 70,
+      "ERROR": 2
+    },
+    "complete_pairs": 63,
+    "gain": 2,
+    "loss": 0,
+    "active_at_snapshot": "main_verify_0126 L3E8_seed0/1776/on",
+    "controller_pid": 1286669
   }
 }

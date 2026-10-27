@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## B4 fourth input block audited: no gain, extra shared-positive cost 2026-10-27
+
+Real increment8since118:126settled=125native+1retainedpublicationERROR;54POSITIVE/70TIMEOUT/2ERROR,63pairs,gain/loss2/0;PID1286669runninginput1776.
+[Record](moe_aware_b4_records_20261027.json)`fourth_input_review`:1754 off4POSITIVE/11TIMEOUT,on4/9/2ERROR,0gain/loss;30receipts/costs/versionboundariesaudited3.573s,no newsolver/forward.
+Shared4positiveobjects=L3E8seed0+L2E16allseeds;off8historiesinitiallyclose,on16initialendpointclosures,no fallback;sharedcost262.249/498.119s.
+Allrequestcost3477.057/3551.794s includesbothERRORs;not speedup byearlyerror. PublicPGDR3E8seed1counterexample hasno positiveconflict andisnotcreditedtoanarm.
+[Table](moe_aware_b4_20261026.md) now4of20completeinputblocks;originalfailuresretained,no interimbootstrap/admission. Next fixedB4/fullpairedanalysis.G1–G6OPEN.
+
+
 ## B4 remaining suffix running after deadline-alarm repair 2026-10-27
 
 Real increment0completed/1started:118settled retained;newmain0118=R3E8seed2/1754/on;old0109/0117notretried.
