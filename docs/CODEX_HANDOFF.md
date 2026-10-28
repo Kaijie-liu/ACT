@@ -1,5 +1,16 @@
 # MoE project handoff — current entry point
 
+## User-authorized baseline-preserving M-B revision 2026-10-29
+
+New study frozen22calls, not yet launched; old B4 continues immutable R3, prior MAIN STOP unchanged.
+User authorizes original11 objects, <=30 local calls/3h, each300s; [contract](guard_dual_refinement_20261029.md).
+Old off/on were independent20-step trajectories; valid bounds but insufficient isolation of guard gain over optimized alpha.
+New default-off path retains full alpha-only prefix, restores evaluated alpha*, zero beta,40 joint updates plus fixed tiny gradient probe.
+Paid equal-extra-alpha control separates additional alpha work; pointwise max retention is not free or finite-budget dominance.
+Controls10native/16.358s; R1 erroneous ReLU-dual-positive test retained, exact dual optimum-.4 checked without rerun; remaining controls PASS.
+Three missing catalogueIDs bound to same old executed M-B histories; 1s freeze-error cost retained; next22calls/audit, original>=5/median>0 gate only.
+Old numerical filters/failed attempts preserved; no T1 change, newB4 or B5 now; no per-request progress reports.
+
 ## B4 double-radius public evidence audited; performance pending 2026-10-28
 
 Real increment1since724:725settled;12radiuspubliccallscomplete,120PGD/360censusdomainsreceived;PID1286669runningradius0005,no extraanalysisquery.

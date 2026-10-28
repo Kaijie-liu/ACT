@@ -292,7 +292,9 @@ def batch(folder, manifest, *, summarizer=None, entry=None):
     worker.require(ROOT != Path('/data1/Kane/MOE/ACT') and (ROOT/'.frozen_commit').is_file(), 'immutable execution copy')
     worker.require(all(sha(ROOT/p) == h for p, h in spec['source_files'].items()), 'source identity')
     supplementary = spec['schema'] in worker.SCHEMAS[1:]
-    worker.require(spec['budgets'] == dict(local_calls=200 if supplementary else 250, request=300, stage=(17 if supplementary else 21)*3600,
+    refinement = spec['schema'] == 'guard-dual-refinement-v1'
+    worker.require(spec['budgets'] == dict(local_calls=30 if refinement else 200 if supplementary else 250,
+        request=300, stage=(3 if refinement else 17 if supplementary else 21)*3600,
         artifacts=128*2**20, as_bytes=8*2**30), 'registered unchanged quotas')
     resource.setrlimit(resource.RLIMIT_AS, (8*2**30, 8*2**30)); os.nice(10)
     prior = spec.get('prior_accounting', {})

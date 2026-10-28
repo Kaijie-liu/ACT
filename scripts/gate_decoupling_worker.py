@@ -27,7 +27,7 @@ import genbab_cpu_ready as backend
 
 CAP = 128*2**20
 SCHEMAS = ('gate-decoupling-stage4-v1', 'gate-decoupling-stage4-supplement-v1',
-           'moe-aware-stage5a-v1')
+           'moe-aware-stage5a-v1', 'guard-dual-refinement-v1')
 
 
 def reconstruct_enabled(spec):
@@ -109,13 +109,18 @@ def source_object(spec, call):
     inventory = load(spec['catalog']['path'], spec['catalog']['sha256'])
     matches = [o for o in inventory['objects'] if o['id'] == call['object_id']]
     require(len(matches) == 1, 'one bound hard-core object')
-    variants = ('MB_OFF', 'MB_ON', 'MC_BASE', 'MC_2', 'MC_4') if spec.get('schema') == SCHEMAS[2] else ('V2', 'V3')
+    variants = (('ALPHA_CONTINUE', 'GUARD_REFINE') if spec.get('schema') == SCHEMAS[3]
+        else ('MB_OFF', 'MB_ON', 'MC_BASE', 'MC_2', 'MC_4') if spec.get('schema') == SCHEMAS[2]
+        else ('V2', 'V3'))
     require(call['variant'] in variants, 'registered diagnostic variant')
     return matches[0]
 
 
 def check_received(folder, value, spec, call, deadline):
     """Recheck local scope/coverage without loading a model or numerical library."""
+    if spec.get('schema') == SCHEMAS[3]:
+        from guard_dual_refinement import check_received as receive_refinement
+        return receive_refinement(folder, value, spec, call, deadline)
     if spec.get('schema') == SCHEMAS[2]:
         from moe_aware_diagnostics import check_received as receive_5a
         return receive_5a(folder, value, spec, call, deadline)
@@ -317,7 +322,10 @@ def worker(folder):
         call = spec['calls'][request['call_index']]
         require(digest(call) == request['call_sha256'], 'frozen call table')
         obj = journal.call('source_binding', lambda: source_object(spec, call))
-        if spec['schema'] == SCHEMAS[2]:
+        if spec['schema'] == SCHEMAS[3]:
+            from guard_dual_refinement import diagnose as diagnose_refinement
+            value = diagnose_refinement(obj, call['variant'], spec, deadline, journal)
+        elif spec['schema'] == SCHEMAS[2]:
             from moe_aware_diagnostics import diagnose as diagnose_5a
             value = diagnose_5a(obj, call['variant'], spec, deadline, journal)
         else:
@@ -348,18 +356,20 @@ def invoke(folder, manifest, call_index, *, stage_deadline):
     control = load(spec['control']['path'], spec['control']['sha256'])
     require(control['status'] == 'PASS', 'frozen integration control receipt')
     call = spec['calls'][call_index]
+    # Existing B4-tested tail reservation, only for the newly frozen diagnostic.
+    tails = (12, 10, 5) if spec['schema'] == SCHEMAS[3] else (6, 4, 2)
     remaining = CAP-size(folder.parent)-spec.get('prior_accounting', {}).get('bytes', 0)
     require(remaining > 256*1024, 'remaining cumulative stage artifact allowance')
     folder.mkdir(); (folder/'tmp').mkdir(); (folder/'cache').mkdir()
     journal = Journal(folder, end, remaining)
     journal.put('request.json', dict(manifest=str(manifest), manifest_sha256=sha(manifest),
         call_index=call_index, call_sha256=digest(call), started=began, hard_deadline=end,
-        worker_deadline=end-6, artifact_limit=remaining-192*1024))
+        worker_deadline=end-tails[0], artifact_limit=remaining-192*1024))
     env = dict(PATH='/usr/bin:/bin', PYTHONDONTWRITEBYTECODE='1', PYTHONNOUSERSITE='1',
         OMP_NUM_THREADS='1', OPENBLAS_NUM_THREADS='1', MKL_NUM_THREADS='1', NUMEXPR_NUM_THREADS='1',
         CUDA_VISIBLE_DEVICES='', TMPDIR=str(folder/'tmp'), XDG_CACHE_HOME=str(folder/'cache'))
     receipt = execute([str(backend.ENVIRONMENT/'bin/python'), '-I', '-B', __file__, str(folder)],
-        run_deadline=end-4, cleanup_deadline=end-2, env=env, rss_limit=None, development_policy=POLICY)
+        run_deadline=end-tails[1], cleanup_deadline=end-tails[2], env=env, rss_limit=None, development_policy=POLICY)
     journal.put('session.json', receipt)
     accepted, value, status = False, None, 'ERROR'
     try:
@@ -367,12 +377,12 @@ def invoke(folder, manifest, call_index, *, stage_deadline):
             publication = load(folder/'published.json')
             outcome = load(folder/'outcome.json', publication['sha256'])
             require(outcome['request_sha256'] == sha(folder/'request.json'), 'received request/result identity')
-            accepted = outcome['clock'] < end-6 and publication['clock'] < end-6
+            accepted = outcome['clock'] < end-tails[0] and publication['clock'] < end-tails[0]
             status = outcome['value']['status'] if accepted else 'TIMEOUT'
             if accepted:
                 value = outcome['value']
                 check_received(folder, value, spec, call, end)
-        elif receipt.get('returncode') == 124 or 'TIMEOUT' in receipt['status'] or time.monotonic() >= end-6:
+        elif receipt.get('returncode') == 124 or 'TIMEOUT' in receipt['status'] or time.monotonic() >= end-tails[0]:
             status = 'TIMEOUT'
     except (ValueError, KeyError, TypeError, OSError) as error:
         accepted, value, status = False, None, 'ERROR'
