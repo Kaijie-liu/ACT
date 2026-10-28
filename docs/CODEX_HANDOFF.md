@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## Current review paper compiled; stopped mechanisms remain stopped 2026-10-29
+
+Real increment: 0 new scientific calls in this writing stage; old B4 reached 808 settled (MAIN600/ablation120/radius88), immutable R3 PID1286669 still running.
+[Eight-page review source](../paper/review_main.tex) now presents complete-history, guard-atom and endpoint reductions plus failed practical/admission gates.
+[Four generated tables](../paper/results/current_review_tables.tex) reproduce committed completed summaries; radius/boundary remain pending, no interim gate change.
+Revised M-B remains 1/11 versus extra-alpha 0/11, STOP; no last-margin M-C/new B4/B5; G1–G6 OPEN.
+[Build note](current_review_paper_20261029.md): R1 path overflow retained, R2 compiled cleanly, two pages inspected; 42 local links/source hashes/table recount PASS, no numerical reproof.
+[Review guide](SUBMISSION_REVIEW.md) gives human questions and verified venue dates; human review/clean empirical reproduction/publication remain undone.
+Next finish only the frozen radius/boundary queues and final audit; paper claims do not replace the scientific gates.
+
 ## Revised M-B complete: one local closure, admission fails 2026-10-29
 
 Real increment22/22diagnostics;21UNKNOWN/1numericalPOSITIVE,noERROR/TIMEOUT;[result](guard_dual_refinement_result_20261029.json),[interpretation](guard_dual_refinement_20261029.md#完成结果不通过关闭m-bm-c).

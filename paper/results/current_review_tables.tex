@@ -1,0 +1,62 @@
+% Relevant committed summary primary sha256 30c1121e079619babae3fb0bd0d6f09652d1e1be3ca0efb126b35342b94e875d
+% Relevant committed summary multilayer sha256 5e78f74054d0dd883fbfe692c8a5146f155786fb917f0c491c54be8a49c6d127
+% Relevant committed summary guard sha256 8bebc40ef4f01d9630a61de608044f2d730faf7b2574acf165b5262afa56f8fa
+\begin{table}[ht]
+\centering\small
+\caption{Complete-request cascade: 300 calls per arm. P is numerical POSITIVE, not a strict certificate. All terminals and costs are retained.}
+\label{tab:primary}
+\begin{tabular}{lrrrrrr}
+\toprule
+Method & P & UNKNOWN & TIMEOUT & ERROR & Mean s & Median s \\
+\midrule
+Coupled & 116 & 8 & 176 & 0 & 189.287 & 288.350 \\
+Cascade & 122 & 5 & 171 & 2 & 192.983 & 288.337 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[ht]
+\centering\small
+\caption{Family breakdown of the same primary cohort: 60 model--input objects per row. Gain/loss counts are paired, not differences between unmatched totals.}
+\label{tab:families}
+\begin{tabular}{lrrrr}
+\toprule
+Family & Coupled P & Cascade P & Gained & Lost \\
+\midrule
+L2E8 & 24 & 28 & 5 & 1 \\
+L3E8 & 27 & 26 & 0 & 1 \\
+L2E16 & 53 & 53 & 0 & 0 \\
+R2E8 & 7 & 10 & 4 & 1 \\
+R3E8 & 5 & 5 & 0 & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[ht]
+\centering\small
+\caption{Separate multilayer bottleneck study: 60 objects per configuration/arm. The single-layer cost anchor is a separate pruning-only 60 calls.}
+\label{tab:multilayer}
+\begin{tabular}{lrrr}
+\toprule
+Configuration & ACT v1 P & Naive P & Pruned P \\
+\midrule
+L2E8 & 0 & 0 & 28 \\
+L3E8 & 0 & 0 & 33 \\
+L2E16 & 0 & 0 & 47 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[ht]
+\centering\small
+\caption{Revised guard diagnostic on the same eleven histories. Each continuation retains its complete twenty-evaluation baseline. A local history is not a full MoE request.}
+\label{tab:guard}
+\begin{tabular}{lrr}
+\toprule
+Continuation & Closed histories & UNKNOWN \\
+\midrule
+Extra alpha & 0 & 11 \\
+Joint alpha/guard & 1 & 10 \\
+\bottomrule
+\end{tabular}
+\end{table}

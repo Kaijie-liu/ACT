@@ -1,131 +1,120 @@
-# Independent pre-submission review: current manuscript and bounded reproduction
+# Independent technical review: reductions and empirical limits
 
-This is a review invitation/template for PI-managed use, not a completed review
-or authorization to contact anyone. The short manuscript is
-[review_main.tex](../paper/review_main.tex); the longer
+Updated 2026-10-29. This is a PI-managed review template, not a completed human
+review or permission to contact anyone. Start with the current
+[short paper](../paper/review_main.tex), then consult the longer
 [method](../paper/sections/03_path_conditioned_method.md),
-[source contract](../paper/sections/05_soundness_engineering.md) and
-[evaluation](../paper/sections/08_evaluation.md) remain supporting material.
-No venue has been selected by this packaging work. The PDF uses a generic
-article layout, not an official ISSTA/ASE/FSE/ICSE submission template.
+[evaluation](../paper/sections/08_evaluation.md) and
+[source contract](../paper/sections/05_soundness_engineering.md).
+The generic article layout is not an official submission template.
 
 ## Read the argument before the receipts
 
-The question is whether the relational obligation method is a sufficiently
-important and supported contribution, NOT whether enough tests passed.
-Start with the short paper, write your own account of its contribution, then
-challenge the evidence using the following map. A disagreeing or negative
-review is a valid outcome; no proposed acceptance score is supplied.
+The question is whether the problem, reductions and measured limitations support
+a useful research contribution. Counts of controls or documents do not answer
+it. No positive novelty verdict or review score is supplied.
 
-| Claim | Evidence location | Required qualification / challenge |
+| Claim / question | Evidence | Essential qualification |
 |---|---|---|
-| Mathematical complete-output rule | Short paper Proposition 1; method's complete-request composition theorem | Are coverage, tie inclusion, same-source enclosures and valid row bounds sufficient? They are hypotheses, not inferred from historical solver success. |
-| Scoped reuse | Method and `scoped_f0_proofs.py` | The same property must hold on both membership domains; pair inclusion, factor identities and constant terms must match. Supplied interval validity remains an assumption. |
-| New-input internal gain | Committed confirmation review; generated tables | 23 gained / 0 lost policy SAFE, 100 input clusters and three fixed models; not independently proved real-box coverage or 300 independent images. |
-| Relation precision | Committed relationship ablation | Two completed-relaxation failures support a precision mechanism; a third solver-limit case has a cost confound. Not casewise attribution of all 23 gains. |
-| External value | Committed external review | ACT 11 policy positives vs CROWN 13 numerical filters, 8 shared / 3 ACT-only / 5 CROWN-only; means 138.11 / 4.23 s. Explain complementarity without hiding the cost disadvantage or equating grades. |
-| MetaMoE author-path competition | Repaired full20 archive and result (2026-09-23) | ACT 4 policy positives vs author 9 numerical filters, 4 shared / 0 ACT-only / 5 author-only. All ACT positives route-stable. Repaired request times out; this is compatibility, not a new certificate. Common-positive means 10.55 / 7.17 s. Adapter/repair disclosed; do not pool with weighted top-2 experiments or call it unchanged author execution. |
-| Applicability of historical main table | Input source ledger and composed-input addendum | Requested/formula sets are not nested on all 100 inputs. No network counterexample follows, but no source-complete real-box certificate follows either. |
-| Independent proof | Old portable-proof review; new full-source/property-range reviews | Old same-HZ conditional 9/9 positive is not a positive result on newer source-checked matrices. No cross-source splicing. |
-| Latest same-source execution frontier | [Seven-call ledger and decision](proof_closure_decision_20260925_r1.md) | Six timeouts and one resource stop; no output LP query or bound. One online router receipt discharges 225/252 duties, leaving 27. Four synthetic source-construction controls are not output proofs or a reason to unseal real requests. |
-| Generality | Conv V2 and general evidence reviews | Conv 30-input HZ positives: zero. New 20-input evidence positives: zero. High-accuracy/cross-family strict gains remain open. |
+| Complete-output composition | Short paper Proposition 1; detailed method | Every tie-legal history and property, same input/source, valid exclusions and bounds. An incomplete tree cannot be positive. |
+| Output-atom guard reduction | Proposition 2; guarded frontend and semantic controls | Pointwise `max(p,-g)>0` equivalence, including ties; not equivalent finite-budget relaxation precision or a claim that generic tools can never exploit guards. |
+| Independent-gate embedding and last endpoint | Proposition 3; M-A contract | Valid prefix ranges; last affine suffix and domain independent of last gate. Inner gates remain nonlinear. Numerical sigmoid intervals are not automatically exact enclosures. |
+| Strong engine versus old ACT v1 | [Stage-1 records](multilayer_stage1_records_20261022.json), `final_result_20261025` | 108/180 pruned positives versus zero; ACT has 178 TIMEOUT, one ERROR and one UNSUPPORTED. Supplemental bottleneck gate was registered after 189 calls. No unique ReLU-cause claim. |
+| Primary cascade gain and stop | [B4 records](moe_aware_b4_records_20261027.json), `main_and_ablation_review` | 122 versus 116, nine gains/three losses, +2pp/[0,4]pp; five-point threshold fails. Twenty input blocks preserve cross-model dependence. |
+| Mechanism and cost | Same records, `main_gain_loss_trace_review` | All nine gains use V2; 48/52 endpoints close initially. Shared-positive overhead exceeds gain savings. Partial logs cannot prove a counterfactual budget choice. |
+| Execution variability | Same records, ablation/repeated coupled rows | Four terminal changes among 120, including one positive to timeout; not four SAFE changes or a 3pp SAFE-noise estimate. |
+| Revised guard contribution | [Result](guard_dual_refinement_result_20261029.json), [interpretation](guard_dual_refinement_20261029.md) | Full baseline retention and paid equal-extra-alpha control. One of eleven histories closes, not five; M-B/M-C stop. Local closure is not a full request. |
+| Larger radius and single-layer scope | B4 frozen queues; handoff for state | Still pending. They cannot replace primary denominators or stopping gates. Public PGD is not free arm credit; sampled histories are not exact legal counts. |
+| Historical internal gain | [Source audit](main_table_source_applicability_20260921.md), [input addendum](main_table_input_composition_20260921.md) | All 23 old gains lack full input-containment provenance. Preserve numeric results without calling them source-complete certificates. |
+| Earlier independent tool challenges | [MetaMoE follow-up](metamoe_las_followup_result_20260923_r1.md), detailed evaluation | Author-compatible 9 versus ACT 4; earlier plain CROWN 13 versus ACT 11. Distinct semantics/cohorts/grades, not the current full GenBaB comparison. |
+| Independent proof frontier | [Stopped source/output study](proof_closure_decision_20260925_r1.md), source-proof appendix | Old positive supplied-HZ objects differ from newer checked source matrices. No proof splicing; no full native-floating execution claim. |
 
-## Minimum human review report (leave unanswered until actually reviewed)
+## Human review report (leave unanswered until performed)
 
-Reviewer and date: **pending**. Relationship to implementation: **pending**.
-Access level (short paper / repository / private raw objects): **pending**.
-Commands actually executed, exit codes, environment: **pending**.
+Reviewer/date, expertise and relationship to implementation: **pending**.
+Access (paper/code/private raw artifacts): **pending**.
+Actually executed commands, environments and exit codes: **pending**.
 
-1. Restate the target, three contributions, and the narrowest defensible claim.
-2. Try to falsify Proposition 1 with a legal tie, nonzero property constant,
-   partial fact, mismatched source, or missing route. Identify the exact failed
-   hypothesis or implementation issue; do not treat a control as a full proof.
-3. Trace one claimed gain from the statement through archived accounting and
-   numerical contract. Report inaccessible raw material explicitly.
-4. State whether the input-containment limitation makes the main empirical
-   contribution too weak for the intended claim; disagreement with the authors'
-   current conditional interpretation is welcome.
-5. Assess the external path's practical challenge and whether related work
-   distinguishes within-request facts from templates/conflicts and shared HZ
-   relations from generic path enumeration.
-6. Separate must-fix defects, honestly reportable limitations, and optional
-   future research. Give a manuscript recommendation, not an A-tier guarantee.
+1. Restate the narrowest defensible contribution. Compare it with existing
+   program/verification reductions, MetaMoE, GenBaB and output-constraint work
+   including INVPROP. Which claimed part is new, useful, or merely standard?
+2. Attempt to falsify the three propositions using a legal tie, nonzero
+   property constant, an empty history, a missing history, a mismatched source,
+   an invalid gate range, or a nonlinear suffix. Identify failed hypotheses.
+3. Trace one primary gain and one loss through source identity, complete
+   obligations and cost. Report unavailable raw evidence; do not substitute
+   hash checking for numerical soundness.
+4. Check the revised guard optimizer's evaluated alpha restoration, retained
+   per-property prefix maxima and paid extra-alpha comparator. Does the
+   one-history gain survive the stated numerical contract? The analytic ReLU
+   guard dual gap is a useful counterexample to an unjustified positive oracle.
+5. Check pairing, input-level uncertainty, failure preservation, the practical
+   STOP, the post-189 supplemental rule and shared-host timing limitations.
+   Do not infer unique ReLU hardness from timeouts or frozen-gate failures.
+6. Separate factual defects, claim limits and optional future work. Assess
+   venue fit independently; an honest negative review is a valid outcome.
 
-An AI reviewer must label itself as such. A same-author reimplementation is not
-third-party review. A human report, sign-off or novelty verdict must never be
-filled in automatically by the packaging scripts.
+AI review must identify itself. No packaging script may fill human sign-off,
+independence or a novelty verdict. This template sends no invitation.
 
-## The local review kit
+## Current bounded table reproduction
 
-The kit contains the short paper, its audited table renderer, selected committed
-reviews, source-contract records, and this review form. It intentionally does
-not contain weights, raw input tensors, the real portable proof, a solver, or
-an empirical re-execution. The checker verifies file identity, reconstructs
-archived accounting and reproduces the manuscript tables. It neither executes
-the neural model nor independently proves its safety bounds.
-Links to longer sections, implementation files and ancillary histories refer
-to the full repository and are not all included in this bounded kit. Its
-manifest is the exact inventory, not a claim that every linked object has
-been distributed. The short paper and three generated tables are self-contained.
-The additional proof-frontier ledger is rebuilt from five pinned compact
-archives without following raw server paths. It is also accounting only, not
-a new mathematical check.
-The new MetaMoE table is reconstructed from all 20 archived rows, not a
-partial-run summary. See [current claim disposition](competition_guarantee_disposition_20260923.md).
-
-From an existing suitable Python installation, after receiving a complete kit
-and its manifest hash **through a separately trusted channel**:
+The current renderer reads three committed JSON summaries, performs accounting
+checks, and reconstructs four tables. It needs only the Python standard library:
 
 ```sh
-python -I -S /path/to/kit/scripts/check_submission_review_kit.py --manifest-sha256 HASH
+python -I -S -B scripts/render_current_review_tables.py --check
 ```
 
-The checker rejects missing/extra files, symlinks, unsafe paths, invalid grades,
-changed bytes and stale table rendering. Expected hashes are not authority
-when supplied only by the untrusted package itself. This is integrity and
-accounting checking, not an adversarial execution sandbox or a mathematical
-certificate checker. `-I -S` establishes Python dependency isolation, not a
-fresh OS/container installation. The manifest also binds the checker itself.
+It does not read checkpoint/data/server raw paths, execute a model, solve an
+obligation or independently reprove a lower bound. Run without `--check` to
+print the LaTeX. Relevant summary-view hashes are embedded in
+[the table file](../paper/results/current_review_tables.tex); source identity
+is distinct from mathematical evidence. The current PDF build and targeted
+checks are recorded in [the build note](current_review_paper_20261029.md).
 
-The source can be compiled with an already installed LaTeX distribution:
+Compile from `paper/` with an already installed LaTeX distribution and a new
+empty output directory:
 
 ```sh
-cd /path/to/kit/paper
 pdflatex -no-shell-escape -halt-on-error -interaction=nonstopmode -output-directory /NEW/BUILD review_main.tex
 pdflatex -no-shell-escape -halt-on-error -interaction=nonstopmode -output-directory /NEW/BUILD review_main.tex
 ```
 
-Use a separate build directory; adding LaTeX output to the immutable kit makes
-its exact-file inventory check fail. No installer or network download is run
-by this workflow. The supplied Python checker itself needs no LaTeX.
+The historical September review kits, manifests, table renderer and integrity
+checker stay unchanged. Their inventories bind their own historical contents,
+not this new paper. A separately trusted kit-manifest hash is required for
+historical kit verification. `python -I -S` gives dependency isolation, not a
+fresh OS or clean empirical model execution. No installer is run here.
 
-## Still required for the empirical artifact
+## Work still requiring external review or a publication decision
 
-Do not merge these incomplete tasks into the table-only success above:
+| Task | Current boundary |
+|---|---|
+| Independent human technical review | Pending; PI selects and coordinates reviewer |
+| Clean-environment empirical execution | Pending; fixed request/model/input/version/budget needed, not a table rebuild |
+| Actual source-complete positive proof | Open scientific gap, not a packaging task |
+| Distribution of weights/data/third-party code | Rights and anonymity decisions pending; private raw paths not automatically public |
+| Submission, authorship and AI disclosure | Human authors must confirm claims and material AI assistance; no submission or contact authorized here |
 
-| Operation | Required input | Current state / owner |
-|---|---|---|
-| Independent human method review | Paper, code, contracts, reviewer access | Not completed; PI chooses and coordinates reviewer |
-| Actual trained-model request in a clean environment | Exact checkpoint, input tensor, configuration, execution version and dependency environment | Not performed here; separately scoped rerun, no performance claim from a smoke |
-| Check a real stored conditional proof | Entire old 13-file bundle plus independently retained statement/bundle hashes | Local relocation already passed; transfer/rights decision pending |
-| Reproduce saved source audit | Saved tensor packages and pinned decoding environment | Local audit complete; raw access is not included in this kit |
-| Public/anonymous distribution | Rights review for data, weights, third-party files; private-path/identity redaction without altering originals | No publication or anonymization claim; PI decision required |
-| Same-source complete positive proof | Checked source plus every positive output obligation on those exact matrices | Research goal open; not a packaging task |
+A clean empirical run must retain errors and all cost; it cannot repair a past
+online failure. Sealed cases, new installations and dissemination continue to
+follow their existing authorization boundaries.
 
-For an eventual clean empirical run, prerecord the exact request and hashes,
-environment, CPU/thread settings, immutable output directory, total budget,
-expected outcome's evidence grade and failure handling. Execute once without
-outcome-driven retries, retain all terminals, and distinguish execution
-agreement from a proof of historical outcomes. Installing dependencies,
-redistributing model/data objects, or reopening a sealed experiment requires
-the relevant explicit authorization. This document launches none of them.
+## Official dates and references checked 2026-10-29
 
-## AI assistance disclosure and reference check
+- ISSTA 2027 lists mandatory abstract **2027-01-08** and paper **2027-01-11**.
+  Use the official track rules for final formatting/timezone requirements;
+  this note does not infer them from a date alone.
+  [Official dates](https://conf.researchr.org/dates/issta-2027).
+- OOPSLA 2027 round 1 (2026-10-14) has passed; round 2 is **2027-04-07, AoE**.
+  [Official track](https://2027.splashcon.org/track/splashoopsla2027).
 
-The short paper includes a factual disclosure draft: AI assisted code, tests,
-orchestration, analyses and writing, not just grammar. No final human sign-off
-or exhaustive tool/version list is invented. Human authors must confirm the
-inventory and all claims before submission. Current source checks for the
-condensed bibliography are recorded in
-[the reference note](submission_references_20260921.md); they are targeted
-metadata/claim checks, not an exhaustive literature review or priority proof.
+These dates are planning inputs, not a promise that the current evidence meets
+either venue's novelty or evaluation expectations. GenBaB's
+[author paper](https://arxiv.org/abs/2405.21063) identifies TACAS 2025;
+[INVPROP](https://arxiv.org/abs/2302.01404) provides relevant prior work on
+output-constrained bound propagation. HZ, DNNV, CROWN and MetaMoE metadata were
+also checked against their primary pages linked in the short bibliography.
+This targeted check is not an exhaustive priority search. Earlier reference
+checks remain in [the historical note](submission_references_20260921.md).

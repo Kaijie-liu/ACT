@@ -4,477 +4,414 @@
 \usepackage[hidelinks]{hyperref}
 \newtheorem{proposition}{Proposition}
 \newcommand{\R}{\mathbb{R}}
-\title{Relational Verification of Weighted Mixture-of-Experts Programs:\\Scoped Reuse and Explicit Proof Contracts}
-\author{Author details omitted for pre-submission review}
-\date{Technical review draft, 25 September 2026}
+\title{Verifying Route-Variable Mixture-of-Experts Programs:\\Obligation Reductions and Empirical Limits}
+\author{Author details omitted for technical review}
+\date{Technical review draft, 29 October 2026}
 \begin{document}
 \maketitle
 \begin{abstract}
-Input perturbations can change a mixture-of-experts (MoE) program's dispatch
-without violating its output property. Requiring route invariance can therefore
-exclude safe regions, while independently bounding experts loses common-input
-relationships. We develop an ACT analysis using HybridZ for output-layer weighted
-MoE programs that retains legal route guards and shared input factors. It
-combines expert-wise sufficient conditions, property-directed weighted
-obligations, scoped fact reuse, and route-complexity scheduling. In a frozen
-comparison on 100 new verification inputs and three fixed same-family models,
-the implementation gains 23 policy-accepted safety results over matched
-monolithic solving with no losses; all gains involve multiple recorded legal
-routes. These are empirical numerical-policy outcomes: a subsequent exact
-input audit finds containment gaps, and the historical bounds lack a complete
-source-to-output proof. A separate ablation supports the contribution of shared
-expert relationships. An ACT-fronted plain CROWN path is much cheaper and has
-more numerical positive filters overall, with complementary ACT-only outcomes.
-A separate repaired MetaMoE author-checkpoint comparison gives nine author
-numerical filters versus four ACT policy acceptances, with no ACT-only positive.
-Independent rational checking establishes complete positive results for some
-supplied-HZ requests under upstream assumptions. A newer declared-source
-construction checks a convolutional enclosure but does not obtain a complete
-positive output on its new matrices. We thus contribute a scoped organization
-of weighted verification obligations and evidence of its benefits and limits,
-not universal backend superiority or source-complete high-accuracy certification.
+A mixture-of-experts (MoE) program may preserve its output property while its
+route changes under perturbation. We organize verification over all tie-legal
+routing histories and reduce guarded, weighted output obligations to static
+neural verification problems. The reductions connect complete route coverage,
+output-side guard specifications, and an independent-gate relaxation with exact
+last-gate endpoint obligations. We evaluate these constructions with a strong
+nonlinear branch-and-bound engine rather than assuming a specialized abstract
+representation is necessary. In a 180-object multilayer comparison, a pruned
+frontend obtains 108 numerical positives, while naive enumeration and our
+initial HybridZ implementation obtain none. A subsequent 300-object paired
+comparison gives 122 positives with a gate-decoupling cascade versus 116
+without it: nine gains, three losses, and a net two percentage points with an
+input-block interval of [0,4]. This fails the registered five-point practical
+threshold. A revised, baseline-preserving guard-dual diagnostic closes one of
+eleven histories and also fails its admission threshold. The evidence supports
+complete-obligation reductions, local mechanism effects, and an empirical map
+of limitations, not stable superiority or a source-complete strict verifier.
+Historical input-containment gaps and the numerical status of backend bounds
+remain explicit. Larger-radius and single-layer boundary queues are pending.
 \end{abstract}
 
 \paragraph{Review status.}
-This is a condensed, venue-neutral research draft, not a claim of completed
-human review, anonymous artifact release, or acceptance readiness. Detailed
-derivations and preserved negative experiments accompany the longer sections.
-No new verification experiment was run to produce this manuscript.
+This venue-neutral draft replaces the September short manuscript as the current
+reading entry. Historical manuscripts and immutable review kits remain archived.
+It is not an official submission template, independent human review, or clean
+empirical reproduction. The remaining frozen queues can extend the evaluation;
+they cannot change the completed primary decision. No new model query was run
+for this manuscript update.
 
-\section{Problem and contribution}
-Data-dependent routing makes a MoE a piecewise program. The verification
-problem concerns all permitted executions, not merely the route observed at
-the clean input. An expert output possible somewhere in an input box may be
-impossible where that expert is selected. Two individually possible expert
-outputs may also be impossible at the same input. Erasing these relationships
-can lose useful safety information even after every path has been enumerated.
+\section{Question and scope}
+Data-dependent dispatch makes a MoE a piecewise program. Proving that its route
+never changes is sufficient in some cases but unnecessary for output robustness.
+Conversely, finding an unsafe expert or a negative relaxation lower bound does
+not establish an unsafe complete execution. The obligation concerns the same
+input, the routers and experts it reaches, and every legal tie resolution.
 
-Our software-analysis question is: \emph{how should a verifier retain dispatch
-conditions and common-input relationships while organizing complete weighted
-output obligations within a fixed budget?} We study eval-mode, output-layer
-selected-softmax top-2 programs on CPU/float64. The normalized top-$k$ algebra
-generalizes, but the production interface evaluated here does not cover
-arbitrary internal or token-level routing histories.
+Our question is which complete verification reductions expose that structure
+effectively to existing engines, and when their additional cost is worthwhile.
+We contribute a scoped organization of guarded obligations and a comparative
+study of route decomposition, prefix pruning, and gate relaxation. The claim is
+not that path splitting, weak duality, hybrid zonotopes, or endpoint affine
+optimization is individually new. Whether their instantiation and the empirical
+findings constitute a sufficient research contribution requires independent
+technical and literature review.
 
-We contribute (1) a relational organization of legal route and output
-obligations using ACT and HybridZ; (2) property-directed weighted verification with
-domain-scoped fact reuse and a frozen structural schedule; and (3) an evaluation
-that separates empirical policy acceptance, conditional rational proofs, and
-checked source construction. Hybrid zonotopes, convexity, McCormick envelopes,
-proof reuse, and algorithm selection are not individually claimed as new.
+The current experiments cover eval-mode CIFAR-10 MLPs with output or internal
+selected-softmax top-2 routing, including residual variants. They use CPU/double
+precision and an explicitly modified compatibility snapshot of the general
+nonlinear verifier GenBaB~\cite{genbab}. They do not establish results for
+arbitrary token-level MoE, native floating-point execution, or new high-accuracy
+architectures. The earlier ACT implementation using HybridZ~\cite{hz} and its proof
+artifacts supply comparison and trust-boundary evidence, not a replacement for
+the stronger external engine.
+In configuration names, $L$ is the number of routed layers, $E$ the experts per
+layer, and $R$ denotes a residual variant. Model and training details remain
+bound to the stage manifests rather than selected by verification success.
 
-The main comparison shows new-input gains over two internal configurations,
-not a population-wide certified accuracy or independent-tool dominance. We
-retain the external path's lower cost, the second family's absence of positive
-production results, and the source-containment obstruction in the main text.
-These findings limit the practical and formal claims of the method. The
-separate class-separated top-1 author-model comparison below is an adapter
-evaluation, not an expansion of the weighted top-2 theorem's empirical scope.
-
-\section{Semantics and conditional proof rule}
-Let $X$ be the \emph{declared} perturbation set, $r:X\to\R^E$ the router,
-and $E_i:X\to\R^C$ the experts. A legal unordered route $S$ of size $k$
-satisfies $r_i(x)\ge r_j(x)$ for every $i\in S,j\notin S$. The weak
-inequalities include every tie-legal route. On its guarded domain $X_S$,
-the output is
+\section{Complete-output semantics and reductions}
+For an input set $X$, let layer $\ell$ receive $h_{\ell-1}$, compute router
+scores $r_{\ell,e}$ and expert outputs $E_{\ell,e}$, and select an unordered
+pair $S_\ell=\{a,b\}$. The pair is legal whenever each selected score is at
+least each unselected score. Equality is included. With a fixed pair,
 \[
- F_S(x)=\sum_{i\in S}\lambda_i(x)E_i(x),\qquad
- \lambda_i(x)\ge0,\quad\sum_{i\in S}\lambda_i(x)=1.
+ h_\ell=\rho_\ell h_{\ell-1}
+       +\lambda_\ell E_{\ell,a}(h_{\ell-1})
+       +(1-\lambda_\ell)E_{\ell,b}(h_{\ell-1}),\qquad
+ \lambda_\ell=\sigma(r_{\ell,a}-r_{\ell,b}),
 \]
-For selected-softmax, normalization is over the selected experts, not all
-experts. Fix rows $p_\ell(v)=q_\ell^\top v+c_\ell$; classification uses
-the clean label's margin against every other class. The target is
-\begin{equation}\label{eq:target}
- \forall x\in X,\ \forall S\text{ legal at }x,\ \forall\ell:
- p_\ell(F_S(x))>0.
-\end{equation}
-This is a mathematical real-program target. The production float64
-implementation does not thereby prove its own deployed arithmetic semantics.
-
-\paragraph{Shared relation.}
-A hybrid zonotope represents an affine image of bounded continuous and
-discrete factors subject to linear constraints. Router and expert analyses
-share the input-factor identities and relevant route constraints. Distinct
-expert activation choices remain distinct factors. Duplicating input factors
-loses correlation; merging independent activation factors can unsoundly
-remove executions. Completed route analysis supplies a covering family
-$\widehat{\mathcal S}$; the implementation requires its exact-query protocol
-to complete under the numerical policy. An incomplete query is not evidence
-that the unexamined route is unreachable.
-
-\paragraph{Scoped facts.}
-Write $X_i$ for the domain where expert $i$ belongs to some legal route.
-Since $X_S\subseteq X_i$ for $i\in S$, a valid membership-domain bound
-$p_\ell(E_i(x))\ge L_{i\ell}>0$ remains applicable on $X_S$.
-If every selected expert has such a fact for the same row, normalized
-nonnegative weights prove the row with lower bound
-$\min_{i\in S}L_{i\ell}$. This rule transfers a fact, not an abstract
-state with possibly incompatible factor numbering. Identity includes model,
-input domain, property, expert, factor frame, and numerical contract.
-
-\paragraph{Residual weighted obligations.}
-For pair $S=\{a,b\}$, define in the \emph{same} factor space
+where $\rho_\ell\in\{0,1\}$ denotes a compatible residual connection. An
+ordinary affine output head is allowed. For a history $H=(S_1,\ldots,S_L)$,
+let $F_H$ be its specialized static graph and $g_{H,j}(x)\geq0$ all of its
+prefix-dependent legality conditions. Define
+$X_H=\{x\in X:\forall j,\ g_{H,j}(x)\geq0\}$.
+The target is
 \[
- u=q^\top E_b+c,\quad d=q^\top(E_a-E_b),\qquad
- p(F_S)=u+\lambda d.
+ \forall H\;\forall x\in X_H\;\forall k,\quad
+ p_{H,k}(x)=q_k^\top F_H(x)+c_k>0.
 \]
-F0 introduces one scalar product for this property instead of a product for
-every output coordinate. Given sound intervals $\lambda\in[l,h]$ and
-$d\in[L,H]$, its outer envelope includes
-\begin{align*}
- w&\ge l d+L\lambda-lL,& w&\ge h d+H\lambda-hH,\\
- w&\le h d+L\lambda-hL,& w&\le l d+H\lambda-lH.
-\end{align*}
-The common-input dependence between $u$ and $d$ is retained. The envelope
-may still discard dependence of the gate on those factors. It is not an exact
-MILP encoding of softmax. Nonpositive relaxed bounds alone establish neither
-network unsafety nor impossibility of a stronger proof.
+All quantities in a history use the same input and upstream selected execution.
+A list of conservatively possible histories is not a proof that each is
+reachable; observed route flips also do not exhaust the legal set.
 
-\begin{proposition}[Conditional complete-output composition]\label{prop:complete}
-For a top-2 program, suppose $\widehat{\mathcal S}$ covers every tie-legal route on $X$.
-For every route/property obligation, suppose either valid scoped expert facts
-prove the row, or an outer enclosure of its joint guarded relation has a
-valid strictly positive lower bound for the weighted property. If these
-facts and enclosures bind the same model, domain, property and semantics,
-then~\eqref{eq:target} holds.
+\begin{proposition}[Complete-obligation composition]
+Suppose a finite history cover contains every legal execution on $X$.
+For every retained history and property, suppose a valid lower bound over
+$X_H$ is strictly positive, or the history has a valid emptiness proof.
+Then the complete MoE satisfies all the properties on $X$.
 \end{proposition}
 \begin{proof}
-Fix an input, a legal route and a property. Coverage includes that route.
-In the reuse case, domain containment makes every expert fact applicable
-at this input; convexity gives the minimum positive expert bound, including
-the property constant because the weights sum to one. In the residual case,
-the concrete shared factors, true gate and $w=\lambda d$ satisfy the outer
-enclosure, so its valid lower bound also bounds the concrete property.
-Every obligation is discharged and the choice of execution was arbitrary.
+Every legal execution belongs to a covered history and satisfies that history's
+guards. Its output equals the specialized graph's output. Apply each valid
+row bound. At a tie, the same argument applies to every legal choice.
 \end{proof}
-The proposition does not assert that every floating implementation satisfies
-its hypotheses. A missing route, unchecked row or expired checker cannot
-discharge an obligation. An expert-only violation is UNKNOWN unless an
-in-domain input violates the complete routed model on replay.
+The hypotheses include valid input enclosure, correct graph conversion, and
+sound route exclusions. A timeout, partially enumerated tree, or structural
+receipt check does not supply a missing hypothesis. Domain-scoped facts may
+replace an obligation only when their property and source match and their
+proved domain contains the target guarded domain.
 
-\section{Execution, reuse and fairness}
-The current execution first obtains route coverage and cheap guarded expert
-interval facts, without support-tightening solves in that common prelude.
-With one legal pair it goes directly to weighted solving: gate weights remain
-input-dependent. With multiple pairs, it allocates at most 25\% of the then
-remaining budget to expert-wise verification before residual F0. Incomplete
-Tier~1 solving may continue to F0 while total budget remains. A replayed
-full-model violation or a complete proof can terminate early.
-
-The 25\% rule is a frozen design, not an optimal-allocation theorem. Prior
-development found monolithic solving superior in total coverage and staged
-solving complementary on multi-route cases. That finding motivated the rule;
-it is preserved rather than relabeled by later results.
-
-The primary matched-monolithic comparator computes the same common facts
-independently and pays their cost. For each property it partitions pairs into
-reused and residual obligations, solves the residual disjunction, and takes
-the minimum across both parts. The legacy monolithic configuration remains a
-secondary comparator; it is not retroactively forced to adopt the new prelude.
-These are internal configurations with shared HZ/F0 machinery, not three
-independent external tools. Method-specific Tier~1 search is not silently
-donated to the other arm as a free fact.
-
-Every request has a 300-second outer cap including startup, loading, route
-analysis, propagation, construction and solving. Common-fact snapshots are
-published before method-specific search. Terminal ledgers retain watchdog
-terminations even when no final package exists. Separate post-run audits
-are not charged as if they were production verification; independently
-checked evidence experiments separately disclose their own accounting.
-
-\section{Guarantee contracts and independent evidence}\label{sec:contracts}
-We distinguish four layers, which must not be collapsed into a single SAFE
-claim. First, Proposition~\ref{prop:complete} is a real-arithmetic result
-conditional on valid coverage and enclosures. Second, historical HZ/HiGHS
-SAFE denotes acceptance by frozen optimal-status, bound-correction and
-positive-margin policies. Third, rational checking validates supplied
-constraints and lower-bound certificates. Fourth, a declared-source checker
-can establish how particular matrices enclose a particular graph and domain.
-None automatically proves execution equivalence with arbitrary native kernels.
-
-\paragraph{Concrete obstruction in the main cohort.}
-A saved-only exact audit reconstructs the frozen input formula rather than
-recovering old intermediate traces. The requested rational $2/255$ box is
-not contained in that formula's box on all 100 inputs (257,850 inward
-coordinates); interpreting epsilon as its exact binary64 value also fails
-on all inputs (197,704 coordinates). Both interpretations have 50,512 outward
-coordinates across all 100 inputs: the boxes are not nested. All 23 primary
-gain model--input pairs are affected. This is not a network counterexample,
-but it prevents a source-complete real-box interpretation of the main table.
-Common defects across arms, tiny gaps, or large old output margins do not
-repair the missing containment argument. Corrected construction could change
-both route coverage and outcomes; no such counterfactual result is reported.
-
-Independently, the native solver correction policy lacks a checked general
-error-coverage argument. Its $10^{-9}$ correction scales and $10^{-7}$
-candidate-policy tolerances concern different quantities; comparing those
-numbers is not a soundness proof or a proof of unsoundness. Downstream
-conversion remains another unclosed premise for the historical bounds.
-
-\paragraph{Exact downstream checking.}
-For a finite-box LP $\min c^\top z+d$ with $Az\le b$, $Ez=h$ and
-$l\le z\le u$, take $y\le0$, arbitrary $v$, and
-$r=c-A^\top y-E^\top v$. Then
+\begin{proposition}[Guarded specification as output atoms]
+For a fixed history and property, the guarded property above is equivalent to
 \[
- B=d+b^\top y+h^\top v+\sum_j\min(r_jl_j,r_ju_j)
+ \forall x\in X,\quad
+ s_H(x)=\max\{p_H(x),-g_{H,1}(x),\ldots,-g_{H,J}(x)\}>0.
 \]
-is a valid lower bound. This follows by substitution, the signs of $y$,
-and coordinatewise minimization of the residual on the box. The checker
-uses exact rational arithmetic; a numerical solver only proposes multipliers.
-It reconstructs projections and McCormick rows from the supplied shared HZ,
-with explicit continuous relaxation of binary factors. It need not trust a
-solver's optimal-status or objective report. Validity of the supplied HZ,
-guard lowering and route exclusions nevertheless remains an upstream premise.
+\end{proposition}
+\begin{proof}
+At a legal point all $-g_{H,j}$ are nonpositive, so $s_H>0$ requires $p_H>0$.
+At an illegal point at least one $-g_{H,j}$ is positive, satisfying the formula
+regardless of the property. These cases exhaust $X$.
+\end{proof}
+The maximum is representable with ReLU operations. Strict positivity preserves
+tie obligations; replacing it by a non-strict check would not prove the stated
+property. Logical equivalence does not imply that a finite-budget relaxation
+uses an output atom as effectively as an input-domain constraint. Prefix pruning
+uses its own bounds to exclude impossible extensions, never another arm's
+route answers. An unfinished extension remains in the coverage denominator.
 
-The older input98 bundle checks all nine output obligations positively under
-those premises. Its portable check does not load a checkpoint or solver.
-A later path checks represented-input containment, affine compensation,
-expert layers, factor maps, route exclusions and new output construction for
-a declared convolutional graph. Its new output bounds are nonpositive or
-missing. Positive duals for the old matrices cannot be attached to these new
-matrices. The complete source-checked positive request remains unestablished.
-Input98 follow-up is stopped; this draft initiates no new local optimization.
+\subsection{Independent gates and last-gate endpoints (M-A)}
+For each history prefix, obtain a valid margin range and an enclosing sigmoid
+range $[l_\ell,u_\ell]$. Replace its gate by an independent variable in that
+range. Every original execution embeds in this enlarged relation by choosing
+its actual gates. Inductively this gives an outer relaxation provided all
+ranges are valid on the relevant original prefix domain and any retained
+constraints also contain the original execution. Gate independence loses
+router--expert correlation; it is not an exact transformation.
 
-\section{Evaluation}
-We ask four separate questions: RQ1, does the frozen execution improve
-complete policy outcomes on new inputs? RQ2, does common-input relationship
-retention contribute? RQ3, what value remains against a runnable external
-path? RQ4, which guarantees and model families transfer? Different cohorts
-and evidence grades are not pooled.
+\begin{proposition}[Last-gate endpoint reduction]
+Suppose the suffix after the last mixed expert output is affine, and the domain
+of upstream variables $z$ and retained guards is independent of the last gate.
+Write a property as $b(z)+\lambda d(z)$ for $\lambda\in[l,u]$. Then
+\[
+ \inf_{z,\lambda\in[l,u]}\{b(z)+\lambda d(z)\}
+ =\min\{\inf_z[b(z)+l d(z)],\inf_z[b(z)+u d(z)]\}.
+\]
+\end{proposition}
+\begin{proof}
+For each $z$ the affine function of $\lambda$ attains its minimum at an
+endpoint. Infimum commutes with the minimum of these two functions.
+\end{proof}
+Both endpoints must close for every property. This statement does not turn
+all inner variable gates into pure ReLU computations; they still multiply
+expert outputs. Nor does it justify endpoint substitution through a nonlinear
+suffix. For fixed $z$, replacing a gate by another value within its range
+changes this property by at most $(u-l)|d(z)|$. Multilayer output error requires
+additional downstream sensitivity bounds, not a sum of unpropagated widths.
 
-\input{results/submission_tables.tex}
+The complete-request cascade first tries the relaxed history with an at-most
+120-second phase cap, then uses only the remaining request time for coupled
+GenBaB. Every phase is charged to the same 300-second request. A failed relaxed
+proof is UNKNOWN; a relaxed violating point requires original-model replay.
+Keeping an old candidate does not recover time spent on a failed phase.
 
-\paragraph{RQ1: new-input internal comparison.}
-The primary family consists of three frozen eight-expert MLP training runs,
-approximately 48\% clean accuracy. The 100 images are common clean-correct
-inputs selected by dataset order after excluding prior verification sets,
-not by route complexity or expected outcome. Earlier whole-test telemetry
-is disclosed: these are new verification endpoints, not wholly unseen images.
-Each request specifies a clipped $L_\infty$ radius $2/255$;
-Section~\ref{sec:contracts} distinguishes this requested set from the
-constructed input set.
-The earlier 30-input study is separate. Model, configuration, radius and
-selection were frozen before the 900 calls; order rotates within input blocks.
+\subsection{Guard duals and margin partitions (M-B/M-C)}
+For nonnegative multipliers $\beta$, any certified bound
+\[
+ L(\beta)\leq\inf_{x\in X}
+       \left[p_H(x)-\sum_j\beta_jg_{H,j}(x)\right]
+\]
+is a lower bound for $p_H$ on $X_H$. This is weak duality, not a new theorem.
+CROWN~\cite{crown} parameters and guard multipliers can be optimized jointly.
+The zero multiplier permits an unconditioned candidate, but an independently
+optimized finite trajectory need not reproduce that candidate's best bound.
+The corrected diagnostic retains every baseline row maximum before refinement.
+It separately pays for an equal-extra-alpha continuation to distinguish guard
+benefit from additional optimization.
 
-Table~\ref{tab:confirmation} totals 179, 156 and 141 policy acceptances.
-Relative to matched, adaptive gains 23 SAFE and 37 solved model--input pairs
-without losses. Every SAFE gain has multiple recorded policy-feasible pairs;
-two finish in Tier~1 and 21 in F0 with reuse recorded. This is not a concrete
-route-flip witness for every native implementation, or casewise causal
-attribution to reuse. Relative to legacy there are 40 SAFE gains and two
-losses, so no solution-set dominance. All 900 calls are retained, with 739
-complete packages and 161 outer timeouts; 300 common-fact pairs agree.
+Even an exact scalar dual can have a gap. For $x\in[-1,1]$,
+$p=x+1/10$ and $g=\operatorname{ReLU}(x)-1/4\geq0$, the constrained minimum
+is $7/20$. The best scalar dual is instead
+\[
+ \sup_{\beta\geq0}\min\{-9/10+\beta/4,\;11/10-3\beta/4\}=-2/5.
+\]
+This analytic control explains why a negative dual bound alone cannot diagnose
+an optimizer failure or unsafe original execution.
 
-The mean primary SAFE difference is 7.67 percentage points with the frozen
-input-clustered descriptive bootstrap interval [4.67,11.00]. Resampling keeps
-the three fixed models together for each input; 300 pairs are not 300
-independent images or a population of architectures. Mean all-request costs
-are 81.71, 111.57 and 153.27 seconds. Different result sets and concentrated
-long-tail savings preclude a uniform same-proof speedup claim.
+Closed margin cells can cover a parent domain, with overlaps at boundaries.
+Each cell requires all output obligations; absent cells prevent a positive
+aggregate. A cell restriction can be encoded as guard atoms or dualized rows,
+with different finite relaxation behavior. The tested first-layer M-C used
+output-side conditions. A proposed last-layer dual-conditioned variant was
+conditional on revised M-B admission and was not run after that gate failed.
 
-\paragraph{RQ2: shared-input ablation.}
-On ten observed inputs and three models, a separate 60-call study replaces
-the shared expert relation with a block-diagonal product that retains each
-expert's constraints but duplicates their input factors. Every original
-joint assignment embeds in that product; it is a sound enlargement given
-the source abstractions. The shared arm gains three policy SAFE and five
-solved pairs without losses. For seed1/index4018 and seed2/index4014, the
-independent arm completes but remains relaxation-undecided; both are
-multi-route. For seed2/index4018 it reaches a solver limit. This supports a
-relational precision mechanism on two cases, not an attribution of all
-timing or RQ1 gains. Variable count and solver cost also change.
+\section{Experimental design and evidence grades}
+Training, checkpoint selection, input exclusion, radius, arms and stopping rules
+are bound to stage-specific execution versions. Models use fixed validation
+selection, not verification outcome selection. New verification inputs follow
+a fixed ascending clean-correct rule outside historical identities; earlier
+whole-test telemetry is disclosed. The primary cascade uses fifteen fixed
+multilayer models (five configurations, three seeds) and twenty common inputs
+at $2/255$. Three hundred model--input objects are not three hundred independent
+images. Ten thousand bootstrap replicates resample the twenty input blocks,
+carrying every model and paired arm together. Intervals describe these fixed
+models, not random architectures or future training runs.
 
-\paragraph{RQ3: runnable external path.}
-The comparator is explicitly ACT route analysis plus plain CROWN on each
-variable-weight static pair over the whole input box. Router and experts
-still share the same input; weights are not frozen and the clean route is
-not the only obligation. Proving every pair on the whole box is a sufficient
-path, though stricter than proving it only on its guard. The configuration
-is not full alpha-beta-CROWN with branch-and-bound.
+All arms use the same R7 compatibility engine within the paired comparison.
+Compatibility changes, worker-tail repairs and failed attempts are disclosed;
+the experiment is not an unchanged-author-code claim. One publication/cleanup
+failure exceeded the outer limit, costing 301.579 seconds; it remains ERROR
+and is charged. Later supervision reserves cleanup time, giving a 288-second
+worker deadline within the 300-second request. Only unexecuted requests resume.
+Complete costs include loading, propagation, queries, reception and cleanup.
+Shared-host load limits fine-grained timing interpretations.
 
-On ten observed inputs and three models (Table~\ref{tab:external}), the
-external path has 13 numerical positive filters versus 11 HZ-policy
-acceptances, with eight shared, three ACT-only and five CROWN-only outcomes.
-All ACT-only counterparts complete with nonpositive CROWN bounds, not frontend
-errors; two are multi-route. All CROWN-only counterparts are ACT solver-limit
-UNKNOWN. Means are 4.23 versus 138.11 seconds, including cross-environment
-handoff. Immutable raw-input preparation is disclosed separately and excluded
-equally. This establishes limited complementarity and a real cost challenge,
-not ACT dominance; grades differ, and counterexample counts are not extra
-safety certificates or a matched attack comparison.
+POSITIVE means a complete numerical filter under the frozen backend policy,
+not outward-rounded formal SAFE. UNKNOWN, TIMEOUT and ERROR are kept distinct.
+Public PGD counterexamples require full-model replay; they annotate the public
+cohort and are not free arm-generated successes. Negative bounds are not
+counterexamples. Structural audits recompute identities and accounting, not
+all floating-point bounds. Independent rational LP checks and checked source
+conversion are stronger but separate evidence grades.
 
-\paragraph{RQ3: repaired MetaMoE author-model comparison.}
-A separate 20-call follow-up uses ten already observed inputs (five CIFAR-10,
-five MNIST) and the same author checkpoint, materialized inputs and properties
-in both arms. The task is class-separated raw-score top-1 with 19 global
-output margins, normalized-space radius $2/255$ clipped to $[-10,10]$, and a
-300-second whole-request budget. It is not the main weighted top-2 cohort or
-a pixel-radius comparison. The author arm runs its backend with a disclosed
-lAs compatibility wrapper and strict route-invariance sufficient adapter,
-not an unchanged author-tool execution. The original stopped run remains
-separate; no old and new results are spliced.
+\input{results/current_review_tables.tex}
 
-Table~\ref{tab:metamoe} has four ACT policy acceptances versus nine author
-numerical filters: four shared, zero ACT-only, and five author-only CIFAR-10
-cases. All ACT positives are route-stable. The formerly crashing author
-request now times out after seven checked metadata restorations and native
-insertions; compatibility is improved, but no new certificate follows.
-This observed cohort provides no ACT competitive advantage. Distinct evidence
-grades are not a reason to dismiss the practical coverage deficit.
+\section{Results and stopped hypotheses}
+\subsection{Routing decomposition and the multilayer bottleneck test}
+A preceding selected single-layer comparison with guarded GenBaB passes all
+60 historical positives and closes 17 of 41 historical failures; 22 remain
+unknown and two are errors. This is a diagnostic cohort, not a new-input
+population win. It motivates testing stronger generic engines directly.
 
-The smaller all-request ACT mean is driven by the unresolved author timeout.
-On nine normally returned pairs ACT is 16.03 seconds slower on average;
-on four common positives the means are 10.55 versus 7.17 seconds. Saved logs
-record 116 excluded output violation regions and 93 local timeouts, out of
-209 obligations. Repeated setup and short per-property budgets are observable;
-the hard MNIST request also lacks completed route/base obligations. None of
-this establishes a relaxation impossibility or a counterfactual success with
-more time. No new solve or tuning is used in this diagnosis.
+The separate stage-1a study completes all 600 calls: three multilayer
+configurations, three seeds, twenty inputs, three arms, plus sixty
+single-layer pruning anchors. Table~\ref{tab:multilayer} shows 108/180
+multilayer numerical positives for pruned GenBaB and none for naive enumeration
+or ACT v1. ACT's zero consists of 178 TIMEOUT, one ERROR and one UNSUPPORTED,
+not 180 solver timeouts. The single-layer anchor closes 52/60.
 
-\paragraph{RQ4: transfer and proof completion.}
-A separately fixed four-expert convolutional family has 155,052 parameters
-and 67.06\% full-test accuracy. Checkpoint selection uses validation accuracy,
-not verification results. Its 30-input comparison has no HZ-policy positive;
-adaptive's six additional decisions are replayed violations. In a separate
-20-new-input evidence study, no arm produces a positive result: matched
-returns ten UNSAFE and ten TIMEOUT, evidence mode twenty TIMEOUT, and CROWN
-seven UNSAFE and thirteen UNKNOWN. A postselected conditional proof therefore
-does not establish transferable positive coverage.
+After excluding replayed unsafe cases, the L3E8 pruning arm leaves 19/52
+requests without complete coverage and L2E16 leaves 11/58. These counts alone
+do not identify combinatorial explosion. A supplemental attribution rule,
+registered after a 189-call prefix, finds many-history dominance in only 2/52
+and 0/58 respectively. That timing is disclosed: the rule is not retroactively
+called fully preregistered. The route-union proposal stops under this rule.
+The result rejects that finite proposal's motivation on these models, not all
+multilayer routing bottlenecks or all HybridZ representations.
 
-The fixed MLP index3000 request has 18/18 conditionally checked output
-obligations. Transferring fresh evidence generation to the three ACT-only
-external cases yields 46/54 positive obligations but zero complete positive
-requests; these cases are postselected, not a new success-rate estimate.
-The old input98 conditional proof and the newer source-checked output
-noncompletion in
-Section~\ref{sec:contracts} further separate checking coverage from positive
-coverage. A checked nonpositive lower bound is neither an unsafe witness
-nor proof that the LP optimum cannot be positive.
+\subsection{Complete-request cascade: a real but insufficient gain}
+Tables~\ref{tab:primary} and~\ref{tab:families} report the completed primary
+comparison. Coupled and cascade arms share 113 positives; nine are gained and
+three lost. The net $6/300=2$ percentage points has input-block 95\% interval
+$[0,4]$. The registered admission requires a positive interval lower endpoint,
+at least five percentage points, and median cost no more than twice baseline.
+The practical-effect gate clearly fails; the decision is STOP, not gray.
+Near-identical medians in a timeout-dominated table are not general speedup.
 
-\paragraph{Where the later same-source pipeline stops.}
-Seven separately frozen engineering calls on four observed MLP inputs
-(4088, 4096, 4098, 4099) end in six timeouts and one sampled-memory limit.
-All retain 252 original output obligations. None reaches a native output LP
-query or publishes a complete retained expert/output construction; there are
-zero new output bounds or complete positive proofs. In the latest shared-router
-run, checked exclusions discharge 225 duties online, leaving 27 on three
-potential pairs. Potential pairs do not establish actual route change.
-Offline router checks on other stopped calls are not retroactive online
-discharges. The last real in-memory construction returns at 282.95 seconds,
-before a publication-stage resource stop; only about 15 seconds remain before
-the work cutoff, with source and output checks still outstanding.
+All nine gains use 26 relaxed history closures and no coupled fallback. Of
+52 endpoints, 48 close in initial bound propagation and four in nonlinear
+branch-and-bound. Gains concentrate in two-layer configurations. Their
+1,530-second saving is outweighed by 2,459 extra seconds on 113 shared positives
+and 334 on the three losses; neither-positive pairs save 155 seconds without
+being solved. Net request cost rises by 1,109 seconds. Two losses spend large
+budgets in unclosed relaxed phases. Another completes sixteen such phases but
+runs out before covering all histories. These traces do not establish that a
+different phase cap would fix the loss; the cap is not retuned.
 
-A subsequent four-call synthetic control completes fresh upstream construction
-and checking, but intentionally generates no output bounds. Readonly parsing
-lowers whole cost on one object (0.241 to 0.222 seconds) and increases it on
-the other (0.407 to 0.438 seconds), with one observation per arm. It remains
-optional, with no real-request speed or proof-completion claim. These records
-locate an execution frontier before output solving; they do not diagnose
-insufficient output relaxation or justify another sample automatically.
-The saved-only proof-frontier ledger accompanies the artifact; it is accounting,
-not an independent reproof or an additional confirmation cohort.
+The paid minus-M-A ablation on six fixed models yields 64 versus 68 positives,
+six gains and two losses, with interval $[-0.833,8.333]$ points. Its median costs
+are 35.894 versus 132.610 seconds. Separately paid coupled runs disagree on four
+terminal outcomes, including one positive becoming TIMEOUT. Four outcome
+changes among 120 are not an estimate of three-percentage-point SAFE noise;
+several changes concern two nonpositive terminal categories.
 
-\section{Related work and novelty boundary}
-Hybrid zonotopes already represent ReLU networks~\cite{hz}; our contribution
-is not that representation alone. DNNV supports property reduction and
-cross-verifier interfaces~\cite{dnnv}. We specialize obligation formation to
-tie-legal dispatch, normalized weighted outputs and shared-factor identity.
-MetaMoE studies compositional MoE verification~\cite{metamoe}. Our historical
-route-invariance baseline is a labeled reimplementation. The new, separate
-author-checkpoint/backend comparison uses an explicitly repaired sufficient
-adapter and favors the author path; these are not the same experiment.
-Route changes not necessarily implying output errors are not claimed as a
-new observation.
+Public PGD finds 26 replayed counterexamples with no positive conflict. Twelve
+objects have multiple observed histories and show no gain or loss; one observed
+history in the rest does not prove stability. The larger-radius and single-layer
+queues are still running. Their outcomes will be reported separately and cannot
+replace the primary cohort or stopping rule.
 
-CROWN provides static-network bounds~\cite{crown}; modern constraint-driven
-methods such as Clip-and-Verify exploit constraints within branch-and-bound
-~\cite{clip}. Our plain-CROWN experiment neither measures those complete
-systems nor sets their capability ceiling. Our monolithic F0 is a disjunction
-of the same outer relaxations, not exact softmax MILP or a public-tool ranking.
+\subsection{Guard and margin diagnostics}
+Original M-B compares two independent twenty-evaluation trajectories on eleven
+histories and obtains no closure gain. That test is insufficient to isolate
+adding guards after alpha optimization; its valid numerical records are kept.
+Original M-C tests twenty-seven histories with first-margin two/four-cell
+partitions. There are no added closures. Median complete initial-score changes
+are $+0.149568$ and $+0.427032$ over 25 and 19 observed pairs respectively; two
+and eight missing score pairs are not imputed. On the nineteen common complete
+pairs, median initial-bound costs rise from 62.240 seconds to 123.406 and
+207.825. These findings concern this implementation, not every conditional
+margin split.
 
-FastCert reuses intermediate templates across queries~\cite{fastcert};
-incremental Marabou verification inherits conflicts under query refinement
-~\cite{conflicts}. We instead reuse row-specific expert facts within a single
-request using pair-to-membership domain containment. We do not claim first
-use of refinement or proof sharing in neural verification. Source-semantics
-frameworks such as TorchLean~\cite{torchlean} address a related semantic gap;
-our executed rational checker is not a Lean-kernel proof of the entire stack.
-No speedup from a different task is imported as a baseline result here.
+The corrected M-B test runs 22 paid calls on the same eleven histories, with a
+shared twenty-evaluation alpha prefix and forty continuation updates. It
+restores an actually evaluated alpha state, starts beta at zero, charges a
+fixed small gradient probe, and retains all baseline row maxima. All calls
+complete within budget; Table~\ref{tab:guard} gives one local closure versus
+none for equal-extra-alpha. For that residual two-layer history, the minimum
+bound moves from $-5.532507$ to $-5.268918$ with alpha alone and to $1.059180$
+with guard refinement. All 99 baseline row bounds are retained; eleven new
+positive rows produce only one fully closed history.
 
-\section{Limitations and reproducibility}
-The strongest empirical gain is within three fixed, low-accuracy same-family
-models on selected clean-correct inputs. The second-family negative results
-remain part of the claim, and high-accuracy cross-family route-changing strict
-certification is open. Program semantics cover output-layer routing, not
-arbitrary token dispatch or co-batch-dependent training-mode BatchNorm.
+The raw median minimum-bound improvement over the original prefix is 57.960907,
+but cannot all be assigned to guards. Against paid extra-alpha continuation,
+eight objects improve and three decrease, with median difference 0.323164 in
+unscaled model logit units. Different continuation trajectories may differ
+without violating retention of their own prefix. All measured work, including
+controls and saved-record recount, totals about 25.04 minutes. The unchanged
+five-added-closures admission fails. M-B and the conditional last-margin M-C
+follow-up close; no new B4 or B5 is started. This local numerical positive is
+not a complete-request or source-complete certificate.
 
-The exact input audit is a concrete obstruction, not merely a generic
-floating-point caveat. Neither structural audits nor source-code labels
-establish the hypotheses of Proposition~\ref{prop:complete} for the main
-table. Conversely, this does not erase the observed execution differences or
-prove the underlying networks unsafe. Upgrading guarantees requires a newly
-identified same-source construction and evidence, not relabeling old counts.
+\section{Source contracts, history and independent evidence}
+The historical output-layer ACT comparison gives 179 policy acceptances versus
+156 for matched monolithic and 141 for the older strong monolithic path over
+100 inputs and three models. Its 23 primary gains remain frozen experimental
+outcomes. A later exact audit finds input-containment gaps affecting all 23;
+no source-complete strict claim follows from those old bounds. The requested
+and reconstructed input sets are not nested. This does not prove the trained
+models unsafe or determine what corrected executions would produce.
 
-Artifacts separate archived-table reconstruction, actual model verification,
-and stored-proof checking. Committed review files suffice to rebuild the
-tables without numerical packages. A local portable real conditional bundle
-has been relocated and checked, but trained weights, raw inputs and full
-empirical bundles are not distributed with that table-only workflow. A fresh
-source-defined demonstration is a control, not empirical reproduction.
-Clean-environment trained-model reproduction, access/licensing arrangements
-and human independent method review remain open. No anonymous/public release
-or completed external review is asserted by this draft.
+A supplied LP can be checked independently with exact rational arithmetic.
+For $Ax\leq b$, $l\leq x\leq u$, objective $c^\top x+c_0$, and $y\leq0$,
+let $r=c-A^\top y$. A valid lower bound is
+\[
+ c_0+b^\top y+\sum_i\min\{r_i l_i,r_i u_i\}.
+\]
+Checking source coefficients, multiplier signs and the residual makes this a
+statement about that LP. It does not establish neural-to-HZ conversion, original
+input inclusion, guard lowering or omitted-route infeasibility. Portable old
+requests check all required outputs conditional on their supplied source;
+a newer checked source construction has not closed all new output obligations.
+Old positive bounds are never attached to new matrices. No sealed request is
+reopened for this paper.
 
-\paragraph{AI assistance and author responsibility (disclosure draft).}
-AI assistants participated in implementation, tests, experiment orchestration,
-analysis scripts, documentation and manuscript preparation. Another AI session
-provided criticism; it is not an independent human mathematical review.
-Claims in this paper must be traced to recorded executions or stated proofs,
-not assistant assertions. Before submission the human authors must finalize
-the tool/version inventory, verify the scope of assistance and references,
-and take responsibility for the claims. This paragraph is not a statement
-that those final human checks have already occurred.
+\section{Related work and comparison limits}
+Hybrid zonotopes~\cite{hz} provide mixed continuous/discrete representations;
+our unfavorable ACT v1 result is not a verdict on the representation family.
+CROWN~\cite{crown} and GenBaB~\cite{genbab} provide the underlying bound and
+general-nonlinearity algorithms. Existing output-constraint work such as
+INVPROP~\cite{invprop} and verification frameworks such as DNNV~\cite{dnnv}
+preclude claiming generic constraint dualization or static-graph adaptation as
+new. A routing-specific obligation contract and its evidence must carry the
+contribution; adding a guard multiplier to a generic engine alone does not.
+
+MetaMoE~\cite{metamoe} is a direct compositional-verification comparison with
+a different, class-separated hard top-1 object. Our disclosed compatible
+author-path comparison yields nine numerical positives versus four ACT policy
+acceptances on ten inputs, with no ACT-only result. A separate earlier weighted
+pair comparison gives eleven ACT policy acceptances versus thirteen plain-CROWN
+numerical positives, with mean times 138.11 versus 4.23 seconds. Plain CROWN is
+not the full GenBaB baseline used here. These cohorts, guarantees and costs are
+not pooled.
+
+Dual Randomized Smoothing concerns statistical certificates for smoothed
+functions; RoME, Robust Experts and J-TLAT include empirical adversarial
+robustness, while Feature Noise studies other theoretical and empirical noise
+questions. The project's artifact/semantics ledger records execution and
+compatibility limits separately. Attack accuracy is not SAFE rate, continuous
+mixing is not silently changed to top-2, and no six-paper common-task victory
+is claimed. Precise novelty against these works remains a human review task.
+
+\section{Threats, reproduction and disposition}
+Selected hard-history diagnostics do not estimate full-request coverage.
+Timeouts and frozen-gate failures identify finite execution outcomes, not unique
+mathematical causes. In particular the evidence does not establish that all
+remaining difficulty lies in expert ReLU networks. Multiple training seeds,
+shared inputs, hardware variability, compatibility changes and reused observed
+diagnostic objects constrain generalization. Nonlinear backend positive filters
+are neither outward-rounded proofs nor deployed PyTorch/CUDA guarantees.
+
+The four current tables are reconstructed without model or solver calls.
+Run \path{scripts/render_current_review_tables.py} with \texttt{--check}.
+They use committed
+B4, multilayer-stage and revised-guard summaries. This checks accounting only.
+The repository review guide maps claims to exact records and retained raw
+identities. Historical table kits remain immutable historical snapshots; the
+new manuscript does not silently update their manifests. Independent human
+technical review, clean empirical execution, and distributable artifact rights
+remain unfinished and require PI coordination.
+
+\paragraph{AI assistance disclosure draft.}
+AI assistance covered implementation, orchestration, testing, analysis and
+writing, not only language editing. Human authors must verify the final claims,
+references, disclosure and contribution judgments. No human sign-off is implied.
 
 \section{Conclusion}
-Retaining dispatch conditions and common-input expert relationships gives a
-useful organization of weighted MoE verification obligations. Scoped reuse
-and structural scheduling improve frozen-policy outcomes against registered
-internal alternatives on new inputs, and a direct ablation identifies a
-relational precision benefit. A cheaper external path, the adverse MetaMoE
-author-path comparison, negative convolutional transfer, and an exact
-source-containment obstruction limit stronger claims.
-Conditional positive proofs and checked source construction are both real
-progress, but have not yet joined into the claimed stronger positive guarantee.
-The result is a scoped verification method and an explicit evidence contract,
-not a completed source-to-deployment certification solution.
+Complete guarded obligations let a general verifier analyze route-variable MoE
+outputs without requiring route invariance. Prefix pruning and gate endpoints
+can be useful, but this study's specialized cascade fails its registered
+practical-effect gate, and the corrected guard diagnostic fails admission.
+The defensible result is a collection of explicit reductions and measured
+limits, including useful local effects, with source and numerical assumptions
+visible. Completing the remaining fixed queues will refine the empirical map;
+it will not retroactively turn failed gates into demonstrated superiority.
 
 \begin{thebibliography}{9}
 \bibitem{hz} J. Ortiz, A. Vellucci, J. Koeln, and J. Ruths.
 Hybrid Zonotopes Exactly Represent ReLU Neural Networks. 2023.
 \url{https://arxiv.org/abs/2304.02755}.
-\bibitem{dnnv} D. Shriver, S. Elbaum, and M. B. Dwyer.
-DNNV: A Framework for Deep Neural Network Verification. 2021.
+\bibitem{dnnv} D. Shriver et al. DNNV: A framework for deep neural network verification.
 \url{https://arxiv.org/abs/2105.12841}.
 \bibitem{metamoe} Q. Pham, B. Wooding, L. Nam, S. Sasaki, and T. T. Johnson.
 MetaMoE: Formal Verification of Compositional Robustness and Scalability of
-Mixture-of-Experts Architecture. SAIV 2026 proceedings, pp. 167--190.
+Mixture-of-Experts Architecture. SAIV 2026, online July 2026.
 \url{https://doi.org/10.1007/978-3-032-32357-6_8}.
-\bibitem{crown} H. Zhang, T.-W. Weng, P.-Y. Chen, C.-J. Hsieh, and L. Daniel.
-Efficient Neural Network Robustness Certification with General Activation
-Functions. NeurIPS 2018. \url{https://arxiv.org/abs/1811.00866}.
-\bibitem{clip} D. Zhou, J. Chavez, H. Chen, G. A. Hanasusanto, and H. Zhang.
-Clip-and-Verify: Linear Constraint-Driven Domain Clipping for Accelerating
-Neural Network Verification. NeurIPS 2025.
-\url{https://doi.org/10.52202/085713-5815}.
-\bibitem{fastcert} K. Das, S. Ugare, B.-Y. E. Chang, S. Misailovic,
-G. Singh, and M. Sridharan.
-Uncovering the Limits of Proof Sharing for Neural Networks. 2026.
-\url{https://arxiv.org/abs/2608.19351}.
-\bibitem{conflicts} R. Elsaleh, L. Davis, H. Wu, and G. Katz.
-Incremental Neural Network Verification via Learned Conflicts. 2026.
-\url{https://arxiv.org/abs/2603.12232}.
-\bibitem{torchlean} R. J. George et al.
-TorchLean: Formalizing Neural Networks in Lean. 2026.
-\url{https://arxiv.org/abs/2602.22631}.
+\bibitem{crown} H. Zhang et al. Efficient neural network robustness certification
+with general activation functions. 2018. \url{https://arxiv.org/abs/1811.00866}.
+\bibitem{genbab} Z. Shi, Q. Jin, J. Z. Kolter, S. Jana, C.-J. Hsieh, and H. Zhang.
+Neural Network Verification with Branch-and-Bound for General Nonlinearities.
+TACAS 2025. \url{https://arxiv.org/abs/2405.21063}.
+\bibitem{invprop} S. Kotha, C. Brix, J. Z. Kolter, K. Dvijotham, and H. Zhang.
+Provably Bounding Neural Network Preimages. 2024 revision.
+\url{https://arxiv.org/abs/2302.01404}.
 \end{thebibliography}
 \end{document}
