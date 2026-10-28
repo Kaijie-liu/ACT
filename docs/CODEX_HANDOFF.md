@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## B4 gains/losses explained from saved traces, no new solve 2026-10-28
+
+Real increment2since720:722settled;PID1286669runningfixedradius0002,branchunchanged. PriorMAINSTOPandablationauditretained.
+[Record](moe_aware_b4_records_20261027.json)`main_gain_loss_trace_review`:all9gains/3losses,24requests/sourcebindings;9gainsuse26V2closures,52endpoints(48initial/4BaB),0fallback.
+Two losses spend190.685/230.020sinunclosedV2phases,completeonly1history;thirdlosscloses16V2phasesbutcost265.053svsoff22initialhistories/91.743stotal.
+All300paircostdecomposition:gain9−1530.006s,loss3+334.315s,sharedpositive113+2458.890s,neither175−154.519s;net+1108.680s,notgeneralacceleration.
+Missingfinalpayloadmeansfallbackcountsunknown,notzero;partialpositivefilesdonotupgradeTIMEOUT;95.079snon-endpointphasecostnotisolatedstartup.
+Read-onlyextraction0.158s,0model/solver/replay;[analysis](moe_aware_b4_20261026.md)describesmechanismandcost,notcounterfactualT1orrelaxationoptimality.
+Continueonlyfrozenradius/boundary;noT1change,newmechanismorB5.G1–G6OPEN.
+
 ## B4 MAIN and ablation audited: primary practical gate fails 2026-10-28
 
 Real increment570sincearchived150:720settled=719native+1retainedpublicationERROR;MAIN600+ablation120complete;PID1286669continuesfixedradiusqueue.
