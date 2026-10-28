@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## B4 double-radius public evidence audited; performance pending 2026-10-28
+
+Real increment1since724:725settled;12radiuspubliccallscomplete,120PGD/360censusdomainsreceived;PID1286669runningradius0005,no extraanalysisquery.
+[Record](moe_aware_b4_records_20261027.json)`radius_public_review`:same6models/120objects,PGDreplayedunsafe9→31andobserved-multiple7→13from2/255to4/255;alloldobservationsretained.
+All6modelsstillmedian1observedhistory;intervalcandidateupperincreasesarenotexactlegalcountsorproofthat enumerationdominates.
+Publiccost173.235schargedtoradius;source/domainreceiptauditPASS3.124sseparate,0newforward/solver/replay,nopositiveclaimorfreearmcredit.
+[Table](moe_aware_b4_20261026.md):largerradiuschangesunsafefractionandrouting;keep120paired denominator,exactreachabilityunknown,MAINSTOPunchanged.
+Nextfixedradius/boundarythenfinalB4audit;no newmechanism/T1/B5.G1–G6OPEN.
+
 ## Working manuscript aligned with completed B4 primary result 2026-10-28
 
 Real increment1since723:724settled;MAIN600/ablation120retained;PID1286669runningradius0004,no extraanalysisquery.
