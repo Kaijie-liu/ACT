@@ -57,6 +57,33 @@ Actually executed commands, environments and exit codes: **pending**.
 AI review must identify itself. No packaging script may fill human sign-off,
 independence or a novelty verdict. This template sends no invitation.
 
+## MoE literature and the archived execution boundary
+
+The short bibliography now cites all six requested MoE works directly. The
+2026-10-29 check concerns primary-paper metadata and the stated research task;
+it neither reruns their experiments nor refreshes every author repository.
+[The six-work ledger](author_baselines_status_20260924.md) and
+[object-level contracts](baseline_semantic_admission_20261013.md) retain their
+dates, frozen versions, recipe differences and incomplete comparisons.
+
+| Work and primary reference | What was actually executed here; remaining comparison boundary |
+|---|---|
+| [Dual RS, revision 4](https://arxiv.org/abs/2512.01782v4) | [Two-input statistical pilot](dual_rs_certification_archive_20260922_r1.json) after selector training; no same-smoothed-function ACT comparison or full certified-accuracy curve. The older paper/implementation versions bound to that pilot are unchanged. |
+| [MetaMoE](https://doi.org/10.1007/978-3-032-32357-6_8) | [Ten-input author-compatible comparison](metamoe_las_followup_result_20260923_r1.md), with disclosed repairs: author 9 versus ACT 4 numerical/policy positives; not a complete author-table reproduction or strict-certificate contest. |
+| [RoME](https://arxiv.org/abs/2607.06109v1) | [Four-input, three-norm batch](rome_multinorm_archive_20260922_r1.json): 5 completed and 7 timeouts, not a robustness rate. Continuous all-expert token mixtures are not the discrete top-2 object. |
+| [J-TLAT, official ICLR paper](https://proceedings.iclr.cc/paper_files/paper/2026/hash/f206871468dc89cb20fefbc75f2de861-Abstract-Conference.html) | No complete author execution in the archive. The September README-only observation is dated; this check does not infer current artifact absence. |
+| [Feature Noise, revision 2](https://arxiv.org/abs/2601.14792v2) | Theoretical/experimental positioning; no complete author reproduction or same-object ACT comparison. A noisy-feature risk question is not the current pixel-box verification endpoint. |
+| [Robust Experts, official CVF entry](https://openaccess.thecvf.com/content/ICCV2025W/STREAM/html/Pavlitska_Robust_Experts_The_Effect_of_Adversarial_Training_on_CNNs_with_ICCVW_2025_paper.html) | [Two training/evaluation variants](robust_experts_landing_20260922_r1/README.md), with recipe differences preserved; no complete ACT comparison on the trained intermediate top-2 object. |
+
+The live arXiv pages identify Dual RS revision 4 and Feature Noise revision 2;
+the historical detailed survey read revisions 3 and 1. The short paper uses the
+newer metadata only for the broad task distinction and does not move old
+numerical claims to new versions. Direct CVF retrieval returned HTTP 403; the
+official indexed entry supplied the Robust Experts title, authors, workshop
+and pages. No author contact or external deployment occurred. These citations
+make the comparison scope inspectable; they do not complete G6 or establish
+priority for the reductions.
+
 ## Current bounded table reproduction
 
 The current renderer reads three committed JSON summaries, performs accounting

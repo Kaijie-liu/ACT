@@ -1,5 +1,13 @@
 # MoE project handoff — current entry point
 
+## MoE references tied to archived execution scope 2026-10-29
+
+Real increment: 0 new scientific calls launched; frozen old B4 R3 continues, no restarted mechanism or new queue.
+[Short paper](../paper/review_main.tex) now directly cites all six requested MoE works; [review map](SUBMISSION_REVIEW.md#moe-literature-and-the-archived-execution-boundary) links their actual executions and remaining semantic gaps.
+Dual RS v4/Feature Noise v2 metadata do not relabel frozen older reproductions; dated missing-artifact observations remain dated, not claims of current absence.
+[R3 build](current_review_paper_20261029.md#direct-moe-references-added-same-day-r3): 9 pages, two passes, no final warnings; four generated tables unchanged, zero model/solver/replay calls.
+Revised M-B STOP and no M-C/new B4/B5 remain; G1–G6 OPEN. Next finish only the existing radius/boundary queue and final audit.
+
 ## Current review paper compiled; stopped mechanisms remain stopped 2026-10-29
 
 Real increment: 0 new scientific calls in this writing stage; old B4 reached 808 settled (MAIN600/ablation120/radius88), immutable R3 PID1286669 still running.

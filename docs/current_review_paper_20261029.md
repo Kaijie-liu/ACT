@@ -8,7 +8,7 @@ continues in its immutable execution copy; this is not a new algorithm stage.
 
 ## Reviewable change
 
-[The eight-page paper](../paper/review_main.tex) now leads with complete-obligation
+[The review paper](../paper/review_main.tex) now leads with complete-obligation
 reductions and empirical limits. Its propositions state complete-history
 coverage, strict output-atom guard equivalence and last-affine-gate endpoint
 reduction. Independent-gate embedding, numerical range assumptions and the
@@ -61,3 +61,27 @@ links in [the review guide](SUBMISSION_REVIEW.md#official-dates-and-references-c
 ISSTA abstract/full dates are 8/11 January 2027; OOPSLA second round is
 7 April 2027, AoE.
 No contact, artifact publication or submission is made. G1–G6 remain open.
+
+## Direct MoE references added, same day (R3)
+
+Starting from clean `1081e88fe`, the short paper's previously uncited Dual RS,
+RoME, Robust Experts, J-TLAT and Feature Noise descriptions now point to primary
+references. The [review guide](SUBMISSION_REVIEW.md#moe-literature-and-the-archived-execution-boundary)
+connects all six requested works to their existing execution records and
+semantic comparison limits. Dual RS revision 4 and Feature Noise revision 2
+metadata do not relabel the older frozen paper/code versions used by our
+archived studies. No author repository was freshly deployed or rerun; dated
+artifact-search failures are not assertions of present absence.
+
+R3, `/data1/Kane/MOE/results/current_review_paper_20261029_r3`, compiles in two
+passes and extracts to 9 pages / 209,864 bytes. The final log has no warnings,
+undefined citations or overfull boxes. Build and extraction cost 0.814 s;
+model/solver/replay calls are zero. Four generated tables and all numerical
+results remain byte-for-byte unchanged. Source hashes and the PDF hash are in
+`build.json`; R1/R2 remain intact. R3 PDF SHA-256:
+`999baf24347f294ebb1711031cbf889a134e01c5127bebe3511bdb36c877149b`.
+The table reconstruction check passes; `reference_checks.json` records all 11
+cited entries, 49 local link targets, the five new reference IDs in extracted
+PDF text and unchanged table/renderer hashes (0.004 s; no numerical reproof).
+This fills a citation/traceability gap in the review draft, not an algorithm or
+certification result. The immutable old B4 queue continues independently.

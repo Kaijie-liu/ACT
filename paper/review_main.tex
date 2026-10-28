@@ -353,13 +353,26 @@ numerical positives, with mean times 138.11 versus 4.23 seconds. Plain CROWN is
 not the full GenBaB baseline used here. These cohorts, guarantees and costs are
 not pooled.
 
-Dual Randomized Smoothing concerns statistical certificates for smoothed
-functions; RoME, Robust Experts and J-TLAT include empirical adversarial
-robustness, while Feature Noise studies other theoretical and empirical noise
-questions. The project's artifact/semantics ledger records execution and
-compatibility limits separately. Attack accuracy is not SAFE rate, continuous
-mixing is not silently changed to top-2, and no six-paper common-task victory
-is claimed. Precise novelty against these works remains a human review task.
+Dual Randomized Smoothing~\cite{dualrs} certifies a smoothed variance selector
+and classifier, including expert routing; its statistical $L_2$ guarantee is
+not for our original deterministic function. RoME~\cite{rome} studies
+multi-perturbation training with low-rank experts; Robust Experts~\cite{robustexperts}
+studies intermediate CNN experts; J-TLAT~\cite{jtlat} jointly attacks and trains
+video routers and experts. Feature Noise~\cite{featurenoise} studies robustness
+under an equal-parameter, noisy-feature regime. These address related research
+questions, but their attack accuracy or distributional risk is not our
+per-input complete-output verification endpoint.
+
+Our archived work includes a two-input Dual RS statistical pilot, two
+Robust Experts training/evaluation variants, and a limited RoME attack batch.
+It does not reproduce their entire paper tables or establish matched ACT
+certification results. The J-TLAT implementation and a full Feature Noise
+artifact were not obtained in the archived search; this is not a current claim
+that no author artifact exists. The review guide links each statement to the
+execution ledger and object-level semantic contracts. Continuous mixtures are
+not silently replaced by top-2. Updated bibliographic versions do not relabel
+the frozen implementations or their results. No six-paper common-task victory
+or exhaustive novelty search is claimed.
 
 \section{Threats, reproduction and disposition}
 Selected hard-history diagnostics do not estimate full-request coverage.
@@ -395,7 +408,7 @@ limits, including useful local effects, with source and numerical assumptions
 visible. Completing the remaining fixed queues will refine the empirical map;
 it will not retroactively turn failed gates into demonstrated superiority.
 
-\begin{thebibliography}{9}
+\begin{thebibliography}{99}
 \bibitem{hz} J. Ortiz, A. Vellucci, J. Koeln, and J. Ruths.
 Hybrid Zonotopes Exactly Represent ReLU Neural Networks. 2023.
 \url{https://arxiv.org/abs/2304.02755}.
@@ -413,5 +426,21 @@ TACAS 2025. \url{https://arxiv.org/abs/2405.21063}.
 \bibitem{invprop} S. Kotha, C. Brix, J. Z. Kolter, K. Dvijotham, and H. Zhang.
 Provably Bounding Neural Network Preimages. 2024 revision.
 \url{https://arxiv.org/abs/2302.01404}.
+\bibitem{dualrs} C. Sun, Y. Mao, and M. Vechev.
+Dual Randomized Smoothing: Beyond Global Noise Variance.
+ICLR 2026; arXiv revision 4, September 2026.
+\url{https://arxiv.org/abs/2512.01782v4}.
+\bibitem{rome} W. J. Kim et al.
+RoME: Robust Mixture of Low-Rank Experts against Multiple Adversarial Perturbations.
+ECCV 2026. \url{https://arxiv.org/abs/2607.06109v1}.
+\bibitem{robustexperts} S. Pavlitska et al.
+Robust Experts: The Effect of Adversarial Training on CNNs with Sparse Mixture-of-Experts Layers.
+ICCV Workshops, 2025, pp.\ 251--260. \url{https://arxiv.org/abs/2509.05086}.
+\bibitem{jtlat} S. Wang et al.
+Exposing and Defending the Achilles' Heel of Video Mixture-of-Experts.
+ICLR 2026. \url{https://arxiv.org/abs/2602.01369}.
+\bibitem{featurenoise} D. Sun, R. Nittala, and R. Burkholz.
+Robustness of Mixtures of Experts to Feature Noise.
+ICML 2026; arXiv revision 2. \url{https://arxiv.org/abs/2601.14792v2}.
 \end{thebibliography}
 \end{document}
