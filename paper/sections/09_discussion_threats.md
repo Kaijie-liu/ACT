@@ -42,9 +42,26 @@ initial score on a subset of completed M-C tables is not a complete-history
 gain; missing tables and the extra analysis cost remain part of the result.
 This does not refute weak duality or all possible margin partitions. It does
 remove empirical support for the proposed three-component advantage in the
-tested implementations. The ongoing M-A-only B4 retains its full denominator,
-radius and single-layer boundary queues; no prefix is a final efficacy decision.
-See the [diagnostic table](08_evaluation.md#multilayer-mechanism-diagnostics-no-admitted-m-b-or-m-c-benefit).
+tested implementations. M-A-only B4 now has a completed primary comparison:
+122 versus 116 numerical positives, nine gains and three losses, and a net
+two-point increase with an input-block interval of [0,4] points. The registered
+five-point practical threshold fails. This is not a reason to expand the sample
+or tune the phase allowance. The radius and single-layer queues remain separate
+pending characterization. See the [diagnostic table](08_evaluation.md#multilayer-mechanism-diagnostics-no-admitted-m-b-or-m-c-benefit)
+and [primary result](08_evaluation.md#complete-request-cascade-primary-comparison-practical-gate-not-met).
+
+The saved traces distinguish local usefulness from overall cost. All nine gains
+use 26 decoupled history closures without coupled fallback, with 48 of 52
+endpoints closed by initial bounds. However, the nine gains save about 1,530
+seconds while the 113 shared-positive objects add about 2,459 seconds. Two losses
+spend much of their budget in unfinished decoupled phases; another loses after
+16 positive phases because repeated endpoint and phase costs exhaust the request
+budget. These observations explain recorded execution patterns, not a guarantee
+that another phase cap would recover the losses or that the relaxation optimum
+is nonpositive. On the six-model ablation subset, separately paid coupled runs
+also differ on four terminal statuses, including one POSITIVE/TIMEOUT change.
+Finite-budget execution variability remains visible instead of being attributed
+entirely to the mechanism.
 
 ## Model and input generality
 
@@ -192,8 +209,9 @@ The central conclusion is that route invariance is not necessary for proving
 the output property, and complete route-conditioned obligations can expose
 that problem to both HZ-based and general nonlinear backends. The completed
 strong-baseline and mechanism studies do not establish an irreplaceable HZ
-advantage or a successful MoE-aware three-component algorithm. Whether the
-gate-decoupling cascade yields a net complete-request benefit remains the
-question of the ongoing frozen experiment. Same-source strict positive proofs
+advantage or a successful MoE-aware three-component algorithm. The completed
+primary cascade comparison has a positive point estimate but fails its
+pre-registered practical-effect gate; pending radius and boundary results cannot
+replace that primary decision. Same-source strict positive proofs
 and cross-family competitiveness remain open; historical internal gains and
 the explicit negative results are both retained.

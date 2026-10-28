@@ -1,18 +1,21 @@
 # Manuscript reading order
 
-Current research extension (2026-10-27): the
+Current research extension (2026-10-28): the
 [multilayer method section](sections/03_path_conditioned_method.md#multilayer-strong-engine-extension-research-candidate)
 now separates original-execution embedding, last-gate endpoints, guard duality,
 closed margin coverage and pointwise error estimates for M-A/M-B/M-C.
 The [completed mechanism diagnostic](sections/08_evaluation.md#multilayer-mechanism-diagnostics-no-admitted-m-b-or-m-c-benefit)
 has zero closure gains for both M-B and M-C; both fail their registered admission
 rule. Some complete M-C initial tables improve, at greater cost, without closing
-a history. B4 has started with M-A alone and has no final performance result.
+a history. The [completed M-A-only primary comparison](sections/08_evaluation.md#complete-request-cascade-primary-comparison-practical-gate-not-met)
+has 122 versus 116 numerical positives, nine gains and three losses: a net
+two-point increase, below its registered five-point practical threshold.
+The radius and single-layer boundary queues remain in progress.
 The conditional proof rules therefore remain candidate-method results, not an
 experimentally successful three-component algorithm.
 The working abstract, introduction, related-work comparison and discussion now
-include the completed stronger GenBaB and multilayer negative results; none
-claims a final B4 gain. The short technical-review LaTeX paper and its generated
+include the completed stronger GenBaB, multilayer and primary cascade results;
+none claims a successful B4 gate or stable external superiority. The short technical-review LaTeX paper and its generated
 tables remain the earlier single-layer/conditional-evidence draft; they are not
 the current seventh-revision evaluation. Use [the handoff](../docs/CODEX_HANDOFF.md)
 for live evidence.

@@ -1,4 +1,4 @@
-# Working abstract — 27 October 2026
+# Working abstract — 28 October 2026
 
 Input perturbations can change a mixture-of-experts (MoE) program's route
 without violating its output property. We study verification rules that cover
@@ -23,9 +23,14 @@ multilayer positives, whereas ACT v1 and naive enumeration obtain none.
 We then test two MoE-specific candidates: guard-dual bounds and closed margin
 partitions with gate-decoupled endpoint analysis. Neither adds a complete
 history closure on its registered diagnostic cohort. Some partitioned initial
-bounds improve, but at greater cost and without full closure. A complete-request
-comparison of the gate-decoupling cascade alone is in progress; no final
-performance advantage or successful three-component algorithm is claimed.
+bounds improve, but at greater cost and without full closure. In the completed
+600-call primary comparison on 15 fixed multilayer models and 20 new inputs,
+gate decoupling with a coupled fallback yields 122 numerical positives versus
+116 for coupled GenBaB: nine gains and three losses. The net two-percentage-point
+increase, with an input-block interval of [0,4] points, fails the registered
+five-point practical-effect threshold. Mean complete-request cost also increases.
+The radius and single-layer boundary queues remain in progress; no successful
+three-component algorithm or stable external advantage is claimed.
 
 Separately, rational checking closes stored conditional proofs, while the new
 source-checked convolutional construction has no complete positive output on
@@ -39,4 +44,5 @@ Evidence anchors for this working draft: [historical internal comparison](sectio
 [success-selected strong-backend diagnosis](../docs/advantage_region_results_20261021.md),
 [failure-selected diagnosis](../docs/b2_observed_results_20261021.md),
 [completed multilayer comparison](../docs/multilayer_stage1_20261022.md), and
-[completed mechanism diagnostics](sections/08_evaluation.md#multilayer-mechanism-diagnostics-no-admitted-m-b-or-m-c-benefit).
+[completed mechanism diagnostics](sections/08_evaluation.md#multilayer-mechanism-diagnostics-no-admitted-m-b-or-m-c-benefit), and
+[completed primary cascade comparison](sections/08_evaluation.md#complete-request-cascade-primary-comparison-practical-gate-not-met).

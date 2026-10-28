@@ -1,5 +1,13 @@
 # MoE project handoff — current entry point
 
+## Working manuscript aligned with completed B4 primary result 2026-10-28
+
+Real increment1since723:724settled;MAIN600/ablation120retained;PID1286669runningradius0004,no extraanalysisquery.
+[Current evaluation](../paper/sections/08_evaluation.md#complete-request-cascade-primary-comparison-practical-gate-not-met) nowreports122/116,9gain/3loss,net2pp,[0,4]ppandfailed5ppgate,allcosts/errors/publicPGDboundaries.
+Abstract,introduction,method,discussion,READMEandevidenceindexreplaceobsoleteprimary-pendingtext;radius/singlelayerremainpending,oldLaTeXexplicitlyhistorical.
+Gain/lossmechanismandshared-positiveoverheadincluded;noB5,newmechanism,formalSAFEorstableexternalsuperiorityclaim. Frozenrawresults/sourcecontractsunchanged.
+Storedresultfields/73locallinks/17anchorscheckedPASS0.021s,0model/solver/replay.Nextfinishfixedradius/boundarythenfinalB4interpretation;G1–G6OPEN.
+
 ## B4 gains/losses explained from saved traces, no new solve 2026-10-28
 
 Real increment2since720:722settled;PID1286669runningfixedradius0002,branchunchanged. PriorMAINSTOPandablationauditretained.

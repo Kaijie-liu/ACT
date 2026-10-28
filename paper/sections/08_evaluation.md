@@ -1,5 +1,97 @@
 # Evaluation
 
+## Complete-request cascade primary comparison: practical gate not met
+
+The seventh-revision B4 primary cohort contains 15 fixed multilayer MLP models
+(L2E8, L3E8, L2E16, residual R2E8 and R3E8, three seeds each) and 20 shared
+clean-correct CIFAR-10 inputs. Inputs are selected in ascending order outside
+the bound historical exclusion union, without using routes or verification
+outcomes. Earlier whole-test telemetry is disclosed. Each model-input object
+has two independently executed 300-second calls at radius 2/255: coupled
+GenBaB with prefix pruning, and the same engine/frontend with M-A enabled.
+The optional decoupled phase receives at most 120 seconds per history inside
+the request deadline; an unfinished phase falls back only with remaining time.
+M-B and M-C fail diagnostic admission and are absent from both arms.
+
+| Complete primary calls, 300 per arm | Coupled off | Cascade on |
+|---|---:|---:|
+| Numerical POSITIVE | 116 | 122 |
+| Arm-generated UNSAFE_REPLAYED | 0 | 0 |
+| UNKNOWN | 8 | 5 |
+| TIMEOUT | 176 | 171 |
+| ERROR | 0 | 2 |
+| Mean full-request seconds | 189.287 | 192.983 |
+| Median full-request seconds | 288.350 | 288.337 |
+| Total full-request seconds | 56,786.217 | 57,894.897 |
+
+The positive intersection is 113, with nine gains and three losses. The net
+effect is 6/300 = **2 percentage points**. The frozen 10,000-replicate bootstrap
+resamples 20 input blocks carrying all 15 models and both arms; its 95%
+percentile interval is **[0,4] points**. The primary practical threshold of at
+least five points fails, and the interval's lower endpoint is not positive.
+The median cost ratio, 0.999955, meets the cost condition, but near-equal medians
+in a timeout-dominated table do not establish general speedup. The registered
+decision is STOP, not an invitation to collect more samples or change the phase
+cap. This estimates behavior on the fixed models, not a population of model
+architectures or 600 independent observations.
+
+| Family, 60 objects | Off positives | On positives | Gain / loss |
+|---|---:|---:|---:|
+| L2E8 | 24 | 28 | 5 / 1 |
+| L3E8 | 27 | 26 | 0 / 1 |
+| L2E16 | 53 | 53 | 0 / 0 |
+| R2E8 | 7 | 10 | 4 / 1 |
+| R3E8 | 5 | 5 | 0 / 0 |
+
+Post-hoc trace analysis identifies a local mechanism effect: all nine gains use
+26 decoupled history closures and no coupled fallback. Of 52 accepted endpoints,
+48 close through initial bounds and four through nonlinear branch-and-bound.
+Yet the gains save 1,530 seconds while 113 shared-positive objects add 2,459
+seconds. Losses add 334 seconds; the 175 pairs with neither arm positive use
+155 fewer seconds, which is not successful acceleration. These four groups
+account for the overall increase of 1,109 seconds. Two losses spend much of
+their budget in unfinished decoupled phases; a third completes 16 such phases
+but cannot finish the remaining histories before the deadline. This does not
+identify a unique relaxation deficiency or prove a counterfactual phase cap.
+
+The separately executed minus-M-A ablation uses the frozen six-model subset
+and the already paid MAIN on runs as its full-arm comparator. It gives 64 versus
+68 positives, six gains and two losses, a net 3.33 points with interval
+[-0.833,8.333] points. Median full-request costs are 35.894 versus 132.610
+seconds. This subset cannot replace the primary decision. Although MAIN off and
+minus-M-A implement the coupled configuration, their separately paid runs differ
+on four terminal outcomes, including one positive becoming a timeout. This
+execution variability is reported rather than counted as pure mechanism gain.
+
+The public PGD records contain 26 valid full-model counterexamples, with no
+conflict against either arm's positive. They remain public evidence, not free
+UNSAFE credit supplied to a verifier. Public route census observes at least two
+native histories on 12 objects; that stratum has zero gains and zero losses.
+The other 288 objects contain all nine gains and three losses, but one observed
+history does not prove route stability. Exact reachable-history counts remain
+unknown. The frozen 4/255 and single-layer cohorts are still running and will
+be reported separately; neither can replace the primary denominator or gate.
+
+All failed attempts are retained. An initial publication/cleanup failure is
+charged at its observed upper cost of 301.579 seconds and remains ERROR; a
+later deadline-signal error is also retained. Only unexecuted calls continue.
+Disclosed supervision repairs reserve more time for cleanup in both arms,
+reducing worker time from 294 to 288 seconds without changing the 300-second
+request cap or mathematical acceptance rules. The engine identity is unchanged.
+Primary stage accounting is 115,239.317 seconds, including 357.731 seconds of
+selection/public work and the remaining startup, reception, repair and audit
+costs in addition to request costs. The ablation stage costs 17,570.300 seconds.
+Additional read-only reviews are recorded separately; they cannot repair an
+online failure or independently establish CROWN's arithmetic guarantees.
+
+The frozen source/terminal/coverage audit and input-block statistics have been
+independently recounted, not the numerical bounds re-proved. All positives in
+this table are **GenBaB numerical filters**, not source-complete or native
+floating-execution certificates. Evidence: [protocol, complete tables and
+execution interpretation](../../docs/moe_aware_b4_20261026.md) and
+[bound records and independent recount](../../docs/moe_aware_b4_records_20261027.json),
+keys `main_and_ablation_review` and `main_gain_loss_trace_review`.
+
 ## Multilayer mechanism diagnostics: no admitted M-B or M-C benefit
 
 The completed seventh-revision diagnostic tests two optional mechanisms before
@@ -42,9 +134,10 @@ The observed costs suggest a tradeoff, not a proof of the unique bottleneck.
 Both mechanisms fail the unchanged admission rule and are excluded from B4.
 This stops these finite implementations without claiming that all guard-dual
 methods or all margin partitions are ineffective. The authorized complete-
-request comparison now tests **M-A alone**, with the single-layer boundary and
-double-radius cohorts preserved. It has started but has no final result; it
-cannot validate a successful three-component algorithm. The historical studies
+request comparison tests **M-A alone**, with the single-layer boundary and
+double-radius cohorts preserved. Its completed primary table above fails the
+registered practical-effect threshold; those two characterization cohorts
+remain pending. It cannot validate a successful three-component algorithm. The historical studies
 below keep their original cohorts, guarantees and outcomes.
 
 Evidence: [final result, source bindings and independent recount](../../docs/moe_aware_stage5a_results_20261026.json),

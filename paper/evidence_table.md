@@ -1,5 +1,14 @@
 # Claims-to-Evidence Registry
 
+Current primary result (2026-10-28): the M-A-only cascade obtains 122/300
+numerical positives versus 116/300 coupled GenBaB, with nine gains and three
+losses. Its net two-point increase and input-block interval [0,4] points fail
+the registered five-point practical gate. Radius and single-layer queues are
+pending; no three-component advantage or source-complete certificate follows.
+Use the [current primary evaluation](sections/08_evaluation.md#complete-request-cascade-primary-comparison-practical-gate-not-met)
+and [audited source records](../docs/moe_aware_b4_records_20261027.json).
+The earlier entries below retain their original cohorts and guarantee levels.
+
 Current competition disposition (2026-09-23): the repaired MetaMoE comparison
 is complete, ACT 4 policy acceptances versus 9 author numerical sufficient
 filters, no ACT-only positive. This replaces a pending/partial comparison in

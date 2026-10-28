@@ -107,9 +107,15 @@ The completed guard-dual and first-margin partition diagnostics add no history
 closures and fail their frozen admission rules. Their rejection and the
 partitioned bounds' observed precision/cost tradeoff are reported in the
 [current evaluation](08_evaluation.md#multilayer-mechanism-diagnostics-no-admitted-m-b-or-m-c-benefit).
-The running B4 study tests the gate-decoupling cascade alone; its prefixes do
-not establish a complete-request advantage or a successful three-component
-algorithm.
+The subsequent 600-call primary comparison tests gate decoupling with a coupled
+fallback alone. On 300 paired model-input objects it gains nine numerical
+positives and loses three, for a net two percentage points with an input-block
+95% interval of [0,4] points. This fails the registered five-point practical
+threshold; mean request cost rises from 189.287 to 192.983 seconds. All nine
+gained requests close through decoupling without fallback, establishing a
+local computational effect but not the required overall benefit. The radius
+and single-layer boundary queues remain pending. See the
+[primary result](08_evaluation.md#complete-request-cascade-primary-comparison-practical-gate-not-met).
 
 Finally, we separate evidence consistency from independent bound checking.
 A rational checker validates supplied HZ-to-LP projections, direct McCormick

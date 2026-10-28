@@ -512,9 +512,12 @@ positive counts cannot substitute for this paired endpoint.
 The completed M-B 11-pair and M-C 27-object diagnostics have no additional
 complete history closure and fail their registered admission rules; see
 [the results and cost limits](08_evaluation.md#multilayer-mechanism-diagnostics-no-admitted-m-b-or-m-c-benefit).
-B4 has started with M-A alone; its full-request result remains pending.
-The rules above establish conditional mathematical reductions, not a measured
-MoE-aware advantage. CROWN/GenBaB positives retain their numerical-policy
+B4's M-A-only primary comparison is complete: nine gains and three losses on
+300 paired objects yield a two-point increase, below its registered five-point
+practical threshold. Radius and single-layer characterization remain pending;
+see the [primary result](08_evaluation.md#complete-request-cascade-primary-comparison-practical-gate-not-met).
+The rules above establish conditional mathematical reductions, not the required
+MoE-aware performance advantage. CROWN/GenBaB positives retain their numerical-policy
 grade. Source containment, conversion, all-route coverage and independently
 checked output evidence remain separate G3 premises; the historical 23 gains'
 source gaps are not repaired by this extension.
