@@ -103,10 +103,16 @@ See the [completed comparison](../../docs/multilayer_stage1_20261022.md).
 
 This evidence motivates testing optional strong-engine mechanisms rather than
 assuming that an HZ implementation is necessary for competitive verification.
-The completed guard-dual and first-margin partition diagnostics add no history
+The original guard-dual and first-margin partition diagnostics add no history
 closures and fail their frozen admission rules. Their rejection and the
 partitioned bounds' observed precision/cost tradeoff are reported in the
 [current evaluation](08_evaluation.md#multilayer-mechanism-diagnostics-no-admitted-m-b-or-m-c-benefit).
+Because the original guard comparison used independent optimization trajectories,
+a revised diagnostic retains the entire optimized baseline before adding
+guard multipliers. It closes one of the same eleven histories, while an
+extra-alpha continuation closes none. This local benefit still falls below the
+registered five-closure threshold and stops the conditional follow-up; it is
+not evidence of complete-request superiority.
 The subsequent 600-call primary comparison tests gate decoupling with a coupled
 fallback alone. On 300 paired model-input objects it gains nine numerical
 positives and loses three, for a net two percentage points with an input-block

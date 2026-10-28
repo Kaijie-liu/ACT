@@ -1,5 +1,16 @@
 # MoE project handoff — current entry point
 
+## Revised M-B complete: one local closure, admission fails 2026-10-29
+
+Real increment22/22diagnostics;21UNKNOWN/1numericalPOSITIVE,noERROR/TIMEOUT;[result](guard_dual_refinement_result_20261029.json),[interpretation](guard_dual_refinement_20261029.md#完成结果不通过关闭m-bm-c).
+Same11objects/oldexecutedhistories,full20alpha-prefix+40updates;retained99/99baselinebounds,pairedalpha*hashesequal.
+GUARD_REFINE gains1history(R2E8seed1/1312),medianincrement57.960907;required>=5fails=>STOP_MB_AND_MC.
+Equal-extra-alpha closes0;guard-minus-extra-alpha8better/3lower,median.323164,so raw57.96notallguardgain;localpositive is not completeMoE/G3proof.
+Frozen8d51a1384/results/guard_dual_refinement_20261029_r1;22callcost1483.346s,allmeasured1502.449s/~2.79MB;independentterminal/maxrecountPASS,no numerical reproof.
+No last-marginMC/newB4/B5;algorithm line closes under user rule;paper retains reductions,empirical limits,MA+2pp/[0,4]pp/failed5ppgate.
+Old B4 PID1286669/start1191658395 continues immutableR3;801settled at review,MAIN600/ablation120/radius81,boundarypending;only remaining frozen queues/audit/writing.
+G1–G6remainOPEN; controls R1 wrong positive-dual test and freeze metadata failure preserved; no new research direction.
+
 ## User-authorized baseline-preserving M-B revision 2026-10-29
 
 New study frozen22calls, not yet launched; old B4 continues immutable R3, prior MAIN STOP unchanged.

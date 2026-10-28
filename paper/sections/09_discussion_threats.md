@@ -37,7 +37,7 @@ The post-189 registration must remain visible; it must not be described as
 pre-registered before all outcomes. Evidence:
 [multilayer result](../../docs/multilayer_stage1_20261022.md).
 
-M-B and M-C subsequently fail their finite diagnostic admission rules. A higher
+The original M-B and M-C implementations subsequently fail their finite diagnostic admission rules. A higher
 initial score on a subset of completed M-C tables is not a complete-history
 gain; missing tables and the extra analysis cost remain part of the result.
 This does not refute weak duality or all possible margin partitions. It does
@@ -49,6 +49,17 @@ five-point practical threshold fails. This is not a reason to expand the sample
 or tune the phase allowance. The radius and single-layer queues remain separate
 pending characterization. See the [diagnostic table](08_evaluation.md#multilayer-mechanism-diagnostics-no-admitted-m-b-or-m-c-benefit)
 and [primary result](08_evaluation.md#complete-request-cascade-primary-comparison-practical-gate-not-met).
+
+The original M-B test confounds guard use with two independent optimization
+trajectories. Its revised baseline-preserving test remedies that comparison
+and includes a paid extra-alpha continuation. It adds one local history
+closure, showing that the old negative result did not establish the absence
+of guard value. Nevertheless, one falls short of the unchanged five-closure
+admission requirement; the conditional last-layer slicing study is not run.
+Even exact multiplier optimization need not remove a nonlinear guard's
+Lagrangian gap, as the analytic example in the method shows. The observed
+residual bounds therefore do not identify ReLU difficulty, gate decoupling
+or incomplete optimization as a unique cause.
 
 The saved traces distinguish local usefulness from overall cost. All nine gains
 use 26 decoupled history closures without coupled fallback, with 48 of 52

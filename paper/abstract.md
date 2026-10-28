@@ -1,4 +1,4 @@
-# Working abstract — 28 October 2026
+# Working abstract — 29 October 2026
 
 Input perturbations can change a mixture-of-experts (MoE) program's route
 without violating its output property. We study verification rules that cover
@@ -20,10 +20,12 @@ executed studies do not establish a population win rate or matched speedup.
 In a separate 600-call multilayer comparison, pruned GenBaB obtains 108 of 180
 multilayer positives, whereas ACT v1 and naive enumeration obtain none.
 
-We then test two MoE-specific candidates: guard-dual bounds and closed margin
-partitions with gate-decoupled endpoint analysis. Neither adds a complete
-history closure on its registered diagnostic cohort. Some partitioned initial
-bounds improve, but at greater cost and without full closure. In the completed
+We then test guard-dual bounds and closed margin partitions with gate-decoupled
+endpoint analysis. Their original diagnostics add no history closures.
+A revised guard test retains the optimized baseline and adds a paid
+extra-alpha comparator; it gains one of eleven histories, below the unchanged
+five-closure admission threshold. Partitioned initial bounds sometimes
+improve at greater cost without full closure. In the completed
 600-call primary comparison on 15 fixed multilayer models and 20 new inputs,
 gate decoupling with a coupled fallback yields 122 numerical positives versus
 116 for coupled GenBaB: nine gains and three losses. The net two-percentage-point

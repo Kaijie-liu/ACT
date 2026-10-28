@@ -1,18 +1,24 @@
 # Manuscript reading order
 
-Current research extension (2026-10-28): the
+Current research disposition (2026-10-29): the
 [multilayer method section](sections/03_path_conditioned_method.md#multilayer-strong-engine-extension-research-candidate)
 now separates original-execution embedding, last-gate endpoints, guard duality,
 closed margin coverage and pointwise error estimates for M-A/M-B/M-C.
 The [completed mechanism diagnostic](sections/08_evaluation.md#multilayer-mechanism-diagnostics-no-admitted-m-b-or-m-c-benefit)
-has zero closure gains for both M-B and M-C; both fail their registered admission
-rule. Some complete M-C initial tables improve, at greater cost, without closing
+has zero closure gains for the original M-B and M-C implementations.
+The [revised baseline-preserving guard test](sections/08_evaluation.md#revised-guard-diagnostic-local-effect-insufficient-admission)
+adds one of eleven history closures, versus none from extra alpha alone;
+it still fails the unchanged five-closure gate. M-B and the conditional
+last-margin M-C follow-up are now closed; no new B4/B5 is started.
+Some complete original M-C initial tables improve, at greater cost, without closing
 a history. The [completed M-A-only primary comparison](sections/08_evaluation.md#complete-request-cascade-primary-comparison-practical-gate-not-met)
 has 122 versus 116 numerical positives, nine gains and three losses: a net
 two-point increase, below its registered five-point practical threshold.
 The radius and single-layer boundary queues remain in progress.
-The conditional proof rules therefore remain candidate-method results, not an
-experimentally successful three-component algorithm.
+The manuscript therefore centers on complete-obligation reductions, the
+empirical map of verifier behavior, and the limited cascade gain, not an
+experimentally successful three-component algorithm or a uniquely identified
+ReLU bottleneck.
 The working abstract, introduction, related-work comparison and discussion now
 include the completed stronger GenBaB, multilayer and primary cascade results;
 none claims a successful B4 gate or stable external superiority. The short technical-review LaTeX paper and its generated

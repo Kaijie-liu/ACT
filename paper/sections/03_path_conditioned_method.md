@@ -433,6 +433,27 @@ and nonnegative guard multipliers, but the guard multipliers are not themselves
 an independently checked dual certificate. They are also distinct from the
 backend's ReLU-split beta parameters.
 
+The revised diagnostic retains the entire 20-evaluation alpha-only prefix,
+then restores one evaluated alpha state and starts guard multipliers at zero.
+The final per-property maximum includes that prefix and the subsequent joint
+optimization. It therefore cannot fall below its own completed prefix, but it
+costs more and need not finish within the request deadline. A separately paid
+alpha-only continuation distinguishes guard refinement from additional alpha
+optimization; neither a positive multiplier nor a higher bound alone proves
+a complete history. This is a diagnostic design change, not a new duality rule.
+
+Weak duality need not be tight even with exact support queries. For example,
+let \(X=[-1,1]\), \(p(x)=x+1/10\), and
+\(g(x)=\operatorname{ReLU}(x)-1/4\). The constrained minimum is \(7/20\),
+whereas the best scalar-multiplier lower bound is
+\[
+\sup_{\beta\ge0}\min\{-9/10+\beta/4,\;11/10-3\beta/4\}=-2/5.
+\]
+The endpoint lines meet at \(\beta=2\); the intermediate value at zero is
+larger. Thus completing multiplier optimization does not in general recover
+the exact guard-restricted problem. This analytic limitation is separate from
+finite optimization error and numerical bound-checking guarantees.
+
 Output-constraint dual optimization is established prior work, including
 [INVPROP](https://arxiv.org/abs/2302.01404). Our research question concerns its
 organization around MoE history guards and its measured interaction with gate
@@ -509,9 +530,14 @@ not receive a fresh deadline. Only complete route coverage and all properties
 produce a request-level positive. Public counterexample search and local
 positive counts cannot substitute for this paired endpoint.
 
-The completed M-B 11-pair and M-C 27-object diagnostics have no additional
+The original M-B 11-pair and M-C 27-object diagnostics have no additional
 complete history closure and fail their registered admission rules; see
 [the results and cost limits](08_evaluation.md#multilayer-mechanism-diagnostics-no-admitted-m-b-or-m-c-benefit).
+A revised baseline-preserving M-B diagnostic adds one history closure on the
+same eleven objects, below the unchanged requirement of five. The extra-alpha
+control closes none, confirming a local effect without qualifying the mechanism
+for a new complete-request study. The last-margin follow-up is not run; see
+[the revised diagnostic](08_evaluation.md#revised-guard-diagnostic-local-effect-insufficient-admission).
 B4's M-A-only primary comparison is complete: nine gains and three losses on
 300 paired objects yield a two-point increase, below its registered five-point
 practical threshold. Radius and single-layer characterization remain pending;

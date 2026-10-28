@@ -104,6 +104,18 @@ has one 300-second total budget, including all cells and last-gate endpoints.
 The registered admission rule requires at least five additional complete
 history closures **and** a positive paired median score improvement.
 
+The original M-B comparison used independent optimization trajectories:
+20 alpha-only evaluations versus 20 joint alpha/guard evaluations, with the
+latter switching from zero to a fixed positive multiplier initialization.
+It did not retain the alpha-only trajectory's envelope. The table remains a
+valid comparison of those implementations, but cannot isolate the benefit of
+adding guards to an already optimized alpha baseline. A separately authorized
+[baseline-preserving diagnostic](../../docs/guard_dual_refinement_20261029.md)
+on the same eleven executed histories is now complete; it retains the full
+prefix and includes a paid extra-alpha control. It does not amend the old table
+or the old B4 arms. The original M-C test concerned first-layer cells encoded
+as output-side guards, not the proposed last-layer dual-conditioned cells.
+
 | Comparison | Paired histories | Closure gain / loss | Complete score pairs | Median paired score difference | Admission |
 |---|---:|---:|---:|---:|---|
 | M-B / zero-guard | 11 | 0 / 0 | 11 | −2.410982 | Fail |
@@ -143,6 +155,53 @@ below keep their original cohorts, guarantees and outcomes.
 Evidence: [final result, source bindings and independent recount](../../docs/moe_aware_stage5a_results_20261026.json),
 [mechanism analysis](../../docs/moe_aware_bab_20261026.md), and
 [frozen B4 design](../../docs/moe_aware_b4_20261026.md).
+
+### Revised guard diagnostic: local effect, insufficient admission
+
+The revised design uses the same eleven model/input/property objects and their
+previously executed histories. Three old catalogue entries had missing history
+IDs; both old arms' stored histories agree and bind those entries explicitly.
+Each new call independently recomputes its prefix ranges. After the original
+20-evaluation alpha-only prefix, the implementation restores the earliest
+evaluated alpha state maximizing the sum of property bounds. One arm performs
+40 additional alpha updates; the other performs 40 joint alpha/guard updates
+from zero guard multipliers, with one charged small gradient probe. Both retain
+the per-property maximum over the entire baseline and continuation trajectory.
+No old numerical bound is supplied as a free candidate.
+
+All 22 calls complete within 300 seconds: 21 UNKNOWN and one numerical
+POSITIVE, with no errors or timeouts. The eleven paired baseline vectors and
+selected alpha-state hashes agree. Both continuations improve all 99 stored
+baseline property bounds without losing any. The joint arm turns eleven
+individual properties positive; extra alpha alone turns none positive.
+Only one entire history closes: residual L2E8 seed 1, input 1312. Its minimum
+bound changes from −5.532507 to −5.268918 with extra alpha and to +1.059180
+with guard refinement. This establishes a local guard effect under the
+numerical policy, not a complete MoE request or independently checked proof.
+
+The median minimum-bound improvement over the original prefix is 57.960907,
+but much of that improvement also occurs with extra alpha. Against the paid
+extra-alpha arm, joint refinement is better on eight histories and worse on
+three, with a median difference of 0.323164; individual properties split
+79 better and 20 worse. These are raw score units across fixed models, not
+normalized accuracy improvements. Baseline retention does not imply dominance
+over a separately continued optimizer.
+
+The registered rule still requires at least five additional history closures
+and positive median improvement. **One of eleven fails the first condition.**
+The resulting decision closes this M-B attempt and the conditional last-margin
+M-C follow-up. No new B4 or B5 is started. The completed primary cascade table
+and its remaining characterization queues are unaffected.
+
+Total request cost is 1,483.346 seconds; measured control, preparation, batch
+and independent record recount total 1,502.449 seconds, with about 2.79 MB of
+evidence and reserved accounting. The alpha/guard request medians are
+76.425/73.595 seconds on a shared machine; this diagnostic is not a speedup
+comparison. One synthetic-control failure is retained: its test incorrectly
+required positivity across the analytic Lagrangian gap described in the
+method. Only the assertion was corrected, without optimizer or admission-rule
+changes. Evidence: [full result and per-property traces](../../docs/guard_dual_refinement_result_20261029.json)
+and [fixed design, controls and interpretation](../../docs/guard_dual_refinement_20261029.md).
 
 ## Historical evaluation scope
 
