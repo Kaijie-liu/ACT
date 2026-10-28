@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## B4 MAIN and ablation audited: primary practical gate fails 2026-10-28
+
+Real increment570sincearchived150:720settled=719native+1retainedpublicationERROR;MAIN600+ablation120complete;PID1286669continuesfixedradiusqueue.
+[Record](moe_aware_b4_records_20261027.json)`main_and_ablation_review`:MAINoff116/on122POSITIVE,intersection113,gain/loss9/3,net2pp,input-block95%[0,4]pp;STOP_REGISTERED_GATE(<5pp),notGRAY.
+All-requestmeanoff/on189.287/192.983s,median288.350/288.337;no general acceleration. FamilygainsconcentrateL2E8/R2E8;L3E8loses1.
+PublicPGD26replayedunsafe/nopositiveconflict;observed-multiroute12objects0gain/0loss,other288objects9/3,notprovenstable/exactreachablecounts.
+Ablationminus-MA64/on68,6gain/2loss,95%[-.833,8.333]pp,medianratio3.695;separatelypaidcoupledrepeatshave4terminaldifferences,retainnoise/cost.
+Frozen720receipt/source/coverageandbootstraprecountPASS5.368s;priorad-hocreporttuple/listerrorretainedwith300suppercost,0newmodel/solver/replay,numericalboundsnotreproved.
+[Result table](moe_aware_b4_20261026.md):continueonlyremainingfrozenradius/boundary,noT1retune/B5/newmechanism;oldtwoERRORsretained;disk349GiBavailable.G1–G6OPEN.
+
 ## B4 fifth input block complete: one gain, concentrated cost benefit 2026-10-27
 
 Real increment4since146:150settled=149native+1retainedpublicationERROR;67POSITIVE/79TIMEOUT/2UNKNOWN/2ERROR,75pairs,gain/loss3/0;PID1286669running1778.

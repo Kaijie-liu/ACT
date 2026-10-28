@@ -1,5 +1,5 @@
 {
-  "status": "RUNNING_ALARM_REPAIRED_CONTINUATION",
+  "status": "RUNNING_RADIUS_PRIMARY_GATE_FAILED",
   "manifest": "/data1/Kane/MOE/ACT/docs/moe_aware_b4_freeze_20261027_r1.json",
   "manifest_sha256": "72023737a889717e4cf5c4f266b47b51b8d183f5067ae12ceefbcc4242452b24",
   "preparation": {
@@ -27,8 +27,8 @@
   "source_models": 18,
   "excluded_count": 2329,
   "backend_identity": "40246f43aa290511811410e962b2db9e24f0467c76a2aa900aeb5f7685a6209a",
-  "scientific_complete_calls": 125,
-  "numerical_positive_complete_requests": 54,
+  "scientific_complete_calls": 719,
+  "numerical_positive_complete_requests": 302,
   "source_complete_certificates": 0,
   "limits": "M-A-only test after both new mechanisms failed5a; not a successful three-mechanism algorithm claim; numerical results not G3 proof",
   "launch": {
@@ -5533,19 +5533,24 @@
     }
   },
   "observed_latest": {
-    "settled": 150,
-    "native_ledgers": 149,
+    "settled": 720,
+    "native_ledgers": 719,
     "states": {
-      "POSITIVE": 67,
-      "TIMEOUT": 79,
+      "POSITIVE": 302,
+      "TIMEOUT": 398,
       "ERROR": 2,
-      "UNKNOWN": 2
+      "UNKNOWN": 18
     },
-    "complete_pairs": 75,
-    "gain": 3,
-    "loss": 0,
-    "active_at_snapshot": "main_verify_0150 L2E8_seed0/1778/on",
-    "controller_pid": 1286669
+    "complete_main_pairs": 300,
+    "gain": 9,
+    "loss": 3,
+    "completed_parts": [
+      "main",
+      "ablation"
+    ],
+    "active_at_snapshot": "radius_verify_0000 L2E8_seed0/1742/off",
+    "controller_pid": 1286669,
+    "source": "Frozen full MAIN and ablation records independently recounted; live later queue not included in these counts."
   },
   "third_gain_review": {
     "status": "PASS",
@@ -11498,5 +11503,1305 @@
       "shared_positive_on_minus_off_seconds": 144.65058619901538,
       "interpretation": "One gained complete numerical positive offsets extra shared-positive cost in this input block; all states charged. Public PGD witness on L3E8_seed2 is separately replayed evidence, not inferred from the two UNKNOWNs and not credited to either verifier arm. No interim gate or population conclusion."
     }
-  }
+  },
+  "main_and_ablation_review": {
+    "prior_readonly_review_attempt": {
+      "status": "REPORT_ASSEMBLY_ERROR_AFTER_RECEIPT_AUDITS",
+      "error": "tuple/list comparison in ad hoc paired-identity assertion",
+      "new_model_solver_or_replay_calls": 0,
+      "measured_elapsed_seconds": null,
+      "charged_seconds_upper_bound": 300,
+      "raw_results_unchanged": true
+    },
+    "status": "PASS_SOURCE_AND_TERMINAL_RECOUNT",
+    "date": "2026-10-28",
+    "reviewed_completed_calls": 720,
+    "native_ledgers": 719,
+    "retained_publication_failures": [
+      "main_verify_0109"
+    ],
+    "manifest": {
+      "path": "/data1/Kane/MOE/executions/moe_aware_b4_20261027_r1/docs/moe_aware_b4_freeze_20261027_r1.json",
+      "sha256": "72023737a889717e4cf5c4f266b47b51b8d183f5067ae12ceefbcc4242452b24"
+    },
+    "execution_roots": [
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r2",
+      "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3"
+    ],
+    "auditor_execution_root": "/data1/Kane/MOE/executions/moe_aware_b4_20261027_r3",
+    "auditor_source_sha256": "c32110d6d9575957c8db925b79b76e1a21f2b27195a09236c6fc5bd5b3881c1a",
+    "selection_catalog": {
+      "path": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r1/catalog.json",
+      "sha256": "027c4a8c82d8db7ef8efa45f68264d5d610e4e494c9f04f5611615ed2e6875f0",
+      "inputs": [
+        1742,
+        1743,
+        1748,
+        1754,
+        1776,
+        1778,
+        1781,
+        1826,
+        1851,
+        1856,
+        1866,
+        1875,
+        1900,
+        1949,
+        1956,
+        1959,
+        1965,
+        1976,
+        2241,
+        2265
+      ],
+      "history_excluded": 2329,
+      "full_test_telemetry_disclosed": true
+    },
+    "files": [
+      {
+        "path": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/main_audit.json",
+        "sha256": "7ea96e28d8bc1552469bfcef625af16d4f7fbbe6d8efbca6d4f3b0648f8d8944",
+        "bytes": 3185758
+      },
+      {
+        "path": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/main_result.json",
+        "sha256": "d9c120a286d6cdbd5308458f7c5221bcb4113d487382ddb522f3f3f30699a9e4",
+        "bytes": 37144
+      },
+      {
+        "path": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/main_accounting.json",
+        "sha256": "b4110b66b13ab0541e66dd8012cb2d517b1d44465a252296e859092f32a58961",
+        "bytes": 361
+      },
+      {
+        "path": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/main_start.json",
+        "sha256": "2906e48e63323e623ed4eef3725d4173f31cfe47bc7126b1879af56cbab9f2ab",
+        "bytes": 57
+      },
+      {
+        "path": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/ablation_audit.json",
+        "sha256": "e61126f2df66c1b09b8924a22551e6736c7a76b69ddaf8db56794575f38310f0",
+        "bytes": 39782
+      },
+      {
+        "path": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/ablation_result.json",
+        "sha256": "2fbaa09ab2981541cab7d78faa69e1bbc97b505f8b1177ad5d37722c2585a6a2",
+        "bytes": 3499
+      },
+      {
+        "path": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/ablation_accounting.json",
+        "sha256": "b22fb9560e34998033f9c5c522367c2ffb1daee329fba4b0ecef97ec7da131eb",
+        "bytes": 344
+      },
+      {
+        "path": "/data1/Kane/MOE/results/moe_aware_b4_20261027_r3/ablation_start.json",
+        "sha256": "c9365155348a4fc1d8bafe4de3ade55ef91f6bc65e5d0f2df48509708fea1e12",
+        "bytes": 58
+      }
+    ],
+    "main": {
+      "contrast": {
+        "denominator": 300,
+        "input_blocks": 20,
+        "missing": [],
+        "complete": true,
+        "guarantee": "GENBAB_NUMERICAL_FILTER_NOT_FORMAL_SAFE",
+        "states": {
+          "off": {
+            "TIMEOUT": 176,
+            "POSITIVE": 116,
+            "UNKNOWN": 8
+          },
+          "on": {
+            "TIMEOUT": 171,
+            "POSITIVE": 122,
+            "ERROR": 2,
+            "UNKNOWN": 5
+          }
+        },
+        "resampling": "input blocks carrying every fixed model; no model/arm independent resampling",
+        "gained": [
+          [
+            "L2E8_seed0",
+            1743
+          ],
+          [
+            "L2E8_seed1",
+            1743
+          ],
+          [
+            "R2E8_seed2",
+            1776
+          ],
+          [
+            "R2E8_seed2",
+            1851
+          ],
+          [
+            "L2E8_seed0",
+            1856
+          ],
+          [
+            "L2E8_seed0",
+            1866
+          ],
+          [
+            "R2E8_seed2",
+            1949
+          ],
+          [
+            "L2E8_seed1",
+            1976
+          ],
+          [
+            "R2E8_seed1",
+            2265
+          ]
+        ],
+        "lost": [
+          [
+            "L3E8_seed0",
+            1866
+          ],
+          [
+            "R2E8_seed1",
+            1900
+          ],
+          [
+            "L2E8_seed1",
+            1959
+          ]
+        ],
+        "net": 6,
+        "positive_rate_delta": 0.02,
+        "bootstrap95": [
+          0.0,
+          0.04
+        ],
+        "bootstrap_seed": 20261026,
+        "bootstrap_replicates": 10000,
+        "degenerate_input_differences": false,
+        "original_replayed_unsafe": [],
+        "conflicts": [],
+        "solved_gained": [
+          [
+            "L2E8_seed0",
+            1743
+          ],
+          [
+            "L2E8_seed1",
+            1743
+          ],
+          [
+            "R2E8_seed2",
+            1776
+          ],
+          [
+            "R2E8_seed2",
+            1851
+          ],
+          [
+            "L2E8_seed0",
+            1856
+          ],
+          [
+            "L2E8_seed0",
+            1866
+          ],
+          [
+            "R2E8_seed2",
+            1949
+          ],
+          [
+            "L2E8_seed1",
+            1976
+          ],
+          [
+            "R2E8_seed1",
+            2265
+          ]
+        ],
+        "solved_lost": [
+          [
+            "L3E8_seed0",
+            1866
+          ],
+          [
+            "R2E8_seed1",
+            1900
+          ],
+          [
+            "L2E8_seed1",
+            1959
+          ]
+        ],
+        "cost": {
+          "median_ratio": 0.9999549190013653,
+          "median_paired_delta": 0.08215985912829638,
+          "means": {
+            "off": 189.28739000593623,
+            "on": 192.98299066606288
+          },
+          "medians": {
+            "off": 288.3500673500821,
+            "on": 288.3370682410896
+          },
+          "total_seconds": {
+            "off": 56786.21700178087,
+            "on": 57894.897199818864
+          },
+          "scope": "all terminals including UNKNOWN/TIMEOUT/ERROR; not uncensored speedup"
+        },
+        "decision": "STOP_REGISTERED_GATE",
+        "intersection_count": 113
+      },
+      "by_model": {
+        "L2E8_seed0": {
+          "states": {
+            "off": {
+              "TIMEOUT": 10,
+              "POSITIVE": 7,
+              "UNKNOWN": 3
+            },
+            "on": {
+              "TIMEOUT": 9,
+              "POSITIVE": 10,
+              "UNKNOWN": 1
+            }
+          },
+          "gained": [
+            1743,
+            1856,
+            1866
+          ],
+          "lost": [],
+          "cost": {
+            "off": {
+              "total_seconds": 3851.922323860228,
+              "median_seconds": 288.17759538441896
+            },
+            "on": {
+              "total_seconds": 3346.953527405858,
+              "median_seconds": 255.23005905374885
+            }
+          }
+        },
+        "L2E8_seed1": {
+          "states": {
+            "off": {
+              "TIMEOUT": 12,
+              "POSITIVE": 8
+            },
+            "on": {
+              "TIMEOUT": 10,
+              "POSITIVE": 9,
+              "UNKNOWN": 1
+            }
+          },
+          "gained": [
+            1743,
+            1976
+          ],
+          "lost": [
+            1959
+          ],
+          "cost": {
+            "off": {
+              "total_seconds": 4090.508290523663,
+              "median_seconds": 288.31319507956505
+            },
+            "on": {
+              "total_seconds": 4029.960528768599,
+              "median_seconds": 287.9506074199453
+            }
+          }
+        },
+        "L2E8_seed2": {
+          "states": {
+            "off": {
+              "TIMEOUT": 11,
+              "POSITIVE": 9
+            },
+            "on": {
+              "TIMEOUT": 11,
+              "POSITIVE": 9
+            }
+          },
+          "gained": [],
+          "lost": [],
+          "cost": {
+            "off": {
+              "total_seconds": 3819.979219859466,
+              "median_seconds": 288.29189781378955
+            },
+            "on": {
+              "total_seconds": 3517.1834056098014,
+              "median_seconds": 288.319010309875
+            }
+          }
+        },
+        "L3E8_seed0": {
+          "states": {
+            "off": {
+              "TIMEOUT": 14,
+              "POSITIVE": 6
+            },
+            "on": {
+              "TIMEOUT": 15,
+              "POSITIVE": 5
+            }
+          },
+          "gained": [],
+          "lost": [
+            1866
+          ],
+          "cost": {
+            "off": {
+              "total_seconds": 4254.212836036459,
+              "median_seconds": 288.5289793740958
+            },
+            "on": {
+              "total_seconds": 4597.196057176217,
+              "median_seconds": 288.42214290611446
+            }
+          }
+        },
+        "L3E8_seed1": {
+          "states": {
+            "off": {
+              "TIMEOUT": 12,
+              "POSITIVE": 8
+            },
+            "on": {
+              "TIMEOUT": 12,
+              "POSITIVE": 8
+            }
+          },
+          "gained": [],
+          "lost": [],
+          "cost": {
+            "off": {
+              "total_seconds": 3676.3177828527987,
+              "median_seconds": 288.3574229022488
+            },
+            "on": {
+              "total_seconds": 4006.367011398077,
+              "median_seconds": 288.34853956848383
+            }
+          }
+        },
+        "L3E8_seed2": {
+          "states": {
+            "off": {
+              "TIMEOUT": 4,
+              "POSITIVE": 13,
+              "UNKNOWN": 3
+            },
+            "on": {
+              "TIMEOUT": 5,
+              "POSITIVE": 13,
+              "UNKNOWN": 2
+            }
+          },
+          "gained": [],
+          "lost": [],
+          "cost": {
+            "off": {
+              "total_seconds": 2266.267197482288,
+              "median_seconds": 20.99004400894046
+            },
+            "on": {
+              "total_seconds": 2507.439819490537,
+              "median_seconds": 49.944932978600264
+            }
+          }
+        },
+        "L2E16_seed0": {
+          "states": {
+            "off": {
+              "POSITIVE": 17,
+              "TIMEOUT": 2,
+              "UNKNOWN": 1
+            },
+            "on": {
+              "POSITIVE": 17,
+              "TIMEOUT": 3
+            }
+          },
+          "gained": [],
+          "lost": [],
+          "cost": {
+            "off": {
+              "total_seconds": 1171.9054835345596,
+              "median_seconds": 15.991006665863097
+            },
+            "on": {
+              "total_seconds": 1752.4017624482512,
+              "median_seconds": 38.476870517246425
+            }
+          }
+        },
+        "L2E16_seed1": {
+          "states": {
+            "off": {
+              "POSITIVE": 19,
+              "TIMEOUT": 1
+            },
+            "on": {
+              "POSITIVE": 19,
+              "TIMEOUT": 1
+            }
+          },
+          "gained": [],
+          "lost": [],
+          "cost": {
+            "off": {
+              "total_seconds": 632.0332501959056,
+              "median_seconds": 13.083964082412422
+            },
+            "on": {
+              "total_seconds": 1076.7070333696902,
+              "median_seconds": 30.896805533207953
+            }
+          }
+        },
+        "L2E16_seed2": {
+          "states": {
+            "off": {
+              "POSITIVE": 17,
+              "TIMEOUT": 3
+            },
+            "on": {
+              "POSITIVE": 17,
+              "TIMEOUT": 3
+            }
+          },
+          "gained": [],
+          "lost": [],
+          "cost": {
+            "off": {
+              "total_seconds": 1149.4450331460685,
+              "median_seconds": 9.92147317621857
+            },
+            "on": {
+              "total_seconds": 1474.9076968058944,
+              "median_seconds": 20.3465454634279
+            }
+          }
+        },
+        "R2E8_seed0": {
+          "states": {
+            "off": {
+              "TIMEOUT": 20
+            },
+            "on": {
+              "TIMEOUT": 19,
+              "ERROR": 1
+            }
+          },
+          "gained": [],
+          "lost": [],
+          "cost": {
+            "off": {
+              "total_seconds": 5794.000056453049,
+              "median_seconds": 288.5302240559831
+            },
+            "on": {
+              "total_seconds": 5803.004665097222,
+              "median_seconds": 288.5398038998246
+            }
+          }
+        },
+        "R2E8_seed1": {
+          "states": {
+            "off": {
+              "POSITIVE": 5,
+              "TIMEOUT": 14,
+              "UNKNOWN": 1
+            },
+            "on": {
+              "POSITIVE": 5,
+              "TIMEOUT": 14,
+              "UNKNOWN": 1
+            }
+          },
+          "gained": [
+            2265
+          ],
+          "lost": [
+            1900
+          ],
+          "cost": {
+            "off": {
+              "total_seconds": 4740.528335591778,
+              "median_seconds": 288.43489654455334
+            },
+            "on": {
+              "total_seconds": 4943.943133894354,
+              "median_seconds": 288.45874464232475
+            }
+          }
+        },
+        "R2E8_seed2": {
+          "states": {
+            "off": {
+              "TIMEOUT": 18,
+              "POSITIVE": 2
+            },
+            "on": {
+              "TIMEOUT": 15,
+              "POSITIVE": 5
+            }
+          },
+          "gained": [
+            1776,
+            1851,
+            1949
+          ],
+          "lost": [],
+          "cost": {
+            "off": {
+              "total_seconds": 5255.923875235021,
+              "median_seconds": 288.4614489385858
+            },
+            "on": {
+              "total_seconds": 4765.6033404078335,
+              "median_seconds": 288.4569170270115
+            }
+          }
+        },
+        "R3E8_seed0": {
+          "states": {
+            "off": {
+              "TIMEOUT": 20
+            },
+            "on": {
+              "TIMEOUT": 20
+            }
+          },
+          "gained": [],
+          "lost": [],
+          "cost": {
+            "off": {
+              "total_seconds": 5789.0032501854,
+              "median_seconds": 288.60541626624763
+            },
+            "on": {
+              "total_seconds": 5787.6517290622,
+              "median_seconds": 288.5845375834033
+            }
+          }
+        },
+        "R3E8_seed1": {
+          "states": {
+            "off": {
+              "TIMEOUT": 15,
+              "POSITIVE": 5
+            },
+            "on": {
+              "TIMEOUT": 14,
+              "POSITIVE": 5,
+              "ERROR": 1
+            }
+          },
+          "gained": [],
+          "lost": [],
+          "cost": {
+            "off": {
+              "total_seconds": 4505.300847334787,
+              "median_seconds": 288.5148693434894
+            },
+            "on": {
+              "total_seconds": 4497.176566045731,
+              "median_seconds": 288.4390915837139
+            }
+          }
+        },
+        "R3E8_seed2": {
+          "states": {
+            "off": {
+              "TIMEOUT": 20
+            },
+            "on": {
+              "TIMEOUT": 20
+            }
+          },
+          "gained": [],
+          "lost": [],
+          "cost": {
+            "off": {
+              "total_seconds": 5788.869219489396,
+              "median_seconds": 288.61145860608667
+            },
+            "on": {
+              "total_seconds": 5788.4009228385985,
+              "median_seconds": 288.622350865975
+            }
+          }
+        }
+      },
+      "by_family": {
+        "L2E8": {
+          "pairs": 60,
+          "states": {
+            "off": {
+              "TIMEOUT": 33,
+              "POSITIVE": 24,
+              "UNKNOWN": 3
+            },
+            "on": {
+              "TIMEOUT": 30,
+              "POSITIVE": 28,
+              "UNKNOWN": 2
+            }
+          },
+          "gained": 5,
+          "lost": 1,
+          "cost": {
+            "off": {
+              "total_seconds": 11762.409834243357,
+              "median_seconds": 288.29189781378955
+            },
+            "on": {
+              "total_seconds": 10894.097461784258,
+              "median_seconds": 288.15697670262307
+            }
+          }
+        },
+        "L3E8": {
+          "pairs": 60,
+          "states": {
+            "off": {
+              "TIMEOUT": 30,
+              "POSITIVE": 27,
+              "UNKNOWN": 3
+            },
+            "on": {
+              "TIMEOUT": 32,
+              "POSITIVE": 26,
+              "UNKNOWN": 2
+            }
+          },
+          "gained": 0,
+          "lost": 1,
+          "cost": {
+            "off": {
+              "total_seconds": 10196.797816371545,
+              "median_seconds": 288.16944500617683
+            },
+            "on": {
+              "total_seconds": 11111.002888064831,
+              "median_seconds": 288.2722028102726
+            }
+          }
+        },
+        "L2E16": {
+          "pairs": 60,
+          "states": {
+            "off": {
+              "POSITIVE": 53,
+              "TIMEOUT": 6,
+              "UNKNOWN": 1
+            },
+            "on": {
+              "POSITIVE": 53,
+              "TIMEOUT": 7
+            }
+          },
+          "gained": 0,
+          "lost": 0,
+          "cost": {
+            "off": {
+              "total_seconds": 2953.3837668765336,
+              "median_seconds": 11.16102894488722
+            },
+            "on": {
+              "total_seconds": 4304.016492623836,
+              "median_seconds": 26.712787572294474
+            }
+          }
+        },
+        "R2E8": {
+          "pairs": 60,
+          "states": {
+            "off": {
+              "TIMEOUT": 52,
+              "POSITIVE": 7,
+              "UNKNOWN": 1
+            },
+            "on": {
+              "TIMEOUT": 48,
+              "POSITIVE": 10,
+              "ERROR": 1,
+              "UNKNOWN": 1
+            }
+          },
+          "gained": 4,
+          "lost": 1,
+          "cost": {
+            "off": {
+              "total_seconds": 15790.452267279848,
+              "median_seconds": 288.46934206504375
+            },
+            "on": {
+              "total_seconds": 15512.55113939941,
+              "median_seconds": 288.49407874327153
+            }
+          }
+        },
+        "R3E8": {
+          "pairs": 60,
+          "states": {
+            "off": {
+              "TIMEOUT": 55,
+              "POSITIVE": 5
+            },
+            "on": {
+              "TIMEOUT": 54,
+              "POSITIVE": 5,
+              "ERROR": 1
+            }
+          },
+          "gained": 0,
+          "lost": 0,
+          "cost": {
+            "off": {
+              "total_seconds": 16083.173317009583,
+              "median_seconds": 288.55896059051156
+            },
+            "on": {
+              "total_seconds": 16073.22921794653,
+              "median_seconds": 288.553309683688
+            }
+          }
+        }
+      },
+      "routing": {
+        "strata": {
+          "ONE_OBSERVED_NOT_PROVEN_STABLE": {
+            "pairs": 288,
+            "complete_pairs": 288,
+            "gained": 9,
+            "lost": 3
+          },
+          "OBSERVED_MULTIPLE": {
+            "pairs": 12,
+            "complete_pairs": 12,
+            "gained": 0,
+            "lost": 0
+          }
+        },
+        "public_replayed_unsafe": [
+          [
+            "L2E16_seed0",
+            1856
+          ],
+          [
+            "L2E16_seed2",
+            1856
+          ],
+          [
+            "L2E8_seed0",
+            1742
+          ],
+          [
+            "L2E8_seed0",
+            1781
+          ],
+          [
+            "L2E8_seed1",
+            1742
+          ],
+          [
+            "L2E8_seed1",
+            1949
+          ],
+          [
+            "L2E8_seed1",
+            1965
+          ],
+          [
+            "L2E8_seed2",
+            1742
+          ],
+          [
+            "L2E8_seed2",
+            1965
+          ],
+          [
+            "L3E8_seed0",
+            1778
+          ],
+          [
+            "L3E8_seed0",
+            2265
+          ],
+          [
+            "L3E8_seed1",
+            1826
+          ],
+          [
+            "L3E8_seed2",
+            1776
+          ],
+          [
+            "L3E8_seed2",
+            1956
+          ],
+          [
+            "L3E8_seed2",
+            1965
+          ],
+          [
+            "L3E8_seed2",
+            2265
+          ],
+          [
+            "R2E8_seed0",
+            1748
+          ],
+          [
+            "R2E8_seed0",
+            1949
+          ],
+          [
+            "R2E8_seed0",
+            1965
+          ],
+          [
+            "R2E8_seed0",
+            1976
+          ],
+          [
+            "R2E8_seed1",
+            1949
+          ],
+          [
+            "R2E8_seed2",
+            1965
+          ],
+          [
+            "R3E8_seed0",
+            1856
+          ],
+          [
+            "R3E8_seed0",
+            1976
+          ],
+          [
+            "R3E8_seed1",
+            1754
+          ],
+          [
+            "R3E8_seed2",
+            1949
+          ]
+        ],
+        "public_positive_conflicts": [],
+        "interpretation": "descriptive sampled routing, not exact reachable count or causality"
+      },
+      "accounting": {
+        "audit_sha256": "7ea96e28d8bc1552469bfcef625af16d4f7fbbe6d8efbca6d4f3b0648f8d8944",
+        "auxiliary_seconds": 357.73107728362083,
+        "completed": 600,
+        "planned": 600,
+        "request_seconds": 114681.11420159973,
+        "result_sha256": "d9c120a286d6cdbd5308458f7c5221bcb4113d487382ddb522f3f3f30699a9e4",
+        "seconds": 115239.31685187854,
+        "started": 600,
+        "stop_reason": "ALL_REGISTERED_CALLS_EXECUTED"
+      }
+    },
+    "ablation": {
+      "contrast": {
+        "denominator": 120,
+        "input_blocks": 20,
+        "missing": [],
+        "complete": true,
+        "guarantee": "GENBAB_NUMERICAL_FILTER_NOT_FORMAL_SAFE",
+        "states": {
+          "minus_M-A": {
+            "TIMEOUT": 51,
+            "POSITIVE": 64,
+            "UNKNOWN": 5
+          },
+          "on": {
+            "TIMEOUT": 50,
+            "POSITIVE": 68,
+            "UNKNOWN": 2
+          }
+        },
+        "resampling": "input blocks carrying every fixed model; no model/arm independent resampling",
+        "gained": [
+          [
+            "L2E8_seed0",
+            1743
+          ],
+          [
+            "L2E8_seed1",
+            1743
+          ],
+          [
+            "L2E8_seed0",
+            1856
+          ],
+          [
+            "L2E8_seed0",
+            1866
+          ],
+          [
+            "L2E8_seed1",
+            1900
+          ],
+          [
+            "L2E8_seed1",
+            1976
+          ]
+        ],
+        "lost": [
+          [
+            "L3E8_seed0",
+            1866
+          ],
+          [
+            "L2E8_seed1",
+            1959
+          ]
+        ],
+        "net": 4,
+        "positive_rate_delta": 0.03333333333333333,
+        "bootstrap95": [
+          -0.008333333333333333,
+          0.08333333333333333
+        ],
+        "bootstrap_seed": 20261026,
+        "bootstrap_replicates": 10000,
+        "degenerate_input_differences": false,
+        "original_replayed_unsafe": [],
+        "conflicts": [],
+        "solved_gained": [
+          [
+            "L2E8_seed0",
+            1743
+          ],
+          [
+            "L2E8_seed1",
+            1743
+          ],
+          [
+            "L2E8_seed0",
+            1856
+          ],
+          [
+            "L2E8_seed0",
+            1866
+          ],
+          [
+            "L2E8_seed1",
+            1900
+          ],
+          [
+            "L2E8_seed1",
+            1976
+          ]
+        ],
+        "solved_lost": [
+          [
+            "L3E8_seed0",
+            1866
+          ],
+          [
+            "L2E8_seed1",
+            1959
+          ]
+        ],
+        "cost": {
+          "median_ratio": 3.694501521411926,
+          "median_paired_delta": 5.739666908048093,
+          "means": {
+            "minus_M-A": 145.94977835401272,
+            "on": 156.7465493380558
+          },
+          "medians": {
+            "minus_M-A": 35.893813480623066,
+            "on": 132.6097485134378
+          },
+          "total_seconds": {
+            "minus_M-A": 17513.973402481526,
+            "on": 18809.585920566693
+          },
+          "scope": "all terminals including UNKNOWN/TIMEOUT/ERROR; not uncensored speedup"
+        },
+        "decision": "STOP_REGISTERED_GATE",
+        "intersection_count": 62
+      },
+      "accounting": {
+        "audit_sha256": "e61126f2df66c1b09b8924a22551e6736c7a76b69ddaf8db56794575f38310f0",
+        "auxiliary_seconds": 0,
+        "completed": 120,
+        "planned": 120,
+        "request_seconds": 17513.973402481526,
+        "result_sha256": "2fbaa09ab2981541cab7d78faa69e1bbc97b505f8b1177ad5d37722c2585a6a2",
+        "seconds": 17570.300275092945,
+        "started": 120,
+        "stop_reason": "ALL_REGISTERED_CALLS_EXECUTED"
+      },
+      "reference": "same paid MAIN on runs; only frozen M-A component",
+      "coupled_repeat_terminal_differences": [
+        {
+          "model": "L2E8_seed1",
+          "index": 1778,
+          "main_off": "TIMEOUT",
+          "ablation_minus": "UNKNOWN",
+          "main_off_seconds": 288.2526201158762,
+          "ablation_seconds": 288.0318677574396
+        },
+        {
+          "model": "L2E8_seed0",
+          "index": 1826,
+          "main_off": "TIMEOUT",
+          "ablation_minus": "UNKNOWN",
+          "main_off_seconds": 288.2661941740662,
+          "ablation_seconds": 288.4117902442813
+        },
+        {
+          "model": "L2E8_seed1",
+          "index": 1900,
+          "main_off": "POSITIVE",
+          "ablation_minus": "TIMEOUT",
+          "main_off_seconds": 249.98974251374602,
+          "ablation_seconds": 288.7367828320712
+        },
+        {
+          "model": "L2E8_seed0",
+          "index": 1959,
+          "main_off": "UNKNOWN",
+          "ablation_minus": "TIMEOUT",
+          "main_off_seconds": 288.04979181289673,
+          "ablation_seconds": 288.6825692653656
+        }
+      ]
+    },
+    "public": {
+      "received_domains": {
+        "pgd": 300,
+        "census": 900
+      },
+      "unreceived_domains": 0,
+      "replayed_unsafe": [
+        {
+          "model": "L2E8_seed0",
+          "index": 1742,
+          "witness_canonical_sha256": "aeb2c5611546b825c78b0a89f896fb7f1e3fb8ad0cc54b32c7d412e2d62228b3",
+          "guarantee": "FULL_MODEL_REPLAY",
+          "replayed_in_this_audit": false
+        },
+        {
+          "model": "L2E8_seed0",
+          "index": 1781,
+          "witness_canonical_sha256": "72a7072f81a7ab3e46f42f9f2cf5b0b1e8184102fa8cdcb99bdf9d3135a9e297",
+          "guarantee": "FULL_MODEL_REPLAY",
+          "replayed_in_this_audit": false
+        },
+        {
+          "model": "L2E8_seed1",
+          "index": 1742,
+          "witness_canonical_sha256": "7af157d63a4697f507564e87af21368e2c57d6201350a7935be597da09acb507",
+          "guarantee": "FULL_MODEL_REPLAY",
+          "replayed_in_this_audit": false
+        },
+        {
+          "model": "L2E8_seed1",
+          "index": 1949,
+          "witness_canonical_sha256": "604677421b766e8347e4cbff174b3fe104bafe1c4958b7d4e2c25cea23f9b86a",
+          "guarantee": "FULL_MODEL_REPLAY",
+          "replayed_in_this_audit": false
+        },
+        {
+          "model": "L2E8_seed1",
+          "index": 1965,
+          "witness_canonical_sha256": "5a5fffa9582dbd84f32a29d8125c73aa9110797317c41d7d085d71df649ec775",
+          "guarantee": "FULL_MODEL_REPLAY",
+          "replayed_in_this_audit": false
+        },
+        {
+          "model": "L2E8_seed2",
+          "index": 1742,
+          "witness_canonical_sha256": "a18fb178f80bfd6e83f1d8dfeb053f20f1fe4dc5689779cb2a8bbd9fe35fa147",
+          "guarantee": "FULL_MODEL_REPLAY",
+          "replayed_in_this_audit": false
+        },
+        {
+          "model": "L2E8_seed2",
+          "index": 1965,
+          "witness_canonical_sha256": "4c37ca2728f12a879d925a1ce3cfb09d9ff4c83acfe17b05958bbea59c73df95",
+          "guarantee": "FULL_MODEL_REPLAY",
+          "replayed_in_this_audit": false
+        },
+        {
+          "model": "L3E8_seed0",
+          "index": 1778,
+          "witness_canonical_sha256": "ce7175944ba50f11b2e89864c274f2ae7774107447851fdccd3c44a94d2daf4c",
+          "guarantee": "FULL_MODEL_REPLAY",
+          "replayed_in_this_audit": false
+        },
+        {
+          "model": "L3E8_seed0",
+          "index": 2265,
+          "witness_canonical_sha256": "a047d8ea130cb5edc0af7f4b5326a2da329d562f4ae759d8199ed582c0acae5a",
+          "guarantee": "FULL_MODEL_REPLAY",
+          "replayed_in_this_audit": false
+        },
+        {
+          "model": "L3E8_seed1",
+          "index": 1826,
+          "witness_canonical_sha256": "0b064f6f1ec3e2f789e4ac064e43ed8e858c0a8fe45a9586370be4c622e46052",
+          "guarantee": "FULL_MODEL_REPLAY",
+          "replayed_in_this_audit": false
+        },
+        {
+          "model": "L3E8_seed2",
+          "index": 1776,
+          "witness_canonical_sha256": "1fc72136adadccbf98c4081c229fd96b3074850d30b826348ca7732ccabd07ba",
+          "guarantee": "FULL_MODEL_REPLAY",
+          "replayed_in_this_audit": false
+        },
+        {
+          "model": "L3E8_seed2",
+          "index": 1956,
+          "witness_canonical_sha256": "2783329d4f7129134a206cbb2049383283fe9b5e2b857498089788839164460d",
+          "guarantee": "FULL_MODEL_REPLAY",
+          "replayed_in_this_audit": false
+        },
+        {
+          "model": "L3E8_seed2",
+          "index": 1965,
+          "witness_canonical_sha256": "45d9d712b1f86e4039dbc8b4e6eef9e06bb3b8f747bb5bc7e2299b35e50c7003",
+          "guarantee": "FULL_MODEL_REPLAY",
+          "replayed_in_this_audit": false
+        },
+        {
+          "model": "L3E8_seed2",
+          "index": 2265,
+          "witness_canonical_sha256": "eca597e9eb427a329c34a1c8e2f59ccad59849a07f6b8b6c349e37e2c4e5791c",
+          "guarantee": "FULL_MODEL_REPLAY",
+          "replayed_in_this_audit": false
+        },
+        {
+          "model": "L2E16_seed0",
+          "index": 1856,
+          "witness_canonical_sha256": "c3e45b6b512a8ef3dc119705b7ea7819d64e21d62fc593567753c962d304e151",
+          "guarantee": "FULL_MODEL_REPLAY",
+          "replayed_in_this_audit": false
+        },
+        {
+          "model": "L2E16_seed2",
+          "index": 1856,
+          "witness_canonical_sha256": "cbd895091629d2aa37478c35bed7d6670cc260e77d30ed24ba3133efd6942959",
+          "guarantee": "FULL_MODEL_REPLAY",
+          "replayed_in_this_audit": false
+        },
+        {
+          "model": "R2E8_seed0",
+          "index": 1748,
+          "witness_canonical_sha256": "63ff4f21ef55c5e8d61715a6481447caf8780c16c012fd0043f9ae9edeebcba2",
+          "guarantee": "FULL_MODEL_REPLAY",
+          "replayed_in_this_audit": false
+        },
+        {
+          "model": "R2E8_seed0",
+          "index": 1949,
+          "witness_canonical_sha256": "50104bcb6721821d56f880acb389b41c8ed5e9f584869b15df084917c47b5d79",
+          "guarantee": "FULL_MODEL_REPLAY",
+          "replayed_in_this_audit": false
+        },
+        {
+          "model": "R2E8_seed0",
+          "index": 1965,
+          "witness_canonical_sha256": "f2cf2e3d84075e76d5c328a04e4b7c38fc134995a6ac5e33172d13f3ca168385",
+          "guarantee": "FULL_MODEL_REPLAY",
+          "replayed_in_this_audit": false
+        },
+        {
+          "model": "R2E8_seed0",
+          "index": 1976,
+          "witness_canonical_sha256": "ae0757445fa85e50c5959ceb0382a21ba95ab2add11f703c382784fe84261c9c",
+          "guarantee": "FULL_MODEL_REPLAY",
+          "replayed_in_this_audit": false
+        },
+        {
+          "model": "R2E8_seed1",
+          "index": 1949,
+          "witness_canonical_sha256": "b5bc6b604c1277bc813460b5fc3bc7a4604fe0660e0853a436ca839d03c23654",
+          "guarantee": "FULL_MODEL_REPLAY",
+          "replayed_in_this_audit": false
+        },
+        {
+          "model": "R2E8_seed2",
+          "index": 1965,
+          "witness_canonical_sha256": "fa3473c514455fbfe4ee95145c50f94e642210fd5c27614ac45eac16e7ca3d9a",
+          "guarantee": "FULL_MODEL_REPLAY",
+          "replayed_in_this_audit": false
+        },
+        {
+          "model": "R3E8_seed0",
+          "index": 1856,
+          "witness_canonical_sha256": "c741b1e05098da542f5d94950007d578c7152c83b5e4d38f30bea3f55c06322d",
+          "guarantee": "FULL_MODEL_REPLAY",
+          "replayed_in_this_audit": false
+        },
+        {
+          "model": "R3E8_seed0",
+          "index": 1976,
+          "witness_canonical_sha256": "57b8fd3a3c21b76262903fca7b95a626ddaa01a56d82b3078010537989c95404",
+          "guarantee": "FULL_MODEL_REPLAY",
+          "replayed_in_this_audit": false
+        },
+        {
+          "model": "R3E8_seed1",
+          "index": 1754,
+          "witness_canonical_sha256": "5559a063bdc07299cdcf324ccb8cc616345a2d7d6d2d8b7f28935d685198ffbd",
+          "guarantee": "FULL_MODEL_REPLAY",
+          "replayed_in_this_audit": false
+        },
+        {
+          "model": "R3E8_seed2",
+          "index": 1949,
+          "witness_canonical_sha256": "0c76aa3dad727aa5879fa702248ad44190c16c3a0efe46c2b1c52c8f35edaeca",
+          "guarantee": "FULL_MODEL_REPLAY",
+          "replayed_in_this_audit": false
+        }
+      ],
+      "replay_positive_conflicts": [],
+      "interpretation": "Original independently executed public PGD receipts; no free arm credit or retrospective relabel; raw witnesses stay in source archive."
+    },
+    "scientific_interpretation": [
+      "Main M-A-only cascade gains9 loses3: net6/300=2pp, input-block95 interval[0,4]pp; frozen5pp practical gate fails.",
+      "Main median cost gate passes but all-request mean and total increase; this is not a general speedup.",
+      "Ablation6/2 and interval[-0.8333,8.3333]pp, median ratio3.6945; sampled subset cannot replace primary15-model decision.",
+      "Remaining frozen radius and single-layer boundary queues continue to finish registered characterization; no B5/adaptive tuning/new mechanism."
+    ],
+    "numerical_bound_reproof": false,
+    "new_model_solver_or_replay_calls": 0,
+    "source_and_structural_audit": true,
+    "review_seconds_including_imports": 5.367560584098101,
+    "archive_check": {
+      "status": "PASS",
+      "hash_bindings": 9,
+      "local_links": 3,
+      "no_raw_input_or_witness_payload": true,
+      "seconds": 0.016067450866103172
+    },
+    "additional_offline_review_cost": {
+      "successful_seconds": 5.367560584098101,
+      "prior_attempt_seconds_unknown": true,
+      "prior_attempt_charged_upper_seconds": 300,
+      "main_recorded_plus_this_review_upper_seconds": 115544.68441246264,
+      "does_not_change_online_acceptance": true
+    }
+  },
+  "scientific_complete_calls_scope": "Native terminal ledgers, including unsuccessful calls; one retained publication failure is additionally charged in settled_request_attempts.",
+  "settled_request_attempts": 720
 }
