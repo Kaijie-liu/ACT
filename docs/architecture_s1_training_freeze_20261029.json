@@ -1,0 +1,188 @@
+{
+  "schema": "architecture-s1-dense-training-20261029-v1",
+  "dataset_root": "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw",
+  "data_files": {
+    "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py/data_batch_1": "54636561a3ce25bd3e19253c6b0d8538147b0ae398331ac4a2d86c6d987368cd",
+    "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py/data_batch_2": "766b2cef9fbc745cf056b3152224f7cf77163b330ea9a15f9392beb8b89bc5a8",
+    "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py/data_batch_3": "0f00d98ebfb30b3ec0ad19f9756dc2630b89003e10525f5e148445e82aa6a1f9",
+    "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py/data_batch_4": "3f7bb240661948b8f4d53e36ec720d8306f5668bd0071dcb4e6c947f78e9682b",
+    "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py/data_batch_5": "d91802434d8376bbaeeadf58a737e3a1b12ac839077e931237e0dcd43adcb154",
+    "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py/test_batch": "f53d8d457504f7cff4ea9e021afcf0e0ad8e24a91f3fc42091b8adef61157831",
+    "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py/batches.meta": "f962466ef690d46b226450fb9aadc74ba4bc64a76aa526b5827fe4bc5c7125cb"
+  },
+  "split_seed": 0,
+  "split_sha256": "92a4da411c6d6c731da72203665b2533b0fb91b37f7d7f0c82e82d8ace0f1e5d",
+  "epochs": 50,
+  "batch_size": 256,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "optimizer": "AdamW",
+  "loss": "cross_entropy",
+  "augmentation": null,
+  "preprocess": "ToTensor",
+  "scheduler": null,
+  "checkpoint_selection": "earliest maximum validation accuracy",
+  "threads": 1,
+  "workers": 1,
+  "max_user_workers": 8,
+  "device": "cpu",
+  "dtype": "float32",
+  "address_space_bytes": 8589934592,
+  "training_time_separate": true,
+  "models": [
+    {
+      "id": "Dense_total_seed0",
+      "seed": 0,
+      "group": "total",
+      "architecture": {
+        "widths": [
+          3072,
+          1758,
+          879,
+          10
+        ]
+      },
+      "parameter_count": 6957295,
+      "target_parameter_count": 6961368,
+      "mismatch": -4073
+    },
+    {
+      "id": "Dense_total_seed1",
+      "seed": 1,
+      "group": "total",
+      "architecture": {
+        "widths": [
+          3072,
+          1758,
+          879,
+          10
+        ]
+      },
+      "parameter_count": 6957295,
+      "target_parameter_count": 6961368,
+      "mismatch": -4073
+    },
+    {
+      "id": "Dense_total_seed2",
+      "seed": 2,
+      "group": "total",
+      "architecture": {
+        "widths": [
+          3072,
+          1758,
+          879,
+          10
+        ]
+      },
+      "parameter_count": 6957295,
+      "target_parameter_count": 6961368,
+      "mismatch": -4073
+    },
+    {
+      "id": "Dense_active_seed0",
+      "seed": 0,
+      "group": "active",
+      "architecture": {
+        "widths": [
+          3072,
+          602,
+          301,
+          10
+        ]
+      },
+      "parameter_count": 2034469,
+      "target_parameter_count": 2036124,
+      "mismatch": -1655
+    },
+    {
+      "id": "Dense_active_seed1",
+      "seed": 1,
+      "group": "active",
+      "architecture": {
+        "widths": [
+          3072,
+          602,
+          301,
+          10
+        ]
+      },
+      "parameter_count": 2034469,
+      "target_parameter_count": 2036124,
+      "mismatch": -1655
+    },
+    {
+      "id": "Dense_active_seed2",
+      "seed": 2,
+      "group": "active",
+      "architecture": {
+        "widths": [
+          3072,
+          602,
+          301,
+          10
+        ]
+      },
+      "parameter_count": 2034469,
+      "target_parameter_count": 2036124,
+      "mismatch": -1655
+    }
+  ],
+  "old_moe_models": [
+    {
+      "id": "L1E8_seed0",
+      "checkpoint": "/data1/Kane/MOE/results/multilayer_training_20261022_r1/L1E8_seed0/selected.pt",
+      "checkpoint_sha256": "15e1ccd17525c71465ebabc71e6a08b7bfdb12323ba17f62cc0ab058fa80d098",
+      "scope": "L1 primary capacity match"
+    },
+    {
+      "id": "L1E8_seed1",
+      "checkpoint": "/data1/Kane/MOE/results/multilayer_training_20261022_r1/L1E8_seed1/selected.pt",
+      "checkpoint_sha256": "387a03b68f9ee5017821c9a03461fd4b5b44e7e27a1eceef6e46533688693073",
+      "scope": "L1 primary capacity match"
+    },
+    {
+      "id": "L1E8_seed2",
+      "checkpoint": "/data1/Kane/MOE/results/multilayer_training_20261022_r1/L1E8_seed2/selected.pt",
+      "checkpoint_sha256": "5aa3d5a5c9aad7a522d0614cecc7c4a5f9514e9c116be2f2e12a25dc29346c6d",
+      "scope": "L1 primary capacity match"
+    },
+    {
+      "id": "L2E8_seed0",
+      "checkpoint": "/data1/Kane/MOE/results/multilayer_training_20261022_r1/L2E8_seed0/selected.pt",
+      "checkpoint_sha256": "5d8041e13d5f1e4359dbbbc44903afada0dc0b768e64378e4c066e6e81ad22c6",
+      "scope": "L2 secondary depth extension"
+    },
+    {
+      "id": "L2E8_seed1",
+      "checkpoint": "/data1/Kane/MOE/results/multilayer_training_20261022_r1/L2E8_seed1/selected.pt",
+      "checkpoint_sha256": "2f6342c256c8bede5a14a12fc07b27bfc0e627bed6673e2c42fbc6d06124ed06",
+      "scope": "L2 secondary depth extension"
+    },
+    {
+      "id": "L2E8_seed2",
+      "checkpoint": "/data1/Kane/MOE/results/multilayer_training_20261022_r1/L2E8_seed2/selected.pt",
+      "checkpoint_sha256": "7e1e4c130c5fbb6d6b73fb9fa3b6587f26a639f4f550cbcabe3b589ab8fd180b",
+      "scope": "L2 secondary depth extension"
+    }
+  ],
+  "source_files": {
+    "scripts/architecture_s1_train.py": "9e55c6cd5f6a57c11dddd79b2e0c8e11cf375896059d007e48bc2fa40d05d553",
+    "act/pipeline/moe/architecture_dense.py": "5c968d0a3be986dcc9be707b91bc595b879fdbeccc15e6f4f8ed123fb1ea1db2",
+    "scripts/multilayer_train.py": "68f2f96141c43343bacd807009d7d7a85435caeca9d759805a0e4a2fffbb49c9",
+    "scoped_proof/io.py": "ee080902b729bcc0ce50ead5696538b687302358f143b039a6f9bdee2256569d",
+    "act/util/typing_compat.py": "5272f82b90736b90b5302d49708912b04978a159669efed153f389396064943f"
+  },
+  "control_result": "/data1/Kane/MOE/results/architecture_s1_control_20261029_r1/native/complete.json",
+  "control_sha256": "63a08ad2f342f2db71637ff69cb5f6ec5e78d29b8c73d1a7f97c7c1739485bf2",
+  "control_receipt": "/data1/Kane/MOE/results/architecture_s1_control_20261029_r1/session.json",
+  "control_receipt_sha256": "9ce7d31664d428f597198cbcf26c4b68eb96d7c5f7346885ab8f30f01a1ed302",
+  "control_freeze_sha256": "47ea4e1eb361a2478132ac5245712bcac005f23cbd6f9bc52de345db05b754a1",
+  "environment": {
+    "torch": "2.9.1+cu128",
+    "torchvision": "0.24.1+cu128",
+    "numpy": "2.3.5"
+  },
+  "execution_directory": "/data1/Kane/MOE/executions/architecture_s1_training_20261029_r1",
+  "result_directory": "/data1/Kane/MOE/results/architecture_s1_training_20261029_r1",
+  "old_training_threads": 4
+}

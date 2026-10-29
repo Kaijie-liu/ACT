@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## Revision 8 registered: architecture/training S1 frozen 2026-10-29
+
+Real increment:0newtraining/verification; one3.395s synthetic preparation control PASS, no old mechanism restarted.
+User explicitly pivots to [revision8](ALGORITHM_RESEARCH_GOAL_SUMMARY_20261029_r8.txt), active goal; old G1 mechanism line stopped, ISSTA material incorporated, no separate submission.
+[Five closest works](architecture_verifiability_literature_20261029.md) include CertMoE2026 and RobMoE2022; no identical combined study found, no first-MoE-certification claim; ICML2027 deadline unverified officially.
+[S1](architecture_s1_20261029.md) freezes six ordinary dense models against six old L1/L2 models; [manifest](architecture_s1_training_freeze_20261029.json) binds counts, split, data, controls and checkpoints.
+Total/active dense widths1758/879 and602/301, mismatch<0.1%; L2 is secondary, not matched by L1 dense groups. Latest user explicitly fixes new-study first1000/200, historical exposure disclosed.
+Next commit/push freeze, immutable-copy CPU single-thread training at nice10; host/GPU busy, one worker initially, ceiling8. Verification runner pending; complete S1 arithmetic4800calls across bothradii.
+C1–C3 hypotheses, not established; routing/pruning/allhistories charged. S1 gate before S2, no arbitrary mechanism/B5 recovery. Old failures and source gaps remain.
+
 ## Model validity and reproducible method added to review paper 2026-10-29
 
 Real increment:0newmodel/solver/replay calls; prior turn completed finalB4archive, not a waiting/running experiment.
