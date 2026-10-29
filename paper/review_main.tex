@@ -28,7 +28,8 @@ eleven histories and also fails its admission threshold. The evidence supports
 complete-obligation reductions, local mechanism effects, and an empirical map
 of limitations, not stable superiority or a source-complete strict verifier.
 Historical input-containment gaps and the numerical status of backend bounds
-remain explicit. Larger-radius and single-layer boundary queues are pending.
+remain explicit. A separate double-radius cohort yields two gains and no losses
+on 120 paired objects; the single-layer boundary queue remains pending.
 \end{abstract}
 
 \paragraph{Review status.}
@@ -275,9 +276,32 @@ several changes concern two nonpositive terminal categories.
 
 Public PGD finds 26 replayed counterexamples with no positive conflict. Twelve
 objects have multiple observed histories and show no gain or loss; one observed
-history in the rest does not prove stability. The larger-radius and single-layer
-queues are still running. Their outcomes will be reported separately and cannot
-replace the primary cohort or stopping rule.
+history in the rest does not prove stability.
+
+\subsection{Double-radius scope}
+The separate $4/255$ cohort completes all 240 calls
+(Table~\ref{tab:radius}). Coupled and cascade paths obtain six and eight
+positives on 120 paired objects, with two gains, no losses and input-block
+interval $[0,4.167]$ percentage points for the net 1.667-point difference.
+Both gains are in L2E16 seed 1. Each closes one surviving history by two initial
+endpoint bounds without coupled fallback; the other 14,399 catalog histories
+are numerically pruned. They do not establish a route-changing witness or
+source-complete certificate.
+
+The thirteen objects with multiple observed histories have no gain or loss;
+both gains have only one observed history, which does not prove stability.
+On the same six models and twenty inputs, the smaller-radius primary subset
+has 65 versus 68 positives. Thus the observed data do not support an increase
+in net benefit with greater observed routing variability. Radius also changes
+true robustness: public PGD finds 31 counterexamples, with no positive conflict,
+among the 112 objects on which both verification arms time out. Public results
+do not relabel those arm outcomes or change the paired denominator.
+
+The double-radius stage costs 66,220.116 seconds including its public work and
+orchestration. All-request means are 275.446 versus 273.588 seconds; the median
+paired difference is only $-0.002610$ seconds. Timeout-dominated medians are not
+an uncensored acceleration estimate. The secondary cohort cannot overturn the
+primary STOP. The frozen single-layer boundary queue remains pending.
 
 \subsection{Guard and margin diagnostics}
 Original M-B compares two independent twenty-evaluation trajectories on eleven
@@ -383,7 +407,7 @@ shared inputs, hardware variability, compatibility changes and reused observed
 diagnostic objects constrain generalization. Nonlinear backend positive filters
 are neither outward-rounded proofs nor deployed PyTorch/CUDA guarantees.
 
-The four current tables are reconstructed without model or solver calls.
+The five current tables are reconstructed without model or solver calls.
 Run \path{scripts/render_current_review_tables.py} with \texttt{--check}.
 They use committed
 B4, multilayer-stage and revised-guard summaries. This checks accounting only.

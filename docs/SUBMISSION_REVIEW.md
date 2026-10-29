@@ -24,7 +24,8 @@ it. No positive novelty verdict or review score is supplied.
 | Mechanism and cost | Same records, `main_gain_loss_trace_review` | All nine gains use V2; 48/52 endpoints close initially. Shared-positive overhead exceeds gain savings. Partial logs cannot prove a counterfactual budget choice. |
 | Execution variability | Same records, ablation/repeated coupled rows | Four terminal changes among 120, including one positive to timeout; not four SAFE changes or a 3pp SAFE-noise estimate. |
 | Revised guard contribution | [Result](guard_dual_refinement_result_20261029.json), [interpretation](guard_dual_refinement_20261029.md) | Full baseline retention and paid equal-extra-alpha control. One of eleven histories closes, not five; M-B/M-C stop. Local closure is not a full request. |
-| Larger radius and single-layer scope | B4 frozen queues; handoff for state | Still pending. They cannot replace primary denominators or stopping gates. Public PGD is not free arm credit; sampled histories are not exact legal counts. |
+| Larger radius | B4 records, `radius_final_review` | 240/240 calls; 8 versus 6 numerical positives, gain/loss 2/0, +1.667pp/[0,4.167]pp. No gain among thirteen observed-multiple objects; 31 public counterexamples are not arm successes. Exact legal counts remain unknown. |
+| Single-layer boundary | B4 frozen queue; handoff for state | Still pending. The secondary cohort cannot replace primary denominators or stopping gates. |
 | Historical internal gain | [Source audit](main_table_source_applicability_20260921.md), [input addendum](main_table_input_composition_20260921.md) | All 23 old gains lack full input-containment provenance. Preserve numeric results without calling them source-complete certificates. |
 | Earlier independent tool challenges | [MetaMoE follow-up](metamoe_las_followup_result_20260923_r1.md), detailed evaluation | Author-compatible 9 versus ACT 4; earlier plain CROWN 13 versus ACT 11. Distinct semantics/cohorts/grades, not the current full GenBaB comparison. |
 | Independent proof frontier | [Stopped source/output study](proof_closure_decision_20260925_r1.md), source-proof appendix | Old positive supplied-HZ objects differ from newer checked source matrices. No proof splicing; no full native-floating execution claim. |
@@ -87,7 +88,7 @@ priority for the reductions.
 ## Current bounded table reproduction
 
 The current renderer reads three committed JSON summaries, performs accounting
-checks, and reconstructs four tables. It needs only the Python standard library:
+checks, and reconstructs five tables. It needs only the Python standard library:
 
 ```sh
 python -I -S -B scripts/render_current_review_tables.py --check

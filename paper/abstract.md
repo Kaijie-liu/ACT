@@ -31,8 +31,10 @@ gate decoupling with a coupled fallback yields 122 numerical positives versus
 116 for coupled GenBaB: nine gains and three losses. The net two-percentage-point
 increase, with an input-block interval of [0,4] points, fails the registered
 five-point practical-effect threshold. Mean complete-request cost also increases.
-The radius and single-layer boundary queues remain in progress; no successful
-three-component algorithm or stable external advantage is claimed.
+The double-radius cohort adds two numerical positives on 120 paired objects,
+with no gain in its observed-multiple-history stratum. The single-layer queue
+remains in progress; no successful three-component algorithm or stable external
+advantage is claimed.
 
 Separately, rational checking closes stored conditional proofs, while the new
 source-checked convolutional construction has no complete positive output on

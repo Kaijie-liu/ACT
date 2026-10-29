@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## Double-radius stage complete: two local gains, no observed routing trend 2026-10-29
+
+Real increment: radius240/240 completed and independently recounted; old B4 reached1025settled at review, boundary65/120 then running under unchanged PID1286669.
+[B4 record](moe_aware_b4_records_20261027.json)`radius_final_review`:off6/on8,intersection6,gain/loss2/0,+1.667pp,input-block95%[0,4.167]pp;allotherterminalsTIMEOUT.
+Both gains L2E16seed1/1776,1875:oneV2historyeach,fourinitialendpoints,nofallback;13observed-multipleobjects0gain/loss,notexactroutecountsorG3proof.
+PublicPGD31counterexamples/nopositiveconflict/notarmcredit;fullstage66220.116s,meanoff/on275.446/273.588s,medianpaireddelta−.002610s;no general speedup.
+Frozen source/receipt/coverage/bootstrap recount6.810s+trace.101s,0newmodel/solver/replay; [R4 paper](current_review_paper_20261029.md) builds9pages/five tables.
+PrimarySTOPandcorrectedM-B/M-CSTOPunchanged;noB5/newmechanism,G1–G6OPEN.NextfinishonlyremainingboundaryandfinalwholeB4audit.
+
 ## MoE references tied to archived execution scope 2026-10-29
 
 Real increment: 0 new scientific calls launched; frozen old B4 R3 continues, no restarted mechanism or new queue.

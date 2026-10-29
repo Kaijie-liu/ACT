@@ -3,7 +3,7 @@
 The current entry is [the technical-review paper](review_main.tex), revised
 2026-10-29: **Verifying Route-Variable Mixture-of-Experts Programs: Obligation
 Reductions and Empirical Limits**. Its three propositions cover complete
-history obligations, output-atom guards, and last-gate endpoints. Four tables
+history obligations, output-atom guards, and last-gate endpoints. Five tables
 are generated from committed completed-result summaries. This is a generic
 review article, not a venue-formatted submission or a completed human review.
 
@@ -17,8 +17,10 @@ The scientific disposition is unchanged by writing:
   fails. M-B and the conditional last-margin M-C test close; no new B4/B5.
 - The original first-margin M-C test has zero extra closures. It does not test
   every possible last-margin or dual-conditioned implementation.
-- The frozen larger-radius and single-layer queues continue. Their final tables
-  are pending and cannot change the primary decision.
+- The larger-radius queue is complete: 8/120 versus 6/120 positives, two gains,
+  no losses, interval [0,4.167] percentage points. No gain appears among thirteen
+  objects with multiple observed histories. The frozen single-layer queue
+  continues; neither secondary cohort changes the primary decision.
 - Historical 23-gain input-containment gaps, source-complete real proofs,
   external superiority and actual GPU benefit remain unresolved. A local
   history positive is not a complete MoE certificate.
@@ -58,7 +60,7 @@ From the repository root, using the existing ACT environment:
 ```
 
 This verifies [current_review_tables.tex](results/current_review_tables.tex)
-against the committed main/ablation, multilayer and revised-guard summaries.
+against the committed main/ablation, multilayer, revised-guard and radius summaries.
 It does not run models, retrieve raw objects, replay attacks or prove CROWN
 arithmetic. Relevant summary-view hashes appear in the generated table file.
 Run the renderer without `--check` to print the table source.

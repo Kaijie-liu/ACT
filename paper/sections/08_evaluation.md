@@ -69,8 +69,8 @@ UNSAFE credit supplied to a verifier. Public route census observes at least two
 native histories on 12 objects; that stratum has zero gains and zero losses.
 The other 288 objects contain all nine gains and three losses, but one observed
 history does not prove route stability. Exact reachable-history counts remain
-unknown. The frozen 4/255 and single-layer cohorts are still running and will
-be reported separately; neither can replace the primary denominator or gate.
+unknown. The frozen 4/255 cohort is reported separately below; the single-layer
+queue is still running. Neither replaces the primary denominator or gate.
 
 All failed attempts are retained. An initial publication/cleanup failure is
 charged at its observed upper cost of 301.579 seconds and remains ERROR; a
@@ -91,6 +91,34 @@ floating-execution certificates. Evidence: [protocol, complete tables and
 execution interpretation](../../docs/moe_aware_b4_20261026.md) and
 [bound records and independent recount](../../docs/moe_aware_b4_records_20261027.json),
 keys `main_and_ablation_review` and `main_gain_loss_trace_review`.
+
+## Double-radius cohort: small local benefit, no observed routing trend
+
+The registered 4/255 cohort completes all 240 calls on six fixed models and
+twenty shared inputs. Coupled/cascade numerical positives are 6/8; TIMEOUTs are
+114/112, with no complete UNKNOWN, arm UNSAFE or ERROR. All six baseline
+positives are retained; two gains give +1.667 percentage points, with the
+registered input-block interval [0,4.167]. Both gains are L2E16 seed 1; all four
+endpoints close in initial propagation without fallback. Each request has one
+surviving checked numerical history, not a proof of native route variation.
+
+The thirteen objects with multiple observed histories show no gain or loss;
+the two gains have only one observed history. On the same six-model subset at
+2/255, positives were 65/68. Greater observed routing variability therefore
+does not exhibit the hypothesized greater net benefit in these records. Exact
+legal-history counts remain unknown; the joint change in radius, robustness
+and execution difficulty prevents a unique causal interpretation.
+
+Public PGD supplies 31 replayed counterexamples, all among the 112 objects
+where both verification arms time out, and none conflicts with a positive.
+Keep the original 120-pair denominator and original arm outcomes. All-request
+means are 275.446/273.588 seconds and medians 288.784/288.775; the median paired
+difference is -0.002610 seconds. The total stage cost is 66,220.116 seconds,
+including auxiliary work and orchestration. This is not universal acceleration
+or a replacement primary success. The 240 receipts, source identities and
+input-block bootstrap were independently recounted in 6.810 seconds, with
+0.101 seconds for gain-trace extraction; no bound was independently re-proved.
+Evidence: `radius_final_review` in the same [B4 record](../../docs/moe_aware_b4_records_20261027.json).
 
 ## Multilayer mechanism diagnostics: no admitted M-B or M-C benefit
 
@@ -148,8 +176,9 @@ This stops these finite implementations without claiming that all guard-dual
 methods or all margin partitions are ineffective. The authorized complete-
 request comparison tests **M-A alone**, with the single-layer boundary and
 double-radius cohorts preserved. Its completed primary table above fails the
-registered practical-effect threshold; those two characterization cohorts
-remain pending. It cannot validate a successful three-component algorithm. The historical studies
+registered practical-effect threshold; the completed double-radius cohort has
+two gains and the single-layer cohort remains pending. They cannot validate a
+successful three-component algorithm. The historical studies
 below keep their original cohorts, guarantees and outcomes.
 
 Evidence: [final result, source bindings and independent recount](../../docs/moe_aware_stage5a_results_20261026.json),

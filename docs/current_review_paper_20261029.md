@@ -85,3 +85,26 @@ cited entries, 49 local link targets, the five new reference IDs in extracted
 PDF text and unchanged table/renderer hashes (0.004 s; no numerical reproof).
 This fills a citation/traceability gap in the review draft, not an algorithm or
 certification result. The immutable old B4 queue continues independently.
+
+## Audited double-radius results added (R4)
+
+After all 240 radius calls finished, the R3 frozen auditor independently
+recounted their sources, terminal receipt/coverage and twenty-input-block
+statistics. The result and bounded trace extraction are linked by
+`radius_final_review` in the existing B4 record; no scientific query or replay
+was added. The paper and longer companion now report 8 versus 6 numerical
+positives, two gains/no losses, +1.667 pp/[0,4.167] pp, all costs and the absence
+of a gain among thirteen objects with multiple observed histories. The primary
+STOP and corrected M-B/M-C STOP do not change. Only the single-layer table
+remains pending; the original controller proceeds without restart.
+
+The standard-library renderer now reconstructs five tables from the same three
+committed record files. Its new table binds the completed radius summary;
+earlier generated objects remain available in prior commits and R1–R3 builds.
+R4, `/data1/Kane/MOE/results/current_review_paper_20261029_r4`, compiles twice
+and extracts to 9 pages / 211,671 bytes, with no final warning or overfull box.
+Build/extraction took 0.849 s; source hashes are in `build.json`. R4 PDF SHA-256:
+`18ea8b0624d50a88a29098d9f87b534a1d7729e4538bee35dbe33947106e7104`.
+Table reconstruction, retained old-record sections, archive hashes, 67 local
+links and PDF result fields pass in 0.031 s; page 6 was visually reviewed.
+`review_checks.json` records these checks, with no numerical bound reproof.

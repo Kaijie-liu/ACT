@@ -46,8 +46,9 @@ tested implementations. M-A-only B4 now has a completed primary comparison:
 122 versus 116 numerical positives, nine gains and three losses, and a net
 two-point increase with an input-block interval of [0,4] points. The registered
 five-point practical threshold fails. This is not a reason to expand the sample
-or tune the phase allowance. The radius and single-layer queues remain separate
-pending characterization. See the [diagnostic table](08_evaluation.md#multilayer-mechanism-diagnostics-no-admitted-m-b-or-m-c-benefit)
+or tune the phase allowance. The completed double-radius cohort adds two
+numerical positives but no gain among thirteen observed-multiple-history
+objects; the single-layer characterization remains pending. See the [diagnostic table](08_evaluation.md#multilayer-mechanism-diagnostics-no-admitted-m-b-or-m-c-benefit)
 and [primary result](08_evaluation.md#complete-request-cascade-primary-comparison-practical-gate-not-met).
 
 The original M-B test confounds guard use with two independent optimization
@@ -222,7 +223,7 @@ that problem to both HZ-based and general nonlinear backends. The completed
 strong-baseline and mechanism studies do not establish an irreplaceable HZ
 advantage or a successful MoE-aware three-component algorithm. The completed
 primary cascade comparison has a positive point estimate but fails its
-pre-registered practical-effect gate; pending radius and boundary results cannot
+pre-registered practical-effect gate; separate radius and boundary results cannot
 replace that primary decision. Same-source strict positive proofs
 and cross-family competitiveness remain open; historical internal gains and
 the explicit negative results are both retained.

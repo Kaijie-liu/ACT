@@ -119,8 +119,10 @@ positives and loses three, for a net two percentage points with an input-block
 95% interval of [0,4] points. This fails the registered five-point practical
 threshold; mean request cost rises from 189.287 to 192.983 seconds. All nine
 gained requests close through decoupling without fallback, establishing a
-local computational effect but not the required overall benefit. The radius
-and single-layer boundary queues remain pending. See the
+local computational effect but not the required overall benefit. The separate
+double-radius cohort gains two of 120 paired objects, with no gain among its
+thirteen observed-multiple-history objects. The single-layer queue remains
+pending. See the
 [primary result](08_evaluation.md#complete-request-cascade-primary-comparison-practical-gate-not-met).
 
 Finally, we separate evidence consistency from independent bound checking.

@@ -1,6 +1,7 @@
 % Relevant committed summary primary sha256 30c1121e079619babae3fb0bd0d6f09652d1e1be3ca0efb126b35342b94e875d
 % Relevant committed summary multilayer sha256 5e78f74054d0dd883fbfe692c8a5146f155786fb917f0c491c54be8a49c6d127
 % Relevant committed summary guard sha256 8bebc40ef4f01d9630a61de608044f2d730faf7b2574acf165b5262afa56f8fa
+% Relevant committed summary radius sha256 4748977e6aadff4e22ee02c0daa2cf1a27dbc5b0912f0a877d492d7ac9feb9d5
 \begin{table}[ht]
 \centering\small
 \caption{Complete-request cascade: 300 calls per arm. P is numerical POSITIVE, not a strict certificate. All terminals and costs are retained.}
@@ -57,6 +58,20 @@ Continuation & Closed histories & UNKNOWN \\
 \midrule
 Extra alpha & 0 & 11 \\
 Joint alpha/guard & 1 & 10 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[ht]
+\centering\small
+\caption{Separate double-radius cohort at $4/255$: 120 calls per arm, the same six models and twenty input blocks. P is numerical POSITIVE; both arms have zero complete UNKNOWN, UNSAFE and ERROR terminals. Public counterexamples are not arm successes.}
+\label{tab:radius}
+\begin{tabular}{lrrrr}
+\toprule
+Method & P & TIMEOUT & Mean s & Median s \\
+\midrule
+Coupled & 6 & 114 & 275.446 & 288.784 \\
+Cascade & 8 & 112 & 273.588 & 288.775 \\
 \bottomrule
 \end{tabular}
 \end{table}

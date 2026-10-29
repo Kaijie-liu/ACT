@@ -20,6 +20,7 @@ def render():
     primary = read('moe_aware_b4_records_20261027.json')['main_and_ablation_review']['main']
     multilayer = read('multilayer_stage1_records_20261022.json')['final_result_20261025']
     revised = read('guard_dual_refinement_result_20261029.json')
+    radius = read('moe_aware_b4_records_20261027.json')['radius_final_review']
     c = primary['contrast']
     assert c['complete'] and c['denominator'] == 300 and not c['missing']
     assert all(sum(states.values()) == 300 for states in c['states'].values())
@@ -27,7 +28,7 @@ def render():
     assert multilayer['full_calls'] == 600 and multilayer['unexecuted'] == 0
     assert revised['completed_calls'] == 22 and len(revised['pair_details']) == 11
     rows = []
-    for label, value in (('primary', primary), ('multilayer', multilayer), ('guard', revised)):
+    for label, value in (('primary', primary), ('multilayer', multilayer), ('guard', revised), ('radius', radius)):
         digest = hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()).hexdigest()
         rows.append('% Relevant committed summary '+label+' sha256 '+digest)
     def table(caption, label, columns, header, body):
@@ -57,6 +58,16 @@ def render():
     rows += table('Revised guard diagnostic on the same eleven histories. Each continuation retains its complete twenty-evaluation baseline. A local history is not a full MoE request.',
         'tab:guard','lrr','Continuation & Closed histories & UNKNOWN',
         [f"{name} & {sums[arm]} & {11-sums[arm]}" for arm,name in (('alpha','Extra alpha'),('guard','Joint alpha/guard'))])
+    r = radius['contrast']
+    assert r['complete'] and r['denominator'] == 120 and not r['missing']
+    assert all(sum(states.values()) == 120 for states in r['states'].values())
+    assert len(r['gained'])-len(r['lost']) == r['net']
+    assert radius['reviewed_completed_calls'] == 240 and radius['primary_decision'] is False
+    rows += table('Separate double-radius cohort at $4/255$: 120 calls per arm, the same six models and twenty input blocks. P is numerical POSITIVE; both arms have zero complete UNKNOWN, UNSAFE and ERROR terminals. Public counterexamples are not arm successes.',
+        'tab:radius', 'lrrrr', 'Method & P & TIMEOUT & Mean s & Median s',
+        [' & '.join([name, str(r['states'][arm].get('POSITIVE',0)), str(r['states'][arm].get('TIMEOUT',0)),
+            f"{r['cost']['means'][arm]:.3f}", f"{r['cost']['medians'][arm]:.3f}"])
+         for arm,name in (('off','Coupled'),('on','Cascade'))])
     return '\n'.join(rows)
 
 
