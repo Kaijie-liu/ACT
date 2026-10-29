@@ -78,6 +78,7 @@ def all_requests(models):
 
 def source_files():
     return {p:sha(ROOT/p) for p in FILES+('scripts/architecture_s1_study.py',
+        'scripts/architecture_s1_audit.py','act/pipeline/moe/architecture_statistics.py',
         'act/back_end/moe/class_separated_top1.py', 'act/back_end/moe/genbab_pair.py',
         'act/back_end/moe/static_pair.py')}
 
@@ -89,7 +90,7 @@ def freeze(path):
     record = load(ROOT/'docs/architecture_s1_records_20261029.json')
     controls = {}
     for key in ('evaluation_adapter_control', 'request_execution_control', 'early_timeout_delta_control',
-                'public_pgd_control'):
+                'public_pgd_control', 'analysis_control'):
         row = record[key]
         controls[key] = row
         require(row['status'] == 'PASS', 'required S1 integration control '+key)

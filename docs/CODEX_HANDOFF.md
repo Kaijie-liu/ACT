@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## S1 paired analysis and terminal audit ready 2026-10-30
+
+Real increment: no trained verification/attack calls; training remained live at181/300epochs,3/6models, no error. Existing PID3300583/start1212371695 is not restarted.
+[Statistics](../act/pipeline/moe/architecture_statistics.py) resample input blocks with three fixed paired seeds, retain all states/costs and separate capacity groups/radii/methods.
+[Audit](../scripts/architecture_s1_audit.py) binds online terminal/deadline/coverage/replay records; late candidates cannot become success, PGD does not replace verifier results.
+Eight controls PASS in2.593s with0model/solver calls; [record](architecture_s1_records_20261029.json) retains their source identities. Controller failures before spawn now also have measured cost.
+Literal S1 point gate retained, including an explicit both-zero-certificate flag; shared-clean-correct cost strata explain cheap wrong-prediction returns without changing the denominator.
+Next finish six-model training audit, write final numerical manifest, commit/push immutable execution and launch the authorized S1 queue. No S2 or old mechanism work before its registered gate.
+Current results remain numerical-policy evidence; no source-complete certificate or architecture superiority is established.
+
 ## S1 public PGD integrated; two dense models complete 2026-10-30
 
 Real increment:2/6dense models complete;0trained verification/attack calls. Total-matchseed0/1 test52.66%/53.29%, selectedepochs37/25; original trainingPID3300583 continues.

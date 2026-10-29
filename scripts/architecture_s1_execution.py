@@ -431,6 +431,17 @@ def invoke(root, request, manifest, *, seconds=300, timing_reserve=(12, 10, 5)):
     return row
 
 
+def measured_invoke(root, request, manifest, *, seconds, timing_reserve):
+    began=time.monotonic()
+    try:
+        return invoke(root,request,manifest,seconds=seconds,timing_reserve=timing_reserve)
+    except Exception as exc:
+        # Includes failures before a child/session can be created. These are
+        # charged attempts, not zero-time successes or dropped inputs.
+        return dict(id=request['id'],status='ERROR',accepted=False,seconds=time.monotonic()-began,
+            controller_error=dict(kind=type(exc).__name__,error=str(exc)))
+
+
 def finite_queue(root, requests, manifest, *, workers, seconds=300, timing_reserve=(12, 10, 5)):
     """One finite queue; parallel workers never write the shared ledger.
 
@@ -454,7 +465,7 @@ def finite_queue(root, requests, manifest, *, workers, seconds=300, timing_reser
         while pending or (not stopped and next_index < len(requests)):
             while not stopped and len(pending) < workers and next_index < len(requests):
                 query = requests[next_index]; next_index += 1
-                task = pool.submit(invoke, root, query, manifest, seconds=seconds, timing_reserve=timing_reserve)
+                task = pool.submit(measured_invoke, root, query, manifest, seconds=seconds, timing_reserve=timing_reserve)
                 pending[task] = query
             done, _ = wait(pending, return_when=FIRST_COMPLETED)
             for task in sorted(done, key=lambda f: pending[f]['id']):

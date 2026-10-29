@@ -290,3 +290,47 @@ Dense_total_seed1 is now also complete: selected epoch25, test53.29%. Its
 separate prefix audit checks all50epochs and checkpoint/source identities
 without another forward pass. Four models remain; full paired certification
 results, not these partial clean accuracies, will decide S1.
+
+## Paired analysis and terminal audit prepared before verification outcomes
+
+[Statistics](../act/pipeline/moe/architecture_statistics.py) implement the
+registered input-block bootstrap:10000resamples, seed20261029, keeping all
+three fixed seed pairs together in each input block. Complete200-input and
+incomplete1000-input results are separate, as are2/255 and8/255 and the two
+capacity matches. The main time comparison uses all-request medians, including
+UNKNOWN, TIMEOUT and ERROR, with every executed cost retained. Missing jobs or
+missing costs prevent a final S1 decision; they are not silently excluded.
+
+The point gate is unchanged. Its literal rule can authorize S2 when both arms
+have zero numerical positives but MoE's median cost is smaller. The report
+explicitly flags this degeneracy; it does **not** establish that MoE certifies
+more inputs. No new positive-rate/CI threshold is silently imposed. Both
+matching groups and all confidence intervals remain visible. Shared
+clean-correct cost medians are explanatory strata, obtained from the separately
+recorded same-object clean predictions, never a filter on the main sample.
+This helps expose speed differences caused by more cheap clean-error returns.
+
+[Terminal audit](../scripts/architecture_s1_audit.py) checks frozen request and
+input/engine identities, immutable file links, online deadlines, complete
+property/history coverage and full-model replay records. It preserves a late
+terminal as TIMEOUT even if an earlier candidate file contains a positive.
+Accepted public counterexamples conflicting with numerical positives trigger
+an evidence error. This is a structural audit of numerical evidence, not a
+recomputation of every CROWN bound or independent model replay. Auxiliary
+attacks do not replace or upgrade the verifier's recorded terminal.
+
+Routing tables distinguish observed numerical exclusion counts from unknown
+route counts. A single remaining candidate under recorded CROWN exclusions is
+not called an exact feasible-route census or a checked route-flip witness.
+Clean-error early exits and incomplete records cannot manufacture single-route
+evidence. Costs of shared public-PGD batches, cold verifier requests and the
+offline audit are separate. Parallel queue wall time is not the sum of request
+CPU/wall costs and is reported separately.
+
+Eight necessary standard-library/numpy controls passed in2.593s without any
+model or solver call: block versus call resampling, gains/losses, frozen point
+gate, explicit zero-certificate flag, missing denominators/costs, route-unknown
+counts, early-controller-error charging, and rejection of missing properties,
+wrong identity and late positives. All raw controls remain in the single
+[S1 record](architecture_s1_records_20261029.json). Real numerical execution is
+still waiting for the six-model training completion and final manifest binding.
