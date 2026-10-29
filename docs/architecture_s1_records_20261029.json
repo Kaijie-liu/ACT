@@ -80,5 +80,158 @@
   "completed_epochs": 3,
   "verification_calls": 0,
   "incomplete_bound_items": 0,
-  "scope": "start and preparation checks only; no S1 outcome"
+  "scope": "start and preparation checks only; no S1 outcome",
+  "evaluation_adapter_control": {
+    "root": "/data1/Kane/MOE/results/architecture_s1_evaluation_control_20261029_r1",
+    "complete_sha256": "efe38aabc00c709eaebc8dd075501ca3f0c5bc4e653f0c803e73fc1359fc5a24",
+    "status": "PASS",
+    "tests": 18,
+    "seconds": 18.104887364432216,
+    "cases": [
+      {
+        "evidence": "FULL_MODEL_REPLAY",
+        "expected": "UNSAFE_REPLAYED",
+        "family": "dense",
+        "mode": "incomplete",
+        "pruned": 0,
+        "returned": 0,
+        "status": "UNSAFE_REPLAYED",
+        "verified": 0
+      },
+      {
+        "evidence": "FULL_MODEL_REPLAY",
+        "expected": "UNSAFE_REPLAYED",
+        "family": "dense",
+        "mode": "complete",
+        "pruned": 0,
+        "returned": 0,
+        "status": "UNSAFE_REPLAYED",
+        "verified": 0
+      },
+      {
+        "evidence": "CROWN_IBP_NUMERICAL_FILTER",
+        "expected": "POSITIVE",
+        "family": "dense",
+        "mode": "incomplete",
+        "pruned": 0,
+        "returned": 1,
+        "status": "POSITIVE",
+        "verified": 1
+      },
+      {
+        "evidence": "ALPHA_BETA_CROWN_NUMERICAL_FILTER",
+        "expected": "POSITIVE",
+        "family": "dense",
+        "mode": "complete",
+        "pruned": 0,
+        "returned": 1,
+        "status": "POSITIVE",
+        "verified": 1
+      },
+      {
+        "evidence": "FULL_MODEL_REPLAY",
+        "expected": "UNSAFE_REPLAYED",
+        "family": "moe",
+        "mode": "incomplete",
+        "pruned": 0,
+        "returned": 0,
+        "status": "UNSAFE_REPLAYED",
+        "verified": 0
+      },
+      {
+        "evidence": "FULL_MODEL_REPLAY",
+        "expected": "UNSAFE_REPLAYED",
+        "family": "moe",
+        "mode": "complete",
+        "pruned": 0,
+        "returned": 0,
+        "status": "UNSAFE_REPLAYED",
+        "verified": 0
+      },
+      {
+        "evidence": "CROWN_IBP_NUMERICAL_FILTER",
+        "expected": "POSITIVE",
+        "family": "moe",
+        "mode": "incomplete",
+        "pruned": 6,
+        "returned": 3,
+        "status": "POSITIVE",
+        "verified": 3
+      },
+      {
+        "evidence": "GENBAB_NUMERICAL_FILTER",
+        "expected": "POSITIVE",
+        "family": "moe",
+        "mode": "complete",
+        "pruned": 6,
+        "returned": 3,
+        "status": "POSITIVE",
+        "verified": 3
+      },
+      {
+        "evidence": "CROWN_IBP_NUMERICAL_FILTER",
+        "expected": "POSITIVE",
+        "family": "moe",
+        "mode": "incomplete",
+        "pruned": 0,
+        "returned": 9,
+        "status": "POSITIVE",
+        "verified": 9
+      },
+      {
+        "evidence": "GENBAB_NUMERICAL_FILTER",
+        "expected": "POSITIVE",
+        "family": "moe",
+        "mode": "complete",
+        "pruned": 0,
+        "returned": 9,
+        "status": "POSITIVE",
+        "verified": 9
+      },
+      {
+        "evidence": "NONE",
+        "expected": "UNKNOWN",
+        "family": "moe",
+        "mode": "incomplete",
+        "pruned": 0,
+        "returned": 2,
+        "status": "UNKNOWN",
+        "verified": 1
+      },
+      {
+        "evidence": "NONE",
+        "expected": "UNKNOWN",
+        "family": "dense",
+        "mode": "incomplete",
+        "pruned": 0,
+        "returned": 1,
+        "status": "UNKNOWN",
+        "verified": 0
+      }
+    ],
+    "scope": "synthetic semantics and unchanged default traversal; no trained requests"
+  },
+  "common_inputs": {
+    "root": "/data1/Kane/MOE/results/architecture_s1_inputs_20261029_r1",
+    "bytes": 13127225,
+    "catalog_sha256": "f6f0ce298e8f2673179de90387ef8def7e4404bebbf42850fbcf6c73f177f236",
+    "domains": 2000,
+    "examples": 1000,
+    "input_sha256": "968b4d2e5f8e28c07c6dbe660904aa0eeafb99090ff6440655468d7cba34f4b2",
+    "model_calls": 0,
+    "seconds": 2.9316967222839594,
+    "source_sha256": "43fd654fb3179db4b371e009e96fa1de2d666e9257fa911f3daaff0a0b04e644",
+    "status": "COMPLETE",
+    "verification_calls": 0,
+    "complete_sha256": "d5c2b5139b4f907a5d24b16ccb20ba35bf72bfb061a443237f8c7e6649e3d5be",
+    "session_sha256": "a4ae537661528dc6dcf45b4617befc9b485a2bf93b343f6531d2f82d7befb2de",
+    "freeze_sha256": "7cc54d27873c971c6d8b614244adf6a0deee19df43e198030900253dd67a3880",
+    "actual_bytes": 13129187
+  },
+  "preparation_review": {
+    "recorded_at": 1793276703.933103,
+    "status": "PASS",
+    "verification_calls": 0,
+    "checks": "source/receipt hashes and fixed input roster; no new bound computations"
+  }
 }

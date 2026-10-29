@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## S1 bound semantics controlled; fixed common inputs ready 2026-10-29
+
+Real increment:0trainedverificationcalls; training PID3300583/start1212371695 live at check,27/300epochs and0/6models complete; previous launch is not rerun.
+[Adapters](../act/pipeline/moe/architecture_evaluation.py) support full-route CROWN-IBP and coupled GenBaB; dense complete uses sameengine nativekFSB, historical defaults unchanged.
+One18-test/18.105s [control](architecture_s1_records_20261029.json) passes constants, allties, unsafe/zero, deadline/domain, missing-history differential and cross-env dense loading; no source-complete proof.
+First1000physicalinputs/2000domains/9properties perinput materialized once without any model selection;13.14MB includingreceipts,3.628s,oldexposure disclosed.
+Incomplete early-UNKNOWN retains missingcounts, never claims fullcoverage. [S1 record](architecture_s1_20261029.md#common-evaluation-adapters-and-input-preparation) binds semantics and sources.
+Next implement complete-request supervision/reception and finite parallelcatalog, then freeze eval with all6dense selectedweights after training audit. Existing8worker ceiling/300s/8GiB/128MiB stage artifact policy preserved.
+No S1 outcome yet; C1–C3 unknown, S2 gated. OldG1/M-B/M-C remain stopped; source gaps and failed histories retained.
+
 ## S1 six-model dense queue started from committed freeze 2026-10-29
 
 Real increment:1training queue launched,0/6models complete at launch;0S1verification calls. [Start record](architecture_s1_records_20261029.json).

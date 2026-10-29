@@ -61,13 +61,16 @@ def full_replay(model,tensors,candidate,label):
     return _forward_validate(model,candidate,lower=tensors['lower'],upper=tensors['upper'],clean_prediction=label)
 
 
-def verify_graph(graph,lower,upper,property_count,deadline):
+def verify_graph(graph,lower,upper,property_count,deadline,*,configuration=None):
     from api import ABCrownSolver,VerificationSpec,default_config
     from act.back_end.moe.genbab_pair import scalar_bad_set_clauses
     raw=scalar_bad_set_clauses(property_count)
     spec=VerificationSpec.build_from_input_bounds(lower,upper,[raw])
     config=default_config()
-    for key,value in backend.CONFIG.items():backend.put_config(config,key,value)
+    # S1 may use the engine's ordinary ReLU branching for dense networks.
+    # Historical calls retain their exact registered nonlinear configuration.
+    settings=backend.CONFIG if configuration is None else configuration
+    for key,value in settings.items():backend.put_config(config,key,value)
     if (config['bab']['timeout_scale']!=1 or config['bab']['override_timeout'] is not None
             or config['bab']['cut']['enabled'] or config['solver']['beta-crown']['all_node_split_LP']):
         raise ValueError('unchanged shared-time non-LP/non-cut configuration')
@@ -83,7 +86,8 @@ def verify_graph(graph,lower,upper,property_count,deadline):
         stats={k:backend.json_value(stats.get(k)) for k in ('elapsed','bab','pgd')},
         stage='nonlinear_bab' if stats.get('bab') else 'incomplete_only',
         seconds=time.monotonic()-start,actual_raw_spec=raw,
-        bound_propagation='alpha-crown',complete_verifier='bab',branching='nonlinear',
+        bound_propagation=config['solver']['bound_prop_method'],complete_verifier='bab',
+        branching=config['bab']['branching']['method'],
         guarantee='GENBAB_NUMERICAL_FILTER_NOT_INDEPENDENT_PROOF')
     net=getattr(result.reference.get('model'),'net',None)
     record['split_activations']={} if net is None else {

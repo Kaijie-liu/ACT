@@ -130,3 +130,47 @@ PID3300583/start1212371695, detached session, nice10. Results:
 receipts; 8GiB AS observed in process limits, first epoch recorded, no startup
 error. Six models are queued, not finished; no S1 numerical bounds or complete
 verification calls have run. Current evaluation adapters remain the next task.
+
+## Common evaluation adapters and input preparation
+
+The opt-in [adapter](../act/pipeline/moe/architecture_evaluation.py) now supplies
+both methods. Incomplete uses the pinned auto-LiRPA `CROWN-IBP` mode for prefix
+margins and final guarded properties, without alpha optimization or branching.
+Complete MoE retains the coupled R7 GenBaB configuration and original full-CROWN
+prefix pruning. Dense complete verification uses the same API/CPU/float64,
+batch1/attack/deadline settings, with the engine's native kFSB ReLU branching.
+The existing historical `verify_graph` defaults are unchanged; the optional
+configuration is explicit. No stopped M-A/M-B/M-C path is enabled.
+
+Incomplete traversal can stop at its first unproved history, always UNKNOWN.
+The unvisited/returned-unproved counts remain visible, and incomplete work never
+becomes a positive or a solved-time saving. All complete-request comparisons
+still report full costs and states. Report clean-wrong and shared-clean-correct
+cost strata as interpretation, because a cheap wrong prediction is not useful
+certification performance. The registered main denominator remains all inputs.
+
+The fixed synthetic adapter batch passed18tests in18.105s under the existing
+supervisor: dense positive/zero/witness cases, nonzero property constants,
+variable gates, nine tie-legal two-layer histories, missing/invalid domains,
+deadline rejection, UNKNOWN short-circuit versus historical full traversal,
+and loading the ACT-created dense checkpoint in the isolated verifier environment.
+Nine tests are relevant traversal regressions; nine are new adapter controls.
+The alternate-tie negative example remains UNKNOWN despite a positive native
+clean route. This tests coverage, not strict certification of a trained model.
+[Record](architecture_s1_records_20261029.json) binds source hashes and cases;
+raw control evidence is `results/architecture_s1_evaluation_control_20261029_r1`.
+
+[Common input preparation](../scripts/architecture_s1_inputs.py) materialized
+indices0–999 as one shared float32 tensor plus labels, with both float64 boxes
+and all nine label-versus-competitor rows fingerprinted per input. No model was
+loaded or used for selection. The source CIFAR test hash matches training.
+Preparation took3.628s including supervised cleanup, about13.14MB including
+catalog/receipts, charged to the S1 artifact account, not free per-arm answers.
+Per-request reading/materialization will still be charged. Binary64 box
+construction is explicitly the numerical policy, not a repaired exact-input
+source proof. All historical exposure remains disclosed.
+
+The full-request worker/reception/parallel catalog freeze is still pending;
+adapter controls do not authorize a result before that existing S1 requirement
+is implemented. No new per-interface approval is required. Training continues
+from its separate immutable source, unaffected by these code changes.

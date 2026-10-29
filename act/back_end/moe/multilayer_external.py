@@ -121,10 +121,10 @@ def excluded_pair(pair, experts, bounds, tolerance=1e-9):
 
 def verify_histories(model, *, center, lower, upper, rows, thresholds, pruning, deadline,
                      verify_graph, bound_router=router_upper_bounds, publish=lambda _: None,
-                     history_solver=None):
+                     history_solver=None, stop_on_unknown=False):
     """One shared request budget, complete prefix-tree coverage or explicit missing."""
     from act.back_end.moe.class_separated_top1 import validate_replay
-    if type(pruning) is not bool:
+    if type(pruning) is not bool or type(stop_on_unknown) is not bool:
         raise ValueError('explicit pruning flag')
     experts = tuple(len(layer.experts) for layer in model.layers)
     counts = tuple(math.comb(e, 2) for e in experts)
@@ -137,7 +137,9 @@ def verify_histories(model, *, center, lower, upper, rows, thresholds, pruning, 
     def tick():
         if time.monotonic() >= deadline:
             raise TimeoutError('shared request deadline')
+    stopped_unproved = False
     def walk(prefix):
+        nonlocal stopped_unproved
         tick()
         depth = len(prefix)
         if depth == len(experts):
@@ -169,6 +171,10 @@ def verify_histories(model, *, center, lower, upper, rows, thresholds, pruning, 
                         result.update(status='UNSAFE_REPLAYED', witness=point.reshape_as(center).tolist())
                         return
             publish(result)
+            if stop_on_unknown and outcome['status'] != 'verified':
+                # Incomplete certification cannot accept the whole request once
+                # one leaf remains open. This is UNKNOWN, never covered work.
+                stopped_unproved = True
             return
         bounds = {}
         if pruning:
@@ -198,7 +204,7 @@ def verify_histories(model, *, center, lower, upper, rows, thresholds, pruning, 
             else:
                 walk((*prefix, pair))
             publish(result)
-            if result['status'] == 'UNSAFE_REPLAYED':
+            if result['status'] == 'UNSAFE_REPLAYED' or stopped_unproved:
                 return
     tick()
     if validate_replay(model, center, lower, upper, rows, thresholds):
@@ -212,6 +218,8 @@ def verify_histories(model, *, center, lower, upper, rows, thresholds, pruning, 
         if result['complete'] and result['status'] != 'UNSAFE_REPLAYED':
             result['status'] = 'POSITIVE'
     result['unvisited_histories'] = expected-result['pruned_histories']-result['attempted_histories']
+    if stop_on_unknown:
+        result['stopped_at_first_unproved_history'] = stopped_unproved
     result['unclosed_histories'] = expected-result['pruned_histories']-result['verified_histories']
     result['inflight_histories'] = result['attempted_histories']-result['returned_histories']
     result['returned_unproved_histories'] = result['returned_histories']-result['verified_histories']
