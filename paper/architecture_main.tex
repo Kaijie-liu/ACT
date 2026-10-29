@@ -1,0 +1,320 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,booktabs}
+\usepackage[hidelinks]{hyperref}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newcommand{\R}{\mathbb{R}}
+\title{When Is a Mixture of Experts Easier to Certify?\\
+Route-Aware Reductions and a Capacity-Matched Study}
+\author{Author details omitted for technical review}
+\date{Working manuscript, 30 October 2026}
+\begin{document}
+\maketitle
+\begin{abstract}
+Conditional computation reduces the number of expert parameters used by a
+single MoE execution. It need not reduce the cost of certifying every execution
+on a perturbation domain. We formulate an architecture-level comparison that
+separates total capacity, active capacity, complete routing coverage, and
+verification cost. A route-aware reduction exposes all legal selected-softmax
+top-2 histories to a general nonlinear verifier. We use this reduction to
+design a paired comparison of ordinary MoE and dense training, followed,
+conditionally, by a study of routing-aware certification training.
+\textbf{Results status:} the new capacity-matched study is in progress. This
+draft contains the reductions and frozen experimental design, not evidence
+that MoE architectures dominate dense networks. Earlier verifier experiments
+are retained as motivation and limitations, not repurposed as architecture
+comparisons. Numerical backend positives and independently checked source
+proofs remain different evidence levels.
+\end{abstract}
+
+\paragraph{Scope of this draft.}
+The manuscript target is ICML 2027, but the official 2027 submission deadline
+and page limit have not been verified. Eight pages is a working target, not a
+claim of compliance. The completed verifier study is preserved in
+\path{paper/review_main.tex} and will supply a compact empirical-limits section
+and appendices, not a separate simultaneous submission. This draft does not
+record human review, a clean empirical reproduction, or a submission.
+
+\section{Question and hypotheses}
+A sparse MoE can represent many expert functions while activating only a few
+at an input. Certification asks a different question: can every legal execution
+on a neighborhood be shown to preserve the output property? The routers,
+alternative histories, and their construction costs cannot be ignored.
+We distinguish three claims and their required evidence.
+\begin{itemize}
+\item C1: guarded static verification obligations cover the route-variable
+network. The reduction below establishes this statement under explicit source
+and bound-validity assumptions. Small routing overhead is an empirical
+condition, not part of the theorem.
+\item C2: at matched capacity, MoE obtains at least as much certification with
+lower complete-request cost. Total and active parameter matching answer
+different questions; both must be reported.
+\item C3: a routing-aware training objective improves the joint tradeoff among
+clean accuracy, certified accuracy, and verification cost relative to dense
+certification training. This is a gated research hypothesis, not a consequence
+of a routing-margin penalty alone.
+\end{itemize}
+The contribution is not a claim that hybrid zonotopes, case splitting, interval
+training, weak duality, or endpoint minimization are individually new.
+Precedents already study sparse-MoE robustness~\cite{robmoe}, compositional
+MoE verification~\cite{metamoe}, and certification with routed smoothed
+experts~\cite{dualrs}. The new empirical question needs a shared deterministic
+function, threat model, capacity convention, and full cost denominator.
+
+\section{Route-aware complete-output verification}
+At layer $\ell$, let $S_\ell=\{a,b\}$ be an unordered selected pair and let
+$h_{\ell-1}$ be the output of its preceding execution. Define
+\[
+ m_\ell=r_{\ell,a}(h_{\ell-1})-r_{\ell,b}(h_{\ell-1}),\qquad
+ h_\ell=\sigma(m_\ell)E_{\ell,a}(h_{\ell-1})+
+        (1-\sigma(m_\ell))E_{\ell,b}(h_{\ell-1}).
+\]
+All selected scores must be at least all unselected scores. Ties admit every
+legal pair. For a history $H=(S_1,\ldots,S_L)$, $F_H$ is the specialized graph
+and $g_{H,j}(x)\geq0$ its prefix-dependent legality conditions. On input set
+$X$, write $X_H=\{x\in X:g_{H,j}(x)\geq0\text{ for all }j\}$ and
+$p_{H,k}(x)=q_k^\top F_H(x)+c_k$. We seek
+\[
+ \forall H\;\forall x\in X_H\;\forall k,\qquad p_{H,k}(x)>0.
+\]
+
+\begin{proposition}[Complete history reduction]
+If a finite history cover contains every legal execution on $X$, and each
+history is proved infeasible or every output property has a positive valid
+lower bound over $X_H$, the complete MoE satisfies all output properties on $X$.
+\end{proposition}
+\begin{proof}
+Any legal execution has a covered history, satisfies its guards, and agrees
+with its specialized graph. Apply the lower bounds to that input. The argument
+applies to every tie resolution, not just a library's selected clean route.
+\end{proof}
+
+\begin{lemma}[Prefix exclusion]
+Suppose a proposed next pair requires $r_a-r_c\geq0$. A valid strict negative
+upper bound on $r_a-r_c$, over a domain containing every legal execution of the
+preceding prefix, excludes this extension and all its descendants.
+\end{lemma}
+\begin{proof}
+The required inequality is impossible on that prefix. Any descendant requires
+the same extension. A zero upper bound does not exclude equality.
+\end{proof}
+Our frontend computes its own prefix bounds; it does not borrow another arm's
+route census. Numerical exclusions are recorded as such. A surviving candidate
+is not a reachability witness, and an unfinished tree cannot establish safety.
+
+\begin{proposition}[Guarded properties as output atoms]
+For a fixed history and property,
+\[
+ \forall x\in X_H:p_H(x)>0\quad\Longleftrightarrow\quad
+ \forall x\in X:\max\{p_H(x),-g_{H,1}(x),\ldots,-g_{H,J}(x)\}>0.
+\]
+\end{proposition}
+\begin{proof}
+At legal points every negated guard is nonpositive, so the maximum is positive
+exactly when the property is positive. At illegal points a negated guard is
+strictly positive. This also explains why a non-strict acceptance test would
+incorrectly dismiss a violated property at a tie.
+\end{proof}
+ReLU implements the maximum, permitting a standard nonlinear verifier such as
+GenBaB~\cite{genbab}. Logical equivalence does not imply that an output-side
+guard produces the same relaxation as constraining the input domain.
+
+\begin{proposition}[Last-gate endpoints]
+If the suffix is affine and the upstream domain $P$ and retained guards do not
+depend on the last independent gate $\lambda\in[l,u]$, then
+\[
+ \inf_{z\in P,\,\lambda\in[l,u]}[b(z)+\lambda d(z)]
+ =\min\{\inf_{z\in P}[b(z)+l d(z)],\inf_{z\in P}[b(z)+u d(z)]\}.
+\]
+\end{proposition}
+\begin{proof}
+An affine function of $\lambda$ attains its minimum at an endpoint; infimum
+commutes with the minimum of these two functions.
+\end{proof}
+Replacing gates by independently enclosing ranges is an outer relaxation,
+not an equivalent network transformation. Every actual execution embeds by
+using its actual gate values. Endpoints do not remove variable inner-gate
+products or apply through a nonlinear suffix. This optional construction is
+part of the prior study; the frozen S1 complete baseline uses coupled GenBaB.
+
+\begin{lemma}[Why active parameters do not determine total cost]
+For a fixed history only its selected expert graphs need be instantiated in
+the specialized output, but its guards still require relevant router scores.
+A complete request can incur
+\[
+ T=T_{\rm load}+T_{\rm route}+\sum_{H\in\mathcal H_{\rm visited}}
+ (T_{\rm graph,H}+T_{\rm bound,H})+T_{\rm evidence/cleanup}.
+\]
+Thus bounding active parameters per history alone gives no bound independent
+of the visited-history count or proof difficulty.
+\end{lemma}
+\begin{proof}
+Static specialization removes unselected expert evaluations from that history;
+it does not discharge other histories. Summing the work of the actually visited
+obligations, including shared and non-shared overhead as implemented, gives the
+decomposition. Arbitrarily many unresolved histories or expensive selected
+networks remain consistent with the same per-history active parameter count.
+\end{proof}
+The sum describes work in one request. Parallel throughput across requests
+must not be substituted for per-request cost. Our loader reads complete model
+weights; that cost is charged even for weights absent from a specialized graph.
+
+\section{Verification-oriented training: conditional next stage}
+This section specifies the candidate objective. It has not been trained in S1
+and is executed only if the frozen architecture screen passes. At a clean-route
+pair $S$, let $\underline r_a,\overline r_c$ be IBP bounds. A routing penalty is
+\[
+ \mathcal L_{\rm route}=\sum_{a\in S,c\notin S}
+ [\tau-(\underline r_a-\overline r_c)]_+.
+\]
+A strictly positive proved selected-versus-unselected margin gives stability;
+a zero penalty only has that implication when the bound contract and a
+strictly positive $\tau$ support it. Merely minimizing the loss, or observing
+one route on sampled points, does not prove stability.
+
+The training surrogate fixes the clean expert choices and propagates IBP or
+CROWN-IBP~\cite{ibp,crownibp} through the selected computation. Router-margin
+intervals enclose sigmoid weights; interval products enclose the weighted
+expert outputs. If an earlier route can change, the clean-route surrogate
+does not cover the entire network. This approximation is permitted for
+optimization, never as the evaluation certificate. Independent evaluation
+returns to all tie-legal histories and all true-label output properties.
+
+The proposed comparisons separate ordinary training, certification training,
+and the routing penalty. Dense IBP and dense CROWN-IBP are named controls; an
+ordinary network evaluated with CROWN-IBP is not a CROWN-IBP-trained network.
+Schedules, $\tau$, architectures, seeds and evaluation allocation must be
+frozen before new outcomes. The conditional S2 design spans MLP and no-BN
+convolutional-stem families; no S2 result is reported here.
+
+\section{Experiments}
+\subsection{S1: frozen architecture screen}
+CIFAR-10 uses a shared seed-0 45k/5k training/validation split, ToTensor only,
+50 epochs, AdamW at 0.001 with weight decay 0.0001 and batch 256. Three seeds are
+retained for each model. Earliest maximal validation accuracy selects the
+checkpoint; test accuracy does not select it. Existing L1E8/L2E8 models use
+cross-entropy plus their original 0.1 routing-balance term; dense controls use
+cross-entropy. This architecture-specific objective difference is disclosed,
+not presented as a pure architecture intervention with identical losses.
+
+L1E8 has a 3072--128--8 router and eight 3072--256--128--10 experts. Router
+parameters count in both capacity conventions. The dense width ratio 2:1 and
+nearest integer parameter count are fixed before outcomes, without dummy
+weights.
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+Matching convention&MoE target&Dense parameters&Dense hidden widths\\
+\midrule
+Total&6,961,368&6,957,295&1758,879\\
+Active&2,036,124&2,034,469&602,301\\
+\bottomrule
+\end{tabular}
+\end{center}
+Both mismatches are below 0.1\%. L2E8 is a secondary depth extension, not a
+capacity match to these L1 controls. Logical active capacity is distinct from
+training FLOPs: the old training code evaluates all experts before selection.
+
+Evaluation uses the first 1000 test inputs for incomplete CROWN-IBP and first 200
+for complete verification, at 2/255 and 8/255. Clean-wrong inputs remain in every
+denominator. These deterministic prefixes have historical exposure; they are
+development data, not a fresh independent holdout. Each complete request gets
+300 seconds for startup, loading, all routing/graph/bound work, replay,
+serialization, reception, and cleanup. The six MoE and six dense models give
+4800 complete calls and 24000 incomplete items. At most eight single-thread CPU
+workers run concurrently; each has an 8 GiB address-space limit. Both families
+use the pinned numerical engine and common physical input boxes/properties;
+dense uses native ReLU branching and MoE the coupled nonlinear configuration.
+
+Public PGD uses 20 steps, two random starts and step size $\epsilon/4$, with
+original-model replay. Its separately metered outcomes are not free answers
+for either verifier. Numerical positives, replayed violations, unresolved
+queries, timeouts and errors remain separate. No-witness attacks and negative
+relaxation bounds do not prove safety and unsafety, respectively.
+
+The primary endpoint is the 2/255 complete positive rate and all-request median
+time for each L1 match. The frozen screen proceeds if either match has MoE rate
+at least dense and a lower median time. Input-block bootstrap uses 10000
+resamples with all three seed pairs retained. Intervals are descriptive here,
+not an additional gate. A literal zero/zero rate comparison can pass this
+screen on time; such a pass authorizes S2 but does not establish C2. All states,
+missing costs and shared-clean-correct explanatory strata are reported.
+Neither L2 nor 8/255 rescues a failed primary comparison.
+
+\subsection{S1 results: pending}
+Training and execution records live in the frozen S1 manifest and ledger.
+No architecture-certified accuracy, complete-request speedup, or C2 conclusion
+is available in this version. Results will report all seeds and both capacity
+conventions, not select the best seed or omit a slower comparison.
+
+\subsection{S2 and ablations: gated, not executed}
+If S1 passes, the user-approved comparison examines clean accuracy, certified
+accuracy and full verification time jointly. C3 requires at least two percentage
+points higher clean accuracy at matched certified accuracy with positive lower
+confidence bound, and a proved numerical single-route fraction of at least 90\%
+at 2/255. Unknown route counts do not count as stability. Capacity matching,
+routing regularization and certification-training factors remain distinct.
+The finite 3000-complete-call S2 allocation and the comparison of tradeoff points
+must be fixed before new results; no result-driven interpolation or expansion
+is specified by this draft.
+
+\subsection{Earlier verifier experiments as motivation}
+The archived multilayer study obtains 108/180 numerical positives with pruned
+GenBaB and none with ACT v1. A subsequent gate-decoupling cascade obtains 122/300
+against 116/300: nine gains, three losses, net 2 percentage points, input-block
+interval [0,4]. It fails its five-point threshold. The corrected guard diagnostic
+closes one of eleven histories and fails admission. These are retained negative
+results, not evidence that dense architectures are harder to certify or that
+expert ReLUs uniquely explain every unresolved query. The cohorts were selected
+differently from S1 and cannot be pooled into its accuracy denominator.
+
+\section{Related work and limits}
+Sparse-MoE robustness and dense compute comparisons precede this study~\cite{robmoe}.
+MetaMoE uses class-separated hard top-1 compositional verification~\cite{metamoe}.
+Dual randomized smoothing certifies a different, statistical $L_2$ function
+with routed experts~\cite{dualrs}. RT-ER/JTDMoE already motivates expert-focused
+robust training~\cite{rter}. CertMoE is recent route-aware text certification
+work~\cite{certmoe}. None of these differences warrants a blanket ``first MoE
+certification'' claim, and attack accuracies or smoothed-function guarantees
+cannot substitute for our deterministic $L_\infty$ endpoint. The five-work source
+review is available in the project record; author claims are not independent
+proofs by this study.
+
+All experimental backend positives use a floating numerical policy. Exact
+arithmetic on a supplied LP cannot repair an unverified input enclosure or
+network conversion. Historical source gaps remain, and the new study does
+not claim a source-complete proof of native PyTorch execution. The mathematical
+reductions assume valid sources and bounds. A successful record audit checks
+identity and coverage, not every numerical bound. Human technical review and
+clean-environment reproduction remain outstanding.
+
+\section{Disposition}
+The current evidence justifies testing architecture verifiability, not declaring
+MoE easier to certify. S1 will determine whether the registered training study
+proceeds. Failed screens remain failures, and an S1 pass is not a substitute
+for the C3 comparison. No new specialized-verifier mechanism is revived.
+
+\begin{thebibliography}{99}
+\bibitem{robmoe} J. Puigcerver et al. On the Adversarial Robustness of Mixture
+of Experts. NeurIPS 2022. \url{https://doi.org/10.52202/068431-0702}.
+\bibitem{metamoe} Q. Pham et al. MetaMoE: Formal Verification of Compositional
+Robustness and Scalability of Mixture-of-Experts Architecture. SAIV 2026.
+\url{https://doi.org/10.1007/978-3-032-32357-6_8}.
+\bibitem{dualrs} C. Sun, Y. Mao, and M. Vechev. Dual Randomized Smoothing:
+Beyond Global Noise Variance. ICLR 2026.
+\url{https://arxiv.org/abs/2512.01782v4}.
+\bibitem{genbab} Z. Shi et al. Neural Network Verification with Branch-and-Bound
+for General Nonlinearities. TACAS 2025. \url{https://arxiv.org/abs/2405.21063}.
+\bibitem{ibp} S. Gowal et al. On the Effectiveness of Interval Bound Propagation
+for Training Verifiably Robust Models. \url{https://arxiv.org/abs/1810.12715}.
+\bibitem{crownibp} H. Zhang et al. Towards Stable and Efficient Training of
+Verifiably Robust Neural Networks. ICLR 2020. \url{https://arxiv.org/abs/1906.06316}.
+\bibitem{rter} X. Zhang, K. Xu, Z. Hu, and R. Wang. Optimizing Robustness and
+Accuracy in Mixture of Experts: A Dual-Model Approach. ICML 2025.
+\url{https://proceedings.mlr.press/v267/zhang25cj.html}.
+\bibitem{certmoe} Q. Wang et al. CertMoE: Robustness Certification for
+Mixture-of-Experts LLMs via Routing-Aware Smoothing. arXiv preprint 2610.29395, 2026.
+\url{https://arxiv.org/abs/2610.29395}.
+\end{thebibliography}
+\end{document}

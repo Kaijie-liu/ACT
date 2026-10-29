@@ -334,3 +334,25 @@ counts, early-controller-error charging, and rejection of missing properties,
 wrong identity and late positives. All raw controls remain in the single
 [S1 record](architecture_s1_records_20261029.json). Real numerical execution is
 still waiting for the six-model training completion and final manifest binding.
+
+
+## Architecture manuscript working draft
+
+The new [architecture draft](../paper/architecture_main.tex) reuses three
+complete-history/guard/endpoint propositions and states the full cost
+accounting: loading, router pruning, every visited selected-expert graph,
+proof and evidence work. Per-history active parameters alone do not determine
+that sum. The routing training loss is marked conditional future work; ignored
+unstable routes remain a training approximation, never an evaluation proof.
+
+The draft binds the two S1 parameter matches, all-input denominators,
+three-seed paired-input analysis and the unchanged point gate, including its
+zero-certificate degeneracy. S1/S2 result sections are explicitly pending.
+The previous verifier paper and all its failed decisions remain intact;
+revision8 uses that material for motivation/appendices, not a separate submission.
+
+Two existing-compiler passes and text extraction completed in0.787s without
+undefined references or overfull boxes; page4 was visually checked. Six generic
+pages are a working draft, not an official ICML template, final eight-page paper,
+human review or evidence that C2/C3 hold. The existing S1 record binds the
+source/PDF/build receipt; no model or solver call was added by writing.

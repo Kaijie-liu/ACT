@@ -1,6 +1,14 @@
 # Manuscript reading order
 
-The current entry is [the technical-review paper](review_main.tex), revised
+Revision 8's current architecture-study working draft is
+[When Is a Mixture of Experts Easier to Certify?](architecture_main.tex).
+It contains the complete-history/guard/endpoint reductions, the distinction
+between active parameters and full proof cost, and the frozen S1 comparison.
+S1 certification results are pending; S2 remains conditional on the registered
+screen. C2/C3 are hypotheses, not reported wins. Its generic layout is not an
+official ICML 2027 template or a completed eight-page submission.
+
+The completed verifier-study entry remains [the technical-review paper](review_main.tex), revised
 2026-10-29: **Verifying Route-Variable Mixture-of-Experts Programs: Obligation
 Reductions and Empirical Limits**. Its three propositions cover complete
 history obligations, output-atom guards, and last-gate endpoints. Seven tables
@@ -28,7 +36,7 @@ The scientific disposition is unchanged by writing:
 
 Read [the handoff](../docs/CODEX_HANDOFF.md) for current execution state and
 [the review guide](../docs/SUBMISSION_REVIEW.md) for claim/evidence questions.
-The manuscript now centers on reductions and empirical limitations. It does
+The completed verifier manuscript centers on reductions and empirical limitations. It does
 not claim that all remaining hardness has been isolated to expert ReLUs.
 
 ## Detailed companion
@@ -83,6 +91,11 @@ September short manuscript for reading; Git and the old kits preserve that
 manuscript and its tables. `render_submission_tables.py`, historical
 `submission_tables.tex`, old kit manifests and their checker are unchanged;
 they do **not** certify the contents of this new paper.
+
+Use `architecture_main.tex` instead of `review_main.tex` in the two compiler
+commands for the new architecture working draft. Keep the old draft and all
+its outcome tables intact; the architecture paper reuses their limited findings
+as motivation, not as S1 accuracy or a second submission.
 
 ## Proof and review boundaries
 

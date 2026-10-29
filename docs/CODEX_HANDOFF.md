@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## Architecture manuscript aligned with revision8; S1 training continues 2026-10-30
+
+Real increment:0verification calls; original trainingPID3300583 live at244/300epochs,4/6dense models complete. No model selection or queue restart.
+[Working manuscript](../paper/architecture_main.tex) now asks when MoE is easier to certify; C2/C3 and S1/S2 results remain pending, old verifier manuscript/results preserved.
+Complete-history, strict guard-atom and endpoint reductions are retained; full cost includes routing/allhistories/loading, not just active parameters. Clean-route training surrogate is not a certificate.
+Frozen capacity matches, denominators, seed pairing and literal S1 gate are reflected; no gate or experiment changed.
+[Build record](architecture_s1_records_20261029.json) binds a6-page generic draft, two compiler passes/text extraction PASS in0.787s and page4 visual review; not official template/human review.
+Next finish6model audit, final numerical manifest/commit and immutable S1 launch. S2 remains gated; no old mechanism recovery.
+
 ## S1 paired analysis and terminal audit ready 2026-10-30
 
 Real increment: no trained verification/attack calls; training remained live at181/300epochs,3/6models, no error. Existing PID3300583/start1212371695 is not restarted.
