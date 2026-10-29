@@ -32,9 +32,10 @@ gate decoupling with a coupled fallback yields 122 numerical positives versus
 increase, with an input-block interval of [0,4] points, fails the registered
 five-point practical-effect threshold. Mean complete-request cost also increases.
 The double-radius cohort adds two numerical positives on 120 paired objects,
-with no gain in its observed-multiple-history stratum. The single-layer queue
-remains in progress; no successful three-component algorithm or stable external
-advantage is claimed.
+with no gain in its observed-multiple-history stratum. The completed single-layer
+cohort yields 57/60 positives in both arms with no gain/loss and a 2.128-fold
+cascade-to-baseline median cost ratio. No successful three-component algorithm
+or stable external advantage is claimed.
 
 Separately, rational checking closes stored conditional proofs, while the new
 source-checked convolutional construction has no complete positive output on

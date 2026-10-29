@@ -48,7 +48,9 @@ two-point increase with an input-block interval of [0,4] points. The registered
 five-point practical threshold fails. This is not a reason to expand the sample
 or tune the phase allowance. The completed double-radius cohort adds two
 numerical positives but no gain among thirteen observed-multiple-history
-objects; the single-layer characterization remains pending. See the [diagnostic table](08_evaluation.md#multilayer-mechanism-diagnostics-no-admitted-m-b-or-m-c-benefit)
+objects; the completed single-layer characterization shows zero gain/loss
+with higher cascade cost. Its degenerate [0,0] input-block interval reflects
+zero observed differences, not population equivalence. See the [diagnostic table](08_evaluation.md#multilayer-mechanism-diagnostics-no-admitted-m-b-or-m-c-benefit)
 and [primary result](08_evaluation.md#complete-request-cascade-primary-comparison-practical-gate-not-met).
 
 The original M-B test confounds guard use with two independent optimization

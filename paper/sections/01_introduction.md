@@ -121,8 +121,8 @@ threshold; mean request cost rises from 189.287 to 192.983 seconds. All nine
 gained requests close through decoupling without fallback, establishing a
 local computational effect but not the required overall benefit. The separate
 double-radius cohort gains two of 120 paired objects, with no gain among its
-thirteen observed-multiple-history objects. The single-layer queue remains
-pending. See the
+thirteen observed-multiple-history objects. The completed single-layer cohort
+has 57/60 positives in both arms, no gain/loss and higher cascade cost. See the
 [primary result](08_evaluation.md#complete-request-cascade-primary-comparison-practical-gate-not-met).
 
 Finally, we separate evidence consistency from independent bound checking.

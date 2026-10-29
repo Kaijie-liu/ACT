@@ -1,5 +1,33 @@
 # Current technical-review paper, 2026-10-29
 
+## Final B4 archive and review draft (R5)
+
+All 1,080 registered B4 calls have completed and the frozen-source final audit
+passes. The [B4 record](moe_aware_b4_records_20261027.json), `final_review`, binds
+the complete receipt, final accounting and separate 9.443-second review.
+No model/solver/replay call was added by this archive or manuscript work.
+The boundary cohort has identical 57/60 numerical-positive sets, no gain/loss,
+and median cascade/baseline cost 18.688/8.782 seconds. A degenerate [0,0]
+observed-difference interval is not a population-equivalence claim. Final B4
+cost is 56.319 hours; all original errors and primary/M-B STOP decisions stand.
+No queue remains, and no new mechanism or B5 starts.
+
+The short paper, detailed companion, review guide and six generated tables
+now describe all completed cohorts. R5 builds from `1f9d1c7df` plus these
+changes in `/data1/Kane/MOE/results/current_review_paper_20261029_r5`.
+Two LaTeX passes and text extraction take 1.063 seconds, producing ten pages
+and 214,017 bytes with no final warnings, undefined references or overfull boxes.
+PDF SHA-256: `597fa2d7382aa2841c4a8ef69ecc315c4f318e5f6c31ea5be273062ef35b67d8`.
+`build.json` binds sources and compiler exits; pages 6 and 7 were visually
+reviewed. Table reconstruction, previous-record preservation, bound archive
+hashes, 828 local link targets and PDF result fields pass in 0.166 seconds,
+recorded in `review_checks.json`.
+These are document/record checks, not independent numerical reproof or human
+review. The scope remains reductions, empirical limits and small local gains,
+not a demonstrated superior or source-complete strict verifier.
+
+## Earlier build history (preserved)
+
 This writing stage follows the completed revised M-B STOP. It adds **zero
 model, solver or replay calls** and changes no experimental result, gate,
 source object or running worker. Starting branch `feat/moe-route-verification`,

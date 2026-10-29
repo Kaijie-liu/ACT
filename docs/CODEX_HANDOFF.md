@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## All B4 calls complete; no admitted mechanism, no further queue 2026-10-29
+
+Real increment: boundary120/120 and wholeB4 1080/1080 audited; immutableR3 controller exited normally, zero unexecuted registered calls.
+[B4 record](moe_aware_b4_records_20261027.json)`final_review`:1079nativeledgers+1retainedpublicationerror;430P/629TO/19UNKNOWN/2ERROR across distinct cohorts, not pooled accuracy.
+Boundaryoff57/on57,intersection57,gain/loss0/0;median8.782/18.688s,ratio2.128;degenerate[0,0]interval not population equivalence.
+Finalcost202747.210s/56.319h,117514717bytes;unused240unadmittedablation slots not transferred;frozen-sourceaudit9.443s,no newmodel/solver/replay or numericreproof.
+[Final tables](moe_aware_b4_20261026.md) retain MAIN+2pp/[0,4]pp/failed5ppgate,radius+1.667pp,alloldfailures and revisedM-B1/11STOP.
+No last-marginM-C,newB4,B5 or alternative mechanism. G1–G6OPEN; [review paper](../paper/review_main.tex) and [review guide](SUBMISSION_REVIEW.md) are the next human/PI review entry, not completed independent review.
+
 ## Double-radius stage complete: two local gains, no observed routing trend 2026-10-29
 
 Real increment: radius240/240 completed and independently recounted; old B4 reached1025settled at review, boundary65/120 then running under unchanged PID1286669.

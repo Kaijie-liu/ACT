@@ -21,6 +21,8 @@ def render():
     multilayer = read('multilayer_stage1_records_20261022.json')['final_result_20261025']
     revised = read('guard_dual_refinement_result_20261029.json')
     radius = read('moe_aware_b4_records_20261027.json')['radius_final_review']
+    final = read('moe_aware_b4_records_20261027.json')['final_review']
+    boundary = final['boundary']
     c = primary['contrast']
     assert c['complete'] and c['denominator'] == 300 and not c['missing']
     assert all(sum(states.values()) == 300 for states in c['states'].values())
@@ -28,7 +30,7 @@ def render():
     assert multilayer['full_calls'] == 600 and multilayer['unexecuted'] == 0
     assert revised['completed_calls'] == 22 and len(revised['pair_details']) == 11
     rows = []
-    for label, value in (('primary', primary), ('multilayer', multilayer), ('guard', revised), ('radius', radius)):
+    for label, value in (('primary', primary), ('multilayer', multilayer), ('guard', revised), ('radius', radius), ('boundary', boundary)):
         digest = hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()).hexdigest()
         rows.append('% Relevant committed summary '+label+' sha256 '+digest)
     def table(caption, label, columns, header, body):
@@ -67,6 +69,17 @@ def render():
         'tab:radius', 'lrrrr', 'Method & P & TIMEOUT & Mean s & Median s',
         [' & '.join([name, str(r['states'][arm].get('POSITIVE',0)), str(r['states'][arm].get('TIMEOUT',0)),
             f"{r['cost']['means'][arm]:.3f}", f"{r['cost']['medians'][arm]:.3f}"])
+         for arm,name in (('off','Coupled'),('on','Cascade'))])
+    b = boundary['contrast']
+    assert final['full_calls'] == 1080 and final['unexecuted_registered_calls'] == 0
+    assert final['by_part']['boundary'] == 120 and boundary['primary_decision'] is False
+    assert b['complete'] and b['denominator'] == 60 and not b['missing']
+    assert all(sum(states.values()) == 60 for states in b['states'].values())
+    assert not b['gained'] and not b['lost'] and b['net'] == 0
+    rows += table('Single-layer boundary at $2/255$: sixty paired objects on three fixed models. The same 57 objects are positive in both arms. Zero observed gain/loss is not population equivalence.',
+        'tab:boundary', 'lrrrrr', 'Method & P & UNKNOWN & TIMEOUT & Mean s & Median s',
+        [' & '.join([name, *[str(b['states'][arm].get(s,0)) for s in ('POSITIVE','UNKNOWN','TIMEOUT')],
+            f"{b['cost']['means'][arm]:.3f}", f"{b['cost']['medians'][arm]:.3f}"])
          for arm,name in (('off','Coupled'),('on','Cascade'))])
     return '\n'.join(rows)
 

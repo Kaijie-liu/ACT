@@ -69,8 +69,8 @@ UNSAFE credit supplied to a verifier. Public route census observes at least two
 native histories on 12 objects; that stratum has zero gains and zero losses.
 The other 288 objects contain all nine gains and three losses, but one observed
 history does not prove route stability. Exact reachable-history counts remain
-unknown. The frozen 4/255 cohort is reported separately below; the single-layer
-queue is still running. Neither replaces the primary denominator or gate.
+unknown. The completed 4/255 and single-layer cohorts are reported separately
+below. Neither replaces the primary denominator or gate.
 
 All failed attempts are retained. An initial publication/cleanup failure is
 charged at its observed upper cost of 301.579 seconds and remains ERROR; a
@@ -119,6 +119,42 @@ or a replacement primary success. The 240 receipts, source identities and
 input-block bootstrap were independently recounted in 6.810 seconds, with
 0.101 seconds for gain-trace extraction; no bound was independently re-proved.
 Evidence: `radius_final_review` in the same [B4 record](../../docs/moe_aware_b4_records_20261027.json).
+
+## Single-layer boundary and final complete accounting
+
+The frozen single-layer cohort contains three models and twenty shared inputs,
+sixty objects and 120 calls. Both arms return numerical positives on the same
+57 objects, with zero gains and zero losses. The input-block bootstrap interval
+is [0,0] because every observed paired difference is zero; it is not evidence
+of population equivalence. Coupled returns one complete UNKNOWN and two TIMEOUTs;
+the cascade returns three TIMEOUTs. Neither arm has an ERROR or replayed-UNSAFE
+terminal. Seed-level positive counts are 20/20, 19/19 and 18/18 for off/on.
+
+All-request means are 23.154 versus 34.789 seconds; medians are 8.782 versus
+18.688 seconds (cascade/baseline 2.128). The median paired increase is 9.248
+seconds. Public PGD finds one fully replayed counterexample, seed2/input1956,
+without positive conflict; it is not arm credit. One observed history on each
+object does not prove route stability. These records delimit a cost penalty
+without coverage benefit, not a universal claim about single-layer MoEs.
+
+All 1,080 registered B4 calls are now settled: main600, ablation120, radius240,
+boundary120. This includes 1,079 native ledgers and the retained publication-error
+call. Aggregate method-call terminals are 430 POSITIVE, 629 TIMEOUT, 19 UNKNOWN
+and two ERROR; distinct cohorts and repeated arms prevent interpreting this as
+a pooled certified accuracy. The 240 unused unadmitted M-B/M-C ablation slots
+are not reassigned. The controller exits normally; no registered call remains.
+
+Final charged execution is 202,747.210 seconds (56.319 hours), with
+117,514,717 artifact bytes. Final part charges are main115,240.792,
+ablation17,570.300, radius66,220.116 and boundary3,716.002 seconds. The earlier
+main stage-close total is retained; 1.475 seconds of final common bookkeeping
+is charged to main. Boundary stage-close accounting was 3,714.908 seconds;
+its final receipt adds the remaining 1.094-second tail. The final frozen-source
+recount takes 9.443 seconds separately and makes no new model/solver/replay
+calls. All previous errors, records and stopping decisions remain unchanged.
+Evidence: `final_review` in the [B4 record](../../docs/moe_aware_b4_records_20261027.json).
+This checks identities, coverage and cost, not independent CROWN arithmetic.
+No new B4 or B5 follows the failed practical and mechanism-admission gates.
 
 ## Multilayer mechanism diagnostics: no admitted M-B or M-C benefit
 
@@ -177,7 +213,7 @@ methods or all margin partitions are ineffective. The authorized complete-
 request comparison tests **M-A alone**, with the single-layer boundary and
 double-radius cohorts preserved. Its completed primary table above fails the
 registered practical-effect threshold; the completed double-radius cohort has
-two gains and the single-layer cohort remains pending. They cannot validate a
+two gains and the single-layer cohort has zero gain/loss. They cannot validate a
 successful three-component algorithm. The historical studies
 below keep their original cohorts, guarantees and outcomes.
 
@@ -220,7 +256,7 @@ The registered rule still requires at least five additional history closures
 and positive median improvement. **One of eleven fails the first condition.**
 The resulting decision closes this M-B attempt and the conditional last-margin
 M-C follow-up. No new B4 or B5 is started. The completed primary cascade table
-and its remaining characterization queues are unaffected.
+and its completed characterization queues retain their original outcomes.
 
 Total request cost is 1,483.346 seconds; measured control, preparation, batch
 and independent record recount total 1,502.449 seconds, with about 2.79 MB of

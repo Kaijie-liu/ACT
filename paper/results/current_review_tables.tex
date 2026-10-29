@@ -2,6 +2,7 @@
 % Relevant committed summary multilayer sha256 5e78f74054d0dd883fbfe692c8a5146f155786fb917f0c491c54be8a49c6d127
 % Relevant committed summary guard sha256 8bebc40ef4f01d9630a61de608044f2d730faf7b2574acf165b5262afa56f8fa
 % Relevant committed summary radius sha256 4748977e6aadff4e22ee02c0daa2cf1a27dbc5b0912f0a877d492d7ac9feb9d5
+% Relevant committed summary boundary sha256 0423c4b573948f190b1a57a72257c77059aa49b2ebd3da263d2d819022b0e482
 \begin{table}[ht]
 \centering\small
 \caption{Complete-request cascade: 300 calls per arm. P is numerical POSITIVE, not a strict certificate. All terminals and costs are retained.}
@@ -72,6 +73,20 @@ Method & P & TIMEOUT & Mean s & Median s \\
 \midrule
 Coupled & 6 & 114 & 275.446 & 288.784 \\
 Cascade & 8 & 112 & 273.588 & 288.775 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[ht]
+\centering\small
+\caption{Single-layer boundary at $2/255$: sixty paired objects on three fixed models. The same 57 objects are positive in both arms. Zero observed gain/loss is not population equivalence.}
+\label{tab:boundary}
+\begin{tabular}{lrrrrr}
+\toprule
+Method & P & UNKNOWN & TIMEOUT & Mean s & Median s \\
+\midrule
+Coupled & 57 & 1 & 2 & 23.154 & 8.782 \\
+Cascade & 57 & 0 & 3 & 34.789 & 18.688 \\
 \bottomrule
 \end{tabular}
 \end{table}
