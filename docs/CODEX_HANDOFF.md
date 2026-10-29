@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## S1 storage continuation approved and frozen 2026-10-30
+
+Real increment:0model/solver calls;7continuation controls PASS in21.279s, including actual saved-prefix aggregate differential.
+User explicitly approved512MiB shared S1 artifacts; alloldcharges/failures remain, no fresh allowance or retry. [Freeze](architecture_s1_evaluation_freeze_20261030_r2.json).
+Only29583unexecuted IDs remain:783PGD+4800complete+24000incomplete; original31200denominator and13476.846s oldrequestcost retained.
+[Continuation](../scripts/architecture_s1_continuation.py) invokes original d139f9335 queue/worker; numerical source/engine/input/300s/8GiBAS/eightworkers unchanged.
+[Record](architecture_s1_records_20261029.json) binds control/freeze; newroot carries133711374oldchargedbytes, oldroot immutable and hash-bound.
+Next immutable commit/copy, fresh admission and detached continuation launch; no further permission needed. S1 remainsPENDING, S2gated.
+
+
 ## S1 stopped at original artifact cap; prefix archived 2026-10-30
 
 Real increment:1617requests settled=1609acceptedpublicPGDbatches+8ERROR;0complete/incompleteverification. Controller1692415 exited; no oldliveworker observed.

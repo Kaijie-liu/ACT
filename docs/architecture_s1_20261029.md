@@ -446,3 +446,31 @@ The existing512MiB resource-amendment question is still pending. Current quota
 has not changed; no continuation has launched. An approved continuation must
 bind the archived prefix and all its spent costs, preserve the failures and
 continue only the unexecuted roster under one aggregate artifact account.
+
+
+## Approved storage-only continuation, 2026-10-30
+
+User answer: **批准共享上限 512 MiB**. The old128MiB stop and all1617
+attempts remain immutable, including8ERROR. The continuation runs only the
+29583unexecuted IDs, in the original order:783publicPGD batches,4800complete
+and24000incomplete requests. No failed or accepted request receives another
+attempt. The full31200-item denominator and all spent request costs remain.
+
+A new result directory carries the old account's entire charged value, including
+failed reservations, plus the continuation manifest into one512MiB account.
+Old inputs are not charged a second time, and old evidence is not copied or
+rewritten. The original numerical source d139f9335 and its engine, model and
+input bindings remain unchanged. A resource-only manifest changes the capacity
+and execution remainder, adds the original root/tree/manifest identity, and
+binds the small continuation controller and combined auditor. The old frozen
+queue/worker is invoked directly from its immutable execution directory; no
+numerical code, global patch, timing rule or acceptance check changes.
+
+Combined analysis reads each request at exactly one bound location, rejects
+retries, retains original online terminals, sums both segments' request costs,
+and reports the original model/input denominators. New-root storage includes
+all carried charges; neither a new directory nor a new manifest resets quota.
+Continuation controls cover failed-ID exclusion, exact order, orphan/duplicate
+rejection, source/deadline/capacity changes, prior-record tampering, carried byte
+limits, and an actual saved-prefix analysis differential with no model calls.
+Fresh resource admission and committed immutable controller precede launch.

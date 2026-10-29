@@ -87,17 +87,37 @@ def audit_request(root,query,manifest_sha256):
 def analyze(root,manifest):
     began=time.monotonic();spec=load(manifest);manifest_hash=sha(manifest)
     requests=all_requests(spec['models'])
-    require(digest(requests)==spec['request_catalog_sha256'],'frozen complete roster')
-    start=read_record(root/'start.json.gz')
-    require(start['manifest_sha256']==manifest_hash,'execution freeze')
+    segments=[(root,manifest_hash,spec)]
+    if 'continuation' in spec:
+        from architecture_s1_continuation import validate,locate_requests
+        old,full,remaining=validate(spec)
+        require(requests==full,'same complete study denominator')
+        c=spec['continuation']
+        segments.insert(0,(Path(c['root']),c['manifest_sha256'],old))
+        account=load(root/'artifact_account.json')
+        require(account['cap']==spec['artifact_bytes'] and
+            account['initial_bytes']==c['prior_charged_bytes']+Path(manifest).stat().st_size,
+            'aggregate capacity carries old usage, not a fresh allowance')
+    else:
+        require(digest(requests)==spec['request_catalog_sha256'],'frozen complete roster')
+        from architecture_s1_continuation import locate_requests
+    owners=locate_requests(requests,[s[0] for s in segments])
+    for folder,h,_ in segments:
+        start=read_record(folder/'start.json.gz')
+        require(start['manifest_sha256']==h,'execution freeze')
     model_map={m['id']:m for m in spec['models']}
     catalog=load(spec['inputs']['catalog'],spec['inputs']['catalog_sha256'])
     require(sha(spec['inputs']['path'])==spec['inputs']['sha256'],'shared input source')
-    records={};attacks={};all_states=Counter();sources={};total_seconds=0.;missing_cost=0
+    records={};attacks={};all_states=Counter();total_seconds=0.;missing_cost=0
+    segment_seconds=[0.]*len(segments);segment_counts=[0]*len(segments)
     for query in requests:
-        row,value=audit_request(root,query,manifest_hash)
+        owner=owners.get(query['id'],len(segments)-1)
+        folder,h,_=segments[owner]
+        row,value=audit_request(folder,query,h)
         all_states[row['status']]+=1
         total_seconds+=row['seconds'] or 0.
+        segment_seconds[owner]+=row['seconds'] or 0.
+        segment_counts[owner]+=row['status']!='NOT_EXECUTED'
         missing_cost+=row['seconds'] is None and row['status']!='NOT_EXECUTED'
         if value is not None:
             require(value['backend_sources_sha256']==spec['backend_sources_sha256']
@@ -110,7 +130,7 @@ def analyze(root,manifest):
                     attacks[key]=dict(status='NOT_EXECUTED' if row['status']=='NOT_EXECUTED' else 'BATCH_UNACCEPTED',
                         clean_correct=None)
                     continue
-                record=read_record(root/query['id']/domain_map[index]['file'])
+                record=read_record(folder/query['id']/domain_map[index]['file'])
                 require(record['label']==catalog['samples'][index]['label'],'public attack true label')
                 attacks[key]=dict(status=record['result']['status'],clean_correct=record['clean_prediction']==record['label'])
         else:
@@ -147,19 +167,26 @@ def analyze(root,manifest):
                     **paired(moe,dense,count=count,resamples=spec['bootstrap']['resamples'],seed=spec['bootstrap']['seed'])))
     primaries={r['match']:r for r in comparisons if r['mode']=='complete' and r['radius']==2}
     settled=all_states['NOT_EXECUTED']==0
-    queue_path=root/'queue_complete.json.gz'
-    queue=read_record(queue_path) if queue_path.exists() else None
-    require(not settled or queue is not None,'completed queue final receipt')
-    if queue is not None:
-        require(queue['request_catalog_sha256']==spec['request_catalog_sha256'],'final queue identity')
-        require(queue['settled']==len(requests)-all_states['NOT_EXECUTED'],'full terminal denominator')
-        require(abs(queue['summed_request_seconds']-total_seconds)<1e-5,'total charged request time')
-    account=load(root/'artifact_account.json')
-    physical=sum(p.stat().st_size for p in root.rglob('*') if p.is_file())
-    require(physical+account['initial_bytes']<=account['used']<=account['cap'],'shared artifact accounting')
+    queues=[];physical=0
+    for i,(folder,h,part_spec) in enumerate(segments):
+        queue_path=folder/'queue_complete.json.gz'
+        queue=read_record(queue_path) if queue_path.exists() else None
+        require(not settled or queue is not None,'completed queue final receipt')
+        if queue is not None:
+            require(queue['source_manifest_sha256']==h and
+                queue['request_catalog_sha256']==part_spec['request_catalog_sha256'],'final queue identity')
+            require(queue['settled']==segment_counts[i],'full terminal denominator')
+            require(abs(queue['summed_request_seconds']-segment_seconds[i])<1e-5,'total charged request time')
+        queues.append(queue)
+        account=load(folder/'artifact_account.json')
+        part_physical=sum(p.stat().st_size for p in folder.rglob('*') if p.is_file())
+        require(part_physical+account['initial_bytes']<=account['used']<=account['cap'],'shared artifact accounting')
+        physical+=part_physical
     return dict(status='COMPLETE_AUDIT' if settled else 'PREFIX_AUDIT',source_manifest_sha256=manifest_hash,
         online_states=dict(all_states),planned_native_requests=len(requests),charged_request_seconds=total_seconds,
-        missing_executed_cost=missing_cost,queue_wall_seconds=None if queue is None else queue['queue_wall_seconds'],
+        missing_executed_cost=missing_cost,
+        queue_wall_seconds=None if any(q is None for q in queues) else sum(q['queue_wall_seconds'] for q in queues),
+        segment_roots=[str(s[0]) for s in segments],segment_charged_seconds=segment_seconds,
         artifact_physical_bytes=physical,artifact_charged_bytes=account['used'],
         model_tables=tables,paired_comparisons=comparisons,
         s1_decision=s1_decision(primaries['total'],primaries['active'],all_queue_items_settled=settled),
