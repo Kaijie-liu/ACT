@@ -121,3 +121,12 @@ All listed assertions passed; six old MoE checkpoint hashes independently match
 the archived training record. The [training freeze](architecture_s1_training_freeze_20261029.json)
 binds the control/source/data/parameter identities. These checks are preparation,
 not a scientific result or a full numerical proof.
+
+Training launched from committed source `f619c24bd7480edb3e50e47413c9048230a4f721`
+in `/data1/Kane/MOE/executions/architecture_s1_training_20261029_r1`;
+PID3300583/start1212371695, detached session, nice10. Results:
+`/data1/Kane/MOE/results/architecture_s1_training_20261029_r1`.
+[Start record](architecture_s1_records_20261029.json) binds launch and split
+receipts; 8GiB AS observed in process limits, first epoch recorded, no startup
+error. Six models are queued, not finished; no S1 numerical bounds or complete
+verification calls have run. Current evaluation adapters remain the next task.

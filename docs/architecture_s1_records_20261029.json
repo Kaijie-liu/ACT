@@ -1,0 +1,84 @@
+{
+  "schema": "architecture-s1-record-v1",
+  "state": "TRAINING_RUNNING",
+  "recorded_at": 1793275487.114451,
+  "control": {
+    "capacities": [
+      {
+        "parameters": 6957295,
+        "target": 6961368,
+        "widths": [
+          3072,
+          1758,
+          879,
+          10
+        ]
+      },
+      {
+        "parameters": 2034469,
+        "target": 2036124,
+        "widths": [
+          3072,
+          602,
+          301,
+          10
+        ]
+      }
+    ],
+    "earliest_validation_tie": true,
+    "effective_step": true,
+    "optimizer_resume": true,
+    "output_restore": true,
+    "real_training": 0,
+    "seconds": 2.7148074600845575,
+    "shuffle_resume": true,
+    "status": "PASS",
+    "verification_calls": 0,
+    "wrong_count_rejected": true
+  },
+  "control_session_sha256": "9ce7d31664d428f597198cbcf26c4b68eb96d7c5f7346885ab8f30f01a1ed302",
+  "training_launch": {
+    "pid": 3300583,
+    "start_ticks": 1212371695,
+    "sid": 3300583,
+    "commit": "f619c24bd7480edb3e50e47413c9048230a4f721",
+    "command": [
+      "/usr/bin/nice",
+      "-n",
+      "10",
+      "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+      "-B",
+      "/data1/Kane/MOE/executions/architecture_s1_training_20261029_r1/scripts/architecture_s1_train.py",
+      "--run",
+      "/data1/Kane/MOE/results/architecture_s1_training_20261029_r1",
+      "--manifest",
+      "/data1/Kane/MOE/executions/architecture_s1_training_20261029_r1/docs/architecture_s1_training_freeze_20261029.json"
+    ],
+    "manifest_sha256": "2d9a98f82b89ac6f0d0ecdfe1e57070c9b1415fc5ab8019526269fa8aa6b519d",
+    "started_at": 1793275390.3147979,
+    "log": "/data1/Kane/MOE/results/architecture_s1_training_20261029_r1.controller.log",
+    "workers": 1,
+    "nice": 10,
+    "threads": 1,
+    "checkpoint_count": 6,
+    "epochs_per_model": 50,
+    "verification_calls": 0,
+    "training_time_separate": true
+  },
+  "launch_sha256": "51160a0a73dab290d99d9e23f07cac0e76b5c1f05ce813606eebaa2e3387761d",
+  "training_start": {
+    "commit": "f619c24bd7480edb3e50e47413c9048230a4f721",
+    "manifest_sha256": "2d9a98f82b89ac6f0d0ecdfe1e57070c9b1415fc5ab8019526269fa8aa6b519d",
+    "pid": 3300583,
+    "split_sha256": "92a4da411c6d6c731da72203665b2533b0fb91b37f7d7f0c82e82d8ace0f1e5d",
+    "started_at": 1793275394.6515298,
+    "threads": 1,
+    "training_seconds_separate": true
+  },
+  "start_sha256": "6dd26aa34b00f747520ac0c3e069a1cf528831dda1086e09116bbeeb1b82e5bf",
+  "completed_models": 0,
+  "completed_epochs": 3,
+  "verification_calls": 0,
+  "incomplete_bound_items": 0,
+  "scope": "start and preparation checks only; no S1 outcome"
+}

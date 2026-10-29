@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## S1 six-model dense queue started from committed freeze 2026-10-29
+
+Real increment:1training queue launched,0/6models complete at launch;0S1verification calls. [Start record](architecture_s1_records_20261029.json).
+Frozen source `f619c24bd7480edb3e50e47413c9048230a4f721`, immutable `/data1/Kane/MOE/executions/architecture_s1_training_20261029_r1`.
+Detached PID3300583/start1212371695; results `/data1/Kane/MOE/results/architecture_s1_training_20261029_r1`, sibling controller.log/launch.json; laptop/session independence via owned new session.
+Single CPU worker/nice10/native threads1,8GiB AS confirmed; common split hash matches old45k/5k exactly, initialepoch recorded, no startup error. Training budget separate from300sverification.
+Next monitor/final-audit all6seeds and build/semantically check common incomplete/full S1 adapters; freeze numerical execution before results, no new model selection or old mechanism recovery.
+New S1 first1000/200 explicit user scope disclosed as historically exposed development; C1–C3 unproved. Goal active, S1 not complete, S2 only after gate.
+
 ## Revision 8 registered: architecture/training S1 frozen 2026-10-29
 
 Real increment:0newtraining/verification; one3.395s synthetic preparation control PASS, no old mechanism restarted.
