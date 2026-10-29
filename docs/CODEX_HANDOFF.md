@@ -1,5 +1,16 @@
 # MoE project handoff — current entry point
 
+## S1 approved512MiB continuation running 2026-10-30
+
+Real increment: original-prefix continuation launched from37479ccf3; first bound terminal prefix audited with no new numerical queries (counts in linked record).
+[Launch/prefix record](architecture_s1_records_20261029.json): detachedPID2157745/start1216372585,execution/results `architecture_s1_evaluation_20261030_r2`,8CPUworkers.
+Capacity-only freeze a03d5945744a1c8d6fb3da0f028e896ca6e042457cd116511bfe8b30324f95b1; original d139f9335 numerical queue/worker unchanged.
+Newaccount begins133858729bytes incl133711374oldcharges+manifest, cap536870912; old1617attempts including8ERROR immutable, only29583remainder eligible.
+Fresh admission20CPUs/load7.54/78.75GiB memory headroom/about310GiB disk; noGPU, no other job modified, whole-request300s/AS8GiB unchanged.
+Next monitor same live PID, finish PGD then4800complete/24000incomplete; combined auditor retains all31200denominator/costs. No quota reset or retries.
+S1/C2/C3 remainPENDING; S2 onlyafteroriginalgate. Goal active; previous storage block resolved by explicit user approval.
+
+
 ## S1 storage continuation approved and frozen 2026-10-30
 
 Real increment:0model/solver calls;7continuation controls PASS in21.279s, including actual saved-prefix aggregate differential.

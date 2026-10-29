@@ -474,3 +474,15 @@ Continuation controls cover failed-ID exclusion, exact order, orphan/duplicate
 rejection, source/deadline/capacity changes, prior-record tampering, carried byte
 limits, and an actual saved-prefix analysis differential with no model calls.
 Fresh resource admission and committed immutable controller precede launch.
+
+
+Continuation controls PASS: six bounded standard-library cases and one
+saved-prefix aggregate differential,21.278s including supervised startup and
+cleanup,0model/solver calls. The differential preserves all oldstates, full
+roster, chargedcosts, modeltables, pairedcomparisons andS1=PENDING.
+The committed controller37479ccf3 launched detachedPID2157745/start1216372585
+from `executions/architecture_s1_evaluation_20261030_r2`; results use the same
+basename. Its first independent terminal-prefix audit is bound in the shared
+record. The512MiB account starts with133858729chargedbytes including allold
+charges and the newmanifest; no oldaccount/evidence was rewritten. Numerical
+workers still execute the original d139f9335 source. FullS1 results are pending.

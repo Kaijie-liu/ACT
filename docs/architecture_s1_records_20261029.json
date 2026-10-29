@@ -706,5 +706,63 @@
     "remaining": 29583,
     "artifact_bytes": 536870912,
     "numerical_source_unchanged": true
+  },
+  "continuation_launch": {
+    "path": "/data1/Kane/MOE/results/architecture_s1_evaluation_20261030_r2/launch.json.gz",
+    "sha256": "f6f6b868dd334f43dffb015ff76c5c011d9a91af2d9468fc1879e610f137aa7f",
+    "command": [
+      "nice",
+      "-n",
+      "10",
+      "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+      "-B",
+      "/data1/Kane/MOE/executions/architecture_s1_evaluation_20261030_r2/scripts/architecture_s1_continuation.py",
+      "--run",
+      "/data1/Kane/MOE/results/architecture_s1_evaluation_20261030_r2",
+      "--manifest",
+      "/data1/Kane/MOE/executions/architecture_s1_evaluation_20261030_r2/docs/architecture_s1_evaluation_freeze_20261030_r2.json"
+    ],
+    "commit": "37479ccf3e29d385b71c9f8bd13527d4e14b67bd",
+    "console": "discarded; original structured per-request records retained",
+    "continuation_only_unexecuted": true,
+    "execution_directory": "/data1/Kane/MOE/executions/architecture_s1_evaluation_20261030_r2",
+    "launch_time": 1793315399.2175367,
+    "manifest_sha256": "a03d5945744a1c8d6fb3da0f028e896ca6e042457cd116511bfe8b30324f95b1",
+    "pid": 2157745,
+    "resource_observation": {
+      "action": "read only; no signal or modification of another task",
+      "allowed_cpus": 20,
+      "clock": 1793315399.2155023,
+      "gpu_used": false,
+      "load": [
+        7.49609375,
+        8.10009765625,
+        7.923828125
+      ],
+      "memory": {
+        "MemAvailable": 84775997440,
+        "MemTotal": 134491185152
+      },
+      "ordinary_available_disk_bytes": 333008080896,
+      "workers": 8
+    },
+    "result_directory": "/data1/Kane/MOE/results/architecture_s1_evaluation_20261030_r2",
+    "session_id": 2157745,
+    "start_ticks": 1216372585
+  },
+  "continuation_prefix_review": {
+    "path": "/data1/Kane/MOE/results/architecture_s1_evaluation_20261030_r2/prefix_review_001.json.gz",
+    "sha256": "ff1f5aa293dc613fd6b4834252abbd6c5299af8176c0c22cb19b8ccb1e6f4064",
+    "accepted_records": 39,
+    "manifest_sha256": "a03d5945744a1c8d6fb3da0f028e896ca6e042457cd116511bfe8b30324f95b1",
+    "prior_tree_unchanged": true,
+    "scope": "online terminal and record audit, no new model query or witness reproof",
+    "seconds": 2.0795599054545164,
+    "source": "1d8d0ea8d824f88de5b1d408c35a5b1d8e71c50022f690f202753cf81e8d3f32",
+    "states": {
+      "AUXILIARY_COMPLETE": 39
+    },
+    "status": "PASS",
+    "summed_request_seconds": 378.2297131251544
   }
 }
