@@ -1,7 +1,7 @@
 {
   "schema": "architecture-s1-record-v1",
-  "state": "TRAINING_RUNNING_ANALYSIS_READY",
-  "recorded_at": 1793282750.3842242,
+  "state": "TRAINING_COMPLETE_EVALUATION_FROZEN",
+  "recorded_at": 1793283557.780229,
   "control": {
     "capacities": [
       {
@@ -359,5 +359,130 @@
     "pages": 6,
     "visual_review": "page4 capacity and experimental design",
     "new_model_or_solver_calls": 0
+  },
+  "training_final_audit": {
+    "path": "/data1/Kane/MOE/results/architecture_s1_training_final_audit_20261030.json",
+    "sha256": "4e61d7c2540b77104b714bcfb1f85db80782cd8d04242d04af0a5e8c03608bce",
+    "status": "PASS",
+    "audit_seconds": 0.2421935237944126,
+    "training_seconds": 7998.453452464193,
+    "training_complete_sha256": "647ca12ae279b0791938de3cbf3c05d75b6b835bb0aaa6f63b03b82a8734115f",
+    "evaluation_manifest_sha256": "5c64575080c08a931bf851690eed996621b96a156ccf8deff4f20119d40677a4",
+    "selected_models": [
+      {
+        "id": "Dense_total_seed0",
+        "epoch": 37,
+        "test": {
+          "accuracy": 0.5266,
+          "correct": 5266,
+          "total": 10000
+        },
+        "validation": {
+          "accuracy": 0.5324,
+          "correct": 2662,
+          "total": 5000
+        },
+        "parameter_count": 6957295,
+        "checkpoint_sha256": "6966999f406deac06d72eaf24c0f89b5cb743e24e65487320a723935054ed195"
+      },
+      {
+        "id": "Dense_active_seed0",
+        "epoch": 42,
+        "test": {
+          "accuracy": 0.5278,
+          "correct": 5278,
+          "total": 10000
+        },
+        "validation": {
+          "accuracy": 0.5272,
+          "correct": 2636,
+          "total": 5000
+        },
+        "parameter_count": 2034469,
+        "checkpoint_sha256": "658445857ec42a8dbcae6fa2048e0539cf7928e4b44b3462a82203b4c28129ea"
+      },
+      {
+        "id": "Dense_total_seed1",
+        "epoch": 25,
+        "test": {
+          "accuracy": 0.5329,
+          "correct": 5329,
+          "total": 10000
+        },
+        "validation": {
+          "accuracy": 0.534,
+          "correct": 2670,
+          "total": 5000
+        },
+        "parameter_count": 6957295,
+        "checkpoint_sha256": "52027cc5ce43aa9621e18393d248d54fdd94db79f4ebe3a80b73ca8a3868ab21"
+      },
+      {
+        "id": "Dense_active_seed1",
+        "epoch": 40,
+        "test": {
+          "accuracy": 0.5357,
+          "correct": 5357,
+          "total": 10000
+        },
+        "validation": {
+          "accuracy": 0.5328,
+          "correct": 2664,
+          "total": 5000
+        },
+        "parameter_count": 2034469,
+        "checkpoint_sha256": "b9bd96206fb19278d2c51134573b1415d175a4072917605310477248ceeadabd"
+      },
+      {
+        "id": "Dense_total_seed2",
+        "epoch": 28,
+        "test": {
+          "accuracy": 0.5373,
+          "correct": 5373,
+          "total": 10000
+        },
+        "validation": {
+          "accuracy": 0.5304,
+          "correct": 2652,
+          "total": 5000
+        },
+        "parameter_count": 6957295,
+        "checkpoint_sha256": "ee98c88c908b376ec2772147a507ef0cf54ba54e531bd0b36ad209c78eaa8266"
+      },
+      {
+        "id": "Dense_active_seed2",
+        "epoch": 40,
+        "test": {
+          "accuracy": 0.5347,
+          "correct": 5347,
+          "total": 10000
+        },
+        "validation": {
+          "accuracy": 0.5284,
+          "correct": 2642,
+          "total": 5000
+        },
+        "parameter_count": 2034469,
+        "checkpoint_sha256": "a7f3a675537ab4d0b38a5a8e5164e4c526ec93fb658cf3bd643b0dc6bfc24f97"
+      }
+    ],
+    "all_dense_epochs": 300,
+    "all_model_hashes": 12,
+    "new_forward_or_solver_calls": 0,
+    "scope": "record/selection/identity/capacity audit; no accuracy rerun or independent source proof"
+  },
+  "evaluation_freeze": {
+    "path": "docs/architecture_s1_evaluation_freeze_20261030.json",
+    "sha256": "5c64575080c08a931bf851690eed996621b96a156ccf8deff4f20119d40677a4",
+    "counts": {
+      "complete_calls": 4800,
+      "incomplete_items": 24000,
+      "native_batches": 31200,
+      "public_pgd_batches": 2400,
+      "public_pgd_domains": 24000
+    },
+    "source_commit_before_freeze": "8eab6bb00fd73320081bb6be4ae1e56afea37ee4",
+    "workers": 8,
+    "freeze_preparation_seconds": 1.6496786903589964
   }
 }

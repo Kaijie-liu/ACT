@@ -356,3 +356,36 @@ undefined references or overfull boxes; page4 was visually checked. Six generic
 pages are a working draft, not an official ICML template, final eight-page paper,
 human review or evidence that C2/C3 hold. The existing S1 record binds the
 source/PDF/build receipt; no model or solver call was added by writing.
+
+
+## Six dense models completed; numerical evaluation frozen
+
+The original immutable training queue completed all300epochs/six seeds in
+7998.453s (2.222h), without restart or checkpoint replacement. Selection remains
+earliest maximal validation accuracy, not test accuracy or certifiability.
+
+| Group | Seed | Selected epoch | Validation accuracy | Test accuracy |
+| --- | ---: | ---: | ---: | ---: |
+| Total | 0 | 37 | 53.24% | 52.66% |
+| Total | 1 | 25 | 53.40% | 53.29% |
+| Total | 2 | 28 | 53.04% | 53.73% |
+| Active | 0 | 42 | 52.72% | 52.78% |
+| Active | 1 | 40 | 53.28% | 53.57% |
+| Active | 2 | 40 | 52.84% | 53.47% |
+
+The independent record pass checked all300epoch records, integer validation
+counts/earliest-best selection, actual capacity formulas and all12 final model
+hashes in0.242s. Final preparation also loaded checkpoint metadata and checked
+training/split/source identities before binding them. Neither action reran
+accuracy or model verification. Original failures and all selected weights stay
+outside Git and retain their immutable hashes.
+
+[Final evaluation freeze](architecture_s1_evaluation_freeze_20261030.json)
+binds the12models, actual source/engine versions, materialized domains,
+all31200unique native request identities, timing and numerical policy, controls,
+statistics and the original decision gate. Counts remain4800complete calls,
+24000incomplete items and2400publicPGD batches covering24000domains. Eight
+single-thread CPU workers,8GiB AS each, shared128MiB artifact policy and300s
+whole-request limits are unchanged. The run starts from a committed immutable
+copy after fresh resource admission; this freeze contains no verification
+outcomes or certification claim.

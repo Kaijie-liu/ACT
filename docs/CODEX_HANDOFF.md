@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## S1 training complete and all-weight numerical freeze 2026-10-30
+
+Real increment:6/6dense models and300/300epochs completed in7998.453s;0trainedverification/attackcalls before numerical launch. Original trainingPID3300583 exited after COMPLETE.
+Total-match test accuracies52.66/53.29/53.73%;active-match52.78/53.57/53.47%. Allseeds/50epochs/earliestvalidationselection retained; no certification-based selection.
+[Final record](architecture_s1_records_20261029.json) binds a0.242s independent record/capacity/selection audit of300epochs and12checkpoint hashes; metadata preparation checks source/split, no accuracy rerun.
+[Evaluation freeze](architecture_s1_evaluation_freeze_20261030.json) binds31200jobs:4800complete/24000incomplete/2400publicPGDbatches, commoninputs/engine/controls/analysis and unchanged S1gate.
+Next commit/push, make immutablecopy and launch after fresh resources;eightCPUworkers/singlethreads/8GiBAS/shared128MiB/300s. No newapproval needed inside frozen S1.
+C1–C3 performance conclusions pending; cleanaccuracy is not certification. S2 and oldmechanisms remain gated/closed respectively.
+
 ## Architecture manuscript aligned with revision8; S1 training continues 2026-10-30
 
 Real increment:0verification calls; original trainingPID3300583 live at244/300epochs,4/6dense models complete. No model selection or queue restart.
