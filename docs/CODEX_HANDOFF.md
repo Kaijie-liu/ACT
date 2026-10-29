@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## S1 stopped at original artifact cap; prefix archived 2026-10-30
+
+Real increment:1617requests settled=1609acceptedpublicPGDbatches+8ERROR;0complete/incompleteverification. Controller1692415 exited; no oldliveworker observed.
+[Stop archive](architecture_s1_records_20261029.json) binds frozen-source5.546s audit,1616cleanup receipts,13476.846s summedrequestcost/1687.434s parallelwall; no missingcost.
+One explicit prelaunch BufferError;sevennativeexit1/unpublished during exhaustedsharedcap retained, no perchildunique-cause assertion. Failed/partial records unchanged; normalwrite cutoff preserves terminalreserve.
+Remaining783PGDbatches+4800complete+24000incomplete=29583requests; all remain in denominator. S1=PENDING, notscientificSTOP/ENTER_S2.
+The single512MiB amendment request remains pending;128MiB unchanged, no continuationlaunched. This is the first true capacity impasse after authorized prefix execution/archive.
+On explicit approval, freeze resource-only continuation binding oldprefix/costs and onlyunexecuted IDs; do not repeataccepted/failedrequests or resetaggregateusage. No other mechanism/S2 work authorized by this stop.
+Source d139f9335/results `architecture_s1_evaluation_20261030_r1`; complete raw and receipt paths in record. C1–C3 performance claims unresolved.
+
 ## S1 queue launched; storage amendment pending 2026-10-30
 
 Real increment:408publicPGDbatches accepted/independently structurally audited;0complete/incompleteverificationcalls at review. All6dense training complete; no rerun.

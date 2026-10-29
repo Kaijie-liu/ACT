@@ -417,3 +417,32 @@ objects and execution, with an explicit new freeze and only unexecuted requests
 continued after any original-cap stop. It does not change300s/8GiBAS, methods,
 seeds, acceptance, sample counts or old records. The capacity estimate was
 inadequate; it is an execution-storage issue, not evidence against an architecture.
+
+
+## Original-cap prefix stopped and archived
+
+The original controller exited after1617registered requests:1609accepted public
+PGD batches and8ERROR. One ledger records an explicit shared-artifact-cap
+BufferError before child launch; seven native workers exited1 without accepted
+publication during the same exhausted account. Their failure/partial records
+remain, without claiming a separately demonstrated unique cause for each child.
+The normal-write cutoff reserves512KiB for terminals within the128MiB total;
+no file/precision/threshold was removed to extend execution.
+
+Queue wall time1687.434s (28.124min); summed complete request cost13476.846s
+(3.744h), no missing request cost. All1616spawned sessions report
+LEADER_REAPED_NO_LIVE_SESSION; the original controller is gone and no old live
+worker was observed. The frozen-source independent audit takes5.546s and
+retains1609AUXILIARY_COMPLETE/8ERROR/29583NOT_EXECUTED, S1=PENDING_S1_COMPLETION.
+It checks records/coverage/online reception, not fresh PGD or model proofs.
+
+Unexecuted:783public batches plus4800complete and24000incomplete verifier
+requests. Failed batches remain failed; partial domain records are not upgraded
+to accepted whole batches offline. The same31,200-request denominator and
+fixed sample/seed/configuration/decision rules remain. No scientific S1 stop or
+S2 authorization follows from this storage stop.
+
+The existing512MiB resource-amendment question is still pending. Current quota
+has not changed; no continuation has launched. An approved continuation must
+bind the archived prefix and all its spent costs, preserve the failures and
+continue only the unexecuted roster under one aggregate artifact account.

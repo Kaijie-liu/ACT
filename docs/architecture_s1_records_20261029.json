@@ -1,7 +1,7 @@
 {
   "schema": "architecture-s1-record-v1",
-  "state": "EVALUATION_PUBLIC_PGD_RUNNING",
-  "recorded_at": 1793284267.4385664,
+  "state": "STORAGE_PREFIX_STOP_PENDING_CAPACITY_DECISION",
+  "recorded_at": 1793285679.5975988,
   "control": {
     "capacities": [
       {
@@ -568,5 +568,111 @@
     "changes_only": "stage artifact cap; no extra inputs/calls/time/precision/acceptance",
     "old_records_preserved": true,
     "no_current_cap_change": true
+  },
+  "evaluation_storage_stop": {
+    "path": "/data1/Kane/MOE/results/architecture_s1_evaluation_20261030_r1/storage_stop_review.json.gz",
+    "sha256": "0e1e90da72e36e90431594dd1e19fd37198cc1484d2fe3958502fb033102dacc",
+    "status": "ARCHIVED_STORAGE_PREFIX_STOP",
+    "queue": {
+      "launched": 1617,
+      "missing_request_cost": 0,
+      "not_executed": 29583,
+      "queue_wall_seconds": 1687.4336856901646,
+      "request_catalog_sha256": "0eb03b4037a9aeb57f1e3da25da52c78c1d13393b0f417f60b03c8e34a4a429b",
+      "requested": 31200,
+      "settled": 1617,
+      "source_manifest_sha256": "5c64575080c08a931bf851690eed996621b96a156ccf8deff4f20119d40677a4",
+      "states": {
+        "AUXILIARY_COMPLETE": 1609,
+        "ERROR": 8,
+        "POSITIVE": 0,
+        "TIMEOUT": 0,
+        "UNKNOWN": 0,
+        "UNSAFE_REPLAYED": 0
+      },
+      "status": "PREFIX_STOP",
+      "summed_request_seconds": 13476.846057899296,
+      "workers": 8
+    },
+    "audit_sha256": "36052d870f8882a0d252bbe681dcb96c39a226d67c94631c8eab857caf20f3b3",
+    "audit_seconds": 5.546411547809839,
+    "s1_decision": "PENDING_S1_COMPLETION",
+    "cleanup": {
+      "LEADER_REAPED_NO_LIVE_SESSION": 1616
+    },
+    "controller_missing": true,
+    "live_old_worker_sessions": [],
+    "errors": [
+      {
+        "accepted": false,
+        "id": "pgd_0670_e2_L2E8_seed2",
+        "seconds": 6.728790823370218,
+        "status": "ERROR",
+        "terminal_sha256": "8c9d00eb29591225125ad837904f6406c13059a775794b89d3d03833789f9128"
+      },
+      {
+        "accepted": false,
+        "id": "pgd_0670_e2_Dense_active_seed2",
+        "seconds": 7.525964733213186,
+        "status": "ERROR",
+        "terminal_sha256": "952569f58b7a083d6da11ba45bb4167d2fc3db50889d0bc6bcfa0d42936d3cfc"
+      },
+      {
+        "accepted": false,
+        "controller_error": {
+          "error": "shared stage artifact cap",
+          "kind": "BufferError"
+        },
+        "id": "pgd_0670_e2_L2E8_seed0",
+        "seconds": 0.004956256598234177,
+        "status": "ERROR"
+      },
+      {
+        "accepted": false,
+        "id": "pgd_0670_e2_Dense_total_seed0",
+        "seconds": 6.119093827903271,
+        "status": "ERROR",
+        "terminal_sha256": "dbc711ebf822a35b706996f8a1a149472aa209c7f76690d0a119c77204c37441"
+      },
+      {
+        "accepted": false,
+        "id": "pgd_0670_e2_L1E8_seed2",
+        "seconds": 8.49233770929277,
+        "status": "ERROR",
+        "terminal_sha256": "b0608729f1950468c3b4570e9578f1b78039f91a4fe47c05060717eb70afa2d7"
+      },
+      {
+        "accepted": false,
+        "id": "pgd_0670_e2_Dense_total_seed2",
+        "seconds": 7.625645441934466,
+        "status": "ERROR",
+        "terminal_sha256": "a1629355eef5cbc4d6820efbdaf7f9fa641cbbc5d43d6cbbd57d00a846ce19b0"
+      },
+      {
+        "accepted": false,
+        "id": "pgd_0670_e2_Dense_active_seed0",
+        "seconds": 5.376702008768916,
+        "status": "ERROR",
+        "terminal_sha256": "ddbf04555b542572e088ae987148aa6c95880753bfa6cfe19e785e6a2ff928be"
+      },
+      {
+        "accepted": false,
+        "id": "pgd_0670_e2_L1E8_seed0",
+        "seconds": 6.537341037765145,
+        "status": "ERROR",
+        "terminal_sha256": "23a56d30735af4450d3448e7299287f2c429b8532f93a24421ded60ecc963084"
+      }
+    ],
+    "classification": "one explicit controller BufferError; seven native exit1/unpublished terminals during shared-cap exhaustion, retained without per-child unique-cause claim",
+    "public_pgd_batches": {
+      "accepted": 1609,
+      "error": 8,
+      "not_executed": 783
+    },
+    "complete_verification_calls": 0,
+    "incomplete_verification_calls": 0,
+    "extra_model_calls": 0,
+    "capacity_amendment": "PENDING_USER_DECISION_512MiB_NOT_APPLIED",
+    "time": 1793285679.59437
   }
 }
