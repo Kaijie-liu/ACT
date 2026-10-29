@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## S1 execution integration controlled; first dense model audited 2026-10-29
+
+Real increment:1/6dense models completed;0trainedverification calls. Dense_total_seed0:test52.66%,validation-selectedepoch37/50; no verification-based selection.
+[Prefix audit](architecture_s1_records_20261029.json) checks50epochs/earliestbest/checkpoint/split/source without another forward pass; other5models continue under originalPID3300583.
+[Execution](../scripts/architecture_s1_execution.py) reuses owned-session supervision, shared128MiB accounting, <=8workers and immutable complete-request catalogs; no per-history or per-worker budget reset.
+One24.184s control:5standard tests+7native synthetic calls, including two-worker concurrency and exception/deadline/unpublished-candidate rejection; all cleanup passed.
+Later early-returned-TIMEOUT acceptance correction passed one2.396s differential control; prior7calls not repeated, bothsourceversionsretained. These are integration evidence, not architecture gains.
+Next integrate publicPGD/remaining run manifest, complete6model audit, freeze/commit immutable evaluation then launch existing S1 queue; no repeated permission needed.
+S1 primary4800completecalls/24000incompleteitems still unstarted; C1–C3unknown, S2gated. Oldmechanismline and historicalfailed/source-incomplete results remain closed/preserved.
+
 ## S1 bound semantics controlled; fixed common inputs ready 2026-10-29
 
 Real increment:0trainedverificationcalls; training PID3300583/start1212371695 live at check,27/300epochs and0/6models complete; previous launch is not rerun.

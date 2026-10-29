@@ -174,3 +174,60 @@ The full-request worker/reception/parallel catalog freeze is still pending;
 adapter controls do not authorize a result before that existing S1 requirement
 is implemented. No new per-interface approval is required. Training continues
 from its separate immutable source, unaffected by these code changes.
+
+## Complete-request execution integration
+
+[S1 execution](../scripts/architecture_s1_execution.py) now connects the
+adapters to the existing owned-session supervisor. Each request independently
+checks its committed source, external engine identity, checkpoint, materialized
+input and all property rows. Loading the entire model, including inactive expert
+weights, is charged. Full-model replay and structural coverage checks precede
+publication; the controller independently checks the published identity and
+coverage. This remains numerical evidence, not a new source-complete proof.
+
+The proposed production timing is300s total with nested worker/supervisor/cleanup
+cutoffs at288/290/295s. The final five seconds cover reception and terminal
+publication. Online overruns cannot be accepted from a later offline review.
+Returned TIMEOUT, completed UNKNOWN, clean-error witnesses and outer cutoffs
+remain distinct records. Partial candidate files without a valid completed
+publication are retained and rejected. Phase counters cover engine startup,
+model/input loading, verification and coverage/replay; the complete request
+clock additionally includes serialization, reception, cleanup and terminal
+writing. Unallocated overhead is not silently omitted.
+
+The finite queue rotates the model order by input/radius, without model-based
+input selection. It contains4800 complete or24000 incomplete items. At most
+eight single-thread workers have separate output directories; only the caller
+publishes the shared stage ledger. Controller/worker writes use one locked
+128MiB artifact account, with the common-input preparation bytes charged when
+the stage account is created. There is no per-worker quota reset. A512KiB
+terminal reserve is part of, not additional to, that cap. Reservations precede
+writes; interruption can conservatively overcount, never undercount. Only live
+progress may be replaced; failure and terminal records are immutable. Unexpected
+errors stop new admission while already launched requests finish under their
+own deadlines. Tool repairs retain the prefix and require a separately recorded
+continuation of the unexecuted queue.
+
+One new integration control completed in24.184s: five standard-library tests
+and seven synthetic native calls, including four normal requests with two
+concurrent workers and exception/deadline/partial-publication faults. All owned
+sessions were reaped, no late or partial positive was accepted. Physical native
+artifacts19,477bytes are covered by the conservative23,415byte account. A later
+static boundary review added acceptance of an early returned TIMEOUT as an
+explicit partial terminal; its single differential control passed in2.396s,
+without repeating the seven native calls. Both source versions and receipts are
+retained in the [stage record](architecture_s1_records_20261029.json).
+
+No trained verification was run. Public PGD integration, full numerical-run
+manifest and training completion audit remain before the real queue launch.
+The finite runner refuses an unfrozen real queue or a mutable checkout.
+
+## First completed training model (prefix audit)
+
+Dense_total_seed0 completed all50epochs. Earliest highest validation accuracy
+selects epoch37 (53.24% on5000validation examples); the selected checkpoint
+reports52.66% on10000test examples. A read-only audit checked all50epoch records,
+the earliest-maximum rule, architecture/seed/count, checkpoint hash and metadata,
+shared split and original immutable source identity. It did not rerun inference
+or training. Five models remain; this is not a completed seed comparison or
+evidence for/against C2 or C3. Training continues from its existing process.

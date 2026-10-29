@@ -1,7 +1,7 @@
 {
   "schema": "architecture-s1-record-v1",
-  "state": "TRAINING_RUNNING",
-  "recorded_at": 1793275487.114451,
+  "state": "TRAINING_RUNNING_EVALUATION_INTEGRATION_CONTROLLED",
+  "recorded_at": 1793277967.4111621,
   "control": {
     "capacities": [
       {
@@ -233,5 +233,55 @@
     "status": "PASS",
     "verification_calls": 0,
     "checks": "source/receipt hashes and fixed input roster; no new bound computations"
+  },
+  "request_execution_control": {
+    "root": "/data1/Kane/MOE/results/architecture_s1_execution_control_20261029_r1",
+    "complete_sha256": "b5941be72c77a0ab255babc91b4972e6f99a465f91867c4dac9159e03934f638",
+    "freeze_sha256": "1359e76a754f8d87c7f6e46d2edfbce7e835a0e25916db147edfd8a672353bf6",
+    "status": "PASS",
+    "seconds": 24.183860721066594,
+    "standard_tests": 5,
+    "native_calls": 7,
+    "physical_bytes": 19477,
+    "conservative_charged_bytes": 23415,
+    "trained_verification_calls": 0
+  },
+  "early_timeout_delta_control": {
+    "root": "/data1/Kane/MOE/results/architecture_s1_execution_timeout_control_20261029_r2",
+    "complete_sha256": "6c1e922536593f017b34ef2df5adac97b366992df4290011a72407a70d4738ae",
+    "freeze_sha256": "35326a9841aa266bcd23342a09ac41d2e81a970c50e1fe928d789c3ee4891d78",
+    "status": "PASS",
+    "seconds": 2.395631365478039,
+    "tests": 1,
+    "native_calls": 0,
+    "change": "accept early returned TIMEOUT with partial coverage and NONE evidence; no repeated native controls"
+  },
+  "training_completed_prefix_audit": {
+    "path": "/data1/Kane/MOE/results/architecture_s1_training_partial_audit_20261029_r1.json",
+    "sha256": "bf9c71adaa9a458852a087151c2b083e0c8413c4435b4320fcf149db0277e90d",
+    "status": "PASS_COMPLETED_PREFIX",
+    "completed_models": 1,
+    "models": [
+      {
+        "best_epoch": 37,
+        "checkpoint": "/data1/Kane/MOE/results/architecture_s1_training_20261029_r1/Dense_total_seed0/selected.pt",
+        "checkpoint_sha256": "6966999f406deac06d72eaf24c0f89b5cb743e24e65487320a723935054ed195",
+        "completion_sha256": "e734478b7977b73a634cf7d2aeeb345e6f39d0efab099a6630dca261b8aa0b9b",
+        "id": "Dense_total_seed0",
+        "parameter_count": 6957295,
+        "seconds": 2113.268305314705,
+        "test": {
+          "accuracy": 0.5266,
+          "correct": 5266,
+          "total": 10000
+        },
+        "validation": {
+          "accuracy": 0.5324,
+          "correct": 2662,
+          "total": 5000
+        }
+      }
+    ],
+    "no_forward_or_retraining": true
   }
 }
