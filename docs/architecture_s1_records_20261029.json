@@ -1,7 +1,7 @@
 {
   "schema": "architecture-s1-record-v1",
-  "state": "TRAINING_COMPLETE_EVALUATION_FROZEN",
-  "recorded_at": 1793283557.780229,
+  "state": "EVALUATION_PUBLIC_PGD_RUNNING",
+  "recorded_at": 1793284267.4385664,
   "control": {
     "capacities": [
       {
@@ -484,5 +484,89 @@
     "source_commit_before_freeze": "8eab6bb00fd73320081bb6be4ae1e56afea37ee4",
     "workers": 8,
     "freeze_preparation_seconds": 1.6496786903589964
+  },
+  "evaluation_launch": {
+    "path": "/data1/Kane/MOE/results/architecture_s1_evaluation_20261030_r1/launch.json.gz",
+    "sha256": "dc48a4439be91d527b52b21655a95e50939ca694cf9b5cd0c1db0750cf5ff5a8",
+    "command": [
+      "nice",
+      "-n",
+      "10",
+      "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+      "-B",
+      "/data1/Kane/MOE/executions/architecture_s1_evaluation_20261030_r1/scripts/architecture_s1_study.py",
+      "--run",
+      "/data1/Kane/MOE/results/architecture_s1_evaluation_20261030_r1",
+      "--manifest",
+      "/data1/Kane/MOE/executions/architecture_s1_evaluation_20261030_r1/docs/architecture_s1_evaluation_freeze_20261030.json"
+    ],
+    "commit": "d139f9335ad9e780d42a12212f85784e4702316c",
+    "console": "discarded; structured session/error/terminal records retained per request",
+    "execution_directory": "/data1/Kane/MOE/executions/architecture_s1_evaluation_20261030_r1",
+    "launch_time": 1793283765.2445655,
+    "no_training_overlap": true,
+    "pid": 1692415,
+    "resource_observation": {
+      "action": "read only; no signal or modification of another task",
+      "allowed_cpus": 20,
+      "clock": 1793283765.2444632,
+      "gpu_used": false,
+      "load": [
+        6.1591796875,
+        6.33935546875,
+        7.35205078125
+      ],
+      "memory": {
+        "MemAvailable": 107002683392,
+        "MemTotal": 134491185152
+      },
+      "ordinary_available_disk_bytes": 334921486336,
+      "workers": 8
+    },
+    "result_directory": "/data1/Kane/MOE/results/architecture_s1_evaluation_20261030_r1",
+    "session_id": 1692415,
+    "start_ticks": 1213209188
+  },
+  "artifact_observation_before_full_verification": {
+    "clock": 1793284085.187525,
+    "settled_batches": 298,
+    "states": {
+      "AUXILIARY_COMPLETE": 298
+    },
+    "domain_records": 3030,
+    "domain_bytes": 22504308,
+    "mean_domain_bytes": 7427.164356435644,
+    "projected_24000_domain_bytes_only": 178251944.55445546,
+    "projection_not_upper_bound": true,
+    "account": {
+      "accounting": "stored bytes plus outstanding reservations; account/lock reserve4096",
+      "cap": 134217728,
+      "initial_bytes": 13275346,
+      "terminal_reserve": 524288,
+      "used": 36770628
+    }
+  },
+  "evaluation_prefix_review": {
+    "path": "/data1/Kane/MOE/results/architecture_s1_evaluation_20261030_r1/prefix_review_001.json.gz",
+    "sha256": "e819af88d8615934039f838d3624683023c18f9b7ad79a5382617a6e29e0ef61",
+    "charged_request_seconds": 3411.6789740286767,
+    "ledger_count": 408,
+    "ledger_set_sha256": "33d351411b997132b53720dbea0f138f66e232f7cf3026a9b48f4077a0f74b9d",
+    "no_new_model_or_solver_calls": true,
+    "not_final_s1_decision": true,
+    "seconds": 0.797645878046751,
+    "states": {
+      "AUXILIARY_COMPLETE": 408
+    },
+    "status": "PASS_PREFIX"
+  },
+  "artifact_amendment_request": {
+    "status": "PENDING_USER_DECISION",
+    "current_bytes": 134217728,
+    "proposed_bytes": 536870912,
+    "reason": "actual lossless PGD witness records exceed small-study storage projection",
+    "changes_only": "stage artifact cap; no extra inputs/calls/time/precision/acceptance",
+    "old_records_preserved": true,
+    "no_current_cap_change": true
   }
 }

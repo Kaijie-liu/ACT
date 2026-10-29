@@ -389,3 +389,31 @@ single-thread CPU workers,8GiB AS each, shared128MiB artifact policy and300s
 whole-request limits are unchanged. The run starts from a committed immutable
 copy after fresh resource admission; this freeze contains no verification
 outcomes or certification claim.
+
+
+## Numerical queue launch and observed artifact capacity
+
+The immutable evaluation source is `d139f9335ad9e780d42a12212f85784e4702316c`
+at `executions/architecture_s1_evaluation_20261030_r1`; results have the same
+basename under `results/`. Detached controller PID1692415/start1213209188,
+eight CPU request workers, nice10, no overlap with training. Fresh admission
+observed20CPUs/load6.16/about99.7GiB available memory/about312GiB ordinary-user
+disk. Structured session/error/terminal records are retained; redundant console
+output is discarded. Launch/start receipts live inside the shared byte account.
+
+A first independent structural review accepts408publicPGD batch terminals in
+0.798s, with3411.679s charged request time. All are AUXILIARY_COMPLETE; that
+means the auxiliary batch was recorded, not that all ten domains are safe or
+that fixed-search completion occurred on a counterexample's early return.
+No complete/incomplete verifier outcome or S1 decision is available yet.
+
+Actual non-center PGD witnesses expose insufficient artifact planning:
+3030domain records used22,504,308bytes, mean7427bytes. A descriptive projection
+for24000domain records alone is178,251,945bytes, above the frozen134,217,728byte
+stage cap, before most verification evidence. This is not a full upper bound.
+The original128MiB policy remains enforced; neither precision nor evidence
+is deleted. The pending user decision proposes512MiB for the same fixed S1
+objects and execution, with an explicit new freeze and only unexecuted requests
+continued after any original-cap stop. It does not change300s/8GiBAS, methods,
+seeds, acceptance, sample counts or old records. The capacity estimate was
+inadequate; it is an execution-storage issue, not evidence against an architecture.

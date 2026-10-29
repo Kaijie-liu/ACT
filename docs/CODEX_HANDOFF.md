@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## S1 queue launched; storage amendment pending 2026-10-30
+
+Real increment:408publicPGDbatches accepted/independently structurally audited;0complete/incompleteverificationcalls at review. All6dense training complete; no rerun.
+Frozen source d139f9335, `executions/architecture_s1_evaluation_20261030_r1`, same resultbasename; detachedPID1692415/start1213209188,eightCPUworkers,nice10, noGPU/trainingoverlap.
+[Record](architecture_s1_records_20261029.json) binds launch and0.798s prefix audit/3411.679s charged request time; AUXILIARY_COMPLETE is notSAFE.
+Actual3030PGDdomainrecords use22.5MB; extrapolated24000records alone178MB>128MiB cap. Projection notupperbound; originalcapacityplanning was insufficient.
+One pending user question proposes only512MiB sharedstorage, samefixedobjects/methods/300s/8GiB/precision/checks; noapprovalyet, currentcap unchanged. Oldprefix/failures remain; no hiddenquota reset.
+Next monitor samePID; on capfailure preserveallrecords. If approved, freeze resource-only continuation for unexecuted roster; do not repeat completedcalls or change endpoints.
+S1/C2/C3 remain unknown; S2notstarted. No oldmechanism recovery or claimed architecture gain.
+
 ## S1 training complete and all-weight numerical freeze 2026-10-30
 
 Real increment:6/6dense models and300/300epochs completed in7998.453s;0trainedverification/attackcalls before numerical launch. Original trainingPID3300583 exited after COMPLETE.
