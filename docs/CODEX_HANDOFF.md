@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## S1 public PGD settled; complete verification running 2026-10-30
+
+Real increment:all783continuation PGD batches accepted; total2392complete+8oldERROR/2400batches. Full verification has started under the samePID2157745/start1216372585.
+[Public table](architecture_s1_20261029.md#public-pgd-complete-full-verification-started) retains24000domains including80unaccepted;9.661s recordaudit,21107.093s summedrequestcost.
+[Record](architecture_s1_records_20261029.json) binds publicsummary and first complete-verifier terminal audit; numerical filters/replay records, not independent source-complete proofs.
+At8/255 only0.93%–2.63% lack a replayed counterexample; notcertified accuracy orS1gain. Threefixedseeds/share1000inputs, noindependence inflation.
+Same immutable continuation37479ccf3 and originalnumeric d139f9335,512MiBaggregate/300s/8CPUworkers; old8failures unchanged, no newPGD errors.
+Next monitor4800complete then24000incomplete, final combinedaudit/statistics. NoS2 beforefrozenS1gate; no partial comparison or methodchange.
+
+
 ## S1 approved512MiB continuation running 2026-10-30
 
 Real increment: original-prefix continuation launched from37479ccf3; first bound terminal prefix audited with no new numerical queries (counts in linked record).

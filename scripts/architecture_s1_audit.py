@@ -195,10 +195,74 @@ def analyze(root,manifest):
         audit_seconds=time.monotonic()-began,auditor_sha256=sha(__file__))
 
 
+def public_summary(root,manifest):
+    """Summarize the completed public attack queue while verifiers continue.
+
+    Only immutable settled PGD records are read; no live verifier account/queue
+    snapshot is required. Unaccepted batch prefixes remain missing, not repaired.
+    """
+    from architecture_s1_continuation import validate,locate_requests
+    began=time.monotonic();spec=load(manifest)
+    segments=[(root,sha(manifest))]
+    if 'continuation' in spec:
+        _,full,_=validate(spec);c=spec['continuation']
+        segments.insert(0,(Path(c['root']),c['manifest_sha256']))
+    else:
+        full=all_requests(spec['models'])
+        require(digest(full)==spec['request_catalog_sha256'],'full public source roster')
+    owners=locate_requests(full,[s[0] for s in segments])
+    queries=[q for q in full if q['mode']=='pgd']
+    require(all(q['id'] in owners for q in queries),'public queue not yet settled')
+    catalog=load(spec['inputs']['catalog'],spec['inputs']['catalog_sha256'])
+    require(sha(spec['inputs']['path'])==spec['inputs']['sha256'],'public physical inputs')
+    models={m['id']:m for m in spec['models']}
+    tables={(m,r):dict(model=m,radius=r,denominator=1000,clean_correct=0,
+        clean_unknown=0,states=Counter()) for m in models for r in (2,8)}
+    states=Counter();seconds=0.;bindings=[]
+    for q in queries:
+        folder,h=segments[owners[q['id']]]
+        row,value=audit_request(folder,q,h)
+        require(row['seconds'] is not None,'public request cost present')
+        states[row['status']]+=1;seconds+=row['seconds']
+        ledger=folder/(q['id']+'.ledger.json.gz');bindings.append((str(ledger),sha(ledger)))
+        table=tables[(q['model'],q['radius'])]
+        if value is None:
+            table['states']['BATCH_UNACCEPTED']+=len(q['indices'])
+            table['clean_unknown']+=len(q['indices'])
+            continue
+        require(value['family']==models[q['model']]['family'] and
+            value['backend_sources_sha256']==spec['backend_sources_sha256'],'public model/engine binding')
+        for d in value['domains']:
+            record=read_record(folder/q['id']/d['file'])
+            require(record['label']==catalog['samples'][d['index']]['label'],'public true label')
+            table['clean_correct']+=record['clean_prediction']==record['label']
+            table['states'][record['result']['status']]+=1
+    groups=[]
+    for radius in (2,8):
+        for group in ('L1','L2','total','active'):
+            items=[tables[(m,radius)] for m in models if models[m]['group']==group]
+            require(len(items)==3,'three fixed seeds per architecture group')
+            counts=sum((t['states'] for t in items),Counter())
+            groups.append(dict(group=group,radius=radius,denominator=3000,states=dict(counts),
+                clean_correct=sum(t['clean_correct'] for t in items),
+                clean_unknown=sum(t['clean_unknown'] for t in items),
+                not_disproved_count=3000-counts['UNSAFE_REPLAYED']))
+    require(len(queries)==2400 and all(sum(t['states'].values())==1000 for t in tables.values()),
+        '2400 batches, all24000 domains, missing retained')
+    return dict(status='PUBLIC_PGD_RECORD_AUDIT',source_manifest_sha256=sha(manifest),
+        online_states=dict(states),planned_native_requests=2400,planned_domains=24000,
+        charged_request_seconds=seconds,record_identity_digest=digest(bindings),
+        model_tables=list(tables.values()),groups=groups,s1_decision='PENDING_VERIFICATION',
+        scientific_scope='fixed attack results only; no-witness and unaccepted are not certificates; record audit does not independently replay witnesses',
+        audit_seconds=time.monotonic()-began,auditor_sha256=sha(__file__))
+
+
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('root',type=Path);parser.add_argument('manifest',type=Path)
     parser.add_argument('output',type=Path)
-    args=parser.parse_args();result=analyze(args.root,args.manifest)
+    parser.add_argument('--public-only',action='store_true')
+    args=parser.parse_args()
+    result=(public_summary if args.public_only else analyze)(args.root,args.manifest)
     if args.output.resolve().parent==args.root.resolve():
         Artifacts(args.root).write(args.output,result,terminal=True)
     else:

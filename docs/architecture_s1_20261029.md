@@ -486,3 +486,42 @@ basename. Its first independent terminal-prefix audit is bound in the shared
 record. The512MiB account starts with133858729chargedbytes including allold
 charges and the newmanifest; no oldaccount/evidence was rewritten. Numerical
 workers still execute the original d139f9335 source. FullS1 results are pending.
+
+
+## Public PGD complete; full verification started
+
+All2400auxiliary batches are settled:2392AUXILIARY_COMPLETE and8original ERROR.
+The completed continuation contributed783batches without a newerror. The full
+24000-domain denominator includes80unaccepted domains from the oldfailures;
+partial saved records are not promoted offline. A9.661s independent record
+pass validates the immutable terminal/domain bindings, true labels and recorded
+online full-model replay. It does not rerun attacks or independently reprove
+witness arithmetic. Total charged request cost is21107.093s (5.863h), not
+parallelwall time; no attack outcome is supplied to verification workers.
+
+| Radius | Model group | Replayed counterexample | Fixed search: no witness | Unaccepted | Denominator |
+|---|---|---:|---:|---:|---:|
+| 2/255 | L1 | 2161 | 819 | 20 | 3000 |
+| 2/255 | L2 | 2272 | 708 | 20 | 3000 |
+| 2/255 | total | 2099 | 881 | 20 | 3000 |
+| 2/255 | active | 2174 | 806 | 20 | 3000 |
+| 8/255 | L1 | 2921 | 79 | 0 | 3000 |
+| 8/255 | L2 | 2953 | 47 | 0 | 3000 |
+| 8/255 | total | 2944 | 56 | 0 | 3000 |
+| 8/255 | active | 2972 | 28 | 0 | 3000 |
+
+These are descriptive counts on1000shared inputs and3fixed seeds pergroup,
+not3000independent images. No-witness is not a positive certificate. At8/255,
+only0.93%–2.63% were not disproved by the fixed attack, limiting the observed
+ordinary-trained models' robustness, without establishing any certification
+advantage. The2/255 groups also retain their20missing domains each.
+
+The same controller now executes the4800complete verification requests,
+followed by24000incomplete CROWN-IBP items. Initial accepted numerical terminals
+were checked for all-property/full-route coverage, budget and reception; they
+are a startup prefix, not a comparison or S1decision. Model/seed/input/epsilon,
+all-denominator timing and frozen decision rules remain unchanged.
+Reproduce this public summary with `scripts/architecture_s1_audit.py ROOT
+MANIFEST OUTPUT --public-only`; its output is charged to the current shared
+account and includes the auditor and input/ledger identities. Full combined
+analysis remains the same CLI without `--public-only`, after queue termination.
