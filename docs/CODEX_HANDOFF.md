@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## Architecture draft incorporates completed training/PGD evidence 2026-10-30
+
+Real increment:complete verification17/4800 at review (3positive/7replayed/3unknown/4timeout); samePID2157745/start1216372585 live, no newERROR.
+[Manuscript](../paper/architecture_main.tex) includes all6dense test accuracies and all24000public attack domains, including80unaccepted; no attack success-as-certificate or partialS1claim.
+[Build/data record](architecture_s1_records_20261029.json) binds7-page generic PDF, fourgroup rows/sixaccuracy source checks and page5 visualreview PASS;0newmodelqueries for writing.
+Complete/numerical architecture comparison remains pending; S2gated. Fullcost/different trainingthread caveats retained, no training-speedup claim.
+Next monitor the original continuation; do not restart timeout requests, alter methods or inferC2 from initial prefix. Active source/execution/quota unchanged.
+
+
 ## S1 public PGD settled; complete verification running 2026-10-30
 
 Real increment:all783continuation PGD batches accepted; total2392complete+8oldERROR/2400batches. Full verification has started under the samePID2157745/start1216372585.

@@ -242,11 +242,52 @@ screen on time; such a pass authorizes S2 but does not establish C2. All states,
 missing costs and shared-clean-correct explanatory strata are reported.
 Neither L2 nor 8/255 rescues a failed primary comparison.
 
-\subsection{S1 results: pending}
-Training and execution records live in the frozen S1 manifest and ledger.
-No architecture-certified accuracy, complete-request speedup, or C2 conclusion
-is available in this version. Results will report all seeds and both capacity
-conventions, not select the best seed or omit a slower comparison.
+\subsection{S1: completed training and attack audit}
+All six dense controls completed their 50 frozen epochs. Validation-selected
+test accuracies for seeds 0, 1, and 2 are respectively
+$52.66\%,53.29\%,53.73\%$ for total matching and
+$52.78\%,53.57\%,53.47\%$ for active matching. These are full-test clean
+accuracies, not certification rates; all checkpoints remain in the comparison.
+Training took 7998.453 seconds with one CPU worker. We do not compare that
+training time to the earlier MoE runs, which used a different thread count.
+
+The public attack queue settled all 2400 ten-input batches. Of these, 2392
+were accepted; eight original storage-limit-period errors remain errors.
+The complete domain denominator is 24000, including 80 domains without an
+accepted batch result. Their partial saved records are not promoted offline.
+The storage-only continuation increased the aggregate artifact cap from
+128 to 512 MiB and retained all previous charges; neither the attack nor the
+verifier configuration, input set, or request deadline changed.
+
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule
+Group&Clean correct&CE at $2/255$&Missing at $2/255$&CE at $8/255$\\
+\midrule
+L1E8&1492&2161&20&2921\\
+L2E8&1386&2272&20&2953\\
+Dense total&1632&2099&20&2944\\
+Dense active&1637&2174&20&2972\\
+\bottomrule
+\end{tabular}
+\end{center}
+Every cell has denominator 3000: 1000 shared inputs and three fixed seeds,
+not 3000 independent images. CE denotes an online full-model-replayed
+counterexample record, including a clean misclassification. Clean counts use
+the complete $8/255$ records; there are no missing domains or attack timeouts
+at that radius. At $2/255$, the remaining $3000-\mathrm{CE}-20$ cases completed
+the fixed search without a witness. The record audit checks bindings and online
+acceptance, rather than rerunning every attack. Its summed request cost is
+21107.093 seconds, not parallel wall time.
+
+At $8/255$, only $0.93\%$--$2.63\%$ of these ordinarily trained model--input
+pairs lack a replayed counterexample. This describes the difficulty of the
+larger-radius task, not certified accuracy or an architecture advantage.
+No-witness results remain unproved. The full verification queue is running;
+no complete-request speedup, capacity-matched certification comparison, or C2
+conclusion is available. Results will report all seeds and both capacity
+conventions, not select the best seed or omit a slower comparison. Sources and
+audit identities are recorded in \path{docs/architecture_s1_records_20261029.json}.
 
 \subsection{S2 and ablations: gated, not executed}
 If S1 passes, the user-approved comparison examines clean accuracy, certified

@@ -4,7 +4,9 @@ Revision 8's current architecture-study working draft is
 [When Is a Mixture of Experts Easier to Certify?](architecture_main.tex).
 It contains the complete-history/guard/endpoint reductions, the distinction
 between active parameters and full proof cost, and the frozen S1 comparison.
-S1 certification results are pending; S2 remains conditional on the registered
+It now includes the completed six-model dense training and full public PGD
+record audit, with missing attack domains retained. S1 certification results
+are pending; S2 remains conditional on the registered
 screen. C2/C3 are hypotheses, not reported wins. Its generic layout is not an
 official ICML 2027 template or a completed eight-page submission.
 
