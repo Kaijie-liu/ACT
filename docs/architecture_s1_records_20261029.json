@@ -1,7 +1,7 @@
 {
   "schema": "architecture-s1-record-v1",
-  "state": "TRAINING_RUNNING_EVALUATION_INTEGRATION_CONTROLLED",
-  "recorded_at": 1793277967.4111621,
+  "state": "TRAINING_RUNNING_PUBLIC_PGD_AND_EXECUTION_CONTROLLED",
+  "recorded_at": 1793279874.0498347,
   "control": {
     "capacities": [
       {
@@ -282,6 +282,62 @@
         }
       }
     ],
+    "no_forward_or_retraining": true
+  },
+  "public_pgd_control": {
+    "root": "/data1/Kane/MOE/results/architecture_s1_public_control_20261030_r2",
+    "status": "PASS",
+    "complete_sha256": "5c168880257f4bdddf7128a3b6a2c9ee042ed251b7d701965e58808259fdf736",
+    "freeze_sha256": "50f92287bef07e256490a618e97d824970d52af4375581dba19a59db672ac5e5",
+    "seconds": 18.934602838009596,
+    "unit_cases_current": 2,
+    "unit_cases_prior_unchanged": 5,
+    "native_requests": 4,
+    "auxiliary_domains": 4,
+    "trained_calls": 0,
+    "prior_failure": {
+      "root": "/data1/Kane/MOE/results/architecture_s1_public_control_20261030_r1",
+      "complete_sha256": "c23635208f487918196e5ee308a743ce7830ec88af875d4effe791eafef5c9f9",
+      "unit_sha256": "1f7de314c3d32e4d424701781ed78c13eb846d5e12ad1bf319ee2504cd67f752",
+      "reason": "incorrect expectation that finite PGD must find an analytic negative region; same source/model/domain/seed retained"
+    }
+  },
+  "final_plan_control": {
+    "root": "/data1/Kane/MOE/results/architecture_s1_study_plan_control_20261030_r1",
+    "complete_sha256": "f189588d06537c65a48b6fb91ed6b90066bd1ff664f4ba54c4b5c9136e7568dd",
+    "status": "PASS",
+    "seconds": 0.16998883709311485,
+    "counts": {
+      "complete": 4800,
+      "incomplete": 24000,
+      "pgd": 2400
+    },
+    "public_pgd_domains": 24000,
+    "unique_jobs": 31200,
+    "trained_calls": 0
+  },
+  "training_seed1_prefix_audit": {
+    "path": "/data1/Kane/MOE/results/architecture_s1_training_partial_audit_20261030_r2.json",
+    "sha256": "933b1f71a351583e0cee4e872aea0436201033564dfa54509b785f1a7eb0600c",
+    "status": "PASS_COMPLETED_MODEL",
+    "model": {
+      "best_epoch": 25,
+      "checkpoint": "/data1/Kane/MOE/results/architecture_s1_training_20261029_r1/Dense_total_seed1/selected.pt",
+      "checkpoint_sha256": "52027cc5ce43aa9621e18393d248d54fdd94db79f4ebe3a80b73ca8a3868ab21",
+      "id": "Dense_total_seed1",
+      "parameter_count": 6957295,
+      "seconds": 2027.9782008286566,
+      "test": {
+        "accuracy": 0.5329,
+        "correct": 5329,
+        "total": 10000
+      },
+      "validation": {
+        "accuracy": 0.534,
+        "correct": 2670,
+        "total": 5000
+      }
+    },
     "no_forward_or_retraining": true
   }
 }

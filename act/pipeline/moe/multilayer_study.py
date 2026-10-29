@@ -187,10 +187,13 @@ def interval_census(model,center,lower,upper,deadline,seed):
         guarantee='NUMERICAL_INTERVAL_OUTER_COUNT_AND_SAMPLED_NATIVE_HISTORIES_NOT_EXACT_PROOF')
 
 
-def public_pgd(model,tensors,deadline,seed,steps=20,restarts=2):
+def public_pgd(model,tensors,deadline,seed,steps=20,restarts=2,*,step_size=None):
     """Uniform fixed attack; no ACT/GenBaB answers and no per-class reselection."""
     import torch
     from act.back_end.moe.class_separated_top1 import validate_replay
+    step_size=2/255/4 if step_size is None else step_size
+    if not isinstance(step_size,(int,float)) or not math.isfinite(step_size) or step_size<=0:
+        raise ValueError('positive finite PGD step size')
     x,lo,hi,rows,thresholds=[tensors[k] for k in ('center','lower','upper','rows','thresholds')]
     started=time.monotonic();rng=torch.Generator().manual_seed(seed);best=None;best_margin=math.inf
     iterations=0;complete=True
@@ -211,7 +214,7 @@ def public_pgd(model,tensors,deadline,seed,steps=20,restarts=2):
                         seconds=time.monotonic()-started,guarantee='FULL_MODEL_REPLAY')
             if step<steps:
                 gradient=torch.autograd.grad(value,point,only_inputs=True)[0]
-                point=torch.maximum(lo,torch.minimum(hi,point.detach()-(2/255/4)*gradient.sign()))
+                point=torch.maximum(lo,torch.minimum(hi,point.detach()-step_size*gradient.sign()))
                 iterations+=1
         if not complete:break
     valid=False

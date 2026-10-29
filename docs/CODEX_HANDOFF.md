@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## S1 public PGD integrated; two dense models complete 2026-10-30
+
+Real increment:2/6dense models complete;0trained verification/attack calls. Total-matchseed0/1 test52.66%/53.29%, selectedepochs37/25; original trainingPID3300583 continues.
+PublicPGD is fixed20steps×2,ε/4,all1000inputs atbothradii;10domains share one auxiliary300s process,20s internal domain limit, allcostsseparate fromverification.
+[Record](architecture_s1_records_20261029.json) retains R1 bad test-expectation FAIL; corrected same-search comparison+remaining case and four native requests PASS in18.935s, no failed history overwritten.
+Non-center PGD witness losslessly encoded/decoded and full-model replayed; no-witness neverSAFE. Shared ledger references retain fullterminal/evidence and one stage byte account.
+[Study preparation](../scripts/architecture_s1_study.py) requires all6weights/50epochs/earliestvalidation/sourceaudit;31200uniquejobs control passes:4800complete+24000incomplete+2400auxiliarybatches(24000domains).
+Next complete training audit, produce numerical-run freeze, commit/push immutable execution and launch; build paired input-block analysis while queue runs. No new permission required inside S1.
+No real numerical queue or evaluation manifest yet; C1–C3unknown, S2onlyafterfrozenS1gate. Oldmechanisms/sourcegaps/failures unchanged.
+
 ## S1 execution integration controlled; first dense model audited 2026-10-29
 
 Real increment:1/6dense models completed;0trainedverification calls. Dense_total_seed0:test52.66%,validation-selectedepoch37/50; no verification-based selection.

@@ -28,6 +28,7 @@ THREAD_ENV = dict(PYTHONDONTWRITEBYTECODE='1', PYTHONNOUSERSITE='1',
     NUMEXPR_NUM_THREADS='1', CUDA_VISIBLE_DEVICES='')
 FILES = ('scripts/architecture_s1_execution.py', 'scripts/architecture_s1_inputs.py',
     'act/pipeline/moe/architecture_evaluation.py', 'act/pipeline/moe/architecture_dense.py',
+    'act/pipeline/moe/architecture_attack.py',
     'act/pipeline/moe/multilayer_training.py', 'act/back_end/moe/multilayer.py',
     'act/back_end/moe/multilayer_external.py', 'act/pipeline/moe/multilayer_study.py',
     'scripts/b2_observed_worker.py', 'scripts/genbab_cpu_ready.py',
@@ -126,6 +127,88 @@ def catalog(models, mode):
     return result
 
 
+def pgd_catalog(models):
+    """Twenty-four thousand auxiliary domains, ten per <=300s batch.
+
+    Twenty seconds per domain for fixed20x2PGD. Shared loading is charged once
+    per auxiliary batch, never reported as cold single-request verifier cost.
+    """
+    ids = [m['id'] for m in models]
+    require(ids and len(ids) == len(set(ids)), 'unique auxiliary model roster')
+    out = []
+    for start in range(0, 1000, 10):
+        for radius in (2, 8):
+            shift = (start//10+(radius == 8)) % len(ids)
+            for model in ids[shift:]+ids[:shift]:
+                out.append(dict(id=f'pgd_{start:04d}_e{radius}_{model}', model=model,
+                    indices=list(range(start, start+10)), radius=radius, mode='pgd'))
+    return out
+
+
+def bound_input(inputs, inputs_catalog, index, radius):
+    from architecture_s1_inputs import tensors_at, fingerprint
+    sample = inputs_catalog['samples'][index]
+    require(sample['index'] == index, 'input catalog order')
+    tensors = tensors_at(inputs, index, radius)
+    require({k:fingerprint(v) for k,v in tensors.items()} == sample['domains'][str(radius)],
+        'all materialized tensors and properties')
+    require(int(inputs['labels'][index]) == sample['label'], 'physical label')
+    return tensors, sample['label']
+
+
+def pgd_value(model, query, spec, store, folder, deadline, torch, *, family,
+              tensors=None, label=None, inputs=None, inputs_catalog=None):
+    from act.pipeline.moe.architecture_attack import attack
+    domains = []
+    synthetic = spec.get('synthetic_control', False)
+    seed = 0 if synthetic else next(m['seed'] for m in spec['models'] if m['id'] == query['model'])
+    for index in query['indices']:
+        tick(deadline)
+        if not synthetic:
+            tensors, label = bound_input(inputs, inputs_catalog, index, query['radius'])
+        with torch.no_grad():
+            prediction = int(model(tensors['center']).argmax(1))
+        began = time.monotonic(); local_deadline = min(deadline-1, began+20)
+        outcome = attack(model, tensors, radius=query['radius'],
+            seed=20261029+100000*seed+10000*(query['radius'] == 8)+index, deadline=local_deadline)
+        received = time.monotonic()
+        if received >= local_deadline:
+            outcome = dict(status='ATTACK_TIMEOUT', replayed=False, completed_fixed_search=False,
+                guarantee='NONE', seconds=received-began, formal_SAFE=False)
+        record = dict(index=index, label=label, clean_prediction=prediction, result=outcome,
+            started_at=began, received_at=received, deadline=local_deadline)
+        name = f'pgd_{index:04d}.json.gz'
+        h = store.write(folder/name, record)
+        domains.append(dict(index=index, file=name, sha256=h, status=outcome['status']))
+        store.write(folder/'progress.json.gz', dict(phase='public_pgd', returned=len(domains),
+            expected=len(query['indices']), active_index=index, clock=time.monotonic()), replace=True)
+    return dict(result=dict(status='AUXILIARY_COMPLETE', evidence_grade='PUBLIC_PGD_ONLY',
+        evaluation=dict(mode='pgd', family=family), formal_SAFE=False), family=family,
+        domains=domains, clean_correct=None, coverage=None, replayed=False,
+        guarantee='auxiliary attack search, not verification')
+
+
+def audit_pgd(value, folder, query):
+    require(value['result']['status'] == 'AUXILIARY_COMPLETE'
+        and value['result']['evidence_grade'] == 'PUBLIC_PGD_ONLY', 'PGD cannot certify')
+    require([d['index'] for d in value['domains']] == query['indices'], 'all auxiliary domains')
+    for item in value['domains']:
+        require(item['file'] == f"pgd_{item['index']:04d}.json.gz", 'auxiliary relative file identity')
+        path = Path(folder)/item['file']
+        require(sha(path) == item['sha256'], 'auxiliary outcome identity')
+        record = read_record(path); result = record['result']
+        require(record['index'] == item['index'] and result['status'] == item['status'], 'auxiliary domain identity')
+        require(result['status'] in ('UNSAFE_REPLAYED', 'NO_REPLAYED_COUNTEREXAMPLE', 'ATTACK_TIMEOUT'),
+            'attack failure not positive')
+        require(record['started_at'] < record['deadline'] <= query['worker_deadline'], 'same auxiliary deadline')
+        if result['status'] == 'UNSAFE_REPLAYED':
+            require(result['replayed'] and 'witness' in result and record['received_at'] < record['deadline'],
+                'on-time auxiliary full-model replay')
+        if result['status'] == 'NO_REPLAYED_COUNTEREXAMPLE':
+            require(result['completed_fixed_search'] and result['iterations'] == 40,
+                'reported complete fixed attack')
+
+
 def audit_value(result, *, family, experts, properties):
     from act.pipeline.moe.multilayer_study import coverage
     expected = math.prod(math.comb(e, 2) for e in experts) if family == 'moe' else 1
@@ -187,8 +270,8 @@ def worker(folder):
             if family == 'moe':
                 model, tensors = fixture('tie')
             else:
-                value = {'positive': 2., 'partial': 2., 'zero': 0., 'wrong': -1.}[query['case']]
-                model = affine([[0.], [0.]], [value, 0.])
+                value = {'positive': 2., 'partial': 2., 'zero': 0., 'wrong': -1., 'attack': .25}[query['case']]
+                model = affine([[1. if query['case'] == 'attack' else 0.], [0.]], [value, 0.])
                 x = torch.zeros((1, 1), dtype=torch.float64)
                 tensors = dict(center=x, lower=x-1, upper=x+1,
                     rows=torch.tensor([[1., -1.]]), thresholds=torch.zeros(1))
@@ -209,15 +292,22 @@ def worker(folder):
             require(sha(source['path']) == source['sha256'], 'same physical input file')
             inputs = torch.load(source['path'], map_location='cpu', weights_only=True)
             inputs_catalog = load(source['catalog'], source['catalog_sha256'])
-            sample = inputs_catalog['samples'][query['index']]
-            require(sample['index'] == query['index'], 'input catalog order')
-            tensors = tensors_at(inputs, query['index'], query['radius'])
-            require({k:fingerprint(v) for k,v in tensors.items()} == sample['domains'][str(query['radius'])],
-                'all materialized tensors and properties')
-            label = sample['label']
-            require(int(inputs['labels'][query['index']]) == label, 'physical label')
-            del inputs, inputs_catalog
+            if query['mode'] != 'pgd':
+                tensors, label = bound_input(inputs, inputs_catalog, query['index'], query['radius'])
+                del inputs, inputs_catalog
         phase('model_input_load')
+        if query['mode'] == 'pgd':
+            arguments = dict(tensors=tensors, label=label) if synthetic else dict(inputs=inputs, inputs_catalog=inputs_catalog)
+            value = pgd_value(model, query, spec, store, folder, deadline, torch, family=family, **arguments)
+            audit_pgd(value, folder, query)
+            phase('public_pgd_and_reception')
+            value.update(phases=phases, backend_sources_sha256=digest(environment['sources']))
+            h = store.write(folder/'outcome.json.gz', dict(request_sha256=sha(folder/'request.json.gz'),
+                clock=time.monotonic(), value=value))
+            tick(deadline)
+            store.write(folder/'published.json.gz', dict(sha256=h, clock=time.monotonic()))
+            tick(deadline)
+            return 0
         experts = [len(layer.experts) for layer in model.layers] if family == 'moe' else []
         expected = math.prod(math.comb(e, 2) for e in experts) if experts else 1
         from act.pipeline.moe.multilayer_study import coverage
@@ -240,6 +330,12 @@ def worker(folder):
             require(replayed, 'full same-model replay')
             if torch.equal(point, tensors['center']):
                 result['witness'] = dict(reference='bound input center', sha256=fingerprint(point))
+            else:
+                from act.pipeline.moe.architecture_attack import encode_point, decode_point
+                packed = encode_point(point, tensors['lower'], tensors['upper'])
+                require(torch.equal(point, decode_point(packed, tensors['lower'], tensors['upper'])),
+                    'lossless original-model witness encoding')
+                result['witness'] = packed
         phase('coverage_and_replay')
         value = dict(result=result, coverage=cov, replayed=replayed, family=family,
             experts=experts, properties=len(tensors['rows']), clean_prediction=prediction,
@@ -282,7 +378,13 @@ def receive(folder, query, session, end):
         and result['evaluation']['family'] == value['family'], 'received evaluation mode')
     if not spec.get('synthetic_control', False):
         item = next(m for m in spec['models'] if m['id'] == query['model'])
-        require(value['family'] == item['family'] and value['properties'] == 9, 'received family and properties')
+        require(value['family'] == item['family'], 'received family')
+    if query['mode'] == 'pgd':
+        audit_pgd(value, folder, query)
+        tick(end)
+        return result['status'], value
+    if not spec.get('synthetic_control', False):
+        require(value['properties'] == 9, 'received properties')
     cov = audit_value(result, family=value['family'], experts=value['experts'], properties=value['properties'])
     require(cov == value['coverage'], 'received complete coverage')
     if result['status'] == 'UNSAFE_REPLAYED':
@@ -362,14 +464,20 @@ def finite_queue(root, requests, manifest, *, workers, seconds=300, timing_reser
                 except Exception as exc:
                     row = dict(id=query['id'], status='ERROR', accepted=False,
                         controller_error=dict(kind=type(exc).__name__, error=str(exc)))
-                store.write(store.root/(query['id']+'.ledger.json.gz'), row, terminal=True)
+                # Terminal and raw evidence already contain the full record.
+                # Ledger references them without duplicating per-request data.
+                ledger = ({k:row[k] for k in ('id','status','accepted','seconds','terminal_sha256')}
+                    if 'terminal_sha256' in row else row)
+                if row.get('terminal_overrun'):
+                    ledger['terminal_overrun'] = True
+                store.write(store.root/(query['id']+'.ledger.json.gz'), ledger, terminal=True)
                 rows.append(row)
                 if row['status'] == 'ERROR' or row.get('terminal_overrun'):
                     stopped = True
     summary = dict(status='PREFIX_STOP' if stopped else 'COMPLETE', requested=len(requests),
         launched=next_index, settled=len(rows), not_executed=len(requests)-next_index,
         states={s:sum(r['status'] == s for r in rows)
-            for s in ('POSITIVE', 'UNSAFE_REPLAYED', 'UNKNOWN', 'TIMEOUT', 'ERROR')},
+            for s in ('POSITIVE', 'UNSAFE_REPLAYED', 'UNKNOWN', 'TIMEOUT', 'ERROR', 'AUXILIARY_COMPLETE')},
         summed_request_seconds=sum(r.get('seconds', 0) for r in rows),
         missing_request_cost=sum('seconds' not in r for r in rows),
         queue_wall_seconds=time.monotonic()-started, workers=workers,

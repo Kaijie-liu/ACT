@@ -231,3 +231,62 @@ the earliest-maximum rule, architecture/seed/count, checkpoint hash and metadata
 shared split and original immutable source identity. It did not rerun inference
 or training. Five models remain; this is not a completed seed comparison or
 evidence for/against C2 or C3. Training continues from its existing process.
+
+## Public attack and final execution preparation (2026-10-30)
+
+Public PGD uses the same full model and physical input/box as verification,
+independently of verifier answers:20 updates per restart,2 uniform random
+restarts, minimum true-label margin over all nine competitors, step sizeε/4.
+The seed is20261029+100000×model_seed+10000×1[ε=8/255]+input_index, shared
+across paired architectures. Clean-error centers are checked first. Search
+stops only after a valid full-model counterexample or its frozen work/deadline
+limit. Failure to find a witness is **not** evidence of robustness.
+
+All1000inputs,12models and2radii receive this auxiliary attack:24000domains.
+For loading efficiency, ten consecutive inputs share one auxiliary process,
+with20s internal per-domain deadlines and the same300s hard process budget.
+Loading, input checks, all ten searches, witness replay/serialization and cleanup
+are charged to the auxiliary batch. No cold per-input timing is inferred from
+this shared load. A native operation can overrun an internal domain deadline;
+its late result is rejected and the outer hard limit remains in force. These
+2400auxiliary batches are not4800complete verification slots or evidence
+supplied to either certification path. Complete/incomplete verifier requests
+remain individually cold, independently loaded and budgeted.
+
+Non-center witnesses use a lossless representation: each coordinate refers to
+its bound endpoint or retains its exact binary64 interior value. Decoding is
+checked against the original point and replayed before accepting the PGD
+witness. Clean-center witnesses reference the bound common input. No attack
+point quantization, radius reduction or extra acceptance margin is introduced.
+The compact ledger now references the immutable terminal and its measured
+total cost, instead of storing a second copy of the full terminal; every
+underlying source/session/outcome remains retained and charged.
+
+The first attack-control batch stopped on an incorrect test expectation: a
+fixed20×2search was assumed to find a known negative region of a linear toy
+model. Both original/default-step and explicit-step searches actually returned
+no witness. R1 remains FAIL. R2 keeps the **same model, seed, domain and attack**,
+checks agreement of the two searches, and correctly treats no witness as attack
+failure. It runs only the corrected and previously unexecuted unit cases; the
+five unchanged passing cases are retained from R1. A four-request native
+integration batch then checks PGD and both verification families under two
+concurrent workers. One non-center counterexample is actually encoded and
+replayed; three auxiliary domains return no witness. R2 passes in18.935s, with
+17206bytes retained. No trained-model certification or attack was run.
+
+[Final study preparation](../scripts/architecture_s1_study.py) requires all six
+dense completions and validates every50epoch trajectory, earliest validation
+choice, weights, recipe/split and the six existing MoE identities before it can
+write the numerical-run manifest. A standard-library control checks all31200
+unique native batch/request IDs:2400publicPGD,4800complete,24000incomplete;
+there are no accuracy/route-based omissions. It checks the50epoch selector and
+missing-epoch rejection. The source-bound manifest will freeze eight workers,
+both actual engine configurations, request deadlines, shared artifact account,
+catalog hashes and the already registered S1 analysis. The launch repeats a
+read-only CPU/memory/disk admission check and uses an immutable committed copy.
+No numerical-run manifest or real verification queue has yet been launched.
+
+Dense_total_seed1 is now also complete: selected epoch25, test53.29%. Its
+separate prefix audit checks all50epochs and checkpoint/source identities
+without another forward pass. Four models remain; full paired certification
+results, not these partial clean accuracies, will decide S1.
