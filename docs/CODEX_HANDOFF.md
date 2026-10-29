@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## Model validity and reproducible method added to review paper 2026-10-29
+
+Real increment:0newmodel/solver/replay calls; prior turn completed finalB4archive, not a waiting/running experiment.
+[Paper](../paper/review_main.tex) now reports eighteen frozen model accuracies27.65%–52.18%, architecture/recipe/checkpoint selection and exact configured engine.
+[Companion](../paper/sections/08_evaluation.md#frozen-models-training-and-conditional-input-selection) exposes allseeds/epochs and twenty435-candidate common-clean-correct inputs; not whole-test certification.
+Seven generated tables bind both training summaries to originalB4checkpoint hashes; residual architecture and mean→sum balance changes remain confounded, no causal attribution.
+[R6 build](current_review_paper_20261029.md) passes elevenpages/seventables; eighteenstoredtest/epoch/checkpoint identities checked, originalsixresulttablesunchanged; noaccuracyrerun.
+No experimental outcome/denominator/acceptance or oldrecord changed; noM-C/newB4/B5. G1–G6OPEN, human technical review and clean empirical reproduction remain external tasks.
+
 ## All B4 calls complete; no admitted mechanism, no further queue 2026-10-29
 
 Real increment: boundary120/120 and wholeB4 1080/1080 audited; immutableR3 controller exited normally, zero unexecuted registered calls.

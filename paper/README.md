@@ -3,7 +3,7 @@
 The current entry is [the technical-review paper](review_main.tex), revised
 2026-10-29: **Verifying Route-Variable Mixture-of-Experts Programs: Obligation
 Reductions and Empirical Limits**. Its three propositions cover complete
-history obligations, output-atom guards, and last-gate endpoints. Six tables
+history obligations, output-atom guards, and last-gate endpoints. Seven tables
 are generated from committed completed-result summaries. This is a generic
 review article, not a venue-formatted submission or a completed human review.
 
@@ -61,8 +61,9 @@ From the repository root, using the existing ACT environment:
 ```
 
 This verifies [current_review_tables.tex](results/current_review_tables.tex)
-against the committed main/ablation, multilayer, revised-guard, radius and final
-boundary summaries. All 1,080 registered B4 calls are audited; final charged
+against the committed training, main/ablation, multilayer, revised-guard, radius
+and final boundary summaries; training checkpoint identities must match the B4
+freeze. All 1,080 registered B4 calls are audited; final charged
 execution is 56.319 hours. No experiment is still running under this protocol.
 It does not run models, retrieve raw objects, replay attacks or prove CROWN
 arithmetic. Relevant summary-view hashes appear in the generated table file.

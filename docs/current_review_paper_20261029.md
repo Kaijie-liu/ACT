@@ -1,5 +1,32 @@
 # Current technical-review paper, 2026-10-29
 
+## Model validity and reproducible experimental methods (R6)
+
+Starting clean at `33fd27569`, the paper now includes all eighteen archived
+clean test accuracies, network widths/residual construction, the shared45k/5k
+split, training/selection recipe, common-clean-correct input selection and the
+actual configured engine. Clean scores span27.65%–52.18%; collapsed clean
+routing is retained. Residual connections, the stem/head and mean-to-sum balance
+aggregation change together, so the text disclaims an isolated causal ablation.
+The selected twenty inputs condition on all eighteen models being clean-correct;
+their verification rate is not whole-test certified accuracy.
+
+The renderer matches all eighteen training checkpoint hashes to the existing
+B4 freeze and adds one model table. Original six result tables are unchanged.
+Two raw completed-training record hashes and their stored accuracy/epoch fields
+were checked against committed summaries without loading a checkpoint, rerunning
+accuracy or performing a verification query. `review_checks.json` records PASS
+for eighteen identities, unchanged results,597 local links and PDF fields in
+0.155 seconds. This is record verification, not fresh empirical reproduction.
+
+R6 is `/data1/Kane/MOE/results/current_review_paper_20261029_r6`: eleven pages,
+220,203 bytes, two successful LaTeX passes, no final warnings or overfull boxes.
+Build/extraction takes0.998 seconds; source hashes are in `build.json`, and the
+model-table page5 was visually reviewed. PDF SHA-256:
+`ff2c0dd99b7de75dbfc59fa011343fae0cf17c3ad6fbdba77fc26ca7b1b92cf7`.
+Model/solver/replay calls added:zero. All stopped mechanisms, old results and
+G1–G6 status remain unchanged; independent human review is still required.
+
 ## Final B4 archive and review draft (R5)
 
 All 1,080 registered B4 calls have completed and the frozen-source final audit

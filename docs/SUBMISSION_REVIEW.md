@@ -19,6 +19,7 @@ it. No positive novelty verdict or review score is supplied.
 | Complete-output composition | Short paper Proposition 1; detailed method | Every tie-legal history and property, same input/source, valid exclusions and bounds. An incomplete tree cannot be positive. |
 | Output-atom guard reduction | Proposition 2; guarded frontend and semantic controls | Pointwise `max(p,-g)>0` equivalence, including ties; not equivalent finite-budget relaxation precision or a claim that generic tools can never exploit guards. |
 | Independent-gate embedding and last endpoint | Proposition 3; M-A contract | Valid prefix ranges; last affine suffix and domain independent of last gate. Inner gates remain nonlinear. Numerical sigmoid intervals are not automatically exact enclosures. |
+| Model validity and selection | [Training/model table](../paper/sections/08_evaluation.md#frozen-models-training-and-conditional-input-selection), original and residual training records | Clean accuracy27.65%–52.18%; low-accuracy/concentrated-routing seeds retained. Residual architecture and balance aggregation change together. Verification selects twenty common clean-correct inputs across all eighteen models, not a whole-test certified-accuracy sample. |
 | Strong engine versus old ACT v1 | [Stage-1 records](multilayer_stage1_records_20261022.json), `final_result_20261025` | 108/180 pruned positives versus zero; ACT has 178 TIMEOUT, one ERROR and one UNSUPPORTED. Supplemental bottleneck gate was registered after 189 calls. No unique ReLU-cause claim. |
 | Primary cascade gain and stop | [B4 records](moe_aware_b4_records_20261027.json), `main_and_ablation_review` | 122 versus 116, nine gains/three losses, +2pp/[0,4]pp; five-point threshold fails. Twenty input blocks preserve cross-model dependence. |
 | Mechanism and cost | Same records, `main_gain_loss_trace_review` | All nine gains use V2; 48/52 endpoints close initially. Shared-positive overhead exceeds gain savings. Partial logs cannot prove a counterfactual budget choice. |
@@ -87,8 +88,8 @@ priority for the reductions.
 
 ## Current bounded table reproduction
 
-The current renderer reads three committed JSON summaries, performs accounting
-checks, and reconstructs six tables. It needs only the Python standard library:
+The current renderer reads five committed JSON summaries plus the B4 freeze,
+checks model-to-checkpoint identity and accounting, and reconstructs seven tables. It needs only the Python standard library:
 
 ```sh
 python -I -S -B scripts/render_current_review_tables.py --check

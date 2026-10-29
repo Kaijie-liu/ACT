@@ -23,6 +23,14 @@ def render():
     radius = read('moe_aware_b4_records_20261027.json')['radius_final_review']
     final = read('moe_aware_b4_records_20261027.json')['final_review']
     boundary = final['boundary']
+    training = [read('multilayer_training_records_20261022.json'),
+                read('multilayer_stage1b_training_records_20261024.json')]
+    frozen_models = read('moe_aware_b4_freeze_20261027_r1.json')['models']
+    trained_models = {m['id']: m for record in training for m in record['models']}
+    assert len(trained_models) == len(frozen_models) == 18
+    assert all(m['checkpoint_sha256'] == trained_models[m['id']]['checkpoint_sha256']
+               for m in frozen_models)
+    assert training[0]['split_sha256'] == training[1]['split_sha256']
     c = primary['contrast']
     assert c['complete'] and c['denominator'] == 300 and not c['missing']
     assert all(sum(states.values()) == 300 for states in c['states'].values())
@@ -30,7 +38,7 @@ def render():
     assert multilayer['full_calls'] == 600 and multilayer['unexecuted'] == 0
     assert revised['completed_calls'] == 22 and len(revised['pair_details']) == 11
     rows = []
-    for label, value in (('primary', primary), ('multilayer', multilayer), ('guard', revised), ('radius', radius), ('boundary', boundary)):
+    for label, value in (('primary', primary), ('multilayer', multilayer), ('guard', revised), ('radius', radius), ('boundary', boundary), ('training', training)):
         digest = hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()).hexdigest()
         rows.append('% Relevant committed summary '+label+' sha256 '+digest)
     def table(caption, label, columns, header, body):
@@ -38,6 +46,11 @@ def render():
             r'\label{'+label+'}', r'\begin{tabular}{'+columns+'}', r'\toprule',
             header+r' \\', r'\midrule', *[s+r' \\' for s in body],
             r'\bottomrule', r'\end{tabular}', r'\end{table}', '']
+    rows += table('Clean CIFAR-10 test accuracy (percent) of all frozen models. Values are the archived CPU/float32 training evaluation, not a fresh float64 or robustness evaluation. No low-accuracy seed is removed.',
+        'tab:models', 'lrrrr', 'Configuration & Seed 0 & Seed 1 & Seed 2 & Mean',
+        [' & '.join([family, *[f"{100*trained_models[f'{family}_seed{s}']['test']:.2f}" for s in range(3)],
+            f"{100*sum(trained_models[f'{family}_seed{s}']['test'] for s in range(3))/3:.3f}"])
+         for family in ('L1E8','L2E8','L3E8','L2E16','R2E8','R3E8')])
     rows += table('Complete-request cascade: 300 calls per arm. P is numerical POSITIVE, not a strict certificate. All terminals and costs are retained.',
         'tab:primary', 'lrrrrrr', r'Method & P & UNKNOWN & TIMEOUT & ERROR & Mean s & Median s',
         [' & '.join([name, *[str(c['states'][arm].get(s, 0)) for s in ('POSITIVE','UNKNOWN','TIMEOUT','ERROR')],

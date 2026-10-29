@@ -67,8 +67,8 @@ architectures. The earlier ACT implementation using HybridZ~\cite{hz} and its pr
 artifacts supply comparison and trust-boundary evidence, not a replacement for
 the stronger external engine.
 In configuration names, $L$ is the number of routed layers, $E$ the experts per
-layer, and $R$ denotes a residual variant. Model and training details remain
-bound to the stage manifests rather than selected by verification success.
+layer, and $R$ denotes a residual variant. The model construction and training
+below are bound to stage manifests, not selected by verification success.
 
 \section{Complete-output semantics and reductions}
 For an input set $X$, let layer $\ell$ receive $h_{\ell-1}$, compute router
@@ -197,6 +197,53 @@ output-side conditions. A proposed last-layer dual-conditioned variant was
 conditional on revised M-B admission and was not run after that gate failed.
 
 \section{Experimental design and evidence grades}
+\paragraph{Models and training.}
+Each router is a ReLU MLP with one hidden layer of width 128; each expert has
+ReLU hidden layers of widths 256 and 128, followed by a linear output.
+Sequential models flatten the $32\times32\times3$ image to 3,072 coordinates,
+use 128-dimensional intermediate routed outputs and ten final logits. No
+extra activation is inserted between routed layers. Residual models instead
+have a linear $3072\to128$ stem, two or three $h+\operatorname{MoE}(h)$ blocks
+of width 128 and a linear $128\to10$ head. There is no batch normalization.
+
+All eighteen models use initialization/shuffle seeds 0, 1 and 2, with the same
+seed-0 split of CIFAR-10's training set into 45,000 training and 5,000 validation
+examples. Training uses CPU/float32 for fifty epochs, batch size 256, AdamW
+with learning rate $10^{-3}$ and weight decay $10^{-4}$, no scheduler, and
+ToTensor only without normalization or augmentation. The objective is cross
+entropy plus 0.1 times a Switch-style balance term. The sequential family
+averages per-layer balance; the residual follow-up sums it. Thus the follow-up
+changes a bundle of architecture and training factors, not a causal ablation
+of residual connections alone. The earliest validation-accuracy maximum selects
+the checkpoint; the clean test set is evaluated once afterward. All selected
+weights, including weak models, are retained.
+
+Table~\ref{tab:models} reports the archived accuracies, spanning 27.65--52.18\%.
+These are verification-scale models, not evidence of high-accuracy deployment
+coverage. Clean routing also concentrates: the two most selected first-layer
+experts account for 99.995\% of selections in L3E8 seed 2 and 100\% in L2E16
+seed 2. These observations do not prove perturbation-domain route invariance.
+The residual models improve the archived clean scores but do not meet the
+separate high-accuracy, cross-architecture certification objective.
+
+\paragraph{Inputs and backend.}
+Verification materializes ToTensor float32 inputs, then casts to float64;
+the implementation clips the $L_\infty$ box to $[0,1]$. For label $y$, all nine
+properties $F_y-F_j>0$, $j\ne y$, must hold. The twenty B4 inputs are common
+clean-correct under all eighteen float64 models. Selection examines 435
+nonexcluded candidates; the resulting conditional cohort does not estimate
+whole-test certified accuracy. Exact indices and tensor/weight identities are
+retained in the frozen catalog, and both radii use those same inputs.
+
+Each verifier call is a fresh CPU worker with one numerical thread and an
+8-GiB virtual-address-space limit on the shared twenty-logical-CPU host.
+The fixed GenBaB configuration uses alpha-CROWN bounds, batch size one, BBPS
+nonlinear branching with two uniform branches, and no input splitting or
+internal attack. Prefix pruning uses separately paid plain-CROWN bounds.
+This is a disclosed configured compatibility engine, not every configuration
+of the tool family. Public PGD uses two restarts and twenty steps, with a
+three-second domain cap and full-model replay, outside verifier-arm credit.
+
 Training, checkpoint selection, input exclusion, radius, arms and stopping rules
 are bound to stage-specific execution versions. Models use fixed validation
 selection, not verification outcome selection. New verification inputs follow
@@ -430,10 +477,11 @@ shared inputs, hardware variability, compatibility changes and reused observed
 diagnostic objects constrain generalization. Nonlinear backend positive filters
 are neither outward-rounded proofs nor deployed PyTorch/CUDA guarantees.
 
-The six current tables are reconstructed without model or solver calls.
+The seven current tables are reconstructed without model or solver calls.
 Run \path{scripts/render_current_review_tables.py} with \texttt{--check}.
 They use committed
-B4, multilayer-stage and revised-guard summaries. This checks accounting only.
+B4, training, multilayer-stage and revised-guard summaries, matching training
+checkpoint identities to the B4 freeze. This checks records and accounting only.
 The repository review guide maps claims to exact records and retained raw
 identities. Historical table kits remain immutable historical snapshots; the
 new manuscript does not silently update their manifests. Independent human

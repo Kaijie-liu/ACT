@@ -1,5 +1,71 @@
 # Evaluation
 
+## Frozen models, training and conditional input selection
+
+The main evaluation uses fifteen multilayer models, with three single-layer
+models reserved for the boundary cohort. All eighteen checkpoint hashes in the
+[B4 freeze](../../docs/moe_aware_b4_freeze_20261027_r1.json) match the completed
+[original training records](../../docs/multilayer_training_records_20261022.json)
+and [residual training records](../../docs/multilayer_stage1b_training_records_20261024.json).
+The following are archived CPU/float32 clean test accuracies, not freshly run
+float64 results, robust accuracy or verification rates. Selected epochs are in
+seed0/seed1/seed2 order; no weak seed was discarded.
+
+| Configuration | Seed0 test | Seed1 test | Seed2 test | Selected epochs |
+| --- | ---: | ---: | ---: | --- |
+| L1E8 | 48.54% | 48.40% | 48.72% | 25, 40, 36 |
+| L2E8 | 45.83% | 47.16% | 46.97% | 50, 47, 43 |
+| L3E8 | 38.48% | 40.19% | 27.65% | 44, 50, 46 |
+| L2E16 | 39.85% | 39.94% | 32.77% | 44, 50, 44 |
+| R2E8 | 50.79% | 50.91% | 51.15% | 19, 13, 21 |
+| R3E8 | 50.97% | 50.79% | 52.18% | 22, 13, 13 |
+
+All routers have one ReLU hidden layer of width128 and linear expert scores.
+Experts have ReLU hidden widths256/128 and a linear output. Sequential models
+map flattened3072-dimensional images through128-dimensional intermediate MoE
+outputs to ten logits. Residual models add a linear3072→128 stem, two or three
+128→128 blocks `h + MoE(h)`, and a linear128→10 head. There is no BN, extra stem
+activation or normalization. Every routed block uses selected-softmax top2.
+
+Training uses the common seed0 45k/5k split of CIFAR-10 training data, fifty
+epochs, batch256, AdamW(lr0.001, weight_decay0.0001), no scheduler, no augmentation
+and ToTensor only. Initialization/shuffle seeds are0/1/2. Select the earliest
+validation-accuracy maximum and evaluate the held-out test set once afterward.
+The loss is cross entropy plus0.1 times the mean (sequential) or sum (residual)
+of layer balance terms. Each term is `E * sum_e(f_e * p_e)`, where `f_e` is the
+detached top2 selection frequency divided by twice the batch size and `p_e` is
+the batch-mean softmax probability over all experts. The changed aggregation,
+stem/head and residual connections form a bundled follow-up, not an isolated
+residual-connection causal ablation.
+
+Clean accuracies span27.65%–52.18%, so these models do not discharge the
+high-accuracy deployment objective. The original L3E8_seed2 and L2E16_seed2
+put99.995% and100% of first-layer clean selections in their two most-used
+experts. Such concentration is a validity limitation, not proof of routing
+invariance on perturbed domains. The residual family is a separate declared
+follow-up; its higher accuracy cannot overwrite the original results.
+
+B4 materializes ToTensor float32 inputs then casts to float64, clips the
+implemented L-infinity box to[0,1], and requests all nine true-class-minus-other
+logit margins strictly above zero. Common clean correctness is checked under
+all eighteen float64 models. The selection examines435 nonexcluded candidates
+and chooses20, ascending and without route or bound filtering:
+`1742,1743,1748,1754,1776,1778,1781,1826,1851,1856,1866,1875,1900,1949,1956,1959,1965,1976,2241,2265`.
+These are twenty input blocks for the registered descriptive resampling
+analysis, not300 independent model-input draws. Common clean-correct selection
+conditions the comparison; none of its positive fractions is whole-test
+certified accuracy. Full-test historical telemetry remains disclosed.
+
+The frozen R7 compatibility engine runs CPU/float64, one numerical thread,
+batch size1, alpha-CROWN bounds and BBPS nonlinear branching (uniform binary
+branches), without input splitting or its internal attack. Prefix queries use
+plain CROWN. Each request starts a fresh worker with8GiB per-process virtual
+address space; the shared host has20 logical CPUs, not20 dedicated verifier
+cores. Public PGD separately uses two restarts, twenty steps, step2/(255*4),
+three seconds per domain and complete-model witness replay; it never supplies
+free arm successes. See the frozen configuration for exact inherited engine
+settings and the original execution receipts for version/host cost boundaries.
+
 ## Complete-request cascade primary comparison: practical gate not met
 
 The seventh-revision B4 primary cohort contains 15 fixed multilayer MLP models
