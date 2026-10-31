@@ -1,5 +1,13 @@
 # MoE project handoff — current entry point
 
+## S2a manuscript presentation corrected; original queue continues, 2026-11-01
+
+Real increment:0new model/solver calls from editing; original evaluation controller remains live; [record](architecture_s2a_records_20261031.json).
+Moved S1 training/PGD/storage/audit details unchanged to the manuscript appendix; main text now leads with the research comparison. No result or denominator changed.
+Corrected stale appendix “S2 remains unexecuted” to distinguish S1 STOP from later PI-authorized S2a and its failed primary gate.
+Two-pass18page build,source-preservation/text checks and changed-page visual inspection pass; prior17page build preserved separately. This is editorial progress,not new scientific evidence or human review.
+Continue immutable954b8934a queue atPID320490/start1232308927; verify process identity before monitoring,no restart. Final secondary tables/audit remain pending; noS2b/new direction.
+
 ## S2a primary findings integrated in empirical manuscript, 2026-11-01
 
 Real increment:0 added model/solver calls for this analysis; live queue has20primary+914incomplete+0complete settled;24/24training retained; [record](architecture_s2a_records_20261031.json).

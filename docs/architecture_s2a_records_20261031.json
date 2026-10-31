@@ -885,5 +885,28 @@
       "queue_complete": false
     },
     "next": "Finish fixed secondary queue and final audit; update remaining tables/manuscript. No S2b, new mechanism, retuning or added samples."
+  },
+  "manuscript_reorganization": {
+    "date": "2026-11-01",
+    "model_or_solver_calls": 0,
+    "changes": [
+      "moved unchanged S1 training/PGD/storage/audit detail to appendix",
+      "corrected stale appendix assertion that S2 remains unexecuted",
+      "linked separate PI-authorized S2a and primary STOP"
+    ],
+    "checks": [
+      "moved source block byte-identical after heading",
+      "two successful LaTeX passes",
+      "no undefined references or overfull boxes",
+      "primary table values retained in extracted PDF text",
+      "changed body and appendix pages visually inspected"
+    ],
+    "pdf": {
+      "path": "/data1/Kane/MOE/results/architecture_s2a_manuscript_20261101_r2/architecture_main.pdf",
+      "sha256": "a37244ce517909753fd3d7a53b4ad31c6800a747ac56e8d7edf57c5b9970eafe",
+      "bytes": 318672,
+      "pages": 18
+    },
+    "scope": "editorial integration of existing evidence only; fixed secondary evaluation and final audit pending"
   }
 }

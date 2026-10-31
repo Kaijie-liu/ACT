@@ -325,53 +325,13 @@ screen on time; such a pass authorizes S2 but does not establish C2. All states,
 missing costs and shared-clean-correct explanatory strata are reported.
 Neither L2 nor 8/255 rescues a failed primary comparison.
 
-\subsection{S1: completed training and attack audit}
-All six dense controls completed their 50 frozen epochs. Validation-selected
-test accuracies for seeds 0, 1, and 2 are respectively
-$52.66\%,53.29\%,53.73\%$ for total matching and
-$52.78\%,53.57\%,53.47\%$ for active matching. These are full-test clean
-accuracies, not certification rates; all checkpoints remain in the comparison.
-Training took 7998.453 seconds with one CPU worker. We do not compare that
-training time to the earlier MoE runs, which used a different thread count.
-
-The public attack queue settled all 2400 ten-input batches. Of these, 2392
-were accepted; eight original storage-limit-period errors remain errors.
-The complete domain denominator is 24000, including 80 domains without an
-accepted batch result. Their partial saved records are not promoted offline.
-The storage-only continuation increased the aggregate artifact cap from
-128 to 512 MiB and retained all previous charges; neither the attack nor the
-verifier configuration, input set, or request deadline changed.
-
-\begin{center}
-\begin{tabular}{lrrrr}
-\toprule
-Group&Clean correct&CE at $2/255$&Missing at $2/255$&CE at $8/255$\\
-\midrule
-L1E8&1492&2161&20&2921\\
-L2E8&1386&2272&20&2953\\
-Dense total&1632&2099&20&2944\\
-Dense active&1637&2174&20&2972\\
-\bottomrule
-\end{tabular}
-\end{center}
-Every cell has denominator 3000: 1000 shared inputs and three fixed seeds,
-not 3000 independent images. CE denotes an online full-model-replayed
-counterexample record, including a clean misclassification. Clean counts use
-the complete $8/255$ records; there are no missing domains or attack timeouts
-at that radius. At $2/255$, the remaining $3000-\mathrm{CE}-20$ cases completed
-the fixed search without a witness. The record audit checks bindings and online
-acceptance, rather than rerunning every attack. Its summed request cost is
-21107.093 seconds, not parallel wall time.
-
-At $8/255$, only $0.93\%$--$2.63\%$ of these ordinarily trained model--input
-pairs lack a replayed counterexample. This describes the difficulty of the
-larger-radius task, not certified accuracy or an architecture advantage.
-No-witness results remain unproved. All verification requests have now settled.
-The final frozen-source record audit passed in 51.809 seconds (54.298 seconds
-including process setup and publication), without new model or solver queries.
-It retains all eight earlier PGD errors and reports zero new errors, unexecuted
-verification requests, or missing request costs. Sources and audit identities
-are recorded in \path{docs/architecture_s1_result_20261031.json}.
+\paragraph{Completion and empirical robustness.}
+All six dense controls completed the fixed training schedule and all 4,800
+complete and 24,000 incomplete verification calls settled. At $8/255$, public
+PGD leaves only $0.93\%$--$2.63\%$ of model--input pairs without a replayed
+counterexample. This is an empirical attack result, not a certification rate.
+Appendix~\ref{app:s1protocol} gives full-test training accuracies, attack counts,
+the eight retained auxiliary errors and the complete execution-cost record.
 
 \subsection{S1 complete results: the registered screen stops}
 Table~\ref{tab:s1primary} reports the primary endpoint. Neither capacity match
@@ -478,6 +438,7 @@ and source hashes are archived. Route counts are conservative numerical
 candidate upper counts, not exact legal-history counts or route-flip witnesses.
 
 \subsection{S2a: certification training on the full test set}
+\label{sec:s2primary}
 S1 stops under its registered rule. Evaluating ordinary-trained networks using
 CROWN-IBP does not test certification training or the C3 tradeoff claim.
 The PI subsequently authorized a separate S2a study to test C3 directly;
