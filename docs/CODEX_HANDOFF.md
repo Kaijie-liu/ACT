@@ -1,5 +1,13 @@
 # MoE project handoff — current entry point
 
+## S2a selected-configuration followups progressing, 2026-10-31
+
+Real increment:+2 completed/reviewed D-act followups;10/24complete,14started,4active,0trained verification calls; [record](architecture_s2a_records_20261031.json).
+New seed1/2 records pass100-epoch,validation-only selection,source/split/configuration,finite CPU weights and exit/cost checks in1.276s. No extra training,forward,test or solver call.
+OriginalPID327708/start1227134153 and immutable8b59db610 continue unchanged; remaining workers are D-tot/M/M-reg seed1 and D-tot seed2. No errors observed.
+The four selected configurations remain frozen. Validation counts neither establish C3 nor trigger S2b; S1 STOP remains unchanged.
+After all24 completions bind20selected weights/materialized inputs,freeze and freshly admit the existing full evaluation queue;40h estimate does not truncate it,300s/request unchanged.
+
 ## S2a tuning complete; frozen sixteen-run continuation started, 2026-10-31
 
 Real increment:+2 completed M-reg runs;all8 tuning runs complete,8/24overall,12started,4active,810saved epochs,0trained verification calls; [record](architecture_s2a_records_20261031.json).
