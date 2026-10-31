@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## S2a final-weight evaluation frozen, 2026-11-01
+
+Real increment:0new inference calls;24/24training retained,20selected weights and fixed physical test inputs now bound; [record](architecture_s2a_records_20261031.json).
+Manifest05bdf6e476e578137a2d72498f84b79e9355fc0ecdd1e2b368e2f90fdf295ab8 freezes20primary(all10000),20000CROWN-IBP and4000complete requests at2/255,including clean errors.
+Both families use the same R7 engine/configuration;primary float32 and secondary float64 lift the same represented input box. Bootstrap,gates,cyclic request order and optional width capture remain unchanged.
+Preparation6.672s;shared evidence account28,701,221/134,217,728bytes. Eight single-thread CPU workers,8GiB AS each,300s/request;full fixed queue is not truncated at40h.
+Binding review PASS;no test inference yet. Next create immutable execution copy from this committed freeze,perform fresh admission,and run the existing supervisor;no new experiment or queue expansion.
+C3_PENDING and S1 STOP retained. All positives remain numerical-policy results;no source-complete proof or S2b entry is implied.
+
 ## S2a fixed training stage complete, 2026-11-01
 
 Real increment:+3 completed/reviewed seed4 runs;24/24training,2400epochs,20selected models,0trained verification calls; [record](architecture_s2a_records_20261031.json).

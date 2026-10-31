@@ -43,7 +43,7 @@
   "old_decision": "STOP_S1_RETURN_TO_REDUCTION_PAPER",
   "literature": "bounded primary-source search; no equivalent full design found; not novelty proof",
   "scientific_status": "C3_PENDING",
-  "next": "Bind20 selected weights and materialized fixed test inputs, freeze/admit/evaluate the existing full queue; no40h truncation, no S2b before registered decision.",
+  "next": "Create immutable evaluation copy from committed freeze, freshly admit eight single-thread workers and execute20primary+20000incomplete+4000complete requests under the registered limits.",
   "real_training_runs_started": 24,
   "real_training_runs_completed": 24,
   "launch": {
@@ -551,5 +551,36 @@
     "audit_seconds": 1.375636525452137,
     "new_forward_or_solver_calls": 0,
     "test_evaluated": false
+  },
+  "evaluation_freeze": {
+    "status": "FROZEN_NOT_STARTED",
+    "root": "/data1/Kane/MOE/results/architecture_s2a_evaluation_20261101_r1",
+    "manifest": {
+      "path": "/data1/Kane/MOE/results/architecture_s2a_evaluation_20261101_r1/manifest.json",
+      "sha256": "05bdf6e476e578137a2d72498f84b79e9355fc0ecdd1e2b368e2f90fdf295ab8",
+      "bytes": 171435
+    },
+    "input": {
+      "path": "/data1/Kane/MOE/results/architecture_s2a_evaluation_20261101_r1/inputs.json.gz",
+      "sha256": "f393cb5458de5ad4ca8aad9eb44ac9d798ccdc2fa22f482c1b31d348d535463c",
+      "bytes": 28525690,
+      "indices": "0..9999"
+    },
+    "source_base": "71cadd935",
+    "models": 20,
+    "primary_calls": 20,
+    "incomplete_calls": 20000,
+    "complete_calls": 4000,
+    "workers": 8,
+    "worker_threads": 1,
+    "request_seconds": 300,
+    "as_bytes": 8589934592,
+    "artifact_bytes": 134217728,
+    "backend_sources_sha256": "40246f43aa290511811410e962b2db9e24f0467c76a2aa900aeb5f7685a6209a",
+    "request_catalog_sha256": "b990dc7b70caff129ee443fc3b656ec8828d98ccba08f09c2fee62347c1150a2",
+    "preparation_seconds": 6.6717088129371405,
+    "pre_run_binding_check": "PASS: twenty selected weights, physical inputs, sources and unchanged protocol",
+    "time_amendment": "user20261031: finish fixed queue; 40h not truncation; summed and wall reported",
+    "evidence_grade": "NUMERICAL_POLICY; no source-complete or native floating-point proof"
   }
 }
