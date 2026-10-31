@@ -163,6 +163,108 @@ The sum describes work in one request. Parallel throughput across requests
 must not be substituted for per-request cost. Our loader reads complete model
 weights; that cost is charged even for weights absent from a specialized graph.
 
+\section{Route-envelope IBP for certification training}
+\label{sec:routeibp}
+The S2a follow-up uses the complete-output semantics above to construct a
+training bound for a single output MoE layer. It encloses every compatible
+pair, including alternatives to the clean route. This section specifies the
+implemented method; its experimental advantage remains to be tested.
+The following statements concern real arithmetic and valid constituent
+intervals. The implementation uses the numerical policy described in
+Section~\ref{sec:numericalscope}.
+
+\paragraph{Router cover and gate ranges.}
+Let $X$ be the input box, and suppose IBP gives
+$r_i(X)\subseteq[\ell_i,u_i]$. For a canonical pair $a<b$, retain
+\[
+ \mathcal C(X)=\bigl\{\{a,b\}:\quad
+    u_a\geq\ell_c\ \text{and}\ u_b\geq\ell_c
+    \text{ for every }c\notin\{a,b\}\bigr\}.
+\]
+For each retained pair, enclose the weight of its first expert by
+\[
+ [L_{ab},U_{ab}]=
+ [\sigma(\ell_a-u_b),\sigma(u_a-\ell_b)].
+\]
+\begin{lemma}[Interval-compatible route cover]
+Every tie-legal top-2 pair at every $x\in X$ belongs to $\mathcal C(X)$,
+and its selected-softmax weight lies in $[L_{ab},U_{ab}]$.
+\end{lemma}
+\begin{proof}
+Legality requires $r_a(x),r_b(x)\geq r_c(x)$ for every unselected $c$.
+Consequently both selected upper bounds are at least $\ell_c$; a pair
+failing the test cannot be legal. The margin lies between
+$\ell_a-u_b$ and $u_a-\ell_b$; apply monotonicity of $\sigma$.
+Equality is retained throughout.
+\end{proof}
+The test is exact for independent logit intervals: a retained pair is legal
+at the score assignment $r_a=u_a,r_b=u_b,r_c=\ell_c$ for unselected $c$.
+That assignment need not be attainable by the router on a common input, so
+this is a cover rather than an exact reachability census.
+
+\paragraph{Project before taking the expert envelope.}
+For a property $q^\top F+c$, fold $q$ and $c$ into each expert's last affine
+layer before interval propagation through that layer. Let the resulting valid
+interval be $q^\top E_i(X)+c\subseteq[A_i,B_i]$. This retains cancellation
+between output coordinates in the final affine expression; it does not
+preserve all shared-input relations between experts. Define
+\begin{align*}
+ \underline p(X)&=\min_{\{a,b\}\in\mathcal C(X)}
+       \min_{t\in\{L_{ab},U_{ab}\}}
+       \bigl[tA_a+(1-t)A_b\bigr],\\
+ \overline p(X)&=\max_{\{a,b\}\in\mathcal C(X)}
+       \max_{t\in\{L_{ab},U_{ab}\}}
+       \bigl[tB_a+(1-t)B_b\bigr].
+\end{align*}
+\begin{proposition}[Complete-output interval enclosure]
+For every input in $X$ and every tie-legal selection,
+$q^\top F(x)+c\in[\underline p(X),\overline p(X)]$.
+\end{proposition}
+\begin{proof}
+The legal pair and its actual weight occur in the cover and gate range.
+For any such weight $t\in[0,1]$, nonnegative mixing bounds the property
+between $tA_a+(1-t)A_b$ and $tB_a+(1-t)B_b$; the constant is included once
+because the weights sum to one. Each expression is affine in $t$, so its
+extremum over the interval occurs at an endpoint. Taking the outer envelope
+over all retained pairs completes the argument.
+\end{proof}
+Endpoint minimization is exact for this independent interval relaxation,
+not for the original joint router--expert graph. This rule reuses the
+last-gate principle; it is not a new abstract domain. A singleton expert set
+has the explicit top-1, weight-one degeneration to dense IBP, rather than
+an invalid top-2 selection from one expert.
+
+\paragraph{Training objective and stability diagnostic.}
+For label $y$, apply the bound to all $K-1$ rows $q_j=e_y-e_j$, $c_j=0$,
+obtaining $\underline p_j(X)$. The robust training term is
+\[
+ \mathcal L_{\rm rob}(X,y)=
+ \log\left(1+\sum_{j\ne y}\exp(-\underline p_j(X))\right).
+\]
+Every actual class margin is at least its lower bound, so monotonicity of
+log-sum-exp makes this an upper bound on cross-entropy over all legal
+executions, subject to the interval-validity assumptions. Training and primary
+evaluation call the same bound function.
+For the clean selected pair $S_0=\{a,b\}$, the exclusion penalty is
+\[
+ \mathcal L_{\rm route}(X,S_0)=
+ \sum_{c\notin S_0}
+ [\tau-(\min(\ell_a,\ell_b)-u_c)]_+,\qquad\tau=0.
+\]
+Writing bars for batch means, the MoE loss is
+$\kappa\overline{\mathcal L}_{\rm CE}+(1-\kappa)\overline{\mathcal L}_{\rm rob}
++\lambda_m\overline{\mathcal L}_{\rm route}+0.1\mathcal L_{\rm balance}$;
+the dense loss omits both routing terms. During natural warmup, $\kappa=1$
+and the robust and exclusion terms are inactive. The balance term is retained
+from the original MoE recipe, including during warmup, so the comparison
+discloses this architecture-specific loss difference.
+Zero exclusion penalty at $\tau=0$ permits ties and does not prove a unique
+route. Instead, the reported sufficient single-route diagnostic is
+$|\mathcal C(X)|=1$. A unique pair still allows input-dependent gate weights.
+Large candidate covers and loose expert intervals can make the training
+bound ineffective; neither the penalty nor this enclosure theorem guarantees
+the accuracy or cost advantage in C3.
+
 \section{Experiments}
 \subsection{S1: frozen architecture screen}
 CIFAR-10 uses a shared seed-0 45k/5k training/validation split, ToTensor only,
@@ -379,7 +481,23 @@ ablation, and two capacity-matched dense IBP baselines across five seeds.
 All 10,000 test inputs form its primary IBP endpoint; complete verification is
 secondary and uses a common engine version and branching configuration.
 It resamples paired seeds and inputs, while keeping validation-selected
-configurations fixed. Training is underway; no S2a test result or gate decision
+configurations fixed. The bound and loss are given in
+Section~\ref{sec:routeibp}. Training uses five natural warmup epochs, a
+40-epoch linear ramp to $\epsilon=2/255$ and $\kappa=0.5$, then 55 epochs
+at those endpoints. All arms use the same split, batch size and AdamW weight
+decay as S1, with constant learning rate. Each arm has two seed-0 configurations:
+learning rate $\{10^{-3},5\cdot10^{-4}\}$ for both dense arms and the
+unregularized MoE; $\lambda_m\in\{0.1,1\}$ at learning rate $10^{-3}$
+for the regularized MoE. Validation IBP accuracy selects the configuration and
+checkpoint, with clean accuracy and fixed tie-breaks; the selected seed-0
+model is reused and its configuration trains seeds 1--4. This gives 24 runs
+and 20 evaluation models without test-driven selection.
+The registered gate requires MoE minus active-matched dense IBP accuracy of
+at least two percentage points with a strictly positive 95\% lower limit,
+a nonnegative point difference against total matching, and a single-route
+fraction of at least 90\%. All three must hold on the full 10,000-input
+denominator; neither clean-correct filtering nor a secondary verifier result
+rescues a failed gate. Training is underway; no S2a test result or gate decision
 is reported here. No extra S1 samples, radius changes, or verifier mechanisms
 were added to change the original decision.
 
@@ -396,6 +514,7 @@ Appendix~\ref{app:empirical} incorporates the archived model and outcome tables,
 their selection boundaries, and the stopped mechanisms; these are not new runs.
 
 \section{Related work and limits}
+\label{sec:numericalscope}
 Sparse-MoE robustness and dense compute comparisons precede this study~\cite{robmoe}.
 MetaMoE uses class-separated hard top-1 compositional verification~\cite{metamoe}.
 Dual randomized smoothing certifies a different, statistical $L_2$ function

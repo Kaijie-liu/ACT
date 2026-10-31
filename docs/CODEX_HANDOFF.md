@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## S2a mathematical method incorporated in working manuscript, 2026-10-31
+
+Real increment:0new training/evaluation calls;original queue13/24complete,4active,no observed error; [record](architecture_s2a_records_20261031.json).
+[Manuscript](../paper/architecture_main.tex) now derives the tie-inclusive route cover,canonical gate interval,projected endpoint envelope and robust CE loss; source-validity and floating-policy limits remain explicit.
+It distinguishes box compatibility from reachability,independent interval exactness from original graph exactness,and zero tau0 penalty from a unique pair; no new-domain or performance claim.
+Frozen warmup/ramp,MoE balance term,two-configuration validation selection and all three S2a gates are stated. Running8b59db610 arithmetic/training files are unchanged.
+Two TeX passes and visual review of pages4-5 pass;15-page generic working draft,not final venue compliance or independent human review. S1 STOP and C3_PENDING remain.
+Continue originalPID327708/start1227134153;after24completions bind20weights and execute fixed evaluation under existing budget/acceptance rules. No extra study or configuration.
+
 ## S2a all selected seed1 models reviewed; original queue continues, 2026-10-31
 
 Real increment:+3 completed/reviewed D-tot/M/M-reg seed1 runs;13/24complete,17started,4active,0trained verification calls; [record](architecture_s2a_records_20261031.json).
