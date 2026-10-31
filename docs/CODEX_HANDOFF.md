@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## S2a fifteen training completions reviewed, 2026-11-01
+
+Real increment:+2 completed/reviewed D-act seed3 and D-tot seed2 runs;15/24complete,19started,4active,0trained verification calls; [record](architecture_s2a_records_20261031.json).
+New100-epoch/checkpoint,validation-only selection,configuration/source,finite CPU weights and exit/cost checks PASS in1.390s; no additional forward/test/solver call.
+OriginalPID327708/start1227134153 and immutable8b59db610 continue;active D-tot seed3,M seed2/3,M-reg seed2. No errors,restarts,extra attempts or changed tuning choices observed.
+Resource check found20CPUs,load9.5,98GiB available memory and248GiB available disk;no intervention in other jobs or resource-policy change.
+Continue original24-run queue;after all completions bind20weights/materialized inputs,freeze/admit the fixed evaluation. No40h truncation;300s/request and128MiB evidence cap unchanged.
+S1 STOP preserved;validation records and manuscript method proofs do not establish C3. No S2a test result or S2b entry yet.
+
 ## S2a mathematical method incorporated in working manuscript, 2026-10-31
 
 Real increment:0new training/evaluation calls;original queue13/24complete,4active,no observed error; [record](architecture_s2a_records_20261031.json).
