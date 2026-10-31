@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## S2a CPU training running from frozen source, 2026-10-31
+
+Real increment: 4/24 training runs started,0 completed;11 epoch records checked;0 trained verification calls,no error records at review.
+[Launch/prefix record](architecture_s2a_records_20261031.json) binds detached PID327708/start1227134153,source8b59db610,execution/results `architecture_s2a_training_20261031_r1`.
+Fresh admission:20CPUs/load11.95,100.9GiB available memory,275.1GiB disk;4single-thread workers,nice10,8GiBAS,noGPU. No other task touched.
+[Freeze](architecture_s2a_training_freeze_20261031.json):8seed0 configs then16 additional seed runs;selectedseed0 reused;validation-only selection,100epochs,no test evaluation.
+Pure-record prefix audit checks every frozen source,common45k/5k split and current epoch denominators;no repeated training/model queries or scientific gate claim.
+Continue same queue,do not launch duplicate training. Evaluation40h wall/summed answer remains pending;it does not block training or integration.
+S1 STOP unchanged;S2a/C3 pending. After training bind20selected weights and freeze same-engine secondary evaluation;human review stays PI-managed after S2a稿.
+
 ## S2 direct test: method and 24-run training frozen, 2026-10-31
 
 Real increment: 0 real training/verification calls; 16 synthetic controls PASS in3.326s including full architecture shapes; goal newly registered active.

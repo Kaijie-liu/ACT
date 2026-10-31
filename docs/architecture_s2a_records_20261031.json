@@ -1,6 +1,5 @@
 {
-  "stage": "S2a_PRETRAINING",
-  "real_training_runs": 0,
+  "stage": "S2a_TRAINING_RUNNING",
   "real_verification_calls": 0,
   "internal_review": {
     "path": "/data1/Kane/MOE/survey/drafts/act_icml_review_20261031.md",
@@ -44,5 +43,61 @@
   "old_decision": "STOP_S1_RETURN_TO_REDUCTION_PAPER",
   "literature": "bounded primary-source search; no equivalent full design found; not novelty proof",
   "scientific_status": "C3_PENDING",
-  "next": "commit/push immutable copy, fresh admission, CPU training"
+  "next": "monitor same detached queue; prepare evaluation with 40h scope clarification before launch",
+  "real_training_runs_started": 4,
+  "real_training_runs_completed": 0,
+  "launch": {
+    "path": "/data1/Kane/MOE/results/architecture_s2a_20261031_r1/launch.json",
+    "sha256": "2d14cfe6132fc6916271bb38350404e25e2a9269da98941098430730b8ed815a",
+    "cpus": 20,
+    "load": [
+      11.9462890625,
+      18.7822265625,
+      30.59912109375
+    ],
+    "memory_available_bytes": 108313116672,
+    "disk_free_bytes": 295429316608,
+    "workers": 4,
+    "worker_threads": 1,
+    "device": "cpu",
+    "nice": 10,
+    "clock": 1793423014.894193,
+    "status": "LAUNCHED",
+    "pid": 327708,
+    "command": [
+      "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+      "/data1/Kane/MOE/executions/architecture_s2a_training_20261031_r1/scripts/architecture_s2_train.py",
+      "--manifest",
+      "/data1/Kane/MOE/executions/architecture_s2a_training_20261031_r1/docs/architecture_s2a_training_freeze_20261031.json",
+      "--folder",
+      "/data1/Kane/MOE/results/architecture_s2a_training_20261031_r1",
+      "--workers",
+      "4"
+    ],
+    "start_ticks": "1227134153"
+  },
+  "prefix_audit": {
+    "path": "/data1/Kane/MOE/results/architecture_s2a_20261031_r1/training_prefix_audit.json",
+    "sha256": "c5d68b2d6d1d5b453beea3420dd3daf6af7aa327f3ef45f69899808c730f159a",
+    "status": "PASS_PREFIX_RECORD_AUDIT",
+    "pid": 327708,
+    "start_ticks": "1227134153",
+    "live": true,
+    "execution_commit": "8b59db610e32dbcd3c3918cedfcb23b28c9fa949",
+    "training_started": 4,
+    "training_complete": 0,
+    "completed_epochs": 11,
+    "trained_verification_calls": 0,
+    "error_records": 0,
+    "seconds": 0.004439365118741989,
+    "clock": 1793423094.752906,
+    "scope": "source/split/roster/count/cost identities; no model reevaluation; not C3 or proof",
+    "artifact_account": {
+      "accounting": "stored bytes plus outstanding reservations; account/lock reserve4096",
+      "cap": 134217728,
+      "initial_bytes": 294795,
+      "terminal_reserve": 524288,
+      "used": 305902
+    }
+  }
 }
