@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## S2a first two training completions reviewed; queue continues, 2026-10-31
+
+Real increment:+2 completed training runs;6/24 started,2 complete,4 active,280 saved epochs;0 trained verification calls,no errors observed.
+[Record](architecture_s2a_records_20261031.json) binds both D-act seed0 configurations,100 epochs each,validation-only best checkpoint,finite weights and original8b59db610/source/split identities.
+Review adds no forward/test/solver calls; validation results do not establish C3 or a test-set advantage. Twenty final selected weights remain pending.
+Same detachedPID327708/start1227134153 automatically started both MoE tuning configurations; do not restart or duplicate this queue.
+Training/evaluation recipe,300s per verification request and fixed4000complete queue unchanged; old40h estimate is not a truncation limit under user's time clarification.
+Next finish original24 runs,bind20 weights/materialized inputs,freeze evaluation with fresh resource admission; existing final auditor is ready. S1 STOP unchanged,S2b/C3 pending.
+
 ## S2a full-result analysis ready; same training continues, 2026-10-31
 
 Real increment:+54 saved epochs since prior archive (164total);4/24training runs active,0complete,0trained verification calls,no errors observed.

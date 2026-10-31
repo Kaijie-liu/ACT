@@ -44,8 +44,8 @@
   "literature": "bounded primary-source search; no equivalent full design found; not novelty proof",
   "scientific_status": "C3_PENDING",
   "next": "continue original live training; after24 completions bind20 selected weights/materialized inputs, freeze evaluation then fresh resource admission and same-engine queue; final record audit runs automatically",
-  "real_training_runs_started": 4,
-  "real_training_runs_completed": 0,
+  "real_training_runs_started": 6,
+  "real_training_runs_completed": 2,
   "launch": {
     "path": "/data1/Kane/MOE/results/architecture_s2a_20261031_r1/launch.json",
     "sha256": "2d14cfe6132fc6916271bb38350404e25e2a9269da98941098430730b8ed815a",
@@ -101,7 +101,7 @@
     }
   },
   "time_clarification": {
-    "user_quote": "\u6211\u4eec\u4e0d\u6015\u65f6\u95f4\u957f\uff0c\u8981\u505a\u6700\u5b8c\u5584\uff01",
+    "user_quote": "我们不怕时间长，要做最完善！",
     "interpretation": "finish fixed <=4000 complete calls without 40h truncation; 300s per request and <=8 workers unchanged; report wall and summed cost",
     "date": "2026-10-31"
   },
@@ -167,23 +167,18 @@
     "final_weight_input_freeze": "PENDING_TRAINING_COMPLETION"
   },
   "latest_training_observation": {
-    "status": "PASS_PREFIX_RECORD_AUDIT",
+    "status": "COMPLETED_TRAINING_PREFIX_REVIEWED",
     "pid": 327708,
     "start_ticks": "1227134153",
     "live": true,
     "execution_commit": "8b59db610e32dbcd3c3918cedfcb23b28c9fa949",
-    "training_started": 4,
-    "training_complete": 0,
-    "completed_epochs": 164,
+    "training_started": 6,
+    "training_complete": 2,
+    "completed_epochs": 280,
     "error_records": [],
-    "clock": 1793425319.044652,
+    "clock": 1793426808.4318073,
     "trained_verification_calls": 0,
-    "scope": "frozen source and epoch/count binding; no model reevaluation",
-    "load": [
-      14.568359375,
-      15.23974609375,
-      16.82421875
-    ]
+    "scope": "validation-only checkpoint and source/weight/100-epoch consistency; not test or C3 evidence"
   },
   "secondary_analysis_controls": {
     "files": [
@@ -228,5 +223,26 @@
     "real_model_calls": 0,
     "new_test_data_access": false,
     "scope": "crossed rate/cost statistics, common terminal and frozen full-denominator metadata; not certification evidence"
+  },
+  "completed_training_review": {
+    "files": [
+      {
+        "path": "/data1/Kane/MOE/results/architecture_s2a_20261031_r1/training_completion_prefix_001.json",
+        "sha256": "f934fcc1b0fc05e05fa16b55bc49d112e8c4bab6aa5226ae6e5480b8371e8218",
+        "bytes": 10885
+      },
+      {
+        "path": "/data1/Kane/MOE/results/architecture_s2a_20261031_r1/training_completion_prefix_002.json",
+        "sha256": "e3b1c341d5e6998e22d011495d284de3b8fce58157eb46b24868ba4c2f86e8b3",
+        "bytes": 11116
+      }
+    ],
+    "completed_runs": [
+      "D-act_seed0_config0",
+      "D-act_seed0_config1"
+    ],
+    "scope": "100 epochs, validation-only selection, original source and finite saved weights; no new forward/test/solver calls",
+    "new_forward_or_solver_calls": 0,
+    "test_evaluated": false
   }
 }
