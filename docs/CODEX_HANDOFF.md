@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## S2a layer-width measurement ready; frozen training unchanged, 2026-10-31
+
+Real increment:0new trained verification calls; original queue2/24complete,4active,325saved epochs,no observed error; [record](architecture_s2a_records_20261031.json).
+Primary evaluation now records all-input batch means after every Linear/ReLU, ReLU instability, router and all experts; diagnostic cost is separate and included in total cost.
+4new targeted controls +2native synthetic receiver calls PASS in11.454s; dense/E8 primary arrays and weights bitwise unchanged. No repeated model experiment or new input.
+Training/model_bounds/IBP arithmetic sources match immutable8b59db610; optional capture defaults off, pending evaluation manifest enables it for all arms.300s/128MiB unchanged.
+Final auditor retains count-weighted layer means and costs. These descriptive widths address W3 measurement, not causal attribution or source-complete proof.
+Continue samePID327708/start1227134153; after24training runs bind20weights/materialized inputs and freeze evaluation. No tuning change, queue restart, S2b or C3 claim.
+
 ## S1 clean decomposition figure ready; S2a still training, 2026-10-31
 
 Real increment:0 new experiment calls; same queue remains2/24 complete and4active, no observed error. Training progress is bound in the [record](architecture_s2a_records_20261031.json).

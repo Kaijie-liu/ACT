@@ -15,7 +15,7 @@ from scoped_proof.io import load,sha
 from architecture_s1_execution import Artifacts,read_record,require,digest
 from architecture_s1_audit import audit_request
 from architecture_s2_study import all_requests,ARMS
-from act.pipeline.moe.architecture_s2_evaluation import unpack_arrays,check_inputs,check_primary_arrays
+from act.pipeline.moe.architecture_s2_evaluation import unpack_arrays,check_inputs,check_primary_arrays,summarize_layer_diagnostics
 from act.pipeline.moe.architecture_s2_statistics import primary_summary,verification_summary
 from act.pipeline.moe.architecture_statistics import model_summary
 
@@ -63,6 +63,9 @@ def check_primary(root,query,value,model,spec,labels):
                 and b['certified']==int(arrays['certified'][region].sum()),'batch statistics match raw arrays')
     if model['family']=='moe':
         require(value['single_route']==int((arrays['route_count']==1).sum()),'route stability count')
+    if spec.get('layer_diagnostics')=='IBP_LAYER_WIDTHS_V1':
+        require(summarize_layer_diagnostics(batches,family=model['family'])['count']==10000,
+                'all-input layer diagnostics')
     return arrays
 
 
@@ -103,6 +106,9 @@ def analyze(root):
                     mean_margin_width=float((arrays['upper_margin'].astype(np.float64)
                                              -arrays['lower_margin'].astype(np.float64)).mean()),
                     raw_margin_sha256=value['array_sha256'])
+                if spec.get('layer_diagnostics')=='IBP_LAYER_WIDTHS_V1':
+                    primary_details[q['model']]['layer_diagnostics']=summarize_layer_diagnostics(
+                        value['batches'],family=model['family'])
         else:
             if value is not None:check_secondary(value,q,model,spec,int(inputs['labels'][q['index']]))
             row['index']=q['index'];records[(mode,q['model'],q['index'])]=row

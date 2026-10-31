@@ -294,3 +294,30 @@ Record/statistical controls pass, including an all24,020-unexecuted synthetic
 prefix: it retains20 primary,20,000 incomplete and4,000 complete denominators,
 returns PENDING and produces no zero-runtime or positive substitutions. These
 checks supply evaluation integrity only; actual S2a outcomes remain pending.
+
+## Descriptive layer widths for the existing W3 question (2026-10-31)
+
+Before any S2a test outcome, the primary evaluation now optionally captures
+mean neuron interval width after each Linear and ReLU, plus the fraction of
+unstable preactivations at each ReLU. It measures dense networks, the MoE
+router and **all eight experts** on the same full input boxes; it does not
+condition on a clean route or omit clean mistakes. These are unprojected
+neuron intervals, distinct from the already stored projected output margins.
+
+The diagnostic pass calls the unchanged frozen IBP interval function, separately
+from the unchanged training/primary property-bound path. It adds no training,
+checkpoint selection, test input or verifier request. Its repeated propagation,
+capture, serialization, reception and audit costs remain charged; diagnostic
+seconds are also listed separately inside primary batch costs. Each batch
+stores means and its input count; the final report uses count-weighted means
+across unequal batches, with the same layer identities. It does not report a
+per-input width distribution, a causal effect, or an independently proved bound.
+
+The pending final evaluation manifest enables `IBP_LAYER_WIDTHS_V1` for all
+arms. Default behavior stays off for historical controls. Four ordinary controls
+cover hand-computed widths, bitwise unchanged primary arrays/weights for dense
+and E8, weighted aggregation/cost, and missing/nonfinite diagnostics. Two fixed
+native synthetic primary calls pass through the existing supervisor and
+receiver. Total executed control cost is 11.454s; all training source hashes
+remain equal to the running immutable copy. No trained model or CIFAR input is
+queried. The shared128MiB account and300s request deadline are unchanged.

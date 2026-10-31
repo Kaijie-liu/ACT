@@ -45,7 +45,8 @@ def worker(folder,query,spec,store):
     for start in range(0,count,spec['primary_batch_size']):
         tick(deadline);end=min(count,start+spec['primary_batch_size'])
         arrays,metrics=primary_batch(model,torch.from_numpy(inputs['pixels'][start:end]),
-                                    torch.from_numpy(inputs['labels'][start:end]))
+                                    torch.from_numpy(inputs['labels'][start:end]),
+                                    layer_diagnostics=spec.get('layer_diagnostics')=='IBP_LAYER_WIDTHS_V1')
         chunks.append(arrays);batches.append(dict(start=start,stop=end,**metrics))
         store.write(folder/'progress.json.gz',dict(clock=time.monotonic(),phase='primary_IBP',
             observed=end,expected=count,complete=False),replace=True)
@@ -77,7 +78,7 @@ def worker(folder,query,spec,store):
 def receive(folder,query,spec,value,deadline):
     # Called AFTER existing common source/request/publication/deadline/session checks.
     from architecture_s1_execution import read_record,require
-    from act.pipeline.moe.architecture_s2_evaluation import unpack_arrays,check_primary_arrays
+    from act.pipeline.moe.architecture_s2_evaluation import unpack_arrays,check_primary_arrays,summarize_layer_diagnostics
     require(spec.get('study')=='S2A' and value['result']['status']=='AUXILIARY_COMPLETE',
             'primary measurement, not a request certificate')
     require(value['result']['evaluation']['mode']=='primary' and value['properties']==9,'all primary properties')
@@ -97,6 +98,9 @@ def receive(folder,query,spec,value,deadline):
     intervals=[(b['start'],b['stop']) for b in value['batches']]
     require(intervals==[(s,min(count,s+spec['primary_batch_size'])) for s in range(0,count,spec['primary_batch_size'])],
             'complete ordered primary batches')
+    if spec.get('layer_diagnostics')=='IBP_LAYER_WIDTHS_V1':
+        require(summarize_layer_diagnostics(value['batches'],family=value['family'])['count']==count,
+                'complete diagnostic cohort and cost')
     require(value['bound_source_sha256']==spec['source_files']['act/pipeline/moe/route_envelope_ibp.py'],
             'same training/evaluation bound function')
     tick(deadline)

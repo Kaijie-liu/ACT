@@ -122,6 +122,7 @@ def prepare(root,workers):
             convention='uint8 -> float32 /255, clipped float32 2/255 box; secondary exact float64 lift'),
         backend_sources=external,backend_sources_sha256=digest(external),
         primary_torch_version=str(torch.__version__),primary_batch_size=256,
+        layer_diagnostics='IBP_LAYER_WIDTHS_V1',
         complete_configuration=backend.CONFIG,workers=workers,worker_threads=1,
         request_seconds=300,timing_reserve=[12,10,5],artifact_bytes=128*2**20,as_bytes=8*2**30,
         primary_models=20,incomplete_calls=20000,complete_calls=4000,

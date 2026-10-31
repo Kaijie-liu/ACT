@@ -10,7 +10,93 @@ import base64
 import io
 import numpy as np
 import torch
-from .route_envelope_ibp import model_bounds, margin_rows
+from .route_envelope_ibp import model_bounds, margin_rows, interval
+
+
+@torch.no_grad()
+def layer_width_diagnostics(model, lower, upper):
+    """Descriptive IBP neuron widths, separate from the property-bound path.
+
+    Reuses frozen interval arithmetic without changing it. Every network is
+    evaluated on the SAME full input box, including all eight MoE experts.
+    These unconditioned, unprojected widths cannot identify a causal bottleneck.
+    Only batch means are stored; no extra input or model-selection query.
+    """
+    began = time.monotonic()
+    networks = ([('dense', model)] if isinstance(model, torch.nn.Sequential) else
+                [('router', model.layers[0].router)] +
+                [(f'expert_{i}', e) for i, e in enumerate(model.layers[0].experts)])
+
+    def operations(module, path=''):
+        if isinstance(module, torch.nn.Sequential):
+            for name, child in module.named_children():
+                yield from operations(child, f'{path}.{name}' if path else name)
+        else:
+            yield path, module
+
+    rows = []
+    for role, network in networks:
+        lo, hi = lower, upper
+        for path, module in operations(network):
+            if not isinstance(module, (torch.nn.Linear, torch.nn.ReLU, torch.nn.Flatten)):
+                raise ValueError('unsupported layer-width diagnostic operation')
+            crossing = (((lo < 0) & (hi > 0)).float().mean().item()
+                        if isinstance(module, torch.nn.ReLU) else None)
+            lo, hi = interval(module, lo, hi)
+            if isinstance(module, torch.nn.Flatten):
+                continue
+            if not (torch.isfinite(lo).all() and torch.isfinite(hi).all() and (lo <= hi).all()):
+                raise ValueError('finite ordered diagnostic intervals')
+            rows.append(dict(network=role, layer=path, operator=type(module).__name__,
+                neurons=lo[0].numel(), mean_width=float((hi-lo).double().mean()),
+                relu_unstable_fraction=crossing))
+    return dict(schema='IBP_LAYER_WIDTHS_V1', count=len(lower), rows=rows,
+                seconds=time.monotonic()-began,
+                scope='unprojected neurons; full input box; all experts; descriptive batch means')
+
+
+def check_layer_diagnostics(value, *, family, count, experts=8):
+    if (value['schema'] != 'IBP_LAYER_WIDTHS_V1' or value['count'] != count
+            or not np.isfinite(value['seconds']) or value['seconds'] < 0):
+        raise ValueError('layer diagnostic identity and cost')
+    expected = {'dense'} if family == 'dense' else {'router'} | {f'expert_{i}' for i in range(experts)}
+    if family not in ('dense', 'moe') or {r['network'] for r in value['rows']} != expected:
+        raise ValueError('all registered diagnostic networks')
+    keys = set()
+    for r in value['rows']:
+        key = (r['network'], r['layer'])
+        if (key in keys or r['operator'] not in ('Linear', 'ReLU')
+                or type(r['neurons']) is not int or r['neurons'] < 1
+                or not np.isfinite(r['mean_width']) or r['mean_width'] < 0):
+            raise ValueError('layer diagnostic fields')
+        keys.add(key)
+        f = r['relu_unstable_fraction']
+        if r['operator'] == 'Linear':
+            if f is not None: raise ValueError('linear layer has no ReLU instability')
+        elif f is None or not np.isfinite(f) or not 0 <= f <= 1:
+            raise ValueError('ReLU instability fraction')
+
+
+def summarize_layer_diagnostics(batches, *, family):
+    """Weighted all-input means, with a separate charged diagnostic cost."""
+    first = None; sums = {}; total = 0; seconds = 0.
+    for b in batches:
+        d = b['layer_diagnostics']; n = b['stop']-b['start']
+        check_layer_diagnostics(d, family=family, count=n)
+        keys = [(r['network'], r['layer'], r['operator'], r['neurons']) for r in d['rows']]
+        if first is None: first = keys
+        if first != keys: raise ValueError('same ordered layers in every batch')
+        if d['seconds'] > b['seconds']: raise ValueError('diagnostic cost included in batch cost')
+        total += n; seconds += d['seconds']
+        for key, r in zip(keys, d['rows']):
+            v = sums.setdefault(key, [0., 0.])
+            v[0] += n*r['mean_width']
+            if r['relu_unstable_fraction'] is not None: v[1] += n*r['relu_unstable_fraction']
+    if not total: raise ValueError('nonempty layer diagnostic batches')
+    return dict(count=total, seconds=seconds, rows=[dict(network=k[0], layer=k[1], operator=k[2],
+        neurons=k[3], mean_width=v[0]/total,
+        relu_unstable_fraction=v[1]/total if k[2]=='ReLU' else None) for k,v in sums.items()],
+        scope='descriptive means on identical all-input cohort, not per-input CI or causal attribution')
 
 
 def pack_arrays(arrays):
@@ -68,7 +154,7 @@ def secondary_domain(pixels, label, *, classes=10):
 
 
 @torch.no_grad()
-def primary_batch(model, pixels, labels):
+def primary_batch(model, pixels, labels, *, layer_diagnostics=False):
     """Per-input raw margins, clean state and complete route-candidate counts."""
     began = time.monotonic()
     center, lower, upper = input_batch(pixels)
@@ -98,12 +184,15 @@ def primary_batch(model, pixels, labels):
                       router_upper=envelope.router_upper.cpu().numpy(),
                       pair_mask=np.packbits(envelope.candidates.cpu().numpy(), axis=1,
                                             bitorder='little'))
-    return arrays, dict(seconds=time.monotonic()-began, count=len(pixels),
+    diagnostics = layer_width_diagnostics(model, lower, upper) if layer_diagnostics else None
+    metrics = dict(seconds=time.monotonic()-began, count=len(pixels),
         clean=int(clean.sum()), certified=int(certified.sum()),
         mean_margin_width=float((ub-lb).mean()),
         single_route=int((route_counts == 1).sum()) if envelope is not None else None,
         evidence_grade='IBP_NUMERICAL_POLICY', bound_dtype='float32',
-        time_semantics='batch normalization/forward/bounds/array capture; load/save/check separately charged')
+        time_semantics='batch normalization/forward/bounds/array capture and optional layer diagnostics; load/save/check separately charged')
+    if diagnostics is not None: metrics['layer_diagnostics'] = diagnostics
+    return arrays, metrics
 
 
 def check_primary_arrays(arrays, *, family, count, classes=10, experts=8):
