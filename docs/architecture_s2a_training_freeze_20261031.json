@@ -1,0 +1,230 @@
+{
+  "schema": "architecture-s2a-training-20261031-v1",
+  "decision": "S2_DIRECT_TEST_AFTER_S1_STOP",
+  "source_base": "bb2f23e49c2d21f22f4c623fb529ad53654a446b",
+  "source_files": {
+    "act/pipeline/moe/route_envelope_ibp.py": "f61e0358d09bcf7e7dcfde9e693dcc35081b32eeb99af659259e663d16415696",
+    "act/pipeline/moe/architecture_s2_training.py": "cec19895a1cc309706d38d4c461f7b691e58696b8b66a8c5bc8a7a18de0a2853",
+    "scripts/architecture_s2_train.py": "6264c124c9e55764f0aec577acf3cedcbbae0531f3ecbadb3c9785c5ec23ad4f",
+    "tests/test_route_envelope_ibp.py": "b815897ed882111e785657750c6beb3082b1a389aba493e58fe31e4f37dacd6b",
+    "tests/test_architecture_s2_training.py": "75a26fb6c4e04bb434934c4ab0913d8b5e7e46d0df13d5215e02a2f431137ba4",
+    "act/pipeline/moe/architecture_dense.py": "5c968d0a3be986dcc9be707b91bc595b879fdbeccc15e6f4f8ed123fb1ea1db2",
+    "act/pipeline/moe/multilayer_training.py": "2897f0d6bc0c5ae684b7d61f8a88f17ad58be5e84a36bc4fc74239d18801c27b",
+    "act/pipeline/moe/train.py": "bac0e9a50d98f316d577128909ac5c81bf41454debccbc0be54b14a2b1360dd5",
+    "act/back_end/moe/factory.py": "da472b2bbb3d8f684cb9c9916a735fd7105ceaab925911e1cbc983785a4c7d2d",
+    "act/back_end/moe/multilayer.py": "55cd4b23a574d9dd7775662e6fd19ccc2724b148e73554b18674b69bab31ebbe",
+    "act/back_end/moe/multilayer_external.py": "5dbc3178864dadcb11046244f214be68e8066c235389f43132d2253668288c19",
+    "scripts/multilayer_train.py": "68f2f96141c43343bacd807009d7d7a85435caeca9d759805a0e4a2fffbb49c9",
+    "scripts/architecture_s1_execution.py": "a3c1e91fb8cf9a56c4a355a6babb64318a0695c20736dd771275473af4bd54ed",
+    "scripts/genbab_cpu_ready.py": "f2c533a72225c6862ed37c2c7c6b4f779c2bada3115bd1a1c37ba5440c194d03",
+    "scoped_proof/io.py": "ee080902b729bcc0ce50ead5696538b687302358f143b039a6f9bdee2256569d",
+    "scoped_proof/owned_session.py": "0ffd4c41bfc395a3597f9073d8ffd3ff1bdaf5bf16558f0d756cbe89f5132444"
+  },
+  "dataset_root": "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw",
+  "training_data_files": {
+    "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py/data_batch_1": "54636561a3ce25bd3e19253c6b0d8538147b0ae398331ac4a2d86c6d987368cd",
+    "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py/data_batch_2": "766b2cef9fbc745cf056b3152224f7cf77163b330ea9a15f9392beb8b89bc5a8",
+    "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py/data_batch_3": "0f00d98ebfb30b3ec0ad19f9756dc2630b89003e10525f5e148445e82aa6a1f9",
+    "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py/data_batch_4": "3f7bb240661948b8f4d53e36ec720d8306f5668bd0071dcb4e6c947f78e9682b",
+    "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py/data_batch_5": "d91802434d8376bbaeeadf58a737e3a1b12ac839077e931237e0dcd43adcb154",
+    "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py/batches.meta": "f962466ef690d46b226450fb9aadc74ba4bc64a76aa526b5827fe4bc5c7125cb"
+  },
+  "split_seed": 0,
+  "split_source": "/data1/Kane/MOE/results/architecture_s1_training_20261029_r1/split.json",
+  "split_sha256": "92a4da411c6d6c731da72203665b2533b0fb91b37f7d7f0c82e82d8ace0f1e5d",
+  "arms": [
+    {
+      "id": "D-act",
+      "family": "dense",
+      "architecture": {
+        "widths": [
+          3072,
+          602,
+          301,
+          10
+        ]
+      },
+      "parameter_count": 2034469,
+      "configurations": [
+        {
+          "lr": 0.001,
+          "route_weight": 0
+        },
+        {
+          "lr": 0.0005,
+          "route_weight": 0
+        }
+      ]
+    },
+    {
+      "id": "D-tot",
+      "family": "dense",
+      "architecture": {
+        "widths": [
+          3072,
+          1758,
+          879,
+          10
+        ]
+      },
+      "parameter_count": 6957295,
+      "configurations": [
+        {
+          "lr": 0.001,
+          "route_weight": 0
+        },
+        {
+          "lr": 0.0005,
+          "route_weight": 0
+        }
+      ]
+    },
+    {
+      "id": "M",
+      "family": "moe",
+      "architecture": {
+        "input_dim": 3072,
+        "classes": 10,
+        "hidden_output": 128,
+        "router_hidden": [
+          128
+        ],
+        "expert_hidden": [
+          256,
+          128
+        ],
+        "layers": 1,
+        "experts": 8
+      },
+      "parameter_count": 6961368,
+      "configurations": [
+        {
+          "lr": 0.001,
+          "route_weight": 0.1
+        },
+        {
+          "lr": 0.001,
+          "route_weight": 1.0
+        }
+      ]
+    },
+    {
+      "id": "M-reg",
+      "family": "moe",
+      "architecture": {
+        "input_dim": 3072,
+        "classes": 10,
+        "hidden_output": 128,
+        "router_hidden": [
+          128
+        ],
+        "expert_hidden": [
+          256,
+          128
+        ],
+        "layers": 1,
+        "experts": 8
+      },
+      "parameter_count": 6961368,
+      "configurations": [
+        {
+          "lr": 0.001,
+          "route_weight": 0
+        },
+        {
+          "lr": 0.0005,
+          "route_weight": 0
+        }
+      ]
+    }
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "max_training_runs": 24,
+  "selected_models": 20,
+  "epochs": 100,
+  "batch_size": 256,
+  "warmup_epochs": 5,
+  "ramp_epochs": 40,
+  "epsilon": 0.00784313725490196,
+  "kappa_end": 0.5,
+  "optimizer": "AdamW",
+  "weight_decay": 0.0001,
+  "scheduler": null,
+  "augmentation": null,
+  "preprocess": "ToTensor",
+  "tau": 0,
+  "moe_balance_weight": 0.1,
+  "selection": [
+    "max validation IBP count at final epsilon",
+    "max validation clean count",
+    "earliest epoch; first configuration"
+  ],
+  "reuse_selected_seed0": true,
+  "test_access": false,
+  "device": "cpu",
+  "dtype": "float32",
+  "threads": 1,
+  "max_workers": 8,
+  "address_space_bytes": 8589934592,
+  "artifact_cap_bytes": 134217728,
+  "training_storage_separate": true,
+  "training_storage_projection_bytes": 6442450944,
+  "control_artifact_bytes": 294795,
+  "control_log": "/data1/Kane/MOE/results/architecture_s2a_20261031_r1/integrated_controls.txt",
+  "control_log_sha256": "892ab411e1765cd7eb0d26d0dbfcbbe7fde5b47044fa26606276b31fb125910a",
+  "control_result": {
+    "status": "PASS",
+    "tests": 16,
+    "seconds": 3.3257969468832016,
+    "maxrss_kib": 849452,
+    "as_limit_bytes": 8589934592,
+    "python": "3.12.12 | packaged by conda-forge | (main, Oct 22 2025, 23:25:55) [GCC 14.3.0]",
+    "torch": "2.9.1+cu128",
+    "real_training_calls": 0,
+    "test_data_access": false
+  },
+  "run_root": "/data1/Kane/MOE/results/architecture_s2a_training_20261031_r1",
+  "evaluation": {
+    "primary": {
+      "indices": "0..9999",
+      "epsilon": 0.00784313725490196,
+      "method": "route-envelope IBP / dense projected IBP",
+      "clean_errors_unaccepted": true
+    },
+    "secondary_incomplete": {
+      "indices": "0..999",
+      "method": "CROWN-IBP"
+    },
+    "complete": {
+      "indices": "0..199",
+      "max_calls": 4000,
+      "request_seconds": 300,
+      "max_hours": 40,
+      "hours_basis": "PENDING_USER_REPLY",
+      "common_engine_and_heuristic_required": true
+    },
+    "bootstrap": {
+      "replicates": 10000,
+      "seed": 20261031,
+      "resampling": "paired crossed seed and input blocks"
+    },
+    "gate": {
+      "m_minus_d_act_pp_at_least": 2,
+      "m_minus_d_act_ci_lower_above": 0,
+      "m_minus_d_tot_pp_at_least": 0,
+      "m_single_route_fraction_at_least": 0.9
+    }
+  },
+  "admission": {
+    "max_workers": 8,
+    "nice": 10,
+    "fresh_load_and_memory_check": true,
+    "no_gpu": true
+  }
+}

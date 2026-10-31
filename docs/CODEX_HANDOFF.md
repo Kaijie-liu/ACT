@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## S2 direct test: method and 24-run training frozen, 2026-10-31
+
+Real increment: 0 real training/verification calls; 16 synthetic controls PASS in3.326s including full architecture shapes; goal newly registered active.
+[User amendment/method/literature](architecture_s2a_20261031.md) authorizes C3 directly; S1 STOP and old mechanism stops remain unchanged; Claude review is non-independent AI.
+[Training freeze](architecture_s2a_training_freeze_20261031.json) fixes four arms/five seeds/100epochs/5+40+55 schedule,8 tuning+16 subsequent runs,selected seed0 reused,no test loading.
+[Record](architecture_s2a_records_20261031.json) binds review,controls,freeze; route-envelope/constant/tie/E1/gradients/restore/common bound tests passed under8GiB AS.
+[Runner](../scripts/architecture_s2_train.py) reuses old resource/checkpoint/artifact utilities; no new verifier supervisor,solver or GPU;128MiB evidence and separately listed training storage.
+Next commit/push immutable copy,fresh admission then CPU training; evaluation40h wall/summed question pending,does not block training. Training not yet launched.
+C3 pending; no full-source certificate,trained advantage or first-of-kind claim. Human review stays PI-managed after S2a manuscript.
+
 ## Combined manuscript ready for independent review, 2026-10-31
 
 Real increment: 0 new training/model/solver calls; no S2 or mechanism restart. S1 STOP and all old scientific conclusions unchanged.
