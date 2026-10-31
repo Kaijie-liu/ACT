@@ -1,5 +1,13 @@
 # MoE project handoff — current entry point
 
+## S2a six completed runs reviewed; final two tuning runs active, 2026-10-31
+
+Real increment:+2 completed M tuning runs;6/24complete,8started,2active,669saved epochs,0trained verification calls; [record](architecture_s2a_records_20261031.json).
+Both new100-epoch records,validation-only best-checkpoint choice,finite CPU weights,source/split binding and exit/cost checks PASS in1.384s; no forward/test/solver call.
+SamePID327708/start1227134153 now waits for the two M-reg tuning runs. Two workers is expected: seed1-4 starts automatically only after all8 tuning runs finish; do not restart or duplicate.
+The tuning validation counts do not establish test-set advantage,C3 or its90% test single-route gate. Keep frozen selection,recipe and all24 runs; S1 STOP unchanged.
+After24 completions bind20selected weights/materialized inputs,freeze evaluation and freshly admit the fixed queue. Training source remains immutable8b59db610;300s/request unchanged.
+
 ## S2a four completed training runs reviewed; original queue continues, 2026-10-31
 
 Real increment:+2 completed D-tot tuning runs;4/24complete,8started,4active,547saved epochs,0trained verification calls; [record](architecture_s2a_records_20261031.json).
