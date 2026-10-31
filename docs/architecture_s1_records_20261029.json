@@ -1,6 +1,6 @@
 {
   "schema": "architecture-s1-record-v1",
-  "state": "STORAGE_PREFIX_STOP_PENDING_CAPACITY_DECISION",
+  "state": "STOP_S1_RETURN_TO_REDUCTION_PAPER",
   "recorded_at": 1793285679.5975988,
   "control": {
     "capacities": [
@@ -76,11 +76,11 @@
     "training_seconds_separate": true
   },
   "start_sha256": "6dd26aa34b00f747520ac0c3e069a1cf528831dda1086e09116bbeeb1b82e5bf",
-  "completed_models": 0,
-  "completed_epochs": 3,
-  "verification_calls": 0,
-  "incomplete_bound_items": 0,
-  "scope": "start and preparation checks only; no S1 outcome",
+  "completed_models": 6,
+  "completed_epochs": 300,
+  "verification_calls": 4800,
+  "incomplete_bound_items": 24000,
+  "scope": "Completed frozen numerical-policy S1 with registered STOP; no S2; all historical attempts and guarantee limits retained.",
   "evaluation_adapter_control": {
     "root": "/data1/Kane/MOE/results/architecture_s1_evaluation_control_20261029_r1",
     "complete_sha256": "efe38aabc00c709eaebc8dd075501ca3f0c5bc4e653f0c803e73fc1359fc5a24",
@@ -903,5 +903,74 @@
     "visual_review": "page5 table/labels/denominators legible; no overflow",
     "scope": "working draft, not official ICML template or completed S1",
     "model_calls": 0
+  },
+  "final_recorded_at": 1793415351.798644,
+  "evaluation_final": {
+    "result_path": "docs/architecture_s1_result_20261031.json",
+    "result_sha256": "8dde94094d1fe97068ffa55dd32dd6204a8a9a911e089f292aa77c5f962adec5",
+    "path": "/data1/Kane/MOE/results/architecture_s1_evaluation_20261030_r2/final_audit.json.gz",
+    "sha256": "bbd47d04e65dff1e50230e4010fed61d744d7bfb1ccee57e7004c4e3429c0573",
+    "source_manifest_sha256": "a03d5945744a1c8d6fb3da0f028e896ca6e042457cd116511bfe8b30324f95b1",
+    "auditor_sha256": "1d8d0ea8d824f88de5b1d408c35a5b1d8e71c50022f690f202753cf81e8d3f32",
+    "status": "COMPLETE_AUDIT",
+    "audit_seconds": 51.80948360078037,
+    "whole_process_seconds": 54.29771632142365,
+    "model_or_solver_calls": 0,
+    "complete_requests": 4800,
+    "incomplete_requests": 24000,
+    "public_pgd_batches": 2400,
+    "all_states": {
+      "AUXILIARY_COMPLETE": 2392,
+      "ERROR": 8,
+      "POSITIVE": 389,
+      "TIMEOUT": 1211,
+      "UNKNOWN": 13084,
+      "UNSAFE_REPLAYED": 14116
+    },
+    "decision": "STOP_S1_RETURN_TO_REDUCTION_PAPER",
+    "charged_request_seconds": 808742.3915701713,
+    "queue_wall_seconds": 101137.9688741751,
+    "s2_started": false
+  },
+  "architecture_manuscript_final": {
+    "root": "/data1/Kane/MOE/results/architecture_manuscript_20261031_r2",
+    "complete_sha256": "dcd3bb6767add6e9e060dc5269d9b1c61fd2ec86a7ae26b7b36dafec663140f4",
+    "status": "PASS",
+    "source": "/data1/Kane/MOE/ACT/paper/architecture_main.tex",
+    "source_sha256": "9a8655562726921be6f9672d40774efdfd05e0336d0a883d0af5e0fc309c25b7",
+    "result_sha256": "8dde94094d1fe97068ffa55dd32dd6204a8a9a911e089f292aa77c5f962adec5",
+    "audit_sha256": "bbd47d04e65dff1e50230e4010fed61d744d7bfb1ccee57e7004c4e3429c0573",
+    "pdf_sha256": "fd9b67d9cb1c9b97c4b7994756ba5b3f368137ea4deb9e7a37c95be3d5e6171a",
+    "pages": 7,
+    "seconds": 1.0720173604786396,
+    "model_or_solver_calls": 0,
+    "checks": [
+      "frozen audit identical model and comparison rows",
+      "all16reportstate-costrows",
+      "8papercomplete-state-costrows",
+      "2primarytables",
+      "allstatedprimary/incompletecounts",
+      "twoLaTeXpasses",
+      "nooverfull/undefinedreferences",
+      "text extraction"
+    ],
+    "visual_pages": [
+      5
+    ],
+    "visual_review": "page5: both tables, signs, labels and denominators legible; no clipping or overlap",
+    "previous_build": {
+      "root": "/data1/Kane/MOE/results/architecture_manuscript_20261031_r1",
+      "status": "LAYOUT_CHECK_FAILED",
+      "reason": "two overfull prose boxes; logs/PDF retained; spacing corrected without numerical or method changes"
+    },
+    "deadline_check": {
+      "date": "2026-10-31",
+      "urls": [
+        "https://icml.cc/Conferences/2027",
+        "https://icml.cc/Conferences/2027/Dates"
+      ],
+      "result": "Not verified: direct URLs unavailable to web tool; official search returned2026dates and futuremeetings, not2027submission rules. Do not infer2027deadline from2026."
+    },
+    "scope": "7page generic working manuscript and evidence transcription; not venue format, human technical review, independent model reproof or submission"
   }
 }

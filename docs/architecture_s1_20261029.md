@@ -1,5 +1,10 @@
 # S1: capacity-matched architecture screen (revision 8)
 
+**Current disposition, 2026-10-31:** all planned requests settled; frozen audit
+passed; `STOP_S1_RETURN_TO_REDUCTION_PAPER`. See the [final result below](#final-s1-result-registered-stop-2026-10-31)
+and [machine-readable archive](architecture_s1_result_20261031.json). S2 was not
+started. The following dated design/progress entries remain historical records.
+
 Stage: literature review and **training freeze**, before dense outcomes.
 The [five-work review](architecture_verifiability_literature_20261029.md) found
 close precedents but no identical combined study; no novelty stop was triggered.
@@ -525,3 +530,147 @@ Reproduce this public summary with `scripts/architecture_s1_audit.py ROOT
 MANIFEST OUTPUT --public-only`; its output is charged to the current shared
 account and includes the auditor and input/ledger identities. Full combined
 analysis remains the same CLI without `--public-only`, after queue termination.
+
+
+## Final S1 result: registered stop (2026-10-31)
+
+**Decision: `STOP_S1_RETURN_TO_REDUCTION_PAPER`. No S2 was started.** All
+31,200 planned calls settled:4,800 complete verification requests,24,000
+incomplete CROWN-IBP items, and2,400 public PGD batches. The original eight
+storage-period errors remain in the public PGD denominator; continuation has
+no new errors, no unexecuted requests and no missing request costs. No failed
+request was rerun. The detached controller exited with COMPLETE.
+
+The original frozen combined auditor produced `COMPLETE_AUDIT` in51.809s
+(54.298s including its process setup/publication), with **zero new model or
+solver queries**. It checks source/request/terminal identities, all-route and
+all-property coverage, online timing/acceptance, recorded full-model replay,
+and consistency with accepted public-attack records. It does not independently
+recompute CROWN bounds, input containment, model conversion or witness arithmetic.
+All positive results below are **numerical-policy positives**, not source-complete
+strict certificates. UNKNOWN/timeout/negative relaxations are not UNSAFE.
+
+The compact [derived archive](architecture_s1_result_20261031.json) retains all
+48 model/radius/mode rows, eight paired comparisons, every gained/lost input-seed
+identity and source hashes. Its original audit is
+`results/architecture_s1_evaluation_20261030_r2/final_audit.json.gz`, SHA-256
+`bbd47d04e65dff1e50230e4010fed61d744d7bfb1ccee57e7004c4e3429c0573`.
+Auditor SHA-256 `1d8d0ea8d824f88de5b1d408c35a5b1d8e71c50022f690f202753cf81e8d3f32`;
+continuation manifest SHA-256 `a03d5945744a1c8d6fb3da0f028e896ca6e042457cd116511bfe8b30324f95b1`.
+Numerical source remains d139f9335 and continuation source37479ccf3.
+
+### Primary complete verification, 2/255
+
+Each arm has600 model-input pairs:200 shared inputs and three fixed seeds,
+not600 independent images. Differences are MoE minus dense. Bootstrap resamples
+input blocks, retaining all three seed pairs,10,000 times at frozen seed20261029.
+Intervals are descriptive and were not added as a post-result gate.
+
+| Match | MoE positive | Dense positive | Gain/loss | Intersection | Rate difference, pp [95% interval] | Median seconds, MoE/dense |
+|---|---:|---:|---:|---:|---:|---:|
+| total | 114/600 | 115/600 | 55/56 | 59 | -0.167 [-3.833, 3.500] | 10.847/10.945 |
+| active | 114/600 | 116/600 | 52/54 | 62 | -0.333 [-3.833, 3.167] | 10.847/10.716 |
+
+The original screen requires non-lower positive rate **and** lower all-request
+median cost for at least one match. Neither match passes. Total matching has a
+slightly lower median, but one fewer positive; active matching has two fewer
+positives and a slightly higher median. Both rate intervals include zero, so
+this is a failed prespecified screen, not evidence of universal MoE inferiority.
+The positive counts by seed are L1(46,34,34), total(26,47,42), active(40,35,41).
+The unmatched L2 secondary gives(4,7,6),17/600; it cannot replace either match.
+
+All-request medians include clean-wrong early replay and therefore do not
+measure only proof difficulty. The prespecified shared-clean-correct strata
+have207 pairs for total matching, with medians289.060/242.424s (MoE/dense),
+and217 for active matching, with289.451/84.162s. These explanatory strata do
+not replace the primary denominator or gate. Median-difference intervals on
+all requests are[-1.576,0.428]s and[-2.539,0.499]s respectively.
+
+### Secondary outcomes and their limits
+
+At2/255, incomplete CROWN-IBP produces23/3000 L1 positives versus2/3000 for each
+dense group:22gains,1loss,1intersection. The difference is+0.700 percentage
+points, descriptive95% interval[0.400,1.067]. L1 medians are7.588s versus7.251s
+(total) and7.140s(active), approximately4.64% and6.27% higher. This supports a
+limited incomplete-bound coverage advantage on these models, with a cost
+tradeoff; it does not establish the primary complete-verification hypothesis.
+L2 incomplete positives are0/3000.
+
+At8/255 **every group has zero positives in both evaluation modes**. All-request
+complete medians are11.735s for L1 and289.485/289.375s for total/active dense.
+L1 has312/600 clean-wrong replays (over half), whereas dense has275/272 (under
+half), so the median switches between quick rejection and difficult proof work.
+Among shared-clean-correct pairs, all medians are approximately290s. The raw
+secondary comparison's mechanically computed `ENTER_S2` field reflects its
+zero/zero-rate point rule; it is **not** the overall study decision. The frozen
+primary is2/255 complete verification. Neither8/255 nor the incomplete results
+can rescue it, and the apparent25x median ratio is not a certification speedup.
+
+### All verification states and charged costs
+
+P=POSITIVE, U=UNSAFE_REPLAYED, Q=UNKNOWN, T=TIMEOUT. All16 rows have zero ERROR
+and zero NOT_EXECUTED; the eight historical errors belong to public PGD, not
+these verification rows. Cost includes every request, not just successes.
+
+| Mode | Radius | Group | N | P | U | Q | T | Mean seconds | Summed hours |
+|---|---|---|---:|---:|---:|---:|---:|---:|---:|
+| complete | 2/255 | L1E8 | 600 | 114 | 312 | 28 | 146 | 92.759 | 15.460 |
+| complete | 2/255 | Dense_total | 600 | 115 | 275 | 133 | 77 | 105.015 | 17.502 |
+| complete | 2/255 | Dense_active | 600 | 116 | 272 | 191 | 21 | 87.520 | 14.587 |
+| complete | 2/255 | L2E8 | 600 | 17 | 346 | 3 | 234 | 121.939 | 20.323 |
+| complete | 8/255 | L1E8 | 600 | 0 | 312 | 3 | 285 | 144.455 | 24.076 |
+| complete | 8/255 | Dense_total | 600 | 0 | 275 | 177 | 148 | 161.590 | 26.932 |
+| complete | 8/255 | Dense_active | 600 | 0 | 272 | 282 | 46 | 162.896 | 27.149 |
+| complete | 8/255 | L2E8 | 600 | 0 | 346 | 0 | 254 | 128.579 | 21.430 |
+| incomplete | 2/255 | L1E8 | 3000 | 23 | 1508 | 1469 | 0 | 7.821 | 6.517 |
+| incomplete | 2/255 | Dense_total | 3000 | 2 | 1368 | 1630 | 0 | 7.529 | 6.274 |
+| incomplete | 2/255 | Dense_active | 3000 | 2 | 1363 | 1635 | 0 | 7.433 | 6.194 |
+| incomplete | 2/255 | L2E8 | 3000 | 0 | 1614 | 1386 | 0 | 8.045 | 6.704 |
+| incomplete | 8/255 | L1E8 | 3000 | 0 | 1508 | 1492 | 0 | 7.799 | 6.499 |
+| incomplete | 8/255 | Dense_total | 3000 | 0 | 1368 | 1632 | 0 | 7.480 | 6.233 |
+| incomplete | 8/255 | Dense_active | 3000 | 0 | 1363 | 1637 | 0 | 7.424 | 6.187 |
+| incomplete | 8/255 | L2E8 | 3000 | 0 | 1614 | 1386 | 0 | 8.065 | 6.721 |
+
+Summed complete verification cost167.459h; incomplete51.329h; public PGD5.863h:
+**224.651h** charged requests in total. Parallel queue wall is**28.094h** across
+the two execution segments (0.469h+27.625h), excluding the storage-approval gap.
+It is not224.651h elapsed and is not the cost of training or independent audit.
+Dense training2.222h, final record audit54.298s process cost and earlier controls/
+audits are separately recorded. Eight concurrent single-thread workers explain
+the difference between summed request cost and throughput.
+
+After final-audit publication, the aggregate charged artifact account is
+279,456,276bytes of536,870,912bytes (512MiB), including carried old charges,
+failed reservations and final audit; numerical records were not discarded.
+The reported pre-publication physical size266,020,063bytes is a different
+quantity. Git summaries/manuscript builds are separately recorded reporting
+artifacts, not new numerical executions.
+
+Route statistics in the archive are conservative candidate upper counts from
+recorded numerical exclusions; early clean-error exits can retain the whole
+catalog. They do not count exact legal/reachable histories or prove route flips.
+No new route census or difficult-query rerun was added after seeing results.
+
+### Scientific disposition
+
+S1 does not support proceeding to the registered certification-training S2.
+The paper returns to route-aware reductions and empirical limits, with the
+incomplete-bound gain retained rather than suppressed. Ordinary training,
+finite MLP architectures, approximately matched capacity, the MoE-specific
+balance loss, historically exposed prefixes and three fixed seeds limit the
+claim. A failed screen does not rule out other architectures or certified
+training, but it supplies no authorization to search them for a favorable
+outcome. No extra samples, radius changes, S2 training or old mechanism revival.
+C2/C3, source-complete native-execution proofs, human review and clean empirical
+reproduction remain unestablished.
+
+
+Final reporting checks: all48model rows/eightpaired comparisons match the frozen
+final audit exactly; all16state/cost report rows and both primary paper tables
+were checked against that archive. Two existing LaTeX passes, text extraction
+and page5 visual review pass for the7-page generic manuscript (1.072s build/
+data-check cost;0new model queries). Initial prose overflow logs/PDF are kept
+in `architecture_manuscript_20261031_r1`; spacing-only repair is in `_r2`, bound
+by the existing stage record. No scientific result or acceptance rule changed.
+ICML2027 official deadline/page rules remain unverified after an October31
+check; no2026deadline or generic page count is substituted for them.

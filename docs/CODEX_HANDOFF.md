@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## S1 complete: registered stop; no S2, 2026-10-31
+
+Real increment: all 31,200 records settled: 4,800 complete / 24,000 incomplete / 2,400 public PGD batches; 8 original ERROR retained, no new errors, unexecuted requests or missing costs.
+[Final result](architecture_s1_result_20261031.json) binds the frozen 51.809s record audit: COMPLETE_AUDIT, STOP_S1_RETURN_TO_REDUCTION_PAPER; no numerical query added by audit.
+Primary 2/255 L1 positives 114/600 versus total 115/600 and active 116/600; gain/loss 55/56 and 52/54; both descriptive rate intervals include zero, neither frozen point gate passes.
+Incomplete CROWN-IBP 23/3000 versus 2/3000 each dense has a positive rate difference but higher median cost; all 8/255 positives zero. Neither secondary rescues S1.
+[Full report](architecture_s1_20261029.md#final-s1-result-registered-stop-2026-10-31) retains every state/seed/cost and cheap clean-error timing caveat; 224.651h summed requests versus 28.094h parallel queue wall.
+[Manuscript](../paper/architecture_main.tex) returns to reductions and empirical limits; seven-page build/data/visual checks PASS, bound in existing record; S2 NOT_EXECUTED. Numerical positives are not source-complete proofs or universal inferiority.
+Original continuation controller exited COMPLETE; no experiment remains under this protocol. No S2, new mechanism, extra samples or gate change; report the registered scientific stop.
+
 ## Architecture draft incorporates completed training/PGD evidence 2026-10-30
 
 Real increment:complete verification17/4800 at review (3positive/7replayed/3unknown/4timeout); samePID2157745/start1216372585 live, no newERROR.

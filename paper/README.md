@@ -4,11 +4,19 @@ Revision 8's current architecture-study working draft is
 [When Is a Mixture of Experts Easier to Certify?](architecture_main.tex).
 It contains the complete-history/guard/endpoint reductions, the distinction
 between active parameters and full proof cost, and the frozen S1 comparison.
-It now includes the completed six-model dense training and full public PGD
-record audit, with missing attack domains retained. S1 certification results
-are pending; S2 remains conditional on the registered
-screen. C2/C3 are hypotheses, not reported wins. Its generic layout is not an
-official ICML 2027 template or a completed eight-page submission.
+It includes the completed six-model dense training, public PGD and all S1
+verification results. The [frozen audit and derived tables](../docs/architecture_s1_result_20261031.json)
+give **STOP_S1_RETURN_TO_REDUCTION_PAPER**: at 2/255, L1 MoE 114/600 numerical
+positives versus 115/600 total-match and 116/600 active-match dense. Both rate
+intervals include zero; this failed screen is not proof of universal inferiority.
+CROWN-IBP gives 23/3000 versus 2/3000 each dense, with higher median cost; all
+8/255 positive counts are zero. These secondary results do not change the gate.
+S2 is **not executed**. The manuscript now centers on reductions and empirical
+limits; C2/C3 are not reported wins. Its generic layout is not an official
+ICML 2027 template, a human-reviewed paper, or a completed submission.
+The current seven-page PDF and build/data/visual checks are bound in
+[the S1 record](../docs/architecture_s1_records_20261029.json), under
+`results/architecture_manuscript_20261031_r2` outside Git.
 
 The completed verifier-study entry remains [the technical-review paper](review_main.tex), revised
 2026-10-29: **Verifying Route-Variable Mixture-of-Experts Programs: Obligation

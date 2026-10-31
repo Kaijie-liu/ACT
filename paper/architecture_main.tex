@@ -8,7 +8,7 @@
 \title{When Is a Mixture of Experts Easier to Certify?\\
 Route-Aware Reductions and a Capacity-Matched Study}
 \author{Author details omitted for technical review}
-\date{Working manuscript, 30 October 2026}
+\date{Working manuscript, 31 October 2026}
 \begin{document}
 \maketitle
 \begin{abstract}
@@ -17,15 +17,17 @@ single MoE execution. It need not reduce the cost of certifying every execution
 on a perturbation domain. We formulate an architecture-level comparison that
 separates total capacity, active capacity, complete routing coverage, and
 verification cost. A route-aware reduction exposes all legal selected-softmax
-top-2 histories to a general nonlinear verifier. We use this reduction to
-design a paired comparison of ordinary MoE and dense training, followed,
-conditionally, by a study of routing-aware certification training.
-\textbf{Results status:} the new capacity-matched study is in progress. This
-draft contains the reductions and frozen experimental design, not evidence
-that MoE architectures dominate dense networks. Earlier verifier experiments
-are retained as motivation and limitations, not repurposed as architecture
-comparisons. Numerical backend positives and independently checked source
-proofs remain different evidence levels.
+top-2 histories to a general nonlinear verifier. A frozen study compares
+ordinary-trained MoE with total- and active-parameter-matched dense models,
+using three seeds, 4800 complete verification calls and 24000 incomplete-bound
+evaluations. At $2/255$, the single-layer MoE has 114/600 numerical positives
+against 115/600 and 116/600 for the two dense matches. Neither passes the
+registered architecture screen; both difference intervals include zero.
+CROWN-IBP yields 23/3000 versus 2/3000 positives, but with higher median cost.
+Thus the results support a limited incomplete-bound tradeoff, not general
+architectural dominance. The conditional certification-training study was not
+started. Numerical backend positives and independently checked source proofs
+remain different evidence levels.
 \end{abstract}
 
 \paragraph{Scope of this draft.}
@@ -160,34 +162,6 @@ The sum describes work in one request. Parallel throughput across requests
 must not be substituted for per-request cost. Our loader reads complete model
 weights; that cost is charged even for weights absent from a specialized graph.
 
-\section{Verification-oriented training: conditional next stage}
-This section specifies the candidate objective. It has not been trained in S1
-and is executed only if the frozen architecture screen passes. At a clean-route
-pair $S$, let $\underline r_a,\overline r_c$ be IBP bounds. A routing penalty is
-\[
- \mathcal L_{\rm route}=\sum_{a\in S,c\notin S}
- [\tau-(\underline r_a-\overline r_c)]_+.
-\]
-A strictly positive proved selected-versus-unselected margin gives stability;
-a zero penalty only has that implication when the bound contract and a
-strictly positive $\tau$ support it. Merely minimizing the loss, or observing
-one route on sampled points, does not prove stability.
-
-The training surrogate fixes the clean expert choices and propagates IBP or
-CROWN-IBP~\cite{ibp,crownibp} through the selected computation. Router-margin
-intervals enclose sigmoid weights; interval products enclose the weighted
-expert outputs. If an earlier route can change, the clean-route surrogate
-does not cover the entire network. This approximation is permitted for
-optimization, never as the evaluation certificate. Independent evaluation
-returns to all tie-legal histories and all true-label output properties.
-
-The proposed comparisons separate ordinary training, certification training,
-and the routing penalty. Dense IBP and dense CROWN-IBP are named controls; an
-ordinary network evaluated with CROWN-IBP is not a CROWN-IBP-trained network.
-Schedules, $\tau$, architectures, seeds and evaluation allocation must be
-frozen before new outcomes. The conditional S2 design spans MLP and no-BN
-convolutional-stem families; no S2 result is reported here.
-
 \section{Experiments}
 \subsection{S1: frozen architecture screen}
 CIFAR-10 uses a shared seed-0 45k/5k training/validation split, ToTensor only,
@@ -283,22 +257,104 @@ acceptance, rather than rerunning every attack. Its summed request cost is
 At $8/255$, only $0.93\%$--$2.63\%$ of these ordinarily trained model--input
 pairs lack a replayed counterexample. This describes the difficulty of the
 larger-radius task, not certified accuracy or an architecture advantage.
-No-witness results remain unproved. The full verification queue is running;
-no complete-request speedup, capacity-matched certification comparison, or C2
-conclusion is available. Results will report all seeds and both capacity
-conventions, not select the best seed or omit a slower comparison. Sources and
-audit identities are recorded in \path{docs/architecture_s1_records_20261029.json}.
+No-witness results remain unproved. All verification requests have now settled.
+The final frozen-source record audit passed in 51.809 seconds (54.298 seconds
+including process setup and publication), without new model or solver queries.
+It retains all eight earlier PGD errors and reports zero new errors, unexecuted
+verification requests, or missing request costs. Sources and audit identities
+are recorded in \path{docs/architecture_s1_result_20261031.json}.
 
-\subsection{S2 and ablations: gated, not executed}
-If S1 passes, the user-approved comparison examines clean accuracy, certified
-accuracy and full verification time jointly. C3 requires at least two percentage
-points higher clean accuracy at matched certified accuracy with positive lower
-confidence bound, and a proved numerical single-route fraction of at least 90\%
-at 2/255. Unknown route counts do not count as stability. Capacity matching,
-routing regularization and certification-training factors remain distinct.
-The finite 3000-complete-call S2 allocation and the comparison of tradeoff points
-must be fixed before new results; no result-driven interpolation or expansion
-is specified by this draft.
+\subsection{S1 complete results: the registered screen stops}
+Table~\ref{tab:s1primary} reports the primary endpoint. Neither capacity match
+passes: total matching has one fewer MoE positive despite a slightly shorter
+median, and active matching has two fewer with a slightly longer median.
+The corresponding rate intervals include zero. This is a failed prespecified
+screen, not a finding that MoE is universally inferior. The denominator is
+200 shared inputs times three fixed seeds, not 600 independent images.
+
+\begin{table}[ht]
+\centering\small
+\begin{tabular}{lrrrr}
+\toprule
+Dense match & Positives M/D & Gain/loss & $\Delta$ pp [95\% interval] & Median s M/D\\
+\midrule
+Total & 114/115 & 55/56 & $-0.167$ [$-3.833$,3.500] & 10.847/10.945\\
+Active & 114/116 & 52/54 & $-0.333$ [$-3.833$,3.167] & 10.847/10.716\\
+\bottomrule
+\end{tabular}
+\caption{Complete numerical positives at $2/255$, each arm out of 600.
+M/D denotes MoE/dense; intersections are 59 and 62. All-request costs and
+descriptive input-block intervals retain every seed and outcome.}
+\label{tab:s1primary}
+\end{table}
+
+Seed-wise positive counts are $(46,34,34)$ for L1, $(26,47,42)$ for total
+matching, and $(40,35,41)$ for active matching. The unmatched L2 extension has
+$(4,7,6)$, or 17/600. Table~\ref{tab:s1states} retains all complete-verification
+states. A timeout or unknown is never relabeled unsafe.
+
+\begin{table}[ht]
+\centering\small
+\begin{tabular}{llrrrrr}
+\toprule
+Radius & Group & Positive & Replayed & Unknown & Timeout & Mean s\\
+\midrule
+$2/255$ & L1 &114&312&28&146&92.759\\
+ & Dense total &115&275&133&77&105.015\\
+ & Dense active &116&272&191&21&87.520\\
+ & L2 &17&346&3&234&121.939\\
+$8/255$ & L1 &0&312&3&285&144.455\\
+ & Dense total &0&275&177&148&161.590\\
+ & Dense active &0&272&282&46&162.896\\
+ & L2 &0&346&0&254&128.579\\
+\bottomrule
+\end{tabular}
+\caption{All complete requests, 600 per row; no verification errors or missing
+calls. Replayed includes clean misclassification. The eight retained errors
+belong to auxiliary PGD. Means include every request.}
+\label{tab:s1states}
+\end{table}
+
+Cost medians need care. At $2/255$, the shared-clean-correct explanatory strata
+contain 207 pairs for total matching, with medians 289.060/242.424s (MoE/dense),
+and 217 for active matching, with 289.451/84.162s. These are separately recorded
+strata, not replacements for the primary all-input denominator. The all-request
+median-difference intervals are [$-1.576$,0.428]s and [$-2.539$,0.499]s.
+
+At $8/255$, all positive counts are zero, including incomplete verification.
+The complete all-request median is 11.735s for L1 and 289.485/289.375s for dense.
+MoE has 312 clean-wrong replays, over half the denominator, while dense has
+275/272, below half. The median therefore switches from cheap rejection to
+difficult verification. On shared-clean-correct pairs all three medians are
+approximately 290s. This is not a 25-fold useful certification speedup, and the
+secondary radius cannot rescue the failed primary gate.
+
+\subsection{Incomplete bounds: a coverage--cost tradeoff}
+At $2/255$, incomplete CROWN-IBP~\cite{crownibp} produces 23/3000 L1 positives
+against 2/3000 for each dense match: 22 gains, one loss, and one common positive.
+The rate difference is 0.700 percentage points, descriptive 95\% interval
+[0.400,1.067]. L1 median cost is 7.588s, versus 7.251s (total) and 7.140s (active):
+4.64\% and 6.27\% higher. L2 has no incomplete positive. This is evidence of a
+limited incomplete-bound advantage with a cost penalty, not of the primary
+complete-verification hypothesis. The 1000 input blocks retain all three seeds;
+these results neither replace the primary endpoint nor authorize S2.
+
+Complete verification costs 167.459 summed request hours, incomplete 51.329,
+and public PGD 5.863: 224.651 hours total. The eight-worker parallel queue wall
+time is 28.094 hours across two segments, excluding the approval gap, training
+and audits. Training costs 2.222 hours separately. Parallel throughput is not
+per-request speed. Full states, paired gain/loss identities, cost intervals
+and source hashes are archived. Route counts are conservative numerical
+candidate upper counts, not exact legal-history counts or route-flip witnesses.
+
+\subsection{S2 and ablations: not executed after the stop}
+The registered rule returns this study to reductions and empirical limits.
+Certification training, routing regularization and their proposed ablations
+were not executed. In particular, evaluating ordinary-trained networks using
+CROWN-IBP does not test CROWN-IBP training or the C3 tradeoff claim. The failed
+screen does not prove such training could never help, but it does not justify
+starting it under this protocol. No extra samples, new favorable radius, or
+specialized-verifier mechanism was added to change the decision.
 
 \subsection{Earlier verifier experiments as motivation}
 The archived multilayer study obtains 108/180 numerical positives with pruned
@@ -322,6 +378,10 @@ cannot substitute for our deterministic $L_\infty$ endpoint. The five-work sourc
 review is available in the project record; author claims are not independent
 proofs by this study.
 
+This study covers three fixed seeds of a small ordinary-trained MLP family,
+approximately matched parameter counts, historically exposed input prefixes,
+and an architecture-specific balance loss. It is not a controlled theorem
+about all sparse architectures or a test of certification-trained networks.
 All experimental backend positives use a floating numerical policy. Exact
 arithmetic on a supplied LP cannot repair an unverified input enclosure or
 network conversion. Historical source gaps remain, and the new study does
@@ -331,10 +391,13 @@ identity and coverage, not every numerical bound. Human technical review and
 clean-environment reproduction remain outstanding.
 
 \section{Disposition}
-The current evidence justifies testing architecture verifiability, not declaring
-MoE easier to certify. S1 will determine whether the registered training study
-proceeds. Failed screens remain failures, and an S1 pass is not a substitute
-for the C3 comparison. No new specialized-verifier mechanism is revived.
+S1 is complete and fails the registered architecture screen under both
+capacity conventions. C2 is not established, and C3 was not tested. The
+paper's supported content is route-aware reductions, a bounded empirical
+comparison, and the limits of active-parameter and aggregate-timing arguments.
+The incomplete-bound gain remains part of the result. It is not used to
+override the stop or to revive an unsuccessful mechanism. Independent human
+review and clean empirical reproduction are still required.
 
 \begin{thebibliography}{99}
 \bibitem{robmoe} J. Puigcerver et al. On the Adversarial Robustness of Mixture
