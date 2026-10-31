@@ -23,6 +23,37 @@ reviewer helped design earlier directions. PI-managed review by a human
 certified-training expert remains required on the eventual new manuscript.
 Old verifier mechanisms remain stopped; no new M-B/M-C/B4 work is authorized.
 
+## Complete primary endpoint (2026-11-01)
+
+All24 frozen training runs and20 validation-selected checkpoints completed;
+all20 online primary batches cover all10000 test images. The immutable
+[record](architecture_s2a_records_20261031.json) binds the input,weights,source,
+raw property arrays,acceptance records and10,000-replicate crossed seed/input
+bootstrap. Training cost was14.282h wall and50.846h summed attempts.
+
+| Arm | Clean accuracy | IBP numerical certified accuracy | Provable single-route fraction |
+| --- | ---: | ---: | ---: |
+| D-act | 50.598% | 33.554% | — |
+| D-tot | 50.096% | 31.972% | — |
+| M | 47.106% | 30.124% | 73.920% |
+| M-reg | 46.914% | 29.924% | 44.550% |
+
+Rates average five fixed seeds on10000 shared inputs,not50000 independent
+images. M−D-act is−3.430pp,95%interval[−4.108,−2.762];M−D-tot is−1.848pp,
+interval[−2.632,−1.130]. M−M-reg is+0.200pp,interval[−0.430,+0.79005].
+The routing regularizer increases the descriptive single-route fraction by
+29.370pp,but this does not establish the required certification advantage.
+No clean-conditional population is substituted for the registered endpoint.
+
+**Primary decision: STOP_S2A_WRITE_RESULTS.** M fails both dense-comparison
+gates and the90%single-route gate;C3 is not supported by this fixed MLP study.
+No S2b,retuning,sample expansion or new research direction follows. This does
+not establish an impossibility result for all MoE architectures or recipes.
+The already frozen20000CROWN-IBP and4000complete calls continue for the full
+registered report;their results and final audit remain pending. Primary
+record/statistics checking took8.582s and added no model call. The reported
+positives remain numerical-policy results,not source-complete formal proofs.
+
 ## Bounded literature check (2026-10-31)
 
 Scope: IBP, CROWN-IBP, SABR, TAPS, MTL-IBP crossed with mixture-of-experts,

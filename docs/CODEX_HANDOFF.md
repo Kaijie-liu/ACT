@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## S2a primary endpoint fails; fixed secondary queue running, 2026-11-01
+
+Real increment:20/20primary batches(all10000inputs×20models) and196incomplete requests settled;0complete so far;24/24training retained; [record](architecture_s2a_records_20261031.json).
+Primary numerical certification:D-act33.554%,D-tot31.972%,M30.124%,M-reg29.924%;M single-route73.920%. M−D-act−3.430pp CI[−4.108,−2.762],M−D-tot−1.848pp CI[−2.632,−1.130].
+All primary gates fail:STOP_S2A_WRITE_RESULTS. No S2b,retuning,extra inputs or new direction. M−M-reg+0.200pp CI[−0.430,+0.79005];routing fraction improvement does not rescue C3.
+Primary record/statistics check8.582s,zero added model calls;all20accepted online batches and50kmodel-input cells per arm retained. Numerical policy,not independent network/source proof;final secondary audit pending.
+Immutable evaluation954b8934a runs detachedPID320490/start1232308927,eight1-thread CPUworkers,8GiB AS,300s/request. Fresh load4.86/20CPUs,101.5GiBavailable memory,229GiBdisk passed;no GPU.
+Same128MiB account now precharges1MiB for external launch/log/statistics-cost records;cap unchanged. Fixed20000incomplete+4000complete queue continues;do not truncate40h or rerun primary batches.
+Finish queue,final audit and manuscript per failed-gate contract;S1 STOP retained. Launch/primary hashes and cost in the single stage record;work from original execution,not mutable checkout.
+
 ## S2a final-weight evaluation frozen, 2026-11-01
 
 Real increment:0new inference calls;24/24training retained,20selected weights and fixed physical test inputs now bound; [record](architecture_s2a_records_20261031.json).

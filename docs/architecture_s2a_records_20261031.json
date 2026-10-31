@@ -1,6 +1,6 @@
 {
   "stage": "S2a_TRAINING_RUNNING_EVALUATION_AND_ANALYSIS_READY",
-  "real_verification_calls": 0,
+  "real_verification_calls": 196,
   "internal_review": {
     "path": "/data1/Kane/MOE/survey/drafts/act_icml_review_20261031.md",
     "sha256": "dcf917092bc1fb4a54642bdd49c183ea42b263c07dd91c1af20633ad0313ee0e",
@@ -42,8 +42,8 @@
   "initial_head": "bb2f23e49c2d21f22f4c623fb529ad53654a446b",
   "old_decision": "STOP_S1_RETURN_TO_REDUCTION_PAPER",
   "literature": "bounded primary-source search; no equivalent full design found; not novelty proof",
-  "scientific_status": "C3_PENDING",
-  "next": "Create immutable evaluation copy from committed freeze, freshly admit eight single-thread workers and execute20primary+20000incomplete+4000complete requests under the registered limits.",
+  "scientific_status": "S2A_PRIMARY_STOP_SECONDARY_RUNNING",
+  "next": "Finish already frozen CROWN-IBP and complete queues, then final audit and evidence-consistent manuscript. S2a primary gate failed; no S2b, retuning, extra sample or new direction.",
   "real_training_runs_started": 24,
   "real_training_runs_completed": 24,
   "launch": {
@@ -553,7 +553,7 @@
     "test_evaluated": false
   },
   "evaluation_freeze": {
-    "status": "FROZEN_NOT_STARTED",
+    "status": "RUNNING",
     "root": "/data1/Kane/MOE/results/architecture_s2a_evaluation_20261101_r1",
     "manifest": {
       "path": "/data1/Kane/MOE/results/architecture_s2a_evaluation_20261101_r1/manifest.json",
@@ -582,5 +582,238 @@
     "pre_run_binding_check": "PASS: twenty selected weights, physical inputs, sources and unchanged protocol",
     "time_amendment": "user20261031: finish fixed queue; 40h not truncation; summed and wall reported",
     "evidence_grade": "NUMERICAL_POLICY; no source-complete or native floating-point proof"
+  },
+  "evaluation_launch": {
+    "status": "LAUNCHED",
+    "pid": 320490,
+    "start_ticks": "1232308927",
+    "command": [
+      "/usr/bin/nice",
+      "-n",
+      "10",
+      "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+      "-u",
+      "/data1/Kane/MOE/executions/architecture_s2a_evaluation_20261101_r1/scripts/architecture_s2_study.py",
+      "run",
+      "/data1/Kane/MOE/results/architecture_s2a_evaluation_20261101_r1"
+    ],
+    "execution_commit": "954b8934a4a4ce6ff750fbd9a0760c25d60f89cb",
+    "execution": "/data1/Kane/MOE/executions/architecture_s2a_evaluation_20261101_r1",
+    "root": "/data1/Kane/MOE/results/architecture_s2a_evaluation_20261101_r1",
+    "manifest_sha256": "05bdf6e476e578137a2d72498f84b79e9355fc0ecdd1e2b368e2f90fdf295ab8",
+    "workers": 8,
+    "threads": 1,
+    "nice": 10,
+    "as_bytes": 8589934592,
+    "cpus": 20,
+    "load": [
+      4.67529296875,
+      5.08544921875,
+      5.52099609375
+    ],
+    "memory_available_bytes": 109186912256,
+    "disk_available_bytes": 246046658560,
+    "clock": 1793474762.6482563,
+    "prelaunch_copy_and_binding_seconds": 0.8133466262370348,
+    "log": "/data1/Kane/MOE/results/architecture_s2a_20261031_r1/evaluation_controller_20261101_r1.log",
+    "external_receipt_log_reserved_bytes": 1048576,
+    "accounting": "external receipt/log conservatively precharged in existing stage initial_bytes; cap unchanged",
+    "receipt": {
+      "path": "/data1/Kane/MOE/results/architecture_s2a_20261031_r1/evaluation_launch_20261101_r1.json",
+      "sha256": "7926f43d0be9433929935da88d8828b05e67e207f4e8d36fe3e61e552b0854d0",
+      "bytes": 1305
+    },
+    "actual_start": {
+      "path": "/data1/Kane/MOE/results/architecture_s2a_evaluation_20261101_r1/start.json.gz",
+      "sha256": "9902d51a87fa156cd8ff63467c8615e76bd3af59d474e541440de12d96aa8bc2",
+      "bytes": 389
+    }
+  },
+  "latest_evaluation_observation": {
+    "clock": 1793475013.5719414,
+    "pid": 320490,
+    "start_ticks": "1232308927",
+    "live": true,
+    "settled": 216,
+    "by_mode": {
+      "incomplete": 196,
+      "primary": 20
+    },
+    "states": {
+      "POSITIVE": 67,
+      "UNKNOWN": 45,
+      "UNSAFE_REPLAYED": 84,
+      "AUXILIARY_COMPLETE": 20
+    },
+    "errors": [],
+    "queue_complete": false
+  },
+  "real_complete_calls": 0,
+  "real_incomplete_calls": 196,
+  "primary_model_evaluations": 20,
+  "primary_result": {
+    "artifact": {
+      "path": "/data1/Kane/MOE/results/architecture_s2a_evaluation_20261101_r1/primary_summary.json.gz",
+      "sha256": "b86ceda83f6f192ef53f3e7866702cd1bb94290c43d340711ca12a1929eb7586",
+      "bytes": 316921
+    },
+    "summary": {
+      "arms": {
+        "D-act": {
+          "certified": 16777,
+          "certified_accuracy": 0.33554,
+          "certified_per_seed": [
+            3353,
+            3369,
+            3347,
+            3356,
+            3352
+          ],
+          "clean_accuracy": 0.50598,
+          "clean_correct": 25299,
+          "clean_per_seed": [
+            5041,
+            5051,
+            5040,
+            5089,
+            5078
+          ],
+          "conditional_positive_fraction": 0.6631487410569588,
+          "denominator": 50000,
+          "single_route_fraction": null
+        },
+        "D-tot": {
+          "certified": 15986,
+          "certified_accuracy": 0.31972,
+          "certified_per_seed": [
+            3189,
+            3188,
+            3200,
+            3235,
+            3174
+          ],
+          "clean_accuracy": 0.50096,
+          "clean_correct": 25048,
+          "clean_per_seed": [
+            4966,
+            4943,
+            5051,
+            5031,
+            5057
+          ],
+          "conditional_positive_fraction": 0.6382146279144043,
+          "denominator": 50000,
+          "single_route_fraction": null
+        },
+        "M": {
+          "certified": 15062,
+          "certified_accuracy": 0.30124,
+          "certified_per_seed": [
+            3082,
+            3028,
+            3031,
+            2947,
+            2974
+          ],
+          "clean_accuracy": 0.47106,
+          "clean_correct": 23553,
+          "clean_per_seed": [
+            4825,
+            4756,
+            4673,
+            4618,
+            4681
+          ],
+          "conditional_positive_fraction": 0.6394939073578737,
+          "denominator": 50000,
+          "single_route_fraction": 0.7392
+        },
+        "M-reg": {
+          "certified": 14962,
+          "certified_accuracy": 0.29924,
+          "certified_per_seed": [
+            3035,
+            2970,
+            2984,
+            2939,
+            3034
+          ],
+          "clean_accuracy": 0.46914,
+          "clean_correct": 23457,
+          "clean_per_seed": [
+            4723,
+            4721,
+            4712,
+            4664,
+            4637
+          ],
+          "conditional_positive_fraction": 0.6378479771496781,
+          "denominator": 50000,
+          "single_route_fraction": 0.4455
+        }
+      },
+      "audit_scope": "record identities/coverage/statistics only; no recomputed network or source-complete proof",
+      "bootstrap": {
+        "intervals": "unadjusted percentile95; selected configuration held fixed",
+        "resamples": 10000,
+        "seed": 20261031,
+        "unit": "crossed paired seeds and inputs"
+      },
+      "comparisons": {
+        "M_minus_D-act": {
+          "gained": 3546,
+          "intersection": 11516,
+          "interval95": [
+            -0.04108,
+            -0.02762
+          ],
+          "lost": 5261,
+          "rate_difference": -0.0343
+        },
+        "M_minus_D-tot": {
+          "gained": 4067,
+          "intersection": 10995,
+          "interval95": [
+            -0.02632,
+            -0.0113
+          ],
+          "lost": 4991,
+          "rate_difference": -0.01848
+        },
+        "M_minus_M-reg": {
+          "gained": 3825,
+          "intersection": 11237,
+          "interval95": [
+            -0.0043,
+            0.007900499999999994
+          ],
+          "lost": 3725,
+          "rate_difference": 0.002
+        }
+      },
+      "conditional_interpretation": "post-selection descriptive populations differ; not primary or causal",
+      "decision": "STOP_S2A_WRITE_RESULTS",
+      "evidence_grade": "IBP_NUMERICAL_POLICY_NOT_SOURCE_COMPLETE_PROOF",
+      "gates": {
+        "m_minus_active_at_least_2pp": false,
+        "m_minus_active_ci_lower_positive": false,
+        "m_minus_total_nonnegative": false,
+        "m_single_route_at_least_90pct": false
+      },
+      "input_count": 10000,
+      "paired_seeds": 5,
+      "secondary_stage_complete": false,
+      "source_manifest_sha256": "05bdf6e476e578137a2d72498f84b79e9355fc0ecdd1e2b368e2f90fdf295ab8"
+    },
+    "offline_record_statistics_cost": {
+      "artifact": {
+        "path": "/data1/Kane/MOE/results/architecture_s2a_20261031_r1/primary_report_cost_20261101_r1.json",
+        "sha256": "48236ac568b815c80c198278efa7f673aa3a984e3140aa8ba28b8ff1fb6fe96a",
+        "bytes": 971
+      },
+      "seconds": 8.582248544320464,
+      "additional_model_calls": 0
+    },
+    "scope": "Complete primary endpoint; secondary queue and final audit pending. No S2b."
   }
 }
