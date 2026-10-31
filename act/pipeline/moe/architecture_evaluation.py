@@ -79,7 +79,8 @@ def dense_configuration():
         'bab.branching.nonlinear_split.disable': True})
 
 
-def evaluate(model, tensors, *, family, mode, deadline, publish=lambda _: None):
+def evaluate(model, tensors, *, family, mode, deadline, publish=lambda _: None,
+             complete_configuration=None):
     tick(deadline)
     if family not in ('dense', 'moe') or mode not in ('incomplete', 'complete'):
         raise ValueError('registered S1 family/mode')
@@ -105,7 +106,13 @@ def evaluate(model, tensors, *, family, mode, deadline, publish=lambda _: None):
             options.update(verify_graph=crown_ibp, bound_router=prefix_crown_ibp,
                 stop_on_unknown=True)
         else:
-            options['verify_graph'] = verify_graph
+            if complete_configuration is None:
+                options['verify_graph'] = verify_graph
+            else:
+                def configured_graph(graph, lower, upper, property_count, end):
+                    return verify_graph(graph, lower, upper, property_count, end,
+                                        configuration=complete_configuration)
+                options['verify_graph'] = configured_graph
         result = verify_histories(model, **tensors, pruning=True, deadline=deadline,
             publish=publish, **options)
         if mode == 'incomplete' and result['status'] == 'POSITIVE':
@@ -128,7 +135,8 @@ def evaluate(model, tensors, *, family, mode, deadline, publish=lambda _: None):
             else:
                 from b2_observed_worker import verify_graph
                 outcome, attacks = verify_graph(graph, lower, upper, len(rows), deadline,
-                    configuration=dense_configuration())
+                    configuration=dense_configuration() if complete_configuration is None
+                        else complete_configuration)
             tick(deadline)
             result['histories'] = [dict(history=[], outcome=outcome)]
             result['returned_histories'] = 1; result['active'] = None
@@ -151,4 +159,6 @@ def evaluate(model, tensors, *, family, mode, deadline, publish=lambda _: None):
     result['evaluation'] = dict(family=family, mode=mode,
         strict_positive_required=True, clean_correct_prefilter=False,
         source_complete_proof=False)
+    if complete_configuration is not None and mode == 'complete':
+        result['evaluation']['explicit_complete_configuration'] = dict(complete_configuration)
     return result

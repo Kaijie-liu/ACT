@@ -255,6 +255,9 @@ def worker(folder):
                 raise RuntimeError('expected synthetic exception')
             while True:
                 time.sleep(.05)  # Existing native hard deadline must terminate this child.
+        if query['mode']=='primary':
+            from architecture_s2_primary import worker as primary_worker
+            return primary_worker(folder,query,spec,store)
         environment = backend.probe()
         require(digest(environment['sources']) == spec['backend_sources_sha256'], 'frozen external engine')
         from act.util.typing_compat import install_typing_override
@@ -290,11 +293,17 @@ def worker(folder):
             model = model.double().eval()
             source = spec['inputs']
             require(sha(source['path']) == source['sha256'], 'same physical input file')
-            inputs = torch.load(source['path'], map_location='cpu', weights_only=True)
-            inputs_catalog = load(source['catalog'], source['catalog_sha256'])
-            if query['mode'] != 'pgd':
-                tensors, label = bound_input(inputs, inputs_catalog, query['index'], query['radius'])
-                del inputs, inputs_catalog
+            if spec.get('study') == 'S2A':
+                require(query['mode'] in ('complete','incomplete') and query['radius']==2,
+                    'S2a fixed secondary method/radius')
+                from act.pipeline.moe.architecture_s2_evaluation import load_secondary_input
+                tensors,label=load_secondary_input(read_record(source['path']),query['index'])
+            else:
+                inputs = torch.load(source['path'], map_location='cpu', weights_only=True)
+                inputs_catalog = load(source['catalog'], source['catalog_sha256'])
+                if query['mode'] != 'pgd':
+                    tensors, label = bound_input(inputs, inputs_catalog, query['index'], query['radius'])
+                    del inputs, inputs_catalog
         phase('model_input_load')
         if query['mode'] == 'pgd':
             arguments = dict(tensors=tensors, label=label) if synthetic else dict(inputs=inputs, inputs_catalog=inputs_catalog)
@@ -318,7 +327,11 @@ def worker(folder):
                 coverage=coverage(value, 'genbab_pruned', expected)), replace=True)
         with torch.no_grad():
             prediction = int(model(tensors['center']).argmax(1))
-        result = evaluate(model, tensors, family=family, mode=query['mode'], deadline=deadline, publish=publish)
+        arguments = {}
+        if spec.get('study') == 'S2A' and query['mode']=='complete':
+            require(spec['complete_configuration']==backend.CONFIG,'S2a common engine configuration')
+            arguments['complete_configuration']=spec['complete_configuration']
+        result = evaluate(model, tensors, family=family, mode=query['mode'], deadline=deadline, publish=publish, **arguments)
         phase('verification')
         cov = audit_value(result, family=family, experts=experts, properties=len(tensors['rows']))
         replayed = False
@@ -373,12 +386,20 @@ def receive(folder, query, session, end):
         return 'TIMEOUT', None
     value = outcome['value']; result = value['result']
     spec = load(query['manifest'], query['manifest_sha256'])
+    if query['mode']=='primary':
+        from architecture_s2_primary import receive as receive_primary
+        return receive_primary(folder,query,spec,value,end)
     require(value['backend_sources_sha256'] == spec['backend_sources_sha256'], 'received engine identity')
     require(result['evaluation']['mode'] == query['mode']
         and result['evaluation']['family'] == value['family'], 'received evaluation mode')
     if not spec.get('synthetic_control', False):
         item = next(m for m in spec['models'] if m['id'] == query['model'])
         require(value['family'] == item['family'], 'received family')
+    if spec.get('study') == 'S2A' and query['mode']=='complete':
+        require(result['evaluation'].get('explicit_complete_configuration')==spec['complete_configuration'],
+                'received common S2a configuration')
+        require(all(row['outcome'].get('branching')==spec['complete_configuration']['bab.branching.method']
+                    for row in result['histories']), 'received branch heuristic')
     if query['mode'] == 'pgd':
         audit_pgd(value, folder, query)
         tick(end)
@@ -404,7 +425,8 @@ def invoke(root, request, manifest, *, seconds=300, timing_reserve=(12, 10, 5)):
         worker_deadline=end-wt, started_at=began, hard_deadline=end)
     store.write(folder/'request.json.gz', query)
     env = dict(os.environ, **THREAD_ENV)
-    session = execute([str(backend.ENVIRONMENT/'bin/python'), '-I', '-B', str(Path(__file__).resolve()),
+    python=backend.ACT if request['mode']=='primary' else str(backend.ENVIRONMENT/'bin/python')
+    session = execute([python, '-I', '-B', str(Path(__file__).resolve()),
         'worker', str(folder)], run_deadline=end-rt, cleanup_deadline=end-ct,
         env=env, rss_limit=None, development_policy=backend.POLICY)
     store.write(folder/'session.json.gz', session, terminal=True)

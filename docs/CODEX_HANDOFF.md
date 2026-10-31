@@ -1,5 +1,16 @@
 # MoE project handoff — current entry point
 
+## S2a evaluation integrated; training unchanged, 2026-10-31
+
+Real increment: same4/24training runs active,0complete;110 epoch records checked (+99 since prior archived prefix),0trained verification calls,no errors observed.
+[Record](architecture_s2a_records_20261031.json) binds immutable8b59db610 training source/PID327708/start1227134153; continue same detached queue, no duplicate launch.
+User“我们不怕时间长，要做最完善！” resolves40h: finish fixed≤4000complete calls;300s/request,≤8workers unchanged; wall and summed costs separate. [Contract](architecture_s2a_20261031.md).
+[Evaluation preparation](../scripts/architecture_s2_study.py) binds24 training completions→20selected weights,all10k primary,first1k incomplete,first200 complete; final weights/input freeze still pending.
+13 ordinary tests and7native synthetic calls PASS; common nonlinearBBPS actually branches on dense control and coversMoE ties; original supervisor receives fullprimary arrays, rejects missing property/wrong source.
+Lossless input/array storage, same training/primary bound function, exact float32-box lift for secondary and crossed seed/input bootstrap implemented. No training/data/dependency/GPU change.
+Next finish same training; bind final weights, materialize/freeze test inputs and queue, fresh admission then evaluate. Complete secondary result/cost audit remains to integrate; no true evaluation started.
+S1 STOP unchanged,C3 pending; synthetic ENTER_S2B only tests report logic, not a research verdict. This is evaluation readiness, not certification or speedup evidence.
+
 ## S2a CPU training running from frozen source, 2026-10-31
 
 Real increment: 4/24 training runs started,0 completed;11 epoch records checked;0 trained verification calls,no error records at review.

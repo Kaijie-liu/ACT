@@ -142,9 +142,13 @@ single-route fraction, mean property width and full time. These public-prefix
 inputs have historical exposure and are development, not a new holdout.
 Twenty selected checkpoints yield at most **4,000 complete calls**, each 300s,
 at most eight single-thread CPU workers, each 8GiB RLIMIT_AS. Incomplete
-evaluation and training costs are separate. The user specified a 40h complete
-verification limit; wall-clock versus summed interpretation is pending their
-answer before the evaluation queue is frozen. This does not block training.
+evaluation and training costs are separate. On 2026-10-31, asked whether 40h
+meant summed request time or parallel wall time, the user replied
+“我们不怕时间长，要做最完善！”. This authorizes completing the fixed queue
+without truncating it at the original 40h estimate. The 4,000-call ceiling,
+300s per request and eight-worker limit stay unchanged. Both summed request
+cost and parallel wall time will be reported; no extra sample or configuration
+is implied by this time clarification.
 The same engine revision and common branching heuristic settings must be bound
 for both families before complete verification; intrinsic graph operators
 still differ. The S1 dense-only kfsb setting is not automatically inherited.
@@ -204,3 +208,53 @@ queried by these controls. They validate integration, not trained usefulness.
 The runner preserves immutable epoch/attempt records and resumable optimizer,
 shuffle RNG, best validation state and schedule position; seed0 selection
 explicitly ignores test fields. Configuration choice is still pending training.
+
+## Evaluation integration while training runs (2026-10-31)
+
+The training queue remains on immutable `8b59db610e32dbcd3c3918cedfcb23b28c9fa949`.
+Changes to this checkout do not change those workers. No trained checkpoint or
+test example has been evaluated by the integration controls below.
+
+[Evaluation preparation](../scripts/architecture_s2_study.py) requires all24
+training completions, checks every100-epoch validation choice, then binds the
+20selected checkpoint hashes. The final evaluation freeze is still pending
+those weights. It specifies20 primary batch requests,20,000 incomplete calls
+and4,000 complete calls, without clean-correct filtering. Primary and secondary
+denominators are fixed; incomplete costs are separate from complete costs.
+The existing queue/owned-session supervisor,300s hard request budget and shared
+128MiB artifact account are reused. A partial primary batch cannot establish
+the all10k endpoint. The40h clarification above changes no per-request limit.
+
+Primary measurements call the same float32 `model_bounds` used by training.
+They retain all9 raw lower/upper class margins, clean/certified flags and, for
+MoE, all8 router intervals plus the28-pair candidate mask. Compact numeric
+archives are lossless and charged to the shared account. A unique candidate
+pair is a numerical sufficient stability diagnostic, not a reachability proof.
+Raw uint8 inputs reproduce the training ToTensor convention; secondary workers
+lift those same represented float32 boxes to float64, instead of recomputing a
+different box. This consistency does not prove real-input outward containment
+or equivalence of float32 and float64 network executions.
+
+Both complete-verification arms explicitly use the existing GenBaB R7 CPU/double
+configuration, including nonlinear BBPS branching; graph operators still differ.
+The historical S1 dense kFSB default is unchanged. This enforces the requested
+common heuristic, not a claim that BBPS is the strongest possible dense setting.
+
+Controls in [the stage record](architecture_s2a_records_20261031.json):8 primary
+semantics/codec/bootstrap tests,2 roster/selection tests,1 full20-model synthetic
+record aggregation test and2 legacy receiver regressions pass. Four native
+engine cases pass in10.145s: dense analytic positive requiring6 actual BaB
+domains, all3 tie-pair MoE positive, unchanged legacy dense configuration and
+full-model clean-error replay. Three additional original-supervisor calls pass
+in18.639s (dense primary, E8 all28-pair primary, common dense complete), with
+missing-property and changed-source reception rejected. Training was running
+concurrently; these timings are integration costs, **not** speed comparisons.
+The synthetic report's `ENTER_S2B` is only a test fixture, never a scientific
+decision. Real S2a remains pending.
+
+Reporting uses the registered crossed seed/input bootstrap (10,000 draws) and
+integer comparisons at the exact2pp/90% boundaries. The source-bound primary
+report refuses missing or unaccepted measurements and never converts a late
+offline check into online success. Final secondary state/cost aggregation and
+the selected-weight/input freeze will be completed after training; no true
+evaluation queue is launched from these synthetic tests.
