@@ -255,6 +255,42 @@ decision. Real S2a remains pending.
 Reporting uses the registered crossed seed/input bootstrap (10,000 draws) and
 integer comparisons at the exact2pp/90% boundaries. The source-bound primary
 report refuses missing or unaccepted measurements and never converts a late
-offline check into online success. Final secondary state/cost aggregation and
-the selected-weight/input freeze will be completed after training; no true
-evaluation queue is launched from these synthetic tests.
+offline check into online success. No true evaluation queue is launched from
+these synthetic tests; the selected-weight/input freeze awaits training.
+
+### Complete recorded-result analysis
+
+[The S2 auditor](../scripts/architecture_s2_audit.py) now reuses the existing
+terminal/publication/deadline/cleanup audit for all24,020 registered records.
+After queue completion (or a settled stopped prefix), the controller invokes
+it automatically. It recounts the full9-property primary arrays and secondary
+route/property coverage, checks the common frozen engine, and reconciles every
+request cost with the queue total and shared evidence account. No checkpoint,
+new bound computation or witness replay is performed by this record analysis.
+An `UNSAFE_REPLAYED` row refers to the online full-model replay, not a new
+independent replay by this auditor.
+
+Both secondary methods retain POSITIVE,UNSAFE_REPLAYED,UNKNOWN,TIMEOUT,ERROR and
+NOT_EXECUTED separately. Missing pairs are not gains/losses and get no final
+comparison interval. All executed costs, including clean errors, unknowns and
+timeouts, enter the mean/median comparisons. Rate differences, solved-rate
+differences, mean time differences and ratios of all-request medians use the
+same registered crossed seed/input bootstrap; these are descriptive secondary
+intervals, not additional gates or replacements for the primary gate. Every
+gain/loss retains its seed/input identity. The full20-model primary endpoint
+is necessary for a scientific decision; partial records never imply a pass.
+
+Float32 primary clean flags are not used to fill missing float64 secondary
+flags. Clean discrepancies and positive-versus-replay conflicts are explicitly
+listed for investigation. The registered primary decision remains visible;
+an unresolved numerical conflict is not silently declared consistent. Final
+reporting separates training, shared preparation/startup, primary batch work,
+incomplete requests, complete requests and offline audit. Preparation timing
+starts at the first Python timestamp (not OS process birth); its pre-entry and
+final-write tail are not claimed as measured cold-start time. The complete
+request supervisor still charges its full parent-observed execution window.
+
+Record/statistical controls pass, including an all24,020-unexecuted synthetic
+prefix: it retains20 primary,20,000 incomplete and4,000 complete denominators,
+returns PENDING and produces no zero-runtime or positive substitutions. These
+checks supply evaluation integrity only; actual S2a outcomes remain pending.

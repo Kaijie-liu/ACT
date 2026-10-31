@@ -72,6 +72,18 @@ def audit_request(root,query,manifest_sha256):
     if query['mode']=='pgd':
         audit_pgd(value,folder,request)
         return row,value
+    if query['mode']=='primary':
+        # S2 batch measurement: retain the SAME transport/deadline/cost checks
+        # above, while the caller checks all per-input numerical arrays.
+        require(result['status']=='AUXILIARY_COMPLETE'
+            and result['evidence_grade']=='IBP_NUMERICAL_POLICY'
+            and result['formal_SAFE'] is False
+            and result['evaluation']['source_complete_proof'] is False,
+            'IBP measurement is not a source-complete request proof')
+        require(value['coverage'] is None and value['clean_correct'] is None
+            and value['properties']==9,'batch measurement semantics')
+        require(sha(folder/'arrays.json.gz')==value['array_sha256'],'primary array publication')
+        return row,value
     cov=audit_value(result,family=value['family'],experts=value['experts'],properties=value['properties'])
     require(cov==terminal['coverage']==value['coverage'],'independent coverage recount')
     require(result['formal_SAFE'] is False and result['evaluation']['source_complete_proof'] is False,

@@ -1,5 +1,16 @@
 # MoE project handoff — current entry point
 
+## S2a full-result analysis ready; same training continues, 2026-10-31
+
+Real increment:+54 saved epochs since prior archive (164total);4/24training runs active,0complete,0trained verification calls,no errors observed.
+[Record](architecture_s2a_records_20261031.json) binds samePID327708/start1227134153 and immutable8b59db610; do not duplicate/restart the running queue.
+[S2 auditor](../scripts/architecture_s2_audit.py) reuses existing terminal/deadline/cleanup checks, then recounts all24,020 planned measurements/calls, coverage, labels, common engine and full cost.
+Crossed seed/input statistics now cover secondary positive/solved gain-loss and all-request mean/median costs; absent pairs are not gains and get no finalCI. Primary gate unchanged.
+10distinct record/statistical controls pass (11invocations including serialization extension); full-unexecuted roster staysPENDING; no new model/data/solver calls.
+Float32/float64 clean differences and positive/replay conflicts remain explicit. Record audit does not rerun bounds/witnesses or close source-proof gaps.
+Queue completion now invokes the final audit automatically. Next: finish24training runs,bind20weights/materialize inputs/freeze queue,fresh admission,evaluate;40h is not a truncation limit,300s/4000complete remain.
+S1 STOP unchanged,C3 and S2b remain pending. This phase completes evaluation analysis, not scientific evidence of advantage.
+
 ## S2a evaluation integrated; training unchanged, 2026-10-31
 
 Real increment: same4/24training runs active,0complete;110 epoch records checked (+99 since prior archived prefix),0trained verification calls,no errors observed.

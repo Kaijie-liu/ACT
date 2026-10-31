@@ -3,12 +3,13 @@
 Preparation requires finished validation-only training. It never trains or
 selects a model from test results. Execution reuses the S1 request supervisor.
 """
+import time
+ENTRY=time.monotonic()
 import argparse
 import os
 from pathlib import Path
 import resource
 import sys
-import time
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT),str(ROOT/'scripts')]
@@ -88,6 +89,8 @@ def all_requests(models):
 
 def source_files():
     additional=('scripts/architecture_s2_study.py','scripts/architecture_s2_primary.py',
+        'scripts/architecture_s2_audit.py','scripts/architecture_s1_audit.py',
+        'act/pipeline/moe/architecture_statistics.py',
         'scripts/multilayer_train.py','scripts/architecture_s1_study.py',
         'act/pipeline/moe/architecture_s2_evaluation.py','act/pipeline/moe/architecture_s2_statistics.py',
         'act/pipeline/moe/architecture_s2_training.py','act/pipeline/moe/route_envelope_ibp.py',
@@ -98,7 +101,7 @@ def source_files():
 
 def prepare(root,workers):
     from multilayer_train import setup
-    torch=setup(1);began=time.monotonic();require(1<=workers<=8,'worker ceiling')
+    began=ENTRY;torch=setup(1);require(1<=workers<=8,'worker ceiling')
     # Must fail before test materialization if training is incomplete.
     models=models_from_training();training=load(TRAIN_FREEZE)
     from torchvision.datasets import CIFAR10
@@ -147,10 +150,17 @@ def run(root):
     require(observation['load'][0]+spec['workers']<=observation['allowed_cpus'],'existing CPU admission')
     require(observation['memory']['MemAvailable']>=(8*spec['workers']+4)*2**30,'existing memory admission')
     store.write(store.root/'start.json.gz',dict(commit=(ROOT/'.frozen_commit').read_text().strip(),
-        manifest_sha256=sha(manifest),resources=observation,pid=os.getpid(),clock=time.time()))
+        manifest_sha256=sha(manifest),resources=observation,pid=os.getpid(),clock=time.time(),
+        startup_and_admission_seconds=time.monotonic()-ENTRY))
     result=finite_queue(store.root,all_requests(spec['models']),manifest,workers=spec['workers'],
         seconds=300,timing_reserve=tuple(spec['timing_reserve']))
     print(result)
+    # Record-only analysis follows the settled queue. Its elapsed time is
+    # separate and cannot turn a late verifier output into an online positive.
+    from architecture_s2_audit import analyze
+    report=analyze(store.root)
+    store.write(store.root/'evaluation_summary.json.gz',report,terminal=True)
+    print(report['status'],report['registered_decision'],report['online_states'])
     return 0 if result['status']=='COMPLETE' else 1
 
 

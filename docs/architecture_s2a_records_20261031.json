@@ -1,5 +1,5 @@
 {
-  "stage": "S2a_TRAINING_RUNNING_EVALUATION_INTEGRATED",
+  "stage": "S2a_TRAINING_RUNNING_EVALUATION_AND_ANALYSIS_READY",
   "real_verification_calls": 0,
   "internal_review": {
     "path": "/data1/Kane/MOE/survey/drafts/act_icml_review_20261031.md",
@@ -43,7 +43,7 @@
   "old_decision": "STOP_S1_RETURN_TO_REDUCTION_PAPER",
   "literature": "bounded primary-source search; no equivalent full design found; not novelty proof",
   "scientific_status": "C3_PENDING",
-  "next": "continue same training queue; after 24 completions bind20 selected weights/materialized inputs, freeze and execute approved evaluation; final secondary audit pending",
+  "next": "continue original live training; after24 completions bind20 selected weights/materialized inputs, freeze evaluation then fresh resource admission and same-engine queue; final record audit runs automatically",
   "real_training_runs_started": 4,
   "real_training_runs_completed": 0,
   "launch": {
@@ -174,22 +174,59 @@
     "execution_commit": "8b59db610e32dbcd3c3918cedfcb23b28c9fa949",
     "training_started": 4,
     "training_complete": 0,
-    "completed_epochs": 110,
+    "completed_epochs": 164,
     "error_records": [],
-    "clock": 1793424517.3832252,
+    "clock": 1793425319.044652,
     "trained_verification_calls": 0,
-    "scope": "source/split/epoch/count binding only, no model reevaluation",
+    "scope": "frozen source and epoch/count binding; no model reevaluation",
     "load": [
-      15.4345703125,
-      15.7294921875,
-      18.9228515625
+      14.568359375,
+      15.23974609375,
+      16.82421875
+    ]
+  },
+  "secondary_analysis_controls": {
+    "files": [
+      {
+        "path": "/data1/Kane/MOE/results/architecture_s2a_audit_control_20261031_r1/freeze.json",
+        "sha256": "cf75b2cc979eea042fd124b57af8735f3ff0c3d485ef48711b724ff67f827e11",
+        "bytes": 1039
+      },
+      {
+        "path": "/data1/Kane/MOE/results/architecture_s2a_audit_control_20261031_r1/controls.txt",
+        "sha256": "83b7fa08173974517377d30420a98e12c610fce11fc49aeb741a8ce0407e1846",
+        "bytes": 1385
+      },
+      {
+        "path": "/data1/Kane/MOE/results/architecture_s2a_audit_control_20261031_r1/complete.json",
+        "sha256": "95065b3a1e510d9be7ddcf04c1dd5e1474a1bbad4ceaa770f472ffde9829abdb",
+        "bytes": 296
+      },
+      {
+        "path": "/data1/Kane/MOE/results/architecture_s2a_audit_control_20261031_r1/full_prefix_freeze.json",
+        "sha256": "e1025198d81722b446cb103243ba2de35aa8d198a20ce30d4697395d3f3f372f",
+        "bytes": 180
+      },
+      {
+        "path": "/data1/Kane/MOE/results/architecture_s2a_audit_control_20261031_r1/full_prefix_controls.txt",
+        "sha256": "3d275cfdf7cbb53ce44f89086977ffa64e5e9957ce5b19063e314bbfd0f339d7",
+        "bytes": 436
+      },
+      {
+        "path": "/data1/Kane/MOE/results/architecture_s2a_audit_control_20261031_r1/full_prefix_result.json",
+        "sha256": "50932b7528831412b0bbbecf2c6a0c818de3c9356a8fd326f1ebd98e247020dd",
+        "bytes": 180
+      },
+      {
+        "path": "/data1/Kane/MOE/results/architecture_s2a_audit_control_20261031_r1/training_prefix.json",
+        "sha256": "ab56fef39b3d65d63e6f985fced2f181d57009506be942c0d18d92388d7bd5fd",
+        "bytes": 43995
+      }
     ],
-    "artifact_account": {
-      "accounting": "stored bytes plus outstanding reservations; account/lock reserve4096",
-      "cap": 134217728,
-      "initial_bytes": 294795,
-      "terminal_reserve": 524288,
-      "used": 357167
-    }
+    "distinct_controls": 10,
+    "test_invocations": 11,
+    "real_model_calls": 0,
+    "new_test_data_access": false,
+    "scope": "crossed rate/cost statistics, common terminal and frozen full-denominator metadata; not certification evidence"
   }
 }
