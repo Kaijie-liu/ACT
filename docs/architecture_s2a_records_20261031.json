@@ -44,8 +44,8 @@
   "literature": "bounded primary-source search; no equivalent full design found; not novelty proof",
   "scientific_status": "C3_PENDING",
   "next": "continue original live training; after24 completions bind20 selected weights/materialized inputs, freeze evaluation then fresh resource admission and same-engine queue; final record audit runs automatically",
-  "real_training_runs_started": 6,
-  "real_training_runs_completed": 2,
+  "real_training_runs_started": 8,
+  "real_training_runs_completed": 4,
   "launch": {
     "path": "/data1/Kane/MOE/results/architecture_s2a_20261031_r1/launch.json",
     "sha256": "2d14cfe6132fc6916271bb38350404e25e2a9269da98941098430730b8ed815a",
@@ -172,13 +172,15 @@
     "start_ticks": "1227134153",
     "live": true,
     "execution_commit": "8b59db610e32dbcd3c3918cedfcb23b28c9fa949",
-    "training_started": 6,
-    "training_complete": 2,
-    "completed_epochs": 280,
+    "training_started": 8,
+    "training_complete": 4,
+    "completed_epochs": 547,
     "error_records": [],
-    "clock": 1793426808.4318073,
+    "clock": 1793433010.3778465,
     "trained_verification_calls": 0,
-    "scope": "validation-only checkpoint and source/weight/100-epoch consistency; not test or C3 evidence"
+    "scope": "validation-only checkpoint and source/weight/100-epoch consistency; not test or C3 evidence",
+    "path": "/data1/Kane/MOE/results/architecture_s2a_20261031_r1/training_completion_prefix_003.json",
+    "sha256": "adff891cf861291171ca71b27540624274e9ae9a03d44a0339fb433209ef083b"
   },
   "secondary_analysis_controls": {
     "files": [
@@ -235,11 +237,18 @@
         "path": "/data1/Kane/MOE/results/architecture_s2a_20261031_r1/training_completion_prefix_002.json",
         "sha256": "e3b1c341d5e6998e22d011495d284de3b8fce58157eb46b24868ba4c2f86e8b3",
         "bytes": 11116
+      },
+      {
+        "path": "/data1/Kane/MOE/results/architecture_s2a_20261031_r1/training_completion_prefix_003.json",
+        "sha256": "adff891cf861291171ca71b27540624274e9ae9a03d44a0339fb433209ef083b",
+        "bytes": 22165
       }
     ],
     "completed_runs": [
       "D-act_seed0_config0",
-      "D-act_seed0_config1"
+      "D-act_seed0_config1",
+      "D-tot_seed0_config0",
+      "D-tot_seed0_config1"
     ],
     "scope": "100 epochs, validation-only selection, original source and finite saved weights; no new forward/test/solver calls",
     "new_forward_or_solver_calls": 0,

@@ -1,5 +1,13 @@
 # MoE project handoff — current entry point
 
+## S2a four completed training runs reviewed; original queue continues, 2026-10-31
+
+Real increment:+2 completed D-tot tuning runs;4/24complete,8started,4active,547saved epochs,0trained verification calls; [record](architecture_s2a_records_20261031.json).
+Both new100-epoch records,validation-only checkpoint selection,finite CPU weights,source/split binding and exit/cost checks PASS in1.463s; no forward/test/solver call.
+SamePID327708/start1227134153 automatically launched M-reg configurations; no restart,recipe change or additional tuning. Immutable execution remains8b59db610.
+Validation results select checkpoints only; no test-set advantage,C3 conclusion or S2b entry follows. S1 STOP remains unchanged.
+Continue original24-run queue; after completion bind20selected weights/materialized inputs,freeze evaluation and admit the fixed same-engine queue.40h estimate does not truncate it;300s/request unchanged.
+
 ## S2a layer-width measurement ready; frozen training unchanged, 2026-10-31
 
 Real increment:0new trained verification calls; original queue2/24complete,4active,325saved epochs,no observed error; [record](architecture_s2a_records_20261031.json).
