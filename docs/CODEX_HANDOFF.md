@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## S1 clean decomposition figure ready; S2a still training, 2026-10-31
+
+Real increment:0 new experiment calls; same queue remains2/24 complete and4active, no observed error. Training progress is bound in the [record](architecture_s2a_records_20261031.json).
+[Manuscript](../paper/architecture_main.tex) now shows S1 unconditional/clean-conditional positives with all three seed dots;18 seed records agree with six aggregate rows, no changed denominator or gate.
+[Reproducible renderer](../scripts/architecture_s1_figure.py) reads only archived S1 results; differing clean populations, seed variation and lack of causal attribution are explicit.
+Two successful TeX passes and page6 visual review pass;13-page generic working draft, not venue-format compliance. Build/setup mistakes retained in stage record; no model query.
+Outdated S2-not-started wording is replaced by separately authorized training underway; no S2a test result or C3 claim. W2/W7 presentation improved, W3 causal mechanism remains unestablished.
+Continue originalPID327708/start1227134153 and frozen recipe; after24runs bind20weights/freeze evaluation/admit/run. No queue restart, extra tuning or S2b before its gate.
+
 ## S2a first two training completions reviewed; queue continues, 2026-10-31
 
 Real increment:+2 completed training runs;6/24 started,2 complete,4 active,280 saved epochs;0 trained verification calls,no errors observed.

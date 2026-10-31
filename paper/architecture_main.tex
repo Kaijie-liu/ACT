@@ -1,6 +1,7 @@
 \documentclass[11pt]{article}
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath,amssymb,amsthm,booktabs}
+\usepackage{graphicx}
 \usepackage[hidelinks]{hyperref}
 \newtheorem{proposition}{Proposition}
 \newtheorem{lemma}{Lemma}
@@ -25,8 +26,8 @@ against 115/600 and 116/600 for the two dense matches. Neither passes the
 registered architecture screen; both difference intervals include zero.
 CROWN-IBP yields 23/3000 versus 2/3000 positives, but with higher median cost.
 Thus the results support a limited incomplete-bound tradeoff, not general
-architectural dominance. The conditional certification-training study was not
-started. Numerical backend positives and independently checked source proofs
+architectural dominance. A separately authorized certification-training study
+is underway; its test results are not yet available. Numerical backend positives and independently checked source proofs
 remain different evidence levels.
 \end{abstract}
 
@@ -339,6 +340,27 @@ limited incomplete-bound advantage with a cost penalty, not of the primary
 complete-verification hypothesis. The 1000 input blocks retain all three seeds;
 these results neither replace the primary endpoint nor authorize S2.
 
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{figures/s1_clean_decomposition.pdf}
+\caption{S1 at $2/255$: unconditional positive fractions and descriptive
+fractions among each model's clean-correct inputs. Bars pool three fixed seeds;
+dots show each seed, not confidence limits. The panels use different vertical
+scales. The underlying populations differ between models, so conditioning does
+not identify an architectural effect or revise the primary endpoint.}
+\label{fig:s1clean}
+\end{figure}
+
+Figure~\ref{fig:s1clean} separates prediction accuracy from the fraction of
+correct predictions that verification can establish. For complete verification,
+the latter is 39.6\% for MoE and 35.4\% for both dense matches, while clean
+accuracy is 48.0\%, 54.7\% (active) and 54.2\% (total). For incomplete bounds,
+the conditional fractions are 1.54\%, 0.12\% and 0.12\%. These are post-hoc
+descriptive decompositions: clean-correct cohorts differ, and the seed dots
+show substantial variation. They do not explain whether path width, training
+losses, or another factor caused the difference. In particular, the recorded
+S1 results do not identify a layer responsible for the bound gap.
+
 Complete verification costs 167.459 summed request hours, incomplete 51.329,
 and public PGD 5.863: 224.651 hours total. The eight-worker parallel queue wall
 time is 28.094 hours across two segments, excluding the approval gap, training
@@ -347,14 +369,19 @@ per-request speed. Full states, paired gain/loss identities, cost intervals
 and source hashes are archived. Route counts are conservative numerical
 candidate upper counts, not exact legal-history counts or route-flip witnesses.
 
-\subsection{S2 and ablations: not executed after the stop}
-The registered rule returns this study to reductions and empirical limits.
-Certification training, routing regularization and their proposed ablations
-were not executed. In particular, evaluating ordinary-trained networks using
-CROWN-IBP does not test CROWN-IBP training or the C3 tradeoff claim. The failed
-screen does not prove such training could never help, but it does not justify
-starting it under this protocol. No extra samples, new favorable radius, or
-specialized-verifier mechanism was added to change the decision.
+\subsection{A separately authorized certification-training follow-up}
+S1 stops under its registered rule. Evaluating ordinary-trained networks using
+CROWN-IBP does not test certification training or the C3 tradeoff claim.
+The PI subsequently authorized a separate S2a study to test C3 directly;
+this decision does not convert S1 into a passed screen.
+The frozen follow-up compares route-envelope IBP training, its routing-regularizer
+ablation, and two capacity-matched dense IBP baselines across five seeds.
+All 10,000 test inputs form its primary IBP endpoint; complete verification is
+secondary and uses a common engine version and branching configuration.
+It resamples paired seeds and inputs, while keeping validation-selected
+configurations fixed. Training is underway; no S2a test result or gate decision
+is reported here. No extra S1 samples, radius changes, or verifier mechanisms
+were added to change the original decision.
 
 \subsection{Earlier verifier experiments as motivation}
 The archived multilayer study obtains 108/180 numerical positives with pruned
@@ -394,7 +421,8 @@ clean-environment reproduction remain outstanding.
 
 \section{Disposition}
 S1 is complete and fails the registered architecture screen under both
-capacity conventions. C2 is not established, and C3 was not tested. The
+capacity conventions. C2 is not established, and C3 remains unestablished while
+the separately authorized certification-training study runs. The
 paper's supported content is route-aware reductions, a bounded empirical
 comparison, and the limits of active-parameter and aggregate-timing arguments.
 The incomplete-bound gain remains part of the result. It is not used to
