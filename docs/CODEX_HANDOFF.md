@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## S2a unexecuted continuation admitted and running, 2026-11-01
+
+Real increment:continuation launched;4733original settled incl1ERROR retained; [record](architecture_s2a_records_20261031.json).
+Immutable8087806b6 runs detachedPID283507/start1232841114 from executions/architecture_s2a_evaluation_20261101_r2; verify identity before monitoring,no restart.
+Fresh admission:load5.57/20CPUs,101.7GiBavailable memory,228.7GiBdisk;8single-threadCPUworkers,8GiB AS,300s/request,noGPU. Copy0.483s and startup/admission2.628s separately recorded.
+Only15287incomplete+4000complete unexecuted requests continue;128MiB account carries63,683,960old bytes,external records fit original1MiB reservation. No old terminal is replaced.
+Numerical source/method/weights/inputs unchanged; parser and two-segment auditor are the only changed existing executable sources. Tools-only controls and old failure are archived.
+Continue fixed queue,then aggregate final audit and manuscript. Primary STOP unchanged: no S2b/retuning/extra samples/new mechanism;40h estimate is not a cutoff.
+
 ## S2a dead-stat compatibility fixed; unexecuted continuation frozen, 2026-11-01
 
 Real increment:4733settled=20primary+4713incomplete;0complete;original queue PREFIX_STOP with1ERROR; [record](architecture_s2a_records_20261031.json).
