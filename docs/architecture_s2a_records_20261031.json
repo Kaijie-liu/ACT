@@ -43,9 +43,9 @@
   "old_decision": "STOP_S1_RETURN_TO_REDUCTION_PAPER",
   "literature": "bounded primary-source search; no equivalent full design found; not novelty proof",
   "scientific_status": "C3_PENDING",
-  "next": "Continue original detached 24-run queue; after all completions bind20 selected weights and materialized inputs, freeze/admit/evaluate full fixed queue. No test result or gate change.",
+  "next": "Bind20 selected weights and materialized fixed test inputs, freeze/admit/evaluate the existing full queue; no40h truncation, no S2b before registered decision.",
   "real_training_runs_started": 24,
-  "real_training_runs_completed": 21,
+  "real_training_runs_completed": 24,
   "launch": {
     "path": "/data1/Kane/MOE/results/architecture_s2a_20261031_r1/launch.json",
     "sha256": "2d14cfe6132fc6916271bb38350404e25e2a9269da98941098430730b8ed815a",
@@ -167,22 +167,22 @@
     "final_weight_input_freeze": "PENDING_TRAINING_COMPLETION"
   },
   "latest_training_observation": {
-    "status": "SELECTED_FOLLOWUPS_RUNNING",
+    "status": "TRAINING_COMPLETE",
     "pid": 327708,
     "start_ticks": "1227134153",
-    "live": true,
+    "live": false,
     "execution_commit": "8b59db610e32dbcd3c3918cedfcb23b28c9fa949",
     "training_started": 24,
-    "training_complete": 21,
-    "completed_epochs": 2274,
+    "training_complete": 24,
+    "completed_epochs": 2400,
     "error_records": [],
-    "clock": 1793468944.5104551,
+    "clock": 1793474498.9056926,
     "trained_verification_calls": 0,
     "scope": "record and finite CPU weight consistency; no recomputation of training, validation bounds or test results",
-    "path": "/data1/Kane/MOE/results/architecture_s2a_20261031_r1/training_completion_prefix_011.json",
-    "sha256": "acc2af3759dc8ac155f0c1ff3c7abaa0690d66240b1d378978a48f15b5675722",
-    "active_workers": 3,
-    "queue_phase": "M/M-reg seed3 newly complete; all 24 items started; D-tot/M/M-reg seed4 running"
+    "path": "/data1/Kane/MOE/results/architecture_s2a_20261031_r1/training_completion_prefix_012.json",
+    "sha256": "5b1a2779fcdfde8c7fde274e3756d8720e7326fead6e0fa7d659561c29ac9ef4",
+    "active_workers": 0,
+    "queue_phase": "All 24 runs and 20 validation-selected models complete; original controller exited"
   },
   "secondary_analysis_controls": {
     "files": [
@@ -284,6 +284,11 @@
         "path": "/data1/Kane/MOE/results/architecture_s2a_20261031_r1/training_completion_prefix_011.json",
         "sha256": "acc2af3759dc8ac155f0c1ff3c7abaa0690d66240b1d378978a48f15b5675722",
         "bytes": 23887
+      },
+      {
+        "path": "/data1/Kane/MOE/results/architecture_s2a_20261031_r1/training_completion_prefix_012.json",
+        "sha256": "5b1a2779fcdfde8c7fde274e3756d8720e7326fead6e0fa7d659561c29ac9ef4",
+        "bytes": 35602
       }
     ],
     "completed_runs": [
@@ -307,7 +312,10 @@
       "D-act_seed4",
       "D-tot_seed3",
       "M-reg_seed3",
-      "M_seed3"
+      "M_seed3",
+      "D-tot_seed4",
+      "M-reg_seed4",
+      "M_seed4"
     ],
     "scope": "100 epochs, validation-only selection, original source and finite saved weights; no new forward/test/solver calls",
     "new_forward_or_solver_calls": 0,
@@ -499,5 +507,49 @@
       "warmup, balance, frozen schedule, two-configuration validation selection and original gates"
     ],
     "scientific_status": "C3_PENDING; no S2a test result; S1 STOP unchanged"
+  },
+  "training_completion": {
+    "path": "/data1/Kane/MOE/results/architecture_s2a_training_20261031_r1/complete.json",
+    "sha256": "b7bca7a9f7dab4811f6feda6dd0b80ef74c4b4b2a9cc50faae3e8c7415dc19a0",
+    "controller_seconds": 51415.33177822828,
+    "sum_attempt_seconds": 183044.54874198698,
+    "model_storage_bytes": 2751268248,
+    "final_evidence_account": {
+      "accounting": "stored bytes plus outstanding reservations; account/lock reserve4096",
+      "cap": 134217728,
+      "initial_bytes": 294795,
+      "terminal_reserve": 524288,
+      "used": 1613857
+    },
+    "selected_model_ids": [
+      "D-act_seed0_config1",
+      "D-act_seed1",
+      "D-act_seed2",
+      "D-act_seed3",
+      "D-act_seed4",
+      "D-tot_seed0_config0",
+      "D-tot_seed1",
+      "D-tot_seed2",
+      "D-tot_seed3",
+      "D-tot_seed4",
+      "M-reg_seed0_config0",
+      "M-reg_seed1",
+      "M-reg_seed2",
+      "M-reg_seed3",
+      "M-reg_seed4",
+      "M_seed0_config0",
+      "M_seed1",
+      "M_seed2",
+      "M_seed3",
+      "M_seed4"
+    ],
+    "audit": {
+      "path": "/data1/Kane/MOE/results/architecture_s2a_20261031_r1/training_completion_prefix_012.json",
+      "sha256": "5b1a2779fcdfde8c7fde274e3756d8720e7326fead6e0fa7d659561c29ac9ef4",
+      "bytes": 35602
+    },
+    "audit_seconds": 1.375636525452137,
+    "new_forward_or_solver_calls": 0,
+    "test_evaluated": false
   }
 }

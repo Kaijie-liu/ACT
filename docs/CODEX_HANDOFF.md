@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## S2a fixed training stage complete, 2026-11-01
+
+Real increment:+3 completed/reviewed seed4 runs;24/24training,2400epochs,20selected models,0trained verification calls; [record](architecture_s2a_records_20261031.json).
+Last three100-epoch records and finite weights,all24attempts/exits,validation-only20model selection,source/configuration bindings and full cost/storage totals PASS in1.376s;no new forward/test/solver call.
+OriginalPID327708/start1227134153 has exited after TRAINING_COMPLETE. Training wall14.282h,sum attempts50.846h,model storage2,751,268,248bytes;training evidence account1,613,857/134,217,728bytes.
+All four selected configurations remain unchanged;seed0 is reused. Training source stays immutable8b59db610;no retry,extra run,test selection or observed error.
+Next bind20weights/materialized test inputs,freeze the existing20primary+20000incomplete+4000complete queue,perform fresh resource admission,and execute.300s/request and128MiB evidence cap remain;no40h truncation.
+C3_PENDING;training completion is not a test result or S2b entry. S1 STOP and all guarantee distinctions remain.
+
 ## S2a all selected seed3 models reviewed, 2026-11-01
 
 Real increment:+2 completed/reviewed M/M-reg seed3 runs;21/24complete,all24started,3active,0trained verification calls; [record](architecture_s2a_records_20261031.json).
