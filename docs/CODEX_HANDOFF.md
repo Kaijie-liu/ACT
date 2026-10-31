@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## S2a tuning complete; frozen sixteen-run continuation started, 2026-10-31
+
+Real increment:+2 completed M-reg runs;all8 tuning runs complete,8/24overall,12started,4active,810saved epochs,0trained verification calls; [record](architecture_s2a_records_20261031.json).
+New100-epoch/checkpoint records and independent recomputation of all four configuration choices PASS in1.456s; validation-only selection,finite CPU weights and source/exit/cost bindings retained.
+Chosen learning rates:D-act0.0005;D-tot/M/M-reg0.001;M route weight0.1. Same frozen certified-count/clean-count/configuration tie-break; no test selection or recipe change.
+Selection reuses four seed0 weights;expected16 seed1-4 items match the registered24-run/20-model design. The original controller has already started all four seed1 runs.
+Continue samePID327708/start1227134153 and immutable8b59db610; do not rerun tuning or seed0. After24 completions bind20 weights/materialized inputs and freeze/admit evaluation.
+No test result,C3 decision or S2b entry follows from tuning. S1 STOP and300s/request remain unchanged; complete the authorized fixed queue.
+
 ## S2a six completed runs reviewed; final two tuning runs active, 2026-10-31
 
 Real increment:+2 completed M tuning runs;6/24complete,8started,2active,669saved epochs,0trained verification calls; [record](architecture_s2a_records_20261031.json).

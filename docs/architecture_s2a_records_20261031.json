@@ -44,8 +44,8 @@
   "literature": "bounded primary-source search; no equivalent full design found; not novelty proof",
   "scientific_status": "C3_PENDING",
   "next": "continue original live training; after24 completions bind20 selected weights/materialized inputs, freeze evaluation then fresh resource admission and same-engine queue; final record audit runs automatically",
-  "real_training_runs_started": 8,
-  "real_training_runs_completed": 6,
+  "real_training_runs_started": 12,
+  "real_training_runs_completed": 8,
   "launch": {
     "path": "/data1/Kane/MOE/results/architecture_s2a_20261031_r1/launch.json",
     "sha256": "2d14cfe6132fc6916271bb38350404e25e2a9269da98941098430730b8ed815a",
@@ -167,22 +167,22 @@
     "final_weight_input_freeze": "PENDING_TRAINING_COMPLETION"
   },
   "latest_training_observation": {
-    "status": "COMPLETED_TRAINING_PREFIX_REVIEWED",
+    "status": "TUNING_COMPLETE_FOLLOWUPS_RUNNING",
     "pid": 327708,
     "start_ticks": "1227134153",
     "live": true,
     "execution_commit": "8b59db610e32dbcd3c3918cedfcb23b28c9fa949",
-    "training_started": 8,
-    "training_complete": 6,
-    "completed_epochs": 669,
+    "training_started": 12,
+    "training_complete": 8,
+    "completed_epochs": 810,
     "error_records": [],
-    "clock": 1793435816.8804588,
+    "clock": 1793441823.707121,
     "trained_verification_calls": 0,
-    "scope": "validation-only checkpoint and source/weight/100-epoch consistency; not test or C3 evidence",
-    "path": "/data1/Kane/MOE/results/architecture_s2a_20261031_r1/training_completion_prefix_004.json",
-    "sha256": "8addd5d755e2a39666c58e3ce5290d1307b68cb9161acce3b0c3759e7f829b89",
-    "active_workers": 2,
-    "queue_phase": "last two tuning runs; followups start after all eight tuning runs"
+    "scope": "all eight tuning completions, validation-only checkpoint/configuration selection, immutable source and sixteen-followup roster; no test result or C3 conclusion",
+    "path": "/data1/Kane/MOE/results/architecture_s2a_20261031_r1/training_completion_prefix_005.json",
+    "sha256": "dd36b932ceb82890ff4cdd86517bd00727729cf6a02d4f67e8865db52e2ed951",
+    "active_workers": 4,
+    "queue_phase": "four seed1 followups running; seed2-4 remain in original queue"
   },
   "secondary_analysis_controls": {
     "files": [
@@ -249,6 +249,11 @@
         "path": "/data1/Kane/MOE/results/architecture_s2a_20261031_r1/training_completion_prefix_004.json",
         "sha256": "8addd5d755e2a39666c58e3ce5290d1307b68cb9161acce3b0c3759e7f829b89",
         "bytes": 22374
+      },
+      {
+        "path": "/data1/Kane/MOE/results/architecture_s2a_20261031_r1/training_completion_prefix_005.json",
+        "sha256": "dd36b932ceb82890ff4cdd86517bd00727729cf6a02d4f67e8865db52e2ed951",
+        "bytes": 31370
       }
     ],
     "completed_runs": [
@@ -256,6 +261,8 @@
       "D-act_seed0_config1",
       "D-tot_seed0_config0",
       "D-tot_seed0_config1",
+      "M-reg_seed0_config0",
+      "M-reg_seed0_config1",
       "M_seed0_config0",
       "M_seed0_config1"
     ],
@@ -305,5 +312,87 @@
     "new_trained_model_or_solver_calls": 0,
     "test_data_access": false,
     "scope": "batch mean neuron widths/ReLU instability; original bound and training sources unchanged; no causal or trained benefit evidence"
+  },
+  "tuning_selection_review": {
+    "status": "PASS_ALL_TUNING_COMPLETIONS_AND_FROZEN_SELECTION",
+    "record": {
+      "path": "/data1/Kane/MOE/results/architecture_s2a_20261031_r1/training_completion_prefix_005.json",
+      "sha256": "dd36b932ceb82890ff4cdd86517bd00727729cf6a02d4f67e8865db52e2ed951",
+      "bytes": 31370
+    },
+    "selection": {
+      "path": "/data1/Kane/MOE/results/architecture_s2a_training_20261031_r1/selection.json",
+      "sha256": "5b06c3a5ba0b3f6416a51628c64169f3455cfe4d89202e3053e2c579c2d29e4d",
+      "value": {
+        "configurations": {
+          "D-act": {
+            "id": "D-act_seed0_config1",
+            "configuration": 1,
+            "validation": {
+              "certified": 1613,
+              "clean": 2430,
+              "evidence_grade": "IBP_NUMERICAL_POLICY",
+              "mean_margin_width": 2.339933062744141,
+              "single_route": null,
+              "total": 5000
+            },
+            "checkpoint_sha256": "83f38be12925e613d7a879d271593c37bb97399c9059b316ba048a06d1fff682"
+          },
+          "D-tot": {
+            "id": "D-tot_seed0_config0",
+            "configuration": 0,
+            "validation": {
+              "certified": 1586,
+              "clean": 2435,
+              "evidence_grade": "IBP_NUMERICAL_POLICY",
+              "mean_margin_width": 3.969486926269531,
+              "single_route": null,
+              "total": 5000
+            },
+            "checkpoint_sha256": "b8999bc9632d24c448fbc3aa6780ee23f66c923468a2c4a6a844e6c8c36f9ab5"
+          },
+          "M": {
+            "id": "M_seed0_config0",
+            "configuration": 0,
+            "validation": {
+              "certified": 1506,
+              "clean": 2321,
+              "evidence_grade": "IBP_NUMERICAL_POLICY",
+              "mean_margin_width": 2.204913275146484,
+              "single_route": 3709,
+              "total": 5000
+            },
+            "checkpoint_sha256": "c31114a4901ee87d804e82f4579087dd1ecedfcc0ce9986836a42ab25ca6194d"
+          },
+          "M-reg": {
+            "id": "M-reg_seed0_config0",
+            "configuration": 0,
+            "validation": {
+              "certified": 1476,
+              "clean": 2308,
+              "evidence_grade": "IBP_NUMERICAL_POLICY",
+              "mean_margin_width": 2.448131317138672,
+              "single_route": 2642,
+              "total": 5000
+            },
+            "checkpoint_sha256": "5888b94fd64a050fd2c4bc0ce438a1608eae2cf3a25c14f7a12e35196cab950f"
+          }
+        },
+        "seed0_reused": true,
+        "test_evaluated": false
+      }
+    },
+    "expected_followup_count": 16,
+    "observed_followups": [
+      "D-act_seed1",
+      "D-tot_seed1",
+      "M-reg_seed1",
+      "M_seed1"
+    ],
+    "seed0_reused": true,
+    "final_selected_model_count": 20,
+    "total_training_runs": 24,
+    "new_forward_or_solver_calls": 0,
+    "test_evaluated": false
   }
 }
