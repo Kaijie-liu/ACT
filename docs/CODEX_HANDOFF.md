@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## S2a dead-stat compatibility fixed; unexecuted continuation frozen, 2026-11-01
+
+Real increment:4733settled=20primary+4713incomplete;0complete;original queue PREFIX_STOP with1ERROR; [record](architecture_s2a_records_20261031.json).
+Error incomplete_D-act_seed0_0235 is cleanup parsing of dead X/sid=-1; saved positive candidate remains ERROR, never upgraded or rerun. Original controller exited and prefix audit retained.
+Parser accepts only dead-state sentinel; live/bound identity, signal ownership, deadline and cleanup gates remain.25distinct controls pass after correcting one negative-test fixture publication error;both attempts retained,0model/solver calls.
+[Continuation](../scripts/architecture_s2_continuation.py) freezes15287incomplete+4000complete remaining requests in original order; numerical sources unchanged, old failures/counts/costs retained by two-segment audit.
+Same aggregate128MiB carries prior63,683,960bytes;8CPUworkers,8GiB AS,300s unchanged. Freeze binds prior tree and original954b8934a executable; new execution not launched yet.
+Next commit/push, make immutable copy, freshly admit and run only this remainder. Original prefix and primary STOP stay immutable; noS2b/retuning/new direction.
+
 ## S2a manuscript presentation corrected; original queue continues, 2026-11-01
 
 Real increment:0new model/solver calls from editing; original evaluation controller remains live; [record](architecture_s2a_records_20261031.json).

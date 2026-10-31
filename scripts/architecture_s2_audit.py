@@ -74,31 +74,54 @@ def analyze(root):
     require(spec['study']=='S2A','registered S2a study')
     require(all(sha(ROOT/p)==h for p,h in spec['source_files'].items()),'frozen analysis source')
     requests=all_requests(spec['models'])
-    require(digest(requests)==spec['request_catalog_sha256'],'full fixed request roster')
-    start=read_record(root/'start.json.gz');require(start['manifest_sha256']==mh,'execution freeze')
+    from architecture_s1_continuation import locate_requests
+    segments=[(root,mh,spec,len(requests))]
+    if 'continuation' in spec:
+        from architecture_s2_continuation import validate
+        old,full,remaining=validate(spec);c=spec['continuation']
+        require(requests==full,'same complete S2a denominator')
+        require(all(sha(Path(c['original_execution'])/p)==h for p,h in old['source_files'].items()),
+                'original executable retained')
+        segments=[(Path(c['root']),c['manifest_sha256'],old,len(full)),
+                  (root,mh,spec,len(remaining))]
+        require(load(root/'artifact_account.json')['initial_bytes']==c['prior_charged_bytes'],
+                'continuation carries all old charges without a new allowance')
+    else:
+        require(digest(requests)==spec['request_catalog_sha256'],'full fixed request roster')
+    owners=locate_requests(requests,[s[0] for s in segments])
     # A live queue may still be publishing ledgers; only settled prefixes get
     # this final audit. The separate primary-report entry remains available.
-    queue=read_record(root/'queue_complete.json.gz')
-    require(queue['source_manifest_sha256']==mh and queue['request_catalog_sha256']==digest(requests),
-            'final queue identity')
+    queues=[];starts=[]
+    for folder,h,part_spec,_ in segments:
+        start=read_record(folder/'start.json.gz');require(start['manifest_sha256']==h,'execution freeze')
+        queue=read_record(folder/'queue_complete.json.gz')
+        require(queue['source_manifest_sha256']==h
+                and queue['request_catalog_sha256']==part_spec['request_catalog_sha256'],
+                'final queue identity')
+        queues.append(queue);starts.append(start)
     require(sha(spec['inputs']['path'])==spec['inputs']['sha256'],'shared physical input file')
     inputs=unpack_arrays(read_record(spec['inputs']['path']));check_inputs(inputs)
     models={m['id']:m for m in spec['models']};records={};primary={};primary_details={}
     states=Counter();by_mode={};missing_cost=0;identity=[];bounds_seconds=0.
+    segment_states=[Counter() for _ in segments];segment_seconds=[0.]*len(segments)
     for q in requests:
-        row,value=audit_request(root,q,mh)
+        owner=owners.get(q['id'],len(segments)-1)
+        folder,h,part_spec,_=segments[owner]
+        row,value=audit_request(folder,q,h)
+        if row['status']!='NOT_EXECUTED':segment_states[owner][row['status']]+=1
         states[row['status']]+=1;mode=q['mode'];stats=by_mode.setdefault(mode,dict(states=Counter(),seconds=0.))
         stats['states'][row['status']]+=1
         if row['seconds'] is not None:
             require(np.isfinite(row['seconds']) and row['seconds']>=0,'finite charged cost')
             stats['seconds']+=row['seconds']
+            segment_seconds[owner]+=row['seconds']
         else:missing_cost+=row['status']!='NOT_EXECUTED'
-        lp=root/(q['id']+'.ledger.json.gz')
+        lp=folder/(q['id']+'.ledger.json.gz')
         if lp.exists():identity.append((q['id'],sha(lp)))
         model=models[q['model']]
         if mode=='primary':
             if value is not None:
-                arrays=check_primary(root,q,value,model,spec,inputs['labels'])
+                arrays=check_primary(folder,q,value,model,part_spec,inputs['labels'])
                 primary[q['model']]=arrays
                 batch_cost=sum(b['seconds'] for b in value['batches']);bounds_seconds+=batch_cost
                 primary_details[q['model']]=dict(request_seconds=row['seconds'],
@@ -110,16 +133,18 @@ def analyze(root):
                     primary_details[q['model']]['layer_diagnostics']=summarize_layer_diagnostics(
                         value['batches'],family=model['family'])
         else:
-            if value is not None:check_secondary(value,q,model,spec,int(inputs['labels'][q['index']]))
+            if value is not None:check_secondary(value,q,model,part_spec,int(inputs['labels'][q['index']]))
             row['index']=q['index'];records[(mode,q['model'],q['index'])]=row
     charged=sum(m['seconds'] for m in by_mode.values());not_executed=states['NOT_EXECUTED']
-    require(queue['settled']==len(requests)-not_executed and queue['not_executed']==not_executed,
-            'all terminal and unexecuted denominators')
-    require(queue['states']=={s:states[s] for s in queue['states']},'all online terminal counts')
-    require(abs(queue['summed_request_seconds']-charged)<1e-5 and queue['missing_request_cost']==missing_cost,
-            'all startup/worker/receive/cleanup costs included')
+    for i,queue in enumerate(queues):
+        settled=sum(segment_states[i].values());planned=segments[i][3]
+        require(queue['settled']==settled and queue['not_executed']==planned-settled,
+                'all terminal and unexecuted denominators per segment')
+        require(Counter(queue['states'])==segment_states[i],'all online terminal counts')
+        require(abs(queue['summed_request_seconds']-segment_seconds[i])<1e-5
+                and queue['missing_request_cost']==0,'all request costs included per segment')
     require(missing_cost==0,'complete executed-cost record')
-    complete=queue['status']=='COMPLETE' and not_executed==0
+    complete=queues[-1]['status']=='COMPLETE' and not_executed==0
     options={k:spec['bootstrap'][k] for k in ('resamples','seed')}
     primary_result=None
     if len(primary)==20:
@@ -129,7 +154,7 @@ def analyze(root):
             a,s=ARMS.index(m['arm']),m['seed'];v=primary[m['id']]
             cert[a,s]=v['certified'];clean[a,s]=v['clean'];routes[a,s]=v['route_count']
         primary_result=primary_summary(cert,clean,routes,**options)
-        old=root/'primary_summary.json.gz'
+        old=segments[0][0]/'primary_summary.json.gz'
         if old.exists():
             prior=read_record(old)
             require(all(prior[k]==v for k,v in primary_result.items()),'primary report differential')
@@ -156,16 +181,20 @@ def analyze(root):
             statuses={records[(mode,m['id'],i)]['status'] for mode in ('complete','incomplete')}
             if {'POSITIVE','UNSAFE_REPLAYED'}<=statuses:
                 numeric_conflicts.append(dict(model=m['id'],index=i,kind='same_float64_positive_vs_replay'))
-    account=load(root/'artifact_account.json')
-    physical=sum(p.stat().st_size for p in root.rglob('*') if p.is_file())
-    require(account['cap']==spec['artifact_bytes'] and
-            physical+account['initial_bytes']<=account['used']<=account['cap'],'shared evidence account')
+    physical=0
+    for folder,_,part_spec,_ in segments:
+        account=load(folder/'artifact_account.json')
+        part_physical=sum(p.stat().st_size for p in folder.rglob('*') if p.is_file())
+        require(account['cap']==part_spec['artifact_bytes'] and
+                part_physical+account['initial_bytes']<=account['used']<=account['cap'],'shared evidence account')
+        physical+=part_physical
     decision=(primary_result['decision'] if complete and primary_result is not None
               else 'PENDING_COMPLETE_S2A_EVIDENCE')
     return dict(status='COMPLETE_AUDIT' if complete else 'PREFIX_AUDIT',
         source_manifest_sha256=mh,record_identity_sha256=digest(identity),
         online_states=dict(states),planned_requests=len(requests),primary_measurements=len(primary),
-        charged_request_seconds=charged,queue_wall_seconds=queue['queue_wall_seconds'],
+        charged_request_seconds=charged,queue_wall_seconds=sum(q['queue_wall_seconds'] for q in queues),
+        segment_roots=[str(s[0]) for s in segments],segment_charged_seconds=segment_seconds,
         by_mode=by_mode,missing_executed_cost=missing_cost,
         primary=primary_result,primary_cost_and_width=primary_details,
         secondary=comparisons,model_tables=tables,
@@ -173,7 +202,7 @@ def analyze(root):
         registered_decision=decision,requires_evidence_investigation=bool(numeric_conflicts),
         artifact_physical_bytes=physical,artifact_charged_bytes=account['used'],
         preparation_seconds=spec['preparation_seconds'],primary_batch_compute_seconds=bounds_seconds,
-        controller_startup_and_admission_seconds=start.get('startup_and_admission_seconds'),
+        controller_startup_and_admission_seconds=sum(s.get('startup_and_admission_seconds') or 0 for s in starts),
         cost_scope='queue wall and summed full requests separately; shared prep/startup/train/incomplete separately; prep starts at Python entry (pre-entry and final-write tail excluded); batch time not cold input latency',
         audit_seconds=time.monotonic()-began,auditor_sha256=sha(__file__),
         scientific_scope='numerical-policy comparison; independent record recount, not a rerun of bounds, witnesses or source proof')

@@ -352,3 +352,31 @@ native synthetic primary calls pass through the existing supervisor and
 receiver. Total executed control cost is 11.454s; all training source hashes
 remain equal to the running immutable copy. No trained model or CIFAR input is
 queried. The shared128MiB account and300s request deadline are unchanged.
+
+## Preserved evaluation prefix and cleanup-only continuation (2026-11-01)
+
+The original execution stopped at4,733settled calls (20primary,4,713incomplete,
+0complete). One incomplete request was rejected during cleanup because the
+initial process-stat parser rejected state `X` with session ID `-1`. Its saved
+positive candidate remains an ERROR. This is not a new mathematical result.
+Linux's `do_task_stat` initializes SID to `-1` before obtaining task signal
+metadata ([upstream source](https://github.com/torvalds/linux/blob/v6.8/fs/proc/array.c));
+the observation identifies the parser incompatibility, not a unique kernel cause.
+The narrow repair permits this sentinel only for dead states X/x, never for a
+live task or to authorize a signal. Existing bound identity checks are retained.
+
+Twenty-five distinct controls cover dead/live identity, forbidden signaling,
+deadline, source/cost binding, failed-request exclusion, prior mutation, duplicate
+execution and complete denominators. One negative-test fixture initially used
+immutable publication to simulate corruption; that test error is retained, and
+only that fixture was corrected and rerun. No model/solver was called.
+
+The new immutable continuation contains only15,287incomplete and4,000complete
+requests, in original order. The128MiB shared account carries every old charge;
+it is not reset or enlarged. All settled requests, including the error, remain
+spent. The aggregate auditor checks both source identities, both terminal
+ledgers, all old/new costs and the unchanged complete roster. No offline result
+can replace an online failure. Original source954b8934a and the entire failed
+prefix are preserved; training, numerical engine, input/weight identities and
+300second budget are unchanged. This authorized tool repair does not reopen the
+failed S2a primary gate or permit S2b.

@@ -51,7 +51,12 @@ def _identity(pid,reader,*,initial_development_deadline=None):
         fields=raw.rsplit(b')',1)[1].split()
         state=fields[0].decode('ascii'); sid=int(fields[3]); start=int(fields[19])
         if initial_development_deadline is not None: gate(initial_development_deadline)
-        if len(state)==1 and 0<=sid<2**63 and 0<=start<2**63:
+        # Linux do_task_stat initializes sid=-1; a dead task can retain that
+        # sentinel when its sighand cannot be locked. It is not an owned/live
+        # identity: session scans skip the unmatched SID, and signal checks
+        # still require the positive owned SID and bound start tick.
+        valid_sid=0<=sid<2**63 or (sid==-1 and state in ('X','x'))
+        if len(state)==1 and valid_sid and 0<=start<2**63:
             return state,sid,start
         if attempt+1==attempts:
             raise ValueError(f'invalid process identity: state={state[:8]!r}, sid={sid}, start={start}')

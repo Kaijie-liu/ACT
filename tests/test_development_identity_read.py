@@ -81,5 +81,37 @@ class InitialDevelopmentIdentityTests(unittest.TestCase):
             owned._identity(101,r,initial_development_deadline=deadline)
         self.assertLessEqual(r.reads,2)
 
+    def test_dead_task_without_session_is_not_owned(self):
+        for state in ('X','x'):
+            for call in (lambda r:self.scan(r),
+                         lambda r:owned._observe_cleanup(101,time.monotonic()+5,r)):
+                r=Reader(stat(state=state,sid=-1))
+                result=call(r)
+                self.assertEqual(result['live'],[])
+                self.assertEqual(result['zombies'],[])
+                self.assertEqual(r.reads,1)  # No status read or signal target.
+
+    def test_dead_sentinel_does_not_mask_invalid_live_identity(self):
+        for raw in (stat(sid=-1),stat(state='Z',sid=-1),stat(state='X',sid=-2),
+                    stat(state='X',sid=-1,start=-1),stat(state='X',sid=-1,pid=102)):
+            with self.assertRaises(ValueError):owned._identity(101,Reader(raw))
+
+    def test_bound_session_cannot_turn_into_unknown_dead_identity(self):
+        r=Reader(stat(),stat(state='X',sid=-1))
+        with self.assertRaisesRegex(owned._ObservationFailure,'identity changed'):
+            owned._observe_cleanup(101,time.monotonic()+5,r)
+
+    def test_dead_sentinel_never_authorizes_signal(self):
+        import os
+        class Pidfd:
+            def __init__(self):self.signals=0
+            def pidfd_open(self,pid,flags):return os.open('/dev/null',os.O_RDONLY)
+            def pidfd_send_signal(self,*args):self.signals+=1
+        api=Pidfd()
+        with self.assertRaisesRegex(ValueError,'identity changed'):
+            owned._kill_owned(101,101,time.monotonic()+5,pidfd=api,expected_start=55,
+                              reader=Reader(stat(state='X',sid=-1)))
+        self.assertEqual(api.signals,0)
+
 
 if __name__=='__main__':unittest.main()
