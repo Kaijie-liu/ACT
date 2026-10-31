@@ -1,6 +1,6 @@
 {
-  "stage": "S2a_TRAINING_RUNNING_EVALUATION_AND_ANALYSIS_READY",
-  "real_verification_calls": 196,
+  "stage": "S2A_PRIMARY_STOP_SECONDARY_RUNNING",
+  "real_verification_calls": 914,
   "internal_review": {
     "path": "/data1/Kane/MOE/survey/drafts/act_icml_review_20261031.md",
     "sha256": "dcf917092bc1fb4a54642bdd49c183ea42b263c07dd91c1af20633ad0313ee0e",
@@ -815,5 +815,75 @@
       "additional_model_calls": 0
     },
     "scope": "Complete primary endpoint; secondary queue and final audit pending. No S2b."
+  },
+  "primary_manuscript_integration": {
+    "date": "2026-11-01",
+    "new_model_calls": 0,
+    "new_solver_calls": 0,
+    "source_primary": {
+      "path": "/data1/Kane/MOE/results/architecture_s2a_evaluation_20261101_r1/primary_summary.json.gz",
+      "sha256": "b86ceda83f6f192ef53f3e7866702cd1bb94290c43d340711ca12a1929eb7586",
+      "bytes": 316921
+    },
+    "source_export": {
+      "path": "/data1/Kane/MOE/ACT/paper/results/s2a_primary.json",
+      "sha256": "1844c973870fd655eb2521ce47d9bd1ba7f385b2f936433f9f52c9bcceecd28b",
+      "bytes": 120780
+    },
+    "figure_pdf": {
+      "path": "/data1/Kane/MOE/ACT/paper/figures/s2a_primary.pdf",
+      "sha256": "5f50123f55e3dccc13cd8d60885eb0b3464b24df38ab9c2db2a0e0ecee06364a",
+      "bytes": 23605
+    },
+    "figure_png": {
+      "path": "/data1/Kane/MOE/ACT/paper/figures/s2a_primary.png",
+      "sha256": "4bc12d909d50d312004d8beb322dba1d691702bc9342e9adc93ed4330be78e84",
+      "bytes": 94840
+    },
+    "manuscript_pdf": {
+      "path": "/data1/Kane/MOE/results/architecture_s2a_manuscript_20261101_r1/architecture_main.pdf",
+      "sha256": "88f2eff2aa819e895d154b241c17bbd25c951da18a7ab2162a2788e3370074f8",
+      "bytes": 317647
+    },
+    "checks": [
+      "source hash and primary counts/comparisons match",
+      "all20 models and all batch/layer denominators checked by exporter",
+      "compact-data-only figure rerender succeeded",
+      "Python AST parse",
+      "two successful LaTeX passes",
+      "no undefined references or overfull boxes",
+      "S2 table/figure and diagnostic appendix visually inspected"
+    ],
+    "limitations": [
+      "secondary queues unfinished",
+      "hidden widths not invariant to learned neuron rescaling",
+      "all-expert diagnostics do not isolate active paths",
+      "record audit is not independent source/network proof",
+      "AI analysis is not independent human review"
+    ],
+    "review_followup": {
+      "W2": "clean/unconditional decomposition retained",
+      "W3": "saved all-layer and projected-width descriptives; no causal claim",
+      "W5": "same frozen engine/branching in running S2a secondary queue",
+      "W7": "two source-bound result figures and empirical disposition; final venue format not claimed"
+    },
+    "live_queue_snapshot": {
+      "utc": "2026-10-31 19:42:13",
+      "settled": {
+        "incomplete": 914,
+        "primary": 20
+      },
+      "states": {
+        "POSITIVE": 299,
+        "UNSAFE_REPLAYED": 420,
+        "UNKNOWN": 195,
+        "AUXILIARY_COMPLETE": 20
+      },
+      "controller_pid": 320490,
+      "controller_start_ticks": 1232308927,
+      "execution_commit": "954b8934a4a4ce6ff750fbd9a0760c25d60f89cb",
+      "queue_complete": false
+    },
+    "next": "Finish fixed secondary queue and final audit; update remaining tables/manuscript. No S2b, new mechanism, retuning or added samples."
   }
 }

@@ -1,0 +1,4289 @@
+{
+  "source": "/data1/Kane/MOE/results/architecture_s2a_evaluation_20261101_r1/primary_summary.json.gz",
+  "source_sha256": "b86ceda83f6f192ef53f3e7866702cd1bb94290c43d340711ca12a1929eb7586",
+  "manifest_sha256": "05bdf6e476e578137a2d72498f84b79e9355fc0ecdd1e2b368e2f90fdf295ab8",
+  "decision": "STOP_S2A_WRITE_RESULTS",
+  "gates": {
+    "m_minus_active_at_least_2pp": false,
+    "m_minus_active_ci_lower_positive": false,
+    "m_minus_total_nonnegative": false,
+    "m_single_route_at_least_90pct": false
+  },
+  "arms": {
+    "D-act": {
+      "certified": 16777,
+      "certified_accuracy": 0.33554,
+      "certified_per_seed": [
+        3353,
+        3369,
+        3347,
+        3356,
+        3352
+      ],
+      "clean_accuracy": 0.50598,
+      "clean_correct": 25299,
+      "clean_per_seed": [
+        5041,
+        5051,
+        5040,
+        5089,
+        5078
+      ],
+      "conditional_positive_fraction": 0.6631487410569588,
+      "denominator": 50000,
+      "single_route_fraction": null
+    },
+    "D-tot": {
+      "certified": 15986,
+      "certified_accuracy": 0.31972,
+      "certified_per_seed": [
+        3189,
+        3188,
+        3200,
+        3235,
+        3174
+      ],
+      "clean_accuracy": 0.50096,
+      "clean_correct": 25048,
+      "clean_per_seed": [
+        4966,
+        4943,
+        5051,
+        5031,
+        5057
+      ],
+      "conditional_positive_fraction": 0.6382146279144043,
+      "denominator": 50000,
+      "single_route_fraction": null
+    },
+    "M": {
+      "certified": 15062,
+      "certified_accuracy": 0.30124,
+      "certified_per_seed": [
+        3082,
+        3028,
+        3031,
+        2947,
+        2974
+      ],
+      "clean_accuracy": 0.47106,
+      "clean_correct": 23553,
+      "clean_per_seed": [
+        4825,
+        4756,
+        4673,
+        4618,
+        4681
+      ],
+      "conditional_positive_fraction": 0.6394939073578737,
+      "denominator": 50000,
+      "single_route_fraction": 0.7392
+    },
+    "M-reg": {
+      "certified": 14962,
+      "certified_accuracy": 0.29924,
+      "certified_per_seed": [
+        3035,
+        2970,
+        2984,
+        2939,
+        3034
+      ],
+      "clean_accuracy": 0.46914,
+      "clean_correct": 23457,
+      "clean_per_seed": [
+        4723,
+        4721,
+        4712,
+        4664,
+        4637
+      ],
+      "conditional_positive_fraction": 0.6378479771496781,
+      "denominator": 50000,
+      "single_route_fraction": 0.4455
+    }
+  },
+  "comparisons": {
+    "M_minus_D-act": {
+      "gained": 3546,
+      "intersection": 11516,
+      "interval95": [
+        -0.04108,
+        -0.02762
+      ],
+      "lost": 5261,
+      "rate_difference": -0.0343
+    },
+    "M_minus_D-tot": {
+      "gained": 4067,
+      "intersection": 10995,
+      "interval95": [
+        -0.02632,
+        -0.0113
+      ],
+      "lost": 4991,
+      "rate_difference": -0.01848
+    },
+    "M_minus_M-reg": {
+      "gained": 3825,
+      "intersection": 11237,
+      "interval95": [
+        -0.0043,
+        0.007900499999999994
+      ],
+      "lost": 3725,
+      "rate_difference": 0.002
+    }
+  },
+  "bootstrap": {
+    "intervals": "unadjusted percentile95; selected configuration held fixed",
+    "resamples": 10000,
+    "seed": 20261031,
+    "unit": "crossed paired seeds and inputs"
+  },
+  "details": [
+    {
+      "arm": "D-act",
+      "seed": 0,
+      "count": 10000,
+      "clean": 5041,
+      "certified": 3353,
+      "single_route": null,
+      "mean_margin_width": 2.3629778598785403,
+      "request_seconds": 19.446875425055623,
+      "diagnostic_seconds": 1.5365975368767977,
+      "layers": [
+        {
+          "network": "dense",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 602,
+          "mean_width": 0.8532824425630035,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "dense",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 602,
+          "mean_width": 0.03277487604935155,
+          "relu_unstable_fraction": 0.010961129535734653
+        },
+        {
+          "network": "dense",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 301,
+          "mean_width": 0.7237820338680524,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "dense",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 301,
+          "mean_width": 0.07018383631131747,
+          "relu_unstable_fraction": 0.05838637862801552
+        },
+        {
+          "network": "dense",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 2.087525843565017,
+          "relu_unstable_fraction": null
+        }
+      ],
+      "ledger_sha256": "0a92706b68b4c1eb1b755336384d4655625d9e76fbd008d719443207a5ba5bd3",
+      "array_sha256": "595777f218f8c10576a15d2cd6f0bd52f478ff166b777f815eaa517076f1468f"
+    },
+    {
+      "arm": "D-tot",
+      "seed": 0,
+      "count": 10000,
+      "clean": 4966,
+      "certified": 3189,
+      "single_route": null,
+      "mean_margin_width": 4.00666362991333,
+      "request_seconds": 20.417128555476665,
+      "diagnostic_seconds": 4.83202232979238,
+      "layers": [
+        {
+          "network": "dense",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 1758,
+          "mean_width": 0.7811140760699992,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "dense",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 1758,
+          "mean_width": 0.01631712103845367,
+          "relu_unstable_fraction": 0.0028377132929861544
+        },
+        {
+          "network": "dense",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 879,
+          "mean_width": 1.6147787493119512,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "dense",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 879,
+          "mean_width": 0.035613251758924255,
+          "relu_unstable_fraction": 0.01629522181749344
+        },
+        {
+          "network": "dense",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 3.493055088525713,
+          "relu_unstable_fraction": null
+        }
+      ],
+      "ledger_sha256": "e6d02979745fe49a6c9e7d520e33e413ef1dedd605b0c2e5c87acf30b9c182f6",
+      "array_sha256": "c1ba97a290e374e51ad39900de0f1ff6316a785cc08d5ca54232cd3863cc5bc7"
+    },
+    {
+      "arm": "M",
+      "seed": 0,
+      "count": 10000,
+      "clean": 4825,
+      "certified": 3082,
+      "single_route": 7462,
+      "mean_margin_width": 2.2313318962097166,
+      "request_seconds": 21.43354804813862,
+      "diagnostic_seconds": 5.475429812446237,
+      "layers": [
+        {
+          "network": "expert_0",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.8872752302089822,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_0",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.0780042787093902,
+          "relu_unstable_fraction": 0.008528515625
+        },
+        {
+          "network": "expert_0",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.5454887520586766,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_0",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.10059123056044045,
+          "relu_unstable_fraction": 0.0386140625
+        },
+        {
+          "network": "expert_0",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.453219742769897,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.6264059031578363,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.021208352807731718,
+          "relu_unstable_fraction": 0.00165546875
+        },
+        {
+          "network": "expert_1",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.31453110390942257,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.014635978071470072,
+          "relu_unstable_fraction": 0.0141203125
+        },
+        {
+          "network": "expert_1",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.18912964672660457,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.5134125042958884,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.009059461802867009,
+          "relu_unstable_fraction": 0.000320703125
+        },
+        {
+          "network": "expert_2",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.11158791786150578,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.0060500942728669085,
+          "relu_unstable_fraction": 0.01030546875
+        },
+        {
+          "network": "expert_2",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.11775166350282724,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.8452158864918747,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.07668776819826453,
+          "relu_unstable_fraction": 0.009095703125
+        },
+        {
+          "network": "expert_3",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.9074055907006884,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.09481646737365008,
+          "relu_unstable_fraction": 0.04456640625
+        },
+        {
+          "network": "expert_3",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.4531170233523105,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 1.0923868055728847,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.06651169296517329,
+          "relu_unstable_fraction": 0.010230078125
+        },
+        {
+          "network": "expert_4",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.2491187025735926,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.09255105456680103,
+          "relu_unstable_fraction": 0.03918984375
+        },
+        {
+          "network": "expert_4",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.7420517618806661,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.5561153202437213,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.02089525016604457,
+          "relu_unstable_fraction": 0.0008171875
+        },
+        {
+          "network": "expert_5",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.25263000906648286,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.011076691447973644,
+          "relu_unstable_fraction": 0.00656640625
+        },
+        {
+          "network": "expert_5",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.1439321192055568,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.7163355547283776,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.025325313091042335,
+          "relu_unstable_fraction": 0.001262890625
+        },
+        {
+          "network": "expert_6",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.5273975447731979,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.020421109370138583,
+          "relu_unstable_fraction": 0.01556171875
+        },
+        {
+          "network": "expert_6",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.34789023315185685,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.6739622341157636,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.03838797815891448,
+          "relu_unstable_fraction": 0.00551796875
+        },
+        {
+          "network": "expert_7",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.7577280402374156,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.06056485555598847,
+          "relu_unstable_fraction": 0.04996484375
+        },
+        {
+          "network": "expert_7",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.959724851906784,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "router",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.6866018578360789,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "router",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.030207969607715494,
+          "relu_unstable_fraction": 0.0023734375
+        },
+        {
+          "network": "router",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 8,
+          "mean_width": 0.15079419326724455,
+          "relu_unstable_fraction": null
+        }
+      ],
+      "ledger_sha256": "413eeeadff0e3dc49cef962d006dd2a78f887b2f8d913812d145a87ad7e17974",
+      "array_sha256": "a3ade42565276c4c20faeb2ebac76b7bb2d028bfcc8f267cc2a8a46c2095230d"
+    },
+    {
+      "arm": "M-reg",
+      "seed": 0,
+      "count": 10000,
+      "clean": 4723,
+      "certified": 3035,
+      "single_route": 5314,
+      "mean_margin_width": 2.4553742641448975,
+      "request_seconds": 21.22691127844155,
+      "diagnostic_seconds": 5.490446770563722,
+      "layers": [
+        {
+          "network": "expert_0",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.9392369524059934,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_0",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.09563598354168353,
+          "relu_unstable_fraction": 0.010521484375
+        },
+        {
+          "network": "expert_0",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.9370806875053996,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_0",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.1098826751971792,
+          "relu_unstable_fraction": 0.04174765625
+        },
+        {
+          "network": "expert_0",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.6741218868625911,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.5951060855620425,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.0235938021239941,
+          "relu_unstable_fraction": 0.002116015625
+        },
+        {
+          "network": "expert_1",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.45454593535189153,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.024886119486280087,
+          "relu_unstable_fraction": 0.01956875
+        },
+        {
+          "network": "expert_1",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.3642483852012642,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.5209797018645913,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.006092908179468941,
+          "relu_unstable_fraction": 0.000344140625
+        },
+        {
+          "network": "expert_2",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.11402058640544892,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.0056842342241172445,
+          "relu_unstable_fraction": 0.01273828125
+        },
+        {
+          "network": "expert_2",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.10348248654631897,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.8326524524884066,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.08094366448128712,
+          "relu_unstable_fraction": 0.0100359375
+        },
+        {
+          "network": "expert_3",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.8365798858777838,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.1191550145228066,
+          "relu_unstable_fraction": 0.05388515625
+        },
+        {
+          "network": "expert_3",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.7557926803722974,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 1.0707710619621678,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.08140459010281192,
+          "relu_unstable_fraction": 0.01231875
+        },
+        {
+          "network": "expert_4",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.558127269574534,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.11504931938043847,
+          "relu_unstable_fraction": 0.04617578125
+        },
+        {
+          "network": "expert_4",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 2.0052264123059813,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.5388071668701013,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.015123195029943599,
+          "relu_unstable_fraction": 0.00051875
+        },
+        {
+          "network": "expert_5",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.17186733327601614,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.008923407504257193,
+          "relu_unstable_fraction": 0.0077765625
+        },
+        {
+          "network": "expert_5",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.12523647163774818,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.7236274513250449,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.033146378585824275,
+          "relu_unstable_fraction": 0.001341796875
+        },
+        {
+          "network": "expert_6",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.5961147174882316,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.018506372270608883,
+          "relu_unstable_fraction": 0.01326171875
+        },
+        {
+          "network": "expert_6",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.4039033370138706,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.6691019962025689,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.04299891386522213,
+          "relu_unstable_fraction": 0.00671796875
+        },
+        {
+          "network": "expert_7",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.8630059892595607,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.08506885807960989,
+          "relu_unstable_fraction": 0.06689609375
+        },
+        {
+          "network": "expert_7",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.4563883057922127,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "router",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.671672793198051,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "router",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.07023150452555856,
+          "relu_unstable_fraction": 0.00433515625
+        },
+        {
+          "network": "router",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 8,
+          "mean_width": 0.37240037877701687,
+          "relu_unstable_fraction": null
+        }
+      ],
+      "ledger_sha256": "ed972f97c499759670276388288ba486968dce1bde80557fa683ab09848de50a",
+      "array_sha256": "62531381943329dee2b15b0d0a299f19562a5090683ddee8d8ba2d2e09a8a277"
+    },
+    {
+      "arm": "D-act",
+      "seed": 1,
+      "count": 10000,
+      "clean": 5051,
+      "certified": 3369,
+      "single_route": null,
+      "mean_margin_width": 2.8804244564056396,
+      "request_seconds": 19.451047345995903,
+      "diagnostic_seconds": 1.5234423372894526,
+      "layers": [
+        {
+          "network": "dense",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 602,
+          "mean_width": 0.9391007658816354,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "dense",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 602,
+          "mean_width": 0.03334789244600284,
+          "relu_unstable_fraction": 0.010546677686274052
+        },
+        {
+          "network": "dense",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 301,
+          "mean_width": 0.8910406208482095,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "dense",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 301,
+          "mean_width": 0.07215145805501331,
+          "relu_unstable_fraction": 0.05979069753885269
+        },
+        {
+          "network": "dense",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 2.5695255453538897,
+          "relu_unstable_fraction": null
+        }
+      ],
+      "ledger_sha256": "4b6b38a6e9dea7dfa60a6250d21ffd7c2c285210cd2d0ec2041536d4e21d2122",
+      "array_sha256": "91d2f15466964f521696c57def9a9ef099a6200eb52f43ed5240c24175f15914"
+    },
+    {
+      "arm": "D-tot",
+      "seed": 1,
+      "count": 10000,
+      "clean": 4943,
+      "certified": 3188,
+      "single_route": null,
+      "mean_margin_width": 4.093313610076904,
+      "request_seconds": 20.39962455071509,
+      "diagnostic_seconds": 4.835922552272677,
+      "layers": [
+        {
+          "network": "dense",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 1758,
+          "mean_width": 0.834642812013154,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "dense",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 1758,
+          "mean_width": 0.01691713278688516,
+          "relu_unstable_fraction": 0.0029076223082840445
+        },
+        {
+          "network": "dense",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 879,
+          "mean_width": 1.4856420561638508,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "dense",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 879,
+          "mean_width": 0.036600362721243576,
+          "relu_unstable_fraction": 0.01533117187321186
+        },
+        {
+          "network": "dense",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 3.53851848050639,
+          "relu_unstable_fraction": null
+        }
+      ],
+      "ledger_sha256": "75e07796c91b6c3d418d4ea9027c7fa9b3517e51d484175be4aff26389133c3c",
+      "array_sha256": "65c38e1297fbc528f11f61896ef6bd4a9b424b2fcf649ce5856f5cdcd70699da"
+    },
+    {
+      "arm": "M",
+      "seed": 1,
+      "count": 10000,
+      "clean": 4756,
+      "certified": 3028,
+      "single_route": 7076,
+      "mean_margin_width": 2.1038883697509765,
+      "request_seconds": 21.402686083689332,
+      "diagnostic_seconds": 5.519647307693958,
+      "layers": [
+        {
+          "network": "expert_0",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.7483063955515273,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_0",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.017796597689745248,
+          "relu_unstable_fraction": 0.001522265625
+        },
+        {
+          "network": "expert_0",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.24005039057162247,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_0",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.011912910864008518,
+          "relu_unstable_fraction": 0.01341875
+        },
+        {
+          "network": "expert_0",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.153815664106505,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.5108362036408275,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 2.197641384555027e-07,
+          "relu_unstable_fraction": 3.125e-06
+        },
+        {
+          "network": "expert_1",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.7916694699579238e-06,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 1.704457258711045e-07,
+          "relu_unstable_fraction": 1.71875e-05
+        },
+        {
+          "network": "expert_1",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.5018349699676037e-06,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.7025795923566446,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.04883118572772655,
+          "relu_unstable_fraction": 0.00506328125
+        },
+        {
+          "network": "expert_2",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.8126879965144406,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.052460490661365836,
+          "relu_unstable_fraction": 0.0333
+        },
+        {
+          "network": "expert_2",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.756712466873359,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.9607025194221293,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.08934319999001454,
+          "relu_unstable_fraction": 0.01122421875
+        },
+        {
+          "network": "expert_3",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.5196949869617944,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.10862819028450613,
+          "relu_unstable_fraction": 0.0422265625
+        },
+        {
+          "network": "expert_3",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.4791878152541815,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.7489014023454511,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.07382808638667047,
+          "relu_unstable_fraction": 0.006353515625
+        },
+        {
+          "network": "expert_4",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.454834817615198,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.04086813879453184,
+          "relu_unstable_fraction": 0.02042734375
+        },
+        {
+          "network": "expert_4",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.5713228960694932,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 1.1707607159158682,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.07753723949665436,
+          "relu_unstable_fraction": 0.01092109375
+        },
+        {
+          "network": "expert_5",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.2803633006273663,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.09342540388781218,
+          "relu_unstable_fraction": 0.039625
+        },
+        {
+          "network": "expert_5",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.6953338815994567,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.5375943528112607,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.01520709771567781,
+          "relu_unstable_fraction": 0.00072109375
+        },
+        {
+          "network": "expert_6",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.2710634920062123,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.010449328947980757,
+          "relu_unstable_fraction": 0.00808671875
+        },
+        {
+          "network": "expert_6",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.12967702953679489,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.8589918875985081,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.025105133437522454,
+          "relu_unstable_fraction": 0.001469921875
+        },
+        {
+          "network": "expert_7",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.44333197481180103,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.01158920570684113,
+          "relu_unstable_fraction": 0.0086609375
+        },
+        {
+          "network": "expert_7",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.16508710584475664,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "router",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.7445201729790075,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "router",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.009660143541870638,
+          "relu_unstable_fraction": 0.00135234375
+        },
+        {
+          "network": "router",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 8,
+          "mean_width": 0.028524872114765457,
+          "relu_unstable_fraction": null
+        }
+      ],
+      "ledger_sha256": "b9a358317147f65f81b22c0ac37b97e30dbd27cb1ff34b38a81aecb8b69f395e",
+      "array_sha256": "adc92ab20d95d2e010965caf055bd70be94179a919a330a92b36d527c7dcbf3a"
+    },
+    {
+      "arm": "M-reg",
+      "seed": 1,
+      "count": 10000,
+      "clean": 4721,
+      "certified": 2970,
+      "single_route": 4583,
+      "mean_margin_width": 2.313022883605957,
+      "request_seconds": 21.320146292448044,
+      "diagnostic_seconds": 5.481312846764922,
+      "layers": [
+        {
+          "network": "expert_0",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.7487435808372218,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_0",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.033758104505110534,
+          "relu_unstable_fraction": 0.002550390625
+        },
+        {
+          "network": "expert_0",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.5932736872006837,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_0",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.04822587664681814,
+          "relu_unstable_fraction": 0.0284546875
+        },
+        {
+          "network": "expert_0",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.6618903905960914,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.54036021842435,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 9.7503911703825e-06,
+          "relu_unstable_fraction": 2.34375e-06
+        },
+        {
+          "network": "expert_1",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.00018214383419206114,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.00010509459495242482,
+          "relu_unstable_fraction": 9.84375e-05
+        },
+        {
+          "network": "expert_1",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.0020041781932394953,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.6872554397564964,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.06820735547523073,
+          "relu_unstable_fraction": 0.00613359375
+        },
+        {
+          "network": "expert_2",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.1307633034315048,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.07904394583430258,
+          "relu_unstable_fraction": 0.03981015625
+        },
+        {
+          "network": "expert_2",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.0610148554304986,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 1.0065802484753308,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.09542484685358359,
+          "relu_unstable_fraction": 0.012451171875
+        },
+        {
+          "network": "expert_3",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.7562058177754298,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.1330585963144913,
+          "relu_unstable_fraction": 0.050853125
+        },
+        {
+          "network": "expert_3",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.8823177185527984,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.7707473405836849,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.07392596653330838,
+          "relu_unstable_fraction": 0.007241015625
+        },
+        {
+          "network": "expert_4",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.4345380270379713,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.06737466251084916,
+          "relu_unstable_fraction": 0.035953125
+        },
+        {
+          "network": "expert_4",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.0274189475645126,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 1.1448218862521347,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.08673700368287392,
+          "relu_unstable_fraction": 0.01249296875
+        },
+        {
+          "network": "expert_5",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.5329291600241355,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.10594965631132945,
+          "relu_unstable_fraction": 0.0467
+        },
+        {
+          "network": "expert_5",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.8491156898668415,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.5186410188838024,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.017966664445144123,
+          "relu_unstable_fraction": 0.001189453125
+        },
+        {
+          "network": "expert_6",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.282081365245281,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.013274964373319745,
+          "relu_unstable_fraction": 0.01421796875
+        },
+        {
+          "network": "expert_6",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.16444097375836225,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.8877957792368717,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.03222389801236568,
+          "relu_unstable_fraction": 0.002854296875
+        },
+        {
+          "network": "expert_7",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.5769211319175309,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.0505879474290632,
+          "relu_unstable_fraction": 0.03537890625
+        },
+        {
+          "network": "expert_7",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.8931984158289435,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "router",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.7307758665241767,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "router",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.08055922012621304,
+          "relu_unstable_fraction": 0.00620625
+        },
+        {
+          "network": "router",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 8,
+          "mean_width": 0.8304548710490693,
+          "relu_unstable_fraction": null
+        }
+      ],
+      "ledger_sha256": "1491966a0dbdebceb19c628dc07b0aee8590f0e816d2b3588ff31e6d61540c59",
+      "array_sha256": "963f2666c2293afe5ca278cc80c2e43beaf0b82e788bff8382527e9e1153b154"
+    },
+    {
+      "arm": "D-act",
+      "seed": 2,
+      "count": 10000,
+      "clean": 5040,
+      "certified": 3347,
+      "single_route": null,
+      "mean_margin_width": 3.0127924743652343,
+      "request_seconds": 11.896106919273734,
+      "diagnostic_seconds": 1.8788702320307493,
+      "layers": [
+        {
+          "network": "dense",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 602,
+          "mean_width": 0.9786883583207873,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "dense",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 602,
+          "mean_width": 0.035283635583600384,
+          "relu_unstable_fraction": 0.010650996717810631
+        },
+        {
+          "network": "dense",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 301,
+          "mean_width": 0.9395134818565147,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "dense",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 301,
+          "mean_width": 0.07585386310452857,
+          "relu_unstable_fraction": 0.06064883702993393
+        },
+        {
+          "network": "dense",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 2.677161018365324,
+          "relu_unstable_fraction": null
+        }
+      ],
+      "ledger_sha256": "73cb0b3d2b352149941add07dfd1431cdf3858a37ed2f4386c47eefd10d05485",
+      "array_sha256": "34f9c6432f4317f32564649ea72d7b09a91313f4573e89a0291cd78c189bd3cc"
+    },
+    {
+      "arm": "D-tot",
+      "seed": 2,
+      "count": 10000,
+      "clean": 5051,
+      "certified": 3200,
+      "single_route": null,
+      "mean_margin_width": 4.13578186416626,
+      "request_seconds": 19.065042313188314,
+      "diagnostic_seconds": 4.8410414308309555,
+      "layers": [
+        {
+          "network": "dense",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 1758,
+          "mean_width": 0.8367096261421466,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "dense",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 1758,
+          "mean_width": 0.01683001407749095,
+          "relu_unstable_fraction": 0.0030608646236360074
+        },
+        {
+          "network": "dense",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 879,
+          "mean_width": 1.492459380907749,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "dense",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 879,
+          "mean_width": 0.03850131869559773,
+          "relu_unstable_fraction": 0.017941296973824503
+        },
+        {
+          "network": "dense",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 3.6482311276996136,
+          "relu_unstable_fraction": null
+        }
+      ],
+      "ledger_sha256": "cda80a560f23be535555170271ee4332dddac0c261713f15d810c05401160ddb",
+      "array_sha256": "8eaa2a23e47a98dd4c3ead28549979f23c8064ae25332470102b6fc54ae4287c"
+    },
+    {
+      "arm": "M",
+      "seed": 2,
+      "count": 10000,
+      "clean": 4673,
+      "certified": 3031,
+      "single_route": 7428,
+      "mean_margin_width": 1.9208455486297606,
+      "request_seconds": 20.984016861766577,
+      "diagnostic_seconds": 5.509275251999497,
+      "layers": [
+        {
+          "network": "expert_0",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.822623483571189,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_0",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.08531642096371797,
+          "relu_unstable_fraction": 0.01007265625
+        },
+        {
+          "network": "expert_0",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.4924673620779272,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_0",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.08063703726843724,
+          "relu_unstable_fraction": 0.03973125
+        },
+        {
+          "network": "expert_0",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.1802094847106561,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.6083144722997327,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.03290787555404822,
+          "relu_unstable_fraction": 0.001411328125
+        },
+        {
+          "network": "expert_1",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.5397078467857951,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.017136303813834092,
+          "relu_unstable_fraction": 0.01253203125
+        },
+        {
+          "network": "expert_1",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.18807026829157025,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.7318670616089599,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.026451324302513967,
+          "relu_unstable_fraction": 0.00240234375
+        },
+        {
+          "network": "expert_2",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.4505503765178055,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.03178671025781587,
+          "relu_unstable_fraction": 0.02774921875
+        },
+        {
+          "network": "expert_2",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.4629827908516116,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 1.1684905076274765,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.06994811327751377,
+          "relu_unstable_fraction": 0.009391796875
+        },
+        {
+          "network": "expert_3",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.1121301967339052,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.0834229128677136,
+          "relu_unstable_fraction": 0.03852734375
+        },
+        {
+          "network": "expert_3",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.5391185768580435,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.6966558851133916,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.03765014239352895,
+          "relu_unstable_fraction": 0.002101171875
+        },
+        {
+          "network": "expert_4",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.633520034772472,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.01853713606485835,
+          "relu_unstable_fraction": 0.01006171875
+        },
+        {
+          "network": "expert_4",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.1790262379333749,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.7088201342178742,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.05116983640032122,
+          "relu_unstable_fraction": 0.003828515625
+        },
+        {
+          "network": "expert_5",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.9060166159796492,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.060539273965939354,
+          "relu_unstable_fraction": 0.02686328125
+        },
+        {
+          "network": "expert_5",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.8002759816692768,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 1.1044132268960938,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.0975951682628016,
+          "relu_unstable_fraction": 0.01109296875
+        },
+        {
+          "network": "expert_6",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.7226727183188093,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.0759596262134437,
+          "relu_unstable_fraction": 0.03296796875
+        },
+        {
+          "network": "expert_6",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.9451953072219714,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.6149808323614882,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.035632751824118895,
+          "relu_unstable_fraction": 0.001573828125
+        },
+        {
+          "network": "expert_7",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.6910722961120169,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.01097913488628401,
+          "relu_unstable_fraction": 0.01031328125
+        },
+        {
+          "network": "expert_7",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.1483642043331638,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "router",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.7213818358247867,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "router",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.01657930866566021,
+          "relu_unstable_fraction": 0.00141953125
+        },
+        {
+          "network": "router",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 8,
+          "mean_width": 0.038929347742193206,
+          "relu_unstable_fraction": null
+        }
+      ],
+      "ledger_sha256": "3d7ee1d95f1d70eb7df8b43972eb1dde0d8be869f13d5e896f59eef6d915b8fb",
+      "array_sha256": "67e6da91b9ff8fdb13432bf3b6f473bb2df379eea80d3f0a2b32384aa67955dc"
+    },
+    {
+      "arm": "M-reg",
+      "seed": 2,
+      "count": 10000,
+      "clean": 4712,
+      "certified": 2984,
+      "single_route": 5147,
+      "mean_margin_width": 2.7005834579467773,
+      "request_seconds": 21.024675088003278,
+      "diagnostic_seconds": 5.512920722365379,
+      "layers": [
+        {
+          "network": "expert_0",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.9302307777076029,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_0",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.09519606553650228,
+          "relu_unstable_fraction": 0.009680859375
+        },
+        {
+          "network": "expert_0",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 2.097942419169283,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_0",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.10755911101297025,
+          "relu_unstable_fraction": 0.0367484375
+        },
+        {
+          "network": "expert_0",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.6726109387287496,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.6650097510078223,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.031579394758312264,
+          "relu_unstable_fraction": 0.00140390625
+        },
+        {
+          "network": "expert_1",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.6939803882807973,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.021821855652560042,
+          "relu_unstable_fraction": 0.01786953125
+        },
+        {
+          "network": "expert_1",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.37097056892272084,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.7430537266417406,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.023354278740042356,
+          "relu_unstable_fraction": 0.00253046875
+        },
+        {
+          "network": "expert_2",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.3645129596163532,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.040044907976547986,
+          "relu_unstable_fraction": 0.02880078125
+        },
+        {
+          "network": "expert_2",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.8366558359747007,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 1.2349477334966883,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.08140050995905768,
+          "relu_unstable_fraction": 0.0112375
+        },
+        {
+          "network": "expert_3",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.6185604952424553,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.10465633460852805,
+          "relu_unstable_fraction": 0.048790625
+        },
+        {
+          "network": "expert_3",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.931718487617969,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.7983711409199168,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.047213597464648774,
+          "relu_unstable_fraction": 0.003406640625
+        },
+        {
+          "network": "expert_4",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.0334551311377203,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.039202797733776246,
+          "relu_unstable_fraction": 0.0199171875
+        },
+        {
+          "network": "expert_4",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.6518743330220131,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.7476292896834434,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.05504235686727625,
+          "relu_unstable_fraction": 0.004183984375
+        },
+        {
+          "network": "expert_5",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.1923097737833275,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.062345219694800474,
+          "relu_unstable_fraction": 0.02784609375
+        },
+        {
+          "network": "expert_5",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.0210387438802049,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 1.1568305403149686,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.10847661186946207,
+          "relu_unstable_fraction": 0.012134765625
+        },
+        {
+          "network": "expert_6",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 2.300157255329407,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.1317039699822344,
+          "relu_unstable_fraction": 0.04238828125
+        },
+        {
+          "network": "expert_6",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.9318020865620673,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.5921561124124332,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.03682762639055727,
+          "relu_unstable_fraction": 0.00304453125
+        },
+        {
+          "network": "expert_7",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.6995493044069859,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.0345639942511445,
+          "relu_unstable_fraction": 0.022265625
+        },
+        {
+          "network": "expert_7",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.4903465316583214,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "router",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.7504938547340222,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "router",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.08698801434498164,
+          "relu_unstable_fraction": 0.00702578125
+        },
+        {
+          "network": "router",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 8,
+          "mean_width": 0.6383512481982819,
+          "relu_unstable_fraction": null
+        }
+      ],
+      "ledger_sha256": "4e598baddeb8191235bd45846c388b002c9efe0c5f8741bba70dbd93647feed0",
+      "array_sha256": "f7b68fc0c90aab5835fbe6e4d80ecb291b91be42e9d040d18635f851da80ed8f"
+    },
+    {
+      "arm": "D-act",
+      "seed": 3,
+      "count": 10000,
+      "clean": 5089,
+      "certified": 3356,
+      "single_route": null,
+      "mean_margin_width": 2.93555530128479,
+      "request_seconds": 10.82745990715921,
+      "diagnostic_seconds": 1.5350148621946573,
+      "layers": [
+        {
+          "network": "dense",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 602,
+          "mean_width": 0.9612560093236104,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "dense",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 602,
+          "mean_width": 0.03465500267478219,
+          "relu_unstable_fraction": 0.01046960131675005
+        },
+        {
+          "network": "dense",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 301,
+          "mean_width": 0.9245078446491171,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "dense",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 301,
+          "mean_width": 0.07543836325543073,
+          "relu_unstable_fraction": 0.05775780697464943
+        },
+        {
+          "network": "dense",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 2.6734589980533716,
+          "relu_unstable_fraction": null
+        }
+      ],
+      "ledger_sha256": "ecc45e8dfabaee38ab66d18c3e0f6377a4fb8b4bcd56be8ed24f8a005af8d7e7",
+      "array_sha256": "8b769d2e700eecbc2caa26c2053d270406310fd73b28f1df70a727d523e68b65"
+    },
+    {
+      "arm": "D-tot",
+      "seed": 3,
+      "count": 10000,
+      "clean": 5031,
+      "certified": 3235,
+      "single_route": null,
+      "mean_margin_width": 3.244829782104492,
+      "request_seconds": 18.867256885394454,
+      "diagnostic_seconds": 4.846623649820685,
+      "layers": [
+        {
+          "network": "dense",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 1758,
+          "mean_width": 0.7221631037794369,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "dense",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 1758,
+          "mean_width": 0.01538846535093413,
+          "relu_unstable_fraction": 0.0028351535961031915
+        },
+        {
+          "network": "dense",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 879,
+          "mean_width": 1.3431929075247164,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "dense",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 879,
+          "mean_width": 0.034031462559059346,
+          "relu_unstable_fraction": 0.018081456288695334
+        },
+        {
+          "network": "dense",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 2.8446351972478636,
+          "relu_unstable_fraction": null
+        }
+      ],
+      "ledger_sha256": "528f5c77b1bc943c811d992b95b2751a40425415f62b0394e5698f4e9014866b",
+      "array_sha256": "dea669df2d370ec01b77f5ed2ccb109e9eda77bdb81c2e0dfcd7d5e0666e9af6"
+    },
+    {
+      "arm": "M",
+      "seed": 3,
+      "count": 10000,
+      "clean": 4618,
+      "certified": 2947,
+      "single_route": 7433,
+      "mean_margin_width": 2.1314124732971194,
+      "request_seconds": 20.734884275123477,
+      "diagnostic_seconds": 5.522681552916765,
+      "layers": [
+        {
+          "network": "expert_0",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.9099012106148991,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_0",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.030447880613338203,
+          "relu_unstable_fraction": 0.002615625
+        },
+        {
+          "network": "expert_0",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.6348254242517803,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_0",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.025846068091426422,
+          "relu_unstable_fraction": 0.01369296875
+        },
+        {
+          "network": "expert_0",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.32215000481659545,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.5471823124400224,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.02483691024587606,
+          "relu_unstable_fraction": 0.00072578125
+        },
+        {
+          "network": "expert_1",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.3119728885244969,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.01212654922314341,
+          "relu_unstable_fraction": 0.00730703125
+        },
+        {
+          "network": "expert_1",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.14828838389534504,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.7733645144806127,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.061872715058008905,
+          "relu_unstable_fraction": 0.006572265625
+        },
+        {
+          "network": "expert_2",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.0755256059937688,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.08006658151753727,
+          "relu_unstable_fraction": 0.0309640625
+        },
+        {
+          "network": "expert_2",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.1930442321024834,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 1.2620329370321008,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.09034778855846962,
+          "relu_unstable_fraction": 0.01115703125
+        },
+        {
+          "network": "expert_3",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 2.156685372054276,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.07316737859370842,
+          "relu_unstable_fraction": 0.03633984375
+        },
+        {
+          "network": "expert_3",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.3781643285556138,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.7251469475054764,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.07424406499212491,
+          "relu_unstable_fraction": 0.00600703125
+        },
+        {
+          "network": "expert_4",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.7293813433300063,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.05903440592964253,
+          "relu_unstable_fraction": 0.02533203125
+        },
+        {
+          "network": "expert_4",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.8290537851554156,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.7116958532240707,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.049392649951705246,
+          "relu_unstable_fraction": 0.002633203125
+        },
+        {
+          "network": "expert_5",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.8365427978469168,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.022739006328595133,
+          "relu_unstable_fraction": 0.0110796875
+        },
+        {
+          "network": "expert_5",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.26259889566518363,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.5418714101121644,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.017651203492461354,
+          "relu_unstable_fraction": 0.000411328125
+        },
+        {
+          "network": "expert_6",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.21417305122072708,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.011287943339301637,
+          "relu_unstable_fraction": 0.00843515625
+        },
+        {
+          "network": "expert_6",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.15167924541338348,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 1.1051802973894054,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.06354019178104355,
+          "relu_unstable_fraction": 0.00587421875
+        },
+        {
+          "network": "expert_7",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.4142299646705783,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.06858526309166718,
+          "relu_unstable_fraction": 0.0322375
+        },
+        {
+          "network": "expert_7",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.1783468484018371,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "router",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.7012688144120155,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "router",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.01087295473967679,
+          "relu_unstable_fraction": 0.001078125
+        },
+        {
+          "network": "router",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 8,
+          "mean_width": 0.03308856886704743,
+          "relu_unstable_fraction": null
+        }
+      ],
+      "ledger_sha256": "f9baca3d2b46886d6ea2f38405df9a857a41c53a2563a5610efd545a9586e31b",
+      "array_sha256": "fea2c19aa25e832b55d132ce736d2ab205ef767f6c61ca2de6036ccf06995080"
+    },
+    {
+      "arm": "M-reg",
+      "seed": 3,
+      "count": 10000,
+      "clean": 4664,
+      "certified": 2939,
+      "single_route": 3452,
+      "mean_margin_width": 2.521417578125,
+      "request_seconds": 20.916724955663085,
+      "diagnostic_seconds": 5.50498316064477,
+      "layers": [
+        {
+          "network": "expert_0",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.8230038912073243,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_0",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.04626611774253834,
+          "relu_unstable_fraction": 0.004980859375
+        },
+        {
+          "network": "expert_0",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.9785475510008887,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_0",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.07310277366633382,
+          "relu_unstable_fraction": 0.0344640625
+        },
+        {
+          "network": "expert_0",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.1970850944756717,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.5529635359032429,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.013506808084598742,
+          "relu_unstable_fraction": 0.0004078125
+        },
+        {
+          "network": "expert_1",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.18275953894994446,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.016227942539118523,
+          "relu_unstable_fraction": 0.01378671875
+        },
+        {
+          "network": "expert_1",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.2154044575101138,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.7250517645055544,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.09088361003407336,
+          "relu_unstable_fraction": 0.009236328125
+        },
+        {
+          "network": "expert_2",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.6898289093161787,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.11463288048857793,
+          "relu_unstable_fraction": 0.0484375
+        },
+        {
+          "network": "expert_2",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.4408891664996746,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 1.2410014682937762,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.06972477050736779,
+          "relu_unstable_fraction": 0.011676953125
+        },
+        {
+          "network": "expert_3",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.390302700232518,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.11530899548996094,
+          "relu_unstable_fraction": 0.06233828125
+        },
+        {
+          "network": "expert_3",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 2.29197337966822,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.7061397435624501,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.08699015815347666,
+          "relu_unstable_fraction": 0.0071296875
+        },
+        {
+          "network": "expert_4",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.8392734472058918,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.09417198098598237,
+          "relu_unstable_fraction": 0.0392203125
+        },
+        {
+          "network": "expert_4",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.44347417498514,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.6451109915336012,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.05585713062596915,
+          "relu_unstable_fraction": 0.005618359375
+        },
+        {
+          "network": "expert_5",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.9960394850247162,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.06055999504806605,
+          "relu_unstable_fraction": 0.04049296875
+        },
+        {
+          "network": "expert_5",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.8855670188336074,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.5207117857325356,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.012407028376118978,
+          "relu_unstable_fraction": 0.000366796875
+        },
+        {
+          "network": "expert_6",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.1301028175865622,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.01741705367251525,
+          "relu_unstable_fraction": 0.02206328125
+        },
+        {
+          "network": "expert_6",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.20864152767106897,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 1.0248835489285877,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.056258501867001175,
+          "relu_unstable_fraction": 0.007134765625
+        },
+        {
+          "network": "expert_7",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.2414082343233273,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.09324309109169918,
+          "relu_unstable_fraction": 0.05227890625
+        },
+        {
+          "network": "expert_7",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.6217026637297873,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "router",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.7364283801235025,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "router",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.08109946417185711,
+          "relu_unstable_fraction": 0.00623125
+        },
+        {
+          "network": "router",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 8,
+          "mean_width": 0.8641045217838836,
+          "relu_unstable_fraction": null
+        }
+      ],
+      "ledger_sha256": "2542db2e6631677af440136e4800441d7c3a47893ba36232acc555b0011c381b",
+      "array_sha256": "aca9ce9e463021a1e365e197f5d507d10d7cb3661aad2e2cd3cbd2c693ae8a25"
+    },
+    {
+      "arm": "D-act",
+      "seed": 4,
+      "count": 10000,
+      "clean": 5078,
+      "certified": 3352,
+      "single_route": null,
+      "mean_margin_width": 2.6930094284057615,
+      "request_seconds": 11.093493254855275,
+      "diagnostic_seconds": 1.492261879146099,
+      "layers": [
+        {
+          "network": "dense",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 602,
+          "mean_width": 0.9117630308907985,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "dense",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 602,
+          "mean_width": 0.03544804350642915,
+          "relu_unstable_fraction": 0.011253322231769562
+        },
+        {
+          "network": "dense",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 301,
+          "mean_width": 0.8764103793187152,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "dense",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 301,
+          "mean_width": 0.0745615680625191,
+          "relu_unstable_fraction": 0.05826511631011963
+        },
+        {
+          "network": "dense",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 2.402518106199055,
+          "relu_unstable_fraction": null
+        }
+      ],
+      "ledger_sha256": "cc7342948aa224c3ebe6f4b35fc1510daedf4a257e9212a70be30fac7baaa04b",
+      "array_sha256": "1f47d3ef022addf64a1945c13c09b0f41cad830e1829dc109e917588852bf548"
+    },
+    {
+      "arm": "D-tot",
+      "seed": 4,
+      "count": 10000,
+      "clean": 5057,
+      "certified": 3174,
+      "single_route": null,
+      "mean_margin_width": 3.8458307090759276,
+      "request_seconds": 18.812321281060576,
+      "diagnostic_seconds": 4.7458196599036455,
+      "layers": [
+        {
+          "network": "dense",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 1758,
+          "mean_width": 0.7496217862767065,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "dense",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 1758,
+          "mean_width": 0.017150528184386376,
+          "relu_unstable_fraction": 0.003214789518341422
+        },
+        {
+          "network": "dense",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 879,
+          "mean_width": 1.4469591426050812,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "dense",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 879,
+          "mean_width": 0.036215757139838815,
+          "relu_unstable_fraction": 0.017674630174040796
+        },
+        {
+          "network": "dense",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 3.39477441945404,
+          "relu_unstable_fraction": null
+        }
+      ],
+      "ledger_sha256": "2d481eddfb0bcdc1134e3367fe2d51ac86e5e7a8fc9fa3b16c6ca4fd080cb484",
+      "array_sha256": "a3ec8606402ac84552b0fde8aeac296b7ed856b4102fa1b6e0edfaade8781e8a"
+    },
+    {
+      "arm": "M",
+      "seed": 4,
+      "count": 10000,
+      "clean": 4681,
+      "certified": 2974,
+      "single_route": 7561,
+      "mean_margin_width": 1.7318315896987915,
+      "request_seconds": 20.94104059971869,
+      "diagnostic_seconds": 5.4793616235256195,
+      "layers": [
+        {
+          "network": "expert_0",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.5990214205050958,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_0",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.015363470473946655,
+          "relu_unstable_fraction": 0.00041875
+        },
+        {
+          "network": "expert_0",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.1773984545266403,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_0",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.0123972503555804,
+          "relu_unstable_fraction": 0.0140984375
+        },
+        {
+          "network": "expert_0",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.1306061896478385,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.5783630170714575,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.015772758347642957,
+          "relu_unstable_fraction": 0.000633203125
+        },
+        {
+          "network": "expert_1",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.1930277667153166,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.009173242402460164,
+          "relu_unstable_fraction": 0.02066015625
+        },
+        {
+          "network": "expert_1",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.10624109585982744,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.8791560286697233,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.0945138488766941,
+          "relu_unstable_fraction": 0.012501171875
+        },
+        {
+          "network": "expert_2",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.3638876651339467,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.11701811049856332,
+          "relu_unstable_fraction": 0.0555953125
+        },
+        {
+          "network": "expert_2",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.3657399166719615,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.5865387667981559,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.034073587848237365,
+          "relu_unstable_fraction": 0.00476640625
+        },
+        {
+          "network": "expert_3",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.5215013887138131,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.0747755496536427,
+          "relu_unstable_fraction": 0.0541375
+        },
+        {
+          "network": "expert_3",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.94564708461836,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.6698934240660048,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.05254286366468296,
+          "relu_unstable_fraction": 0.00427265625
+        },
+        {
+          "network": "expert_4",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.7586207706737751,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.05257098781985296,
+          "relu_unstable_fraction": 0.03753515625
+        },
+        {
+          "network": "expert_4",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.6384987111728638,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.6051798925408745,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.025576065945395385,
+          "relu_unstable_fraction": 0.0022203125
+        },
+        {
+          "network": "expert_5",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.3334363580785246,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.01846367777571704,
+          "relu_unstable_fraction": 0.02392265625
+        },
+        {
+          "network": "expert_5",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.1856523107933346,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.6960541931634303,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.050413488416350447,
+          "relu_unstable_fraction": 0.0065703125
+        },
+        {
+          "network": "expert_6",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.7428510809016734,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.0856658800703608,
+          "relu_unstable_fraction": 0.05303125
+        },
+        {
+          "network": "expert_6",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.2553453935974836,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.5942272315608687,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.015109607154829428,
+          "relu_unstable_fraction": 0.001118359375
+        },
+        {
+          "network": "expert_7",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.2581065294944909,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.017259857528917746,
+          "relu_unstable_fraction": 0.03132421875
+        },
+        {
+          "network": "expert_7",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.24216762583097443,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "router",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.6388604721547803,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "router",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.02205714019271545,
+          "relu_unstable_fraction": 0.0020859375
+        },
+        {
+          "network": "router",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 8,
+          "mean_width": 0.06444190429804147,
+          "relu_unstable_fraction": null
+        }
+      ],
+      "ledger_sha256": "fa6308b543c6944fc52cf80f7873b7069d79c953f8b07725d1736b59f4af7da2",
+      "array_sha256": "73f2a3a8ab2b653cac7038d5ffa4af9992fda17ae35aa3470910c93468bb62b1"
+    },
+    {
+      "arm": "M-reg",
+      "seed": 4,
+      "count": 10000,
+      "clean": 4637,
+      "certified": 3034,
+      "single_route": 3779,
+      "mean_margin_width": 1.9349556659698486,
+      "request_seconds": 20.58388121984899,
+      "diagnostic_seconds": 5.350715121254325,
+      "layers": [
+        {
+          "network": "expert_0",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.6300510075565661,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_0",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.016234081666450947,
+          "relu_unstable_fraction": 0.000659375
+        },
+        {
+          "network": "expert_0",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.22579738937461152,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_0",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.010687099192982713,
+          "relu_unstable_fraction": 0.0086109375
+        },
+        {
+          "network": "expert_0",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.14083939988600083,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.6132626578817144,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.015498365287954221,
+          "relu_unstable_fraction": 0.00034453125
+        },
+        {
+          "network": "expert_1",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.23681143100963964,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_1",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.009511203371284136,
+          "relu_unstable_fraction": 0.01258203125
+        },
+        {
+          "network": "expert_1",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.14621143747616558,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.9991481228629243,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.11194013328101428,
+          "relu_unstable_fraction": 0.013396484375
+        },
+        {
+          "network": "expert_2",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 2.0624320531084055,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_2",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.1316325650328188,
+          "relu_unstable_fraction": 0.04899296875
+        },
+        {
+          "network": "expert_2",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.7281373419161143,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.592775301989168,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.03378804986799078,
+          "relu_unstable_fraction": 0.004419140625
+        },
+        {
+          "network": "expert_3",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.59867590848211,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_3",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.0660634429017242,
+          "relu_unstable_fraction": 0.040928125
+        },
+        {
+          "network": "expert_3",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.966199555700719,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.7010662429417134,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.0587333699425566,
+          "relu_unstable_fraction": 0.00466328125
+        },
+        {
+          "network": "expert_4",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.127516473420345,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_4",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.06643931487049667,
+          "relu_unstable_fraction": 0.037075
+        },
+        {
+          "network": "expert_4",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.8426175634849816,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.6271827473581653,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.030525830839239643,
+          "relu_unstable_fraction": 0.002669140625
+        },
+        {
+          "network": "expert_5",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.5180304810911365,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_5",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.043676701500471066,
+          "relu_unstable_fraction": 0.02736171875
+        },
+        {
+          "network": "expert_5",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.6021832342541218,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.717059724550054,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.0583728846243408,
+          "relu_unstable_fraction": 0.0067703125
+        },
+        {
+          "network": "expert_6",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 1.0687065818492425,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_6",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.09378282293612283,
+          "relu_unstable_fraction": 0.052659375
+        },
+        {
+          "network": "expert_6",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 1.4925276687219742,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 256,
+          "mean_width": 0.5851101409542491,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 256,
+          "mean_width": 0.011990706756926374,
+          "relu_unstable_fraction": 0.0009125
+        },
+        {
+          "network": "expert_7",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.25511203623434336,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "expert_7",
+          "layer": "4",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.012717504800861866,
+          "relu_unstable_fraction": 0.01725234375
+        },
+        {
+          "network": "expert_7",
+          "layer": "5",
+          "operator": "Linear",
+          "neurons": 10,
+          "mean_width": 0.2266372673825175,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "router",
+          "layer": "1",
+          "operator": "Linear",
+          "neurons": 128,
+          "mean_width": 0.6969351876692846,
+          "relu_unstable_fraction": null
+        },
+        {
+          "network": "router",
+          "layer": "2",
+          "operator": "ReLU",
+          "neurons": 128,
+          "mean_width": 0.05198905485954601,
+          "relu_unstable_fraction": 0.00425234375
+        },
+        {
+          "network": "router",
+          "layer": "3",
+          "operator": "Linear",
+          "neurons": 8,
+          "mean_width": 0.35084965184181927,
+          "relu_unstable_fraction": null
+        }
+      ],
+      "ledger_sha256": "42de5a42113cba8d9baa4f6a01c30345b7dd45bc403e5e94b6f904b49432e049",
+      "array_sha256": "02f09c83da109650592c96c3dcf179af6d3a5160d34ef3cf9fa747cf471ffeff"
+    }
+  ],
+  "secondary_stage_complete": false,
+  "model_or_solver_calls": 0,
+  "scope": "completed primary endpoint only; seed dots are observations, not confidence intervals; layer widths are descriptive, all experts on the full input box"
+}

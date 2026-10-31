@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## S2a primary findings integrated in empirical manuscript, 2026-11-01
+
+Real increment:0 added model/solver calls for this analysis; live queue has20primary+914incomplete+0complete settled;24/24training retained; [record](architecture_s2a_records_20261031.json).
+[Manuscript](../paper/architecture_main.tex) now reports the full-test primary STOP, paired intervals, route-stability/certification separation and saved all-layer widths; S1 STOP unchanged.
+[Compact export](../paper/results/s2a_primary.json) and [renderer](../scripts/architecture_s2_figure.py) reproduce the primary figure without checkpoints/server-only records; source/count/coverage checks pass, no new inference.
+Two LaTeX passes build17pages; S2 figure/table and diagnostic appendix visually checked, no undefined references or overflow. Human review/clean empirical reproduction remain outstanding.
+Raw neuron widths are learned-scale/all-expert descriptives, not a causal explanation or precision ratio. Routing regularizer raises single-route29.37pp but certification+0.20pp CI crosses0.
+Original detachedPID320490/start1232308927 and immutable954b8934a continue the fixed secondary queue; no ERROR at this snapshot. Do not restart or truncate40h.
+Finish all registered secondary requests and final audit, then finalize the TMLR/workshop working manuscript. No S2b, extra samples, retuning or new direction after the primary gate failed.
+
 ## S2a primary endpoint fails; fixed secondary queue running, 2026-11-01
 
 Real increment:20/20primary batches(all10000inputs×20models) and196incomplete requests settled;0complete so far;24/24training retained; [record](architecture_s2a_records_20261031.json).
