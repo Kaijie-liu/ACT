@@ -1,12 +1,22 @@
 # Independent technical review: reductions and empirical limits
 
-Updated 2026-10-29. This is a PI-managed review template, not a completed human
+Updated 2026-10-31. This is a PI-managed review template, not a completed human
 review or permission to contact anyone. Start with the current
-[short paper](../paper/review_main.tex), then consult the longer
+[combined manuscript](../paper/architecture_main.tex), including its empirical
+and source-boundary appendices. The [earlier verifier draft](../paper/review_main.tex)
+is retained as a historical companion, not a separate submission. Consult the longer
 [method](../paper/sections/03_path_conditioned_method.md),
 [evaluation](../paper/sections/08_evaluation.md) and
 [source contract](../paper/sections/05_soundness_engineering.md).
 The generic article layout is not an official submission template.
+
+S1 has finished and its registered decision is **STOP_S1_RETURN_TO_REDUCTION_PAPER**.
+No S2 training or ablation was executed. Review the reductions and empirical
+limits actually supported, not the abandoned claim that MoE must be easier to
+certify. The [S1 archive](architecture_s1_result_20261031.json) and
+[final explanation](architecture_s1_20261029.md#final-s1-result-registered-stop-2026-10-31)
+retain every comparison, seed, failure and cost. The architecture screen's
+failure does not prove universal architectural inferiority.
 
 ## Read the argument before the receipts
 
@@ -19,6 +29,11 @@ it. No positive novelty verdict or review score is supplied.
 | Complete-output composition | Short paper Proposition 1; detailed method | Every tie-legal history and property, same input/source, valid exclusions and bounds. An incomplete tree cannot be positive. |
 | Output-atom guard reduction | Proposition 2; guarded frontend and semantic controls | Pointwise `max(p,-g)>0` equivalence, including ties; not equivalent finite-budget relaxation precision or a claim that generic tools can never exploit guards. |
 | Independent-gate embedding and last endpoint | Proposition 3; M-A contract | Valid prefix ranges; last affine suffix and domain independent of last gate. Inner gates remain nonlinear. Numerical sigmoid intervals are not automatically exact enclosures. |
+| Active capacity versus complete proof cost | Current paper cost lemma and both S1 capacity conventions | Routers, all retained histories, repeated construction, loading and evidence costs remain. Per-execution active parameters do not determine full certification cost. |
+| Capacity-matched S1 primary | [Final archive](architecture_s1_result_20261031.json), complete 2/255 total/active comparisons | L1 114/600 versus 115/600 and 116/600; gain/loss 55/56 and 52/54. Both rate intervals include zero; both frozen point gates fail. Three fixed paired seeds share 200 inputs. |
+| Incomplete-bound tradeoff | Same archive, incomplete 2/255 | 23/3000 versus 2/3000 each dense; +0.7pp/[0.400,1.067]pp, but 4.64%/6.27% higher median cost. It is a secondary endpoint, not certification training or a rescue of S1. |
+| Larger-radius timing and guarantee | Same archive, radius 8; shared-clean-correct strata | All positives zero. MoE has more than half clean-wrong returns while dense has less than half, shifting the median from short replay to long unresolved proof. About 25x raw median ratio is not useful certification speedup. |
+| S1 design limitations and accounting | [Frozen protocol and final report](architecture_s1_20261029.md), source-bound manifest | Ordinary MLP training; MoE-only balance penalty; approximate parameter matching; historically exposed all-input prefixes. All 31,200 calls settled, eight old PGD errors retained; 224.651 summed hours versus 28.094 parallel hours. |
 | Model validity and selection | [Training/model table](../paper/sections/08_evaluation.md#frozen-models-training-and-conditional-input-selection), original and residual training records | Clean accuracy27.65%–52.18%; low-accuracy/concentrated-routing seeds retained. Residual architecture and balance aggregation change together. Verification selects twenty common clean-correct inputs across all eighteen models, not a whole-test certified-accuracy sample. |
 | Strong engine versus old ACT v1 | [Stage-1 records](multilayer_stage1_records_20261022.json), `final_result_20261025` | 108/180 pruned positives versus zero; ACT has 178 TIMEOUT, one ERROR and one UNSUPPORTED. Supplemental bottleneck gate was registered after 189 calls. No unique ReLU-cause claim. |
 | Primary cascade gain and stop | [B4 records](moe_aware_b4_records_20261027.json), `main_and_ablation_review` | 122 versus 116, nine gains/three losses, +2pp/[0,4]pp; five-point threshold fails. Twenty input blocks preserve cross-model dependence. |
@@ -55,13 +70,18 @@ Actually executed commands, environments and exit codes: **pending**.
    Do not infer unique ReLU hardness from timeouts or frozen-gate failures.
 6. Separate factual defects, claim limits and optional future work. Assess
    venue fit independently; an honest negative review is a valid outcome.
+7. For S1, verify the two capacity conventions, seed/input pairing and the
+   distinction between complete primary and incomplete secondary endpoints.
+   Check why the positive incomplete-bound difference and zero-positive 8/255
+   timing do not change the frozen stop. Is the current architecture/loss/model
+   scope sufficient for the stated limited claim? Do not infer C3 without S2.
 
 AI review must identify itself. No packaging script may fill human sign-off,
 independence or a novelty verdict. This template sends no invitation.
 
 ## MoE literature and the archived execution boundary
 
-The short bibliography now cites all six requested MoE works directly. The
+The historical verifier draft's bibliography cites all six requested MoE works directly. The
 2026-10-29 check concerns primary-paper metadata and the stated research task;
 it neither reruns their experiments nor refreshes every author repository.
 [The six-work ledger](author_baselines_status_20260924.md) and
@@ -88,7 +108,7 @@ priority for the reductions.
 
 ## Current bounded table reproduction
 
-The current renderer reads five committed JSON summaries plus the B4 freeze,
+The historical-table renderer reads committed JSON summaries plus the B4 freeze,
 checks model-to-checkpoint identity and accounting, and reconstructs seven tables. It needs only the Python standard library:
 
 ```sh
@@ -99,15 +119,20 @@ It does not read checkpoint/data/server raw paths, execute a model, solve an
 obligation or independently reprove a lower bound. Run without `--check` to
 print the LaTeX. Relevant summary-view hashes are embedded in
 [the table file](../paper/results/current_review_tables.tex); source identity
-is distinct from mathematical evidence. The current PDF build and targeted
+is distinct from mathematical evidence. The older draft's PDF build and targeted
 checks are recorded in [the build note](current_review_paper_20261029.md).
+The combined manuscript includes these tables unchanged. Its S1 seed table is
+transcribed from all twelve models in the final S1 archive; the build checks
+both source groups. The [S1 record](architecture_s1_records_20261029.json) binds
+the combined source, included tables/appendix, PDF and checks. No new model
+queries are used to merge the papers.
 
 Compile from `paper/` with an already installed LaTeX distribution and a new
 empty output directory:
 
 ```sh
-pdflatex -no-shell-escape -halt-on-error -interaction=nonstopmode -output-directory /NEW/BUILD review_main.tex
-pdflatex -no-shell-escape -halt-on-error -interaction=nonstopmode -output-directory /NEW/BUILD review_main.tex
+pdflatex -no-shell-escape -halt-on-error -interaction=nonstopmode -output-directory /NEW/BUILD architecture_main.tex
+pdflatex -no-shell-escape -halt-on-error -interaction=nonstopmode -output-directory /NEW/BUILD architecture_main.tex
 ```
 
 The historical September review kits, manifests, table renderer and integrity

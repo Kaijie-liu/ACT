@@ -1,0 +1,162 @@
+\section{Archived verification study and limits}
+\label{app:empirical}
+This appendix incorporates the completed verifier-study evidence into the
+current manuscript. It does not restart that study, pool its cohorts with S1,
+or turn its numerical positives into source-complete proofs. The seven tables
+below are included unchanged from the committed, reproducible summary view
+used by the earlier technical-review draft.
+
+\paragraph{Models, cohorts, and costs.}
+In configuration names, $L$ is routed depth, $E$ the number of experts per
+layer, and $R$ denotes a residual model. Routers have a width-128 ReLU hidden
+layer; expert hidden widths are 256 and 128. Sequential networks flatten the
+image and use width-128 intermediate routed outputs. Residual models instead
+use a linear image-to-128 stem, blocks $h+\operatorname{MoE}(h)$, and a linear
+ten-logit head. Both omit batch normalization. Seeds, split, epochs, optimizer,
+and checkpoint selection are frozen. Sequential training averages the balance
+penalty across layers, while residual training sums it; this is not a causal
+ablation of residual connections alone.
+
+The cascade study selects twenty common clean-correct inputs across all
+eighteen models from 435 nonexcluded candidates. Its primary comparison uses
+the fifteen multilayer models, hence 300 paired model--input objects on only
+twenty input blocks. Its conditional positive rate is not S1's whole-prefix
+certified accuracy. S1 uses the separate first-200/1000 all-input denominators,
+including clean errors and disclosed historical exposure. Neither model nor
+input selection may be transferred between these cohorts after outcomes.
+
+Within the historical paired comparison both arms use the same disclosed R7
+compatibility snapshot, CPU/double precision, one numerical thread, 8GiB
+address-space limit, and 300-second full-request budget. GenBaB uses optimized
+alpha bounds and nonlinear branching, with separately charged prefix bounds.
+The results describe this configured engine, not every possible configuration.
+All 1080 registered B4 calls were audited, with 56.319 charged execution hours;
+the 240 unadmitted M-B/M-C ablation slots remain unused. Errors and timeout
+costs stay in the denominator. Shared-host variation limits fine timing claims.
+
+\paragraph{What the stopped tests establish.}
+The earlier multilayer study has 600 calls: 540 across three configurations,
+three seeds, twenty inputs and three arms, plus sixty single-layer pruning
+anchors. Pruned GenBaB obtains 108/180 multilayer positives. ACT v1's zero
+consists of 178 timeouts, one error and one unsupported result, not 180 solver
+timeouts. A supplemental attribution gate registered after a 189-call prefix
+finds many-history dominance in 2/52 L3E8 and 0/58 L2E16 objects after removing
+replayed unsafe cases. Its timing is disclosed; this is not a fully
+preregistered rejection of every possible routing-complexity bottleneck.
+
+M-A replaces gates by independent enclosing intervals, checks last-gate
+endpoints, and falls back to coupled solving with the remaining request time
+after a phase cap of 120 seconds. Its nine gains all use the relaxed path;
+48/52 endpoints close in initial propagation. Three complete-request losses
+remain, so net gain is two percentage points with input-block interval [0,4],
+below the registered five-point threshold. Gains concentrate in two-layer
+models. The paid repeat of the coupled arm changes four of 120 terminal states,
+including one positive-to-timeout change: that is not a three-percentage-point
+estimate of positive-result noise. Neither a shared positive nor a retained
+candidate refunds time spent on an unsuccessful cascade phase.
+
+M-B uses nonnegative guard multipliers and weak duality. The original
+independent-trajectory comparison could not isolate incremental guard benefit.
+The revised test retains an evaluated twenty-step alpha prefix, then compares
+forty guard/alpha updates against paid extra-alpha updates on the same eleven
+histories. It adds one complete local closure, below the required five.
+Original M-C partitions the first-layer margin of twenty-seven local histories
+and adds no closures. A proposed last-layer dual-conditioned variant was gated
+on revised M-B and was not executed. These outcomes do not prove that every
+guard, margin partition or expert-network representation is ineffective.
+
+The larger-radius and single-layer results below do not overturn those stops.
+No gain appears among the thirteen larger-radius objects with multiple observed
+histories; a single observed history elsewhere does not prove route stability.
+The single-layer cohort has the same 57 positives in both arms, with extra
+cascade cost. None of these diagnostic observations isolates ReLU difficulty
+as the unique cause of every unresolved request.
+
+\input{results/current_review_tables.tex}
+\clearpage
+
+\section{S1 seed-level counts and evidence reconstruction}
+\label{app:s1seeds}
+Table~\ref{tab:s1seeds} preserves all twelve fixed models, including the unmatched
+L2 extension. Complete and incomplete columns have different denominators and
+must not be added. Every $8/255$ positive count is zero. Three seeds do not
+constitute a sample of all architectures, and the input-block intervals in the
+main text do not quantify random-training uncertainty.
+
+% Seed-count table inserted from the committed S1 final derived archive.
+% S1 archive sha256 8dde94094d1fe97068ffa55dd32dd6204a8a9a911e089f292aa77c5f962adec5
+\begin{table}[ht]
+\centering\small
+\caption{S1 numerical positives by fixed seed. C denotes complete verification (out of 200); I denotes incomplete CROWN-IBP (out of 1000 per model). No seed is omitted.}
+\label{tab:s1seeds}
+\begin{tabular}{llrrrr}
+\toprule
+Group & Seed & C ($2/255$) & I ($2/255$) & C ($8/255$) & I ($8/255$) \\
+\midrule
+L1E8 & 0 & 46 & 16 & 0 & 0 \\
+L1E8 & 1 & 34 & 3 & 0 & 0 \\
+L1E8 & 2 & 34 & 4 & 0 & 0 \\
+L2E8 & 0 & 4 & 0 & 0 & 0 \\
+L2E8 & 1 & 7 & 0 & 0 & 0 \\
+L2E8 & 2 & 6 & 0 & 0 & 0 \\
+Dense total & 0 & 26 & 0 & 0 & 0 \\
+Dense total & 1 & 47 & 1 & 0 & 0 \\
+Dense total & 2 & 42 & 1 & 0 & 0 \\
+Dense active & 0 & 40 & 1 & 0 & 0 \\
+Dense active & 1 & 35 & 1 & 0 & 0 \\
+Dense active & 2 & 41 & 0 & 0 & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The committed S1 archive is
+\begin{quote}\small
+\path{docs/architecture_s1_result_20261031.json}.
+\end{quote}
+It contains 48 model/mode/radius rows, all eight paired comparisons, gained/lost input-seed
+identities, and costs. Its audit hash binds the full original terminal records.
+The eight old public-PGD errors are retained, accounting for eighty unaccepted
+domains; they are neither rerun nor imputed as successful attacks. All 4800
+complete and 24000 incomplete verification requests are settled without missing
+costs. Shared-clean-correct strata explain all-request timing but do not alter
+the registered primary denominator. S2 remains unexecuted after the stop.
+
+The existing table script is
+\begin{quote}\small
+\path{scripts/render_current_review_tables.py}.
+\end{quote}
+Running it with \texttt{python -I -S -B} and \texttt{--check} reconstructs the
+seven historical tables from their committed source summaries.
+It does not load a model, execute an attack, or independently verify a numerical
+bound. The current manuscript build separately checks the S1 transcription
+against its final archive. Table reconstruction is not clean-environment
+empirical reproduction; a human reviewer must distinguish those tasks.
+
+\section{Source contracts and independent proof boundary}
+\label{app:sourceboundary}
+The historical output-layer ACT study reports 179 policy acceptances against
+156 for matched monolithic and 141 for the older strong path, on 100 inputs
+and three models. A later audit identifies input-containment gaps affecting
+all 23 primary gains. Those counts remain numerical-policy outcomes; they are
+not source-complete certificates. The requested and reconstructed input sets
+are not nested. This does not establish that the models are unsafe, or predict
+the results of a corrected execution. No sealed case is reopened here.
+
+For a supplied LP $Ax\leq b$, $l\leq x\leq u$, objective $c^\top x+c_0$, and
+any $y\leq0$, set $r=c-A^\top y$. Exact arithmetic can check the bound
+\[
+ c_0+b^\top y+\sum_i\min\{r_i l_i,r_i u_i\}.
+\]
+Indeed $y^\top Ax\geq y^\top b$, and the residual term is minimized over the
+variable box. Multiplier signs, original coefficients, residual compensation,
+property identity and obligation coverage must all be checked. This proves a
+statement about the supplied LP. It does not establish input inclusion,
+network-to-HZ conversion, guard lowering, omitted-history infeasibility or
+native floating-point execution. A positive bound from an old matrix cannot
+be attached to a new checked source construction.
+
+Human technical review, a clean empirical reproduction, authorship and any
+distribution and submission decisions remain external tasks. The manuscript and
+record audits do not fill them or certify that the contribution meets a
+particular venue's novelty standard. All unsuccessful gates, original errors,
+and source limitations remain visible alongside local positive results.

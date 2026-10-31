@@ -14,9 +14,14 @@ CROWN-IBP gives 23/3000 versus 2/3000 each dense, with higher median cost; all
 S2 is **not executed**. The manuscript now centers on reductions and empirical
 limits; C2/C3 are not reported wins. Its generic layout is not an official
 ICML 2027 template, a human-reviewed paper, or a completed submission.
-The current seven-page PDF and build/data/visual checks are bound in
+The combined PDF has seven pages including references plus five appendix pages.
+It includes the seven historical verifier-study tables unchanged, all twelve
+S1 models' seed-level counts, cohort differences and the source-proof boundary.
+The build/data/visual checks are bound in
 [the S1 record](../docs/architecture_s1_records_20261029.json), under
-`results/architecture_manuscript_20261031_r2` outside Git.
+`results/architecture_manuscript_20261031_r4` outside Git. Earlier builds remain.
+Start an independent technical review with the
+[updated review guide](../docs/SUBMISSION_REVIEW.md); its human sign-off is pending.
 
 The completed verifier-study entry remains [the technical-review paper](review_main.tex), revised
 2026-10-29: **Verifying Route-Variable Mixture-of-Experts Programs: Obligation

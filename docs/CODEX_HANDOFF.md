@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## Combined manuscript ready for independent review, 2026-10-31
+
+Real increment: 0 new training/model/solver calls; no S2 or mechanism restart. S1 STOP and all old scientific conclusions unchanged.
+[Combined manuscript](../paper/architecture_main.tex) now includes the seven archived verifier-study tables, all12 S1 models' seed counts, cohort differences and source-proof boundary in its appendices.
+[Review guide](SUBMISSION_REVIEW.md) now starts with this manuscript and explicitly checks S1 primary/secondary endpoints, all-request timing and the unexecuted C3 claim.
+[Existing stage record](architecture_s1_records_20261029.json) binds all three included source files,12-page generic PDF, table/data checks and visual review PASS; no new empirical evidence is claimed.
+Authorized result archive and manuscript consolidation are complete. Next substantive validation is PI-managed human technical review and clean empirical reproduction; those are not performed by this AI or inferred from a build.
+No S2, new hypothesis, extra samples, mechanism revival or change of frozen stopping rule is authorized by automatic continuation. Overall scientific success remains unestablished.
+
 ## S1 complete: registered stop; no S2, 2026-10-31
 
 Real increment: all 31,200 records settled: 4,800 complete / 24,000 incomplete / 2,400 public PGD batches; 8 original ERROR retained, no new errors, unexecuted requests or missing costs.

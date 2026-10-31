@@ -34,8 +34,8 @@ remain different evidence levels.
 The manuscript target is ICML 2027, but the official 2027 submission deadline
 and page limit have not been verified. Eight pages is a working target, not a
 claim of compliance. The completed verifier study is preserved in
-\path{paper/review_main.tex} and will supply a compact empirical-limits section
-and appendices, not a separate simultaneous submission. This draft does not
+\path{paper/review_main.tex}; its outcome tables and empirical limits are
+incorporated in Appendix~\ref{app:empirical}, not a separate simultaneous submission. This draft does not
 record human review, a clean empirical reproduction, or a submission.
 
 \section{Question and hypotheses}
@@ -365,6 +365,8 @@ closes one of eleven histories and fails admission. These are retained negative
 results, not evidence that dense architectures are harder to certify or that
 expert ReLUs uniquely explain every unresolved query. The cohorts were selected
 differently from S1 and cannot be pooled into its accuracy denominator.
+Appendix~\ref{app:empirical} incorporates the archived model and outcome tables,
+their selection boundaries, and the stopped mechanisms; these are not new runs.
 
 \section{Related work and limits}
 Sparse-MoE robustness and dense compute comparisons precede this study~\cite{robmoe}.
@@ -421,4 +423,7 @@ Accuracy in Mixture of Experts: A Dual-Model Approach. ICML 2025.
 Mixture-of-Experts LLMs via Routing-Aware Smoothing. arXiv preprint 2610.29395, 2026.
 \url{https://arxiv.org/abs/2610.29395}.
 \end{thebibliography}
+\clearpage
+\appendix
+\input{appendices/architecture_empirical_limits.tex}
 \end{document}
