@@ -1,10 +1,12 @@
 # Reviewer workflows and their evidence boundaries
 
-## New table-only review kit
+## Historical table-only review kit
 
-The [condensed review paper](review_main.tex) and
-[independent review form](../docs/SUBMISSION_REVIEW.md) now have an explicit
-local export workflow. With the existing Python environment and a **new**
+The September table-only kit below is retained for historical accounting.
+It does not export the current [combined manuscript](architecture_main.tex)
+or its S1/S2a results; start with [the reading guide](README.md) and
+[current review form](../docs/SUBMISSION_REVIEW.md) for those studies.
+With the existing Python environment and a **new**
 output directory whose parent exists:
 
 ```sh

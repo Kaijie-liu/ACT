@@ -1,6 +1,6 @@
 # Independent technical review: reductions and empirical limits
 
-Updated 2026-10-31. This is a PI-managed review template, not a completed human
+Updated 2026-11-01. This is a PI-managed review template, not a completed human
 review or permission to contact anyone. Start with the current
 [combined manuscript](../paper/architecture_main.tex), including its empirical
 and source-boundary appendices. The [earlier verifier draft](../paper/review_main.tex)
@@ -11,12 +11,20 @@ is retained as a historical companion, not a separate submission. Consult the lo
 The generic article layout is not an official submission template.
 
 S1 has finished and its registered decision is **STOP_S1_RETURN_TO_REDUCTION_PAPER**.
-No S2 training or ablation was executed. Review the reductions and empirical
-limits actually supported, not the abandoned claim that MoE must be easier to
-certify. The [S1 archive](architecture_s1_result_20261031.json) and
+The subsequent PI-authorized S2a has completed 24 training runs and its primary
+evaluation on all 10,000 test inputs per model. Its decision is
+**STOP_S2A_WRITE_RESULTS**: M has 30.124% IBP numerical certification versus
+33.554% D-act and 31.972% D-tot, and a 73.920% single-route fraction. The fixed
+secondary CROWN-IBP and complete-verification queue is still running; final
+secondary results and audit remain pending. S2b is not launched.
+Review the reductions and empirical limits actually supported, not the claim
+that MoE must be easier to certify. The [S1 archive](architecture_s1_result_20261031.json) and
 [final explanation](architecture_s1_20261029.md#final-s1-result-registered-stop-2026-10-31)
 retain every comparison, seed, failure and cost. The architecture screen's
-failure does not prove universal architectural inferiority.
+failure does not prove universal architectural inferiority. The
+[S2a primary export](../paper/results/s2a_primary.json) and
+[stage record](architecture_s2a_records_20261031.json) bind the separate
+certification-training result; neither stop is relabeled as a passed screen.
 
 ## Read the argument before the receipts
 
@@ -34,6 +42,9 @@ it. No positive novelty verdict or review score is supplied.
 | Incomplete-bound tradeoff | Same archive, incomplete 2/255 | 23/3000 versus 2/3000 each dense; +0.7pp/[0.400,1.067]pp, but 4.64%/6.27% higher median cost. It is a secondary endpoint, not certification training or a rescue of S1. |
 | Larger-radius timing and guarantee | Same archive, radius 8; shared-clean-correct strata | All positives zero. MoE has more than half clean-wrong returns while dense has less than half, shifting the median from short replay to long unresolved proof. About 25x raw median ratio is not useful certification speedup. |
 | S1 design limitations and accounting | [Frozen protocol and final report](architecture_s1_20261029.md), source-bound manifest | Ordinary MLP training; MoE-only balance penalty; approximate parameter matching; historically exposed all-input prefixes. All 31,200 calls settled, eight old PGD errors retained; 224.651 summed hours versus 28.094 parallel hours. |
+| Route-envelope IBP and training | Current paper route-envelope section; [implementation](../act/pipeline/moe/route_envelope_ibp.py); [training freeze](architecture_s2a_training_freeze_20261031.json) | Every interval-compatible tie-legal pair is retained; property constants enter once and gate orientation is fixed. Candidate coverage does not prove route reachability. Training and primary evaluation share the bound function; floating-point results remain numerical-policy evidence. |
+| S2a primary and stopped extension | [Primary export](../paper/results/s2a_primary.json), [stage record](architecture_s2a_records_20261031.json) | M minus D-act is -3.430pp, 95% interval [-4.108,-2.762]; M minus D-tot is -1.848pp, [-2.632,-1.130]. Five paired seeds and 10,000 common inputs are resampled, with selected configurations held fixed. No S2b or new configuration after failure. |
+| Routing regularization and width interpretation | Same export; primary figure and layer appendix | M minus M-reg gives +29.370pp single-route fraction but only +0.200pp IBP accuracy, interval [-0.430,0.79005]. Learned-scale widths and different clean-correct populations are descriptive, not causal proof. Secondary verification is pending and cannot rescue the primary gate. |
 | Model validity and selection | [Training/model table](../paper/sections/08_evaluation.md#frozen-models-training-and-conditional-input-selection), original and residual training records | Clean accuracy27.65%–52.18%; low-accuracy/concentrated-routing seeds retained. Residual architecture and balance aggregation change together. Verification selects twenty common clean-correct inputs across all eighteen models, not a whole-test certified-accuracy sample. |
 | Strong engine versus old ACT v1 | [Stage-1 records](multilayer_stage1_records_20261022.json), `final_result_20261025` | 108/180 pruned positives versus zero; ACT has 178 TIMEOUT, one ERROR and one UNSUPPORTED. Supplemental bottleneck gate was registered after 189 calls. No unique ReLU-cause claim. |
 | Primary cascade gain and stop | [B4 records](moe_aware_b4_records_20261027.json), `main_and_ablation_review` | 122 versus 116, nine gains/three losses, +2pp/[0,4]pp; five-point threshold fails. Twenty input blocks preserve cross-model dependence. |
@@ -74,7 +85,15 @@ Actually executed commands, environments and exit codes: **pending**.
    distinction between complete primary and incomplete secondary endpoints.
    Check why the positive incomplete-bound difference and zero-positive 8/255
    timing do not change the frozen stop. Is the current architecture/loss/model
-   scope sufficient for the stated limited claim? Do not infer C3 without S2.
+   scope sufficient for the stated limited claim? Do not infer certification-
+   training performance from the ordinary-training S1 comparison.
+8. For S2a, check tie-inclusive candidate retention, property-first endpoint
+   bounds and shared training/evaluation code. Verify validation-only selection
+   of 20 models from 24 runs, the crossed paired seed/input bootstrap, and all
+   three failed gate components. Do the routing and width diagnostics support
+   only the stated descriptive conclusions? Keep final secondary findings
+   separate from the primary decision, and retain the original execution
+   error and all charged costs when reviewing the completed queue.
 
 AI review must identify itself. No packaging script may fill human sign-off,
 independence or a novelty verdict. This template sends no invitation.

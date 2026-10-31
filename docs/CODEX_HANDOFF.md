@@ -1,5 +1,13 @@
 # MoE project handoff — current entry point
 
+## S2a review entry points corrected, 2026-11-01
+
+Real increment:0new model/solver calls from this correction; fixed continuation remains live; [record](architecture_s2a_records_20261031.json).
+[Reading guide](../paper/README.md) and [human review map](SUBMISSION_REVIEW.md) now report completed S2a training/primary STOP instead of stale “S2 not executed”; secondary and human review remain pending.
+Historical September table-only kit is explicitly separate from the current S1/S2a manuscript; no artifact release or empirical reproduction is claimed.
+Primary source/export equality and69local links checked; no numerical/queue/source/configuration change. Independent human sign-off stays blank.
+Continue immutable8087806b6 PID283507/start1232841114; verify identity,do not restart. Finish fixed queue and aggregate audit,then final manuscript; noS2b/new direction.
+
 ## S2a unexecuted continuation admitted and running, 2026-11-01
 
 Real increment:continuation launched;4733original settled incl1ERROR retained; [record](architecture_s2a_records_20261031.json).

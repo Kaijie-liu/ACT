@@ -11,17 +11,29 @@ positives versus 115/600 total-match and 116/600 active-match dense. Both rate
 intervals include zero; this failed screen is not proof of universal inferiority.
 CROWN-IBP gives 23/3000 versus 2/3000 each dense, with higher median cost; all
 8/255 positive counts are zero. These secondary results do not change the gate.
-S2 is **not executed**. The manuscript now centers on reductions and empirical
-limits; C2/C3 are not reported wins. Its generic layout is not an official
-ICML 2027 template, a human-reviewed paper, or a completed submission.
-The combined PDF has seven pages including references plus five appendix pages.
-It includes the seven historical verifier-study tables unchanged, all twelve
-S1 models' seed-level counts, cohort differences and the source-proof boundary.
-The build/data/visual checks are bound in
-[the S1 record](../docs/architecture_s1_records_20261029.json), under
-`results/architecture_manuscript_20261031_r4` outside Git. Earlier builds remain.
-Start an independent technical review with the
-[updated review guide](../docs/SUBMISSION_REVIEW.md); its human sign-off is pending.
+
+The separately authorized S2a certification-training study has completed all
+24 training runs and its full-test primary endpoint: five seeds per arm,
+10,000 inputs per model. M obtains **30.124% IBP numerical certification**,
+versus **33.554% D-act** and **31.972% D-tot**. Its single-route fraction is
+73.920%, below the registered 90% gate. The decision is
+**STOP_S2A_WRITE_RESULTS**; S2b is not launched. The
+[compact primary results](results/s2a_primary.json),
+[training and evaluation record](../docs/architecture_s2a_records_20261031.json)
+and manuscript include paired seed/input intervals, the routing-regularizer
+ablation, and the limitations of descriptive layer-width measurements.
+The fixed 20,000 CROWN-IBP and 4,000 complete-verification requests are still
+running; their final comparisons and audit are pending. Secondary results
+cannot change the failed primary gate.
+
+The current 18-page working PDF includes the S1 and S2a primary figures,
+the seven historical verifier-study tables, seed-level results and the
+source-proof boundary. Build/data/visual checks are bound in the S2a record,
+under `results/architecture_s2a_manuscript_20261101_r2` outside Git; earlier
+builds remain. Its generic layout is not an official submission template or
+a completed submission. The [review guide](../docs/SUBMISSION_REVIEW.md)
+identifies the arguments and evidence for PI-managed independent review;
+human sign-off and clean-environment empirical reproduction remain pending.
 
 The completed verifier-study entry remains [the technical-review paper](review_main.tex), revised
 2026-10-29: **Verifying Route-Variable Mixture-of-Experts Programs: Obligation
