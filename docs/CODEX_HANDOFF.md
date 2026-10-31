@@ -1,5 +1,13 @@
 # MoE project handoff — current entry point
 
+## S2a nineteen training completions reviewed, 2026-11-01
+
+Real increment:+2 completed/reviewed D-act seed4 and D-tot seed3 runs;19/24complete,23started,4active,0trained verification calls; [record](architecture_s2a_records_20261031.json).
+New100-epoch/checkpoint records,validation-only choices,unchanged configurations,finite CPU weights and source/exit/cost bindings PASS in1.358s;no additional forward/test/solver call.
+All five D-act models are trained. OriginalPID327708/start1227134153 continues D-tot seed4,M seed3/4,M-reg seed3;M-reg seed4 is the sole not-yet-started item. No errors or extra attempts observed.
+Training source remains immutable8b59db610 and selected configurations remain fixed. Continue all24runs;then bind20weights/materialized inputs,freeze/admit/evaluate the existing queue.
+No40h truncation;300s/request,128MiB evidence cap and all acceptance rules unchanged. No S2a test result,C3 decision or S2b entry;S1 STOP retained.
+
 ## S2a all selected seed2 models reviewed, 2026-11-01
 
 Real increment:+2 completed/reviewed M/M-reg seed2 runs;17/24complete,21started,4active,0trained verification calls; [record](architecture_s2a_records_20261031.json).
