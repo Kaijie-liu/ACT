@@ -1,0 +1,173 @@
+{
+  "status": "POSTHOC_SAME_INPUT_RECOUNT",
+  "primary_sha256": "b86ceda83f6f192ef53f3e7866702cd1bb94290c43d340711ca12a1929eb7586",
+  "incomplete_sha256": "65f683f213683c23b2c947ed1ba2a95db72c47316840676ed78cb7a70c1261eb",
+  "record_identity_sha256": "506fa62b6abbf1233df28943718ac59920a3690d2c186ba03e99aeaad1c810b2",
+  "arms": {
+    "D-act": {
+      "denominator": 5000,
+      "clean": 2565,
+      "ibp_positive": 1683,
+      "crown_positive": 1785,
+      "ibp_positive_per_seed": [
+        330,
+        342,
+        344,
+        327,
+        340
+      ],
+      "crown_gained": 147,
+      "crown_lost": 45,
+      "positive_intersection": 1638
+    },
+    "D-tot": {
+      "denominator": 5000,
+      "clean": 2513,
+      "ibp_positive": 1571,
+      "crown_positive": 1642,
+      "ibp_positive_per_seed": [
+        305,
+        316,
+        310,
+        319,
+        321
+      ],
+      "crown_gained": 125,
+      "crown_lost": 54,
+      "positive_intersection": 1517
+    },
+    "M": {
+      "denominator": 5000,
+      "clean": 2358,
+      "ibp_positive": 1488,
+      "crown_positive": 1530,
+      "ibp_positive_per_seed": [
+        294,
+        306,
+        301,
+        286,
+        301
+      ],
+      "crown_gained": 98,
+      "crown_lost": 56,
+      "positive_intersection": 1432
+    },
+    "M-reg": {
+      "denominator": 5000,
+      "clean": 2344,
+      "ibp_positive": 1474,
+      "crown_positive": 1391,
+      "ibp_positive_per_seed": [
+        295,
+        276,
+        296,
+        301,
+        306
+      ],
+      "crown_gained": 50,
+      "crown_lost": 133,
+      "positive_intersection": 1341
+    }
+  },
+  "comparisons": {
+    "ibp_prefix_M_minus_D-act": {
+      "rate_difference": -0.039,
+      "interval95": [
+        -0.0562,
+        -0.0222
+      ]
+    },
+    "ibp_prefix_M_minus_D-tot": {
+      "rate_difference": -0.0166,
+      "interval95": [
+        -0.036,
+        0.0022049999999999275
+      ]
+    },
+    "ibp_prefix_M_minus_M-reg": {
+      "rate_difference": 0.0028,
+      "interval95": [
+        -0.0174,
+        0.0232
+      ]
+    },
+    "crown_prefix_M_minus_D-act": {
+      "rate_difference": -0.051,
+      "interval95": [
+        -0.072,
+        -0.0306
+      ]
+    },
+    "crown_prefix_M_minus_D-tot": {
+      "rate_difference": -0.0224,
+      "interval95": [
+        -0.0454,
+        0.0004
+      ]
+    },
+    "crown_prefix_M_minus_M-reg": {
+      "rate_difference": 0.0278,
+      "interval95": [
+        0.0092,
+        0.0474
+      ]
+    },
+    "crown_minus_ibp_D-act": {
+      "rate_difference": 0.0204,
+      "interval95": [
+        0.01,
+        0.031
+      ]
+    },
+    "crown_minus_ibp_D-tot": {
+      "rate_difference": 0.0142,
+      "interval95": [
+        0.005,
+        0.0238
+      ]
+    },
+    "crown_minus_ibp_M": {
+      "rate_difference": 0.0084,
+      "interval95": [
+        -0.0016,
+        0.02
+      ]
+    },
+    "crown_minus_ibp_M-reg": {
+      "rate_difference": -0.0166,
+      "interval95": [
+        -0.027,
+        -0.0066
+      ]
+    },
+    "regularizer_difference_between_pipelines": {
+      "rate_difference": 0.025,
+      "interval95": [
+        0.015,
+        0.0354
+      ]
+    }
+  },
+  "regularizer_decomposition": {
+    "full_test_ibp": 0.002,
+    "prefix_ibp": 0.0028,
+    "prefix_crown": 0.0278,
+    "cohort_point_difference": 0.0007999999999999999,
+    "pipeline_point_difference": 0.024999999999999998,
+    "total_point_difference": 0.025799999999999997
+  },
+  "bootstrap": {
+    "resamples": 10000,
+    "seed": 20261031,
+    "unit": "crossed paired seeds and same first1000 inputs",
+    "intervals": "unadjusted descriptive; posthoc, no new gate"
+  },
+  "analysis_seconds": 9.020277589559555,
+  "model_or_solver_calls": 0,
+  "scope": "Saved records only. Numerical pipeline difference includes bound method, route reduction and float32 versus float64 computation; not a causal isolation of bound method. Existing primary STOP unchanged.",
+  "source": {
+    "path": "/data1/Kane/MOE/results/architecture_s2a_evaluation_20261101_r2/same_input_posthoc.json.gz",
+    "sha256": "ce3a5d374aafb3174a0d0c51a1c0b7d70a6ad995aede254268d530f93b3ee692",
+    "bytes": 2991
+  }
+}

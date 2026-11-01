@@ -575,9 +575,19 @@ establish a coverage or cost advantage over dense certification training.
 The regularizer comparison is more favorable in this secondary endpoint:
 M minus M$-$reg is $+2.78$ points, interval $[0.92,4.74]$, with 486 gains
 and 347 losses. Their median-cost ratio is $0.9990$, interval
-$[0.9967,1.0012]$. This result differs from the small, uncertain full-test
-primary IBP difference; both the bound method and the evaluated input cohort
-differ, so this comparison alone cannot isolate their contributions.
+$[0.9967,1.0012]$. To separate the input-subset effect from the change of
+evaluation pipeline, we performed a post hoc recount of saved primary
+IBP results on these same first 1,000 inputs. M minus M$-$reg is then
+$+0.28$ points, interval $[-1.74,2.32]$, versus $+0.20$ on the full test set.
+Thus the point-estimate change attributable to the input subset is only
+$0.08$ points. On the same inputs, the difference between the pipelines'
+regularizer contrasts is $+2.50$ points, interval $[1.50,3.54]$.
+This is a descriptive pipeline comparison, not an isolation of the bound
+method: route reduction and float32 versus float64 computation also differ.
+For M, CROWN-IBP has 98 gains and 56 losses relative to primary IBP;
+for M$-$reg it has 50 gains and 133 losses. It therefore does not dominate
+primary IBP on these stored outcomes. No inference was rerun for this analysis,
+and these post hoc intervals introduce no new acceptance gate.
 All intervals use the frozen 10,000 paired seed/input bootstrap draws and
 are unadjusted descriptive intervals. The incomplete requests account for
 44.873 summed request hours; this is not parallel wall time. They do not

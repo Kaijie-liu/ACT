@@ -101,7 +101,7 @@
     }
   },
   "time_clarification": {
-    "user_quote": "我们不怕时间长，要做最完善！",
+    "user_quote": "\u6211\u4eec\u4e0d\u6015\u65f6\u95f4\u957f\uff0c\u8981\u505a\u6700\u5b8c\u5584\uff01",
     "interpretation": "finish fixed <=4000 complete calls without 40h truncation; 300s per request and <=8 workers unchanged; report wall and summed cost",
     "date": "2026-10-31"
   },
@@ -1364,5 +1364,60 @@
       "queue": null
     },
     "scope": "Completed CROWN-IBP mode record/statistics check only; no numerical rerun or source-complete proof; full queue/final aggregate audit pending. Offline analysis costs are separate from online requests."
+  },
+  "same_input_posthoc": {
+    "date": "2026-11-01",
+    "status": "POSTHOC_SAME_INPUT_RECOUNT",
+    "source": {
+      "path": "/data1/Kane/MOE/results/architecture_s2a_evaluation_20261101_r2/same_input_posthoc.json.gz",
+      "sha256": "ce3a5d374aafb3174a0d0c51a1c0b7d70a6ad995aede254268d530f93b3ee692",
+      "bytes": 2991
+    },
+    "compact": {
+      "path": "/data1/Kane/MOE/ACT/paper/results/s2a_same_input_posthoc.json",
+      "sha256": "b236409b8dd937e9c2e500618cef57f961c48d4e183a11a33060016f8c5a6357",
+      "bytes": 4132
+    },
+    "record_identity_sha256": "506fa62b6abbf1233df28943718ac59920a3690d2c186ba03e99aeaad1c810b2",
+    "analysis_seconds": 9.020277589559555,
+    "publication_seconds": 0.0036308299750089645,
+    "added_model_or_solver_calls": 0,
+    "bootstrap": {
+      "resamples": 10000,
+      "seed": 20261031,
+      "unit": "crossed paired seeds and same first1000 inputs",
+      "intervals": "unadjusted descriptive; posthoc, no new gate"
+    },
+    "regularizer_decomposition": {
+      "full_test_ibp": 0.002,
+      "prefix_ibp": 0.0028,
+      "prefix_crown": 0.0278,
+      "cohort_point_difference": 0.0007999999999999999,
+      "pipeline_point_difference": 0.024999999999999998,
+      "total_point_difference": 0.025799999999999997
+    },
+    "pipeline_contrast": {
+      "rate_difference": 0.025,
+      "interval95": [
+        0.015,
+        0.0354
+      ]
+    },
+    "scope": "Saved records only. Numerical pipeline difference includes bound method, route reduction and float32 versus float64 computation; not a causal isolation of bound method. Existing primary STOP unchanged.",
+    "checks": [
+      "accepted primary array hashes and all20000 incomplete ledger identities match archived reports",
+      "CROWN comparison reproduces existing frozen statistics",
+      "compact equals archived analysis excluding reproducer command",
+      "per-arm gains/losses/intersections and decomposition reconcile",
+      "manuscript numbers and local review links checked",
+      "two LaTeX passes,no overflow or undefined references;changedpage10 visually inspected"
+    ],
+    "pdf": {
+      "path": "/data1/Kane/MOE/results/architecture_s2a_manuscript_20261101_r5/architecture_main.pdf",
+      "sha256": "990080b671ab9fcbe20fac1c9c825a98c4734280f2fbcd88eafdc9c509be4918",
+      "bytes": 323124,
+      "pages": 19
+    },
+    "full_evaluation_complete": false
   }
 }

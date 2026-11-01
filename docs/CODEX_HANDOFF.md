@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## S2a saved-record same-input decomposition, 2026-11-01
+
+Real increment:0new model/solver calls for this analysis; fixed complete queue still live; [record](architecture_s2a_records_20261031.json).
+[Post hoc recount](../paper/results/s2a_same_input_posthoc.json): regularizer contrast +0.28pp IBP on first1000, versus +0.20pp fulltest and +2.78pp CROWN-IBP on samefirst1000.
+Input-subset point difference0.08pp; same-input pipeline contrast2.50pp CI[1.50,3.54]. Pipeline includes route reduction and precision; not isolated bound-method causality or a new gate.
+CROWN vs IBP gains/losses: M98/56,M-reg50/133; no dominance claim. Same accepted arrays/20000ledger identities,9.020s saved-data analysis,0new inference; source and compact bound.
+Same128MiB archive charge retained;19pagePDF/data/layout checks pass. Primary STOP unchanged,noS2b/new direction; this refines the preceding unresolved cohort explanation.
+Continue immutable8087806b6 PID283507/start1232841114; full queue/aggregate audit pending,do not restart. Final audit must reproduce both archived incomplete statistics and this same-input record.
+
 ## S2a CROWN-IBP portion complete and reported, 2026-11-01
 
 Real increment:20000/20000 incomplete requests settled;56/4000 complete at snapshot; [record](architecture_s2a_records_20261031.json).

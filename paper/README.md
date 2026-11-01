@@ -30,10 +30,17 @@ complete-verification requests are still running; their comparisons and the
 final aggregate audit are pending. Secondary results cannot change the failed
 primary gate.
 
+A [post hoc same-input recount](results/s2a_same_input_posthoc.json) separates
+the input-subset point estimate from the evaluation-pipeline difference:
+the regularizer contrast is +0.28pp for primary IBP on the same first 1,000
+inputs and +2.78pp for CROWN-IBP. The 2.50pp contrast difference has interval
+[1.50,3.54]. This does not isolate bound-method causality: route reduction and
+arithmetic precision also differ. It uses saved records only and changes no gate.
+
 The current working PDF includes the S1 and S2a primary figures,
 the seven historical verifier-study tables, seed-level results and the
 source-proof boundary. Build/data/visual checks are bound in the S2a record,
-under `results/architecture_s2a_manuscript_20261101_r4` outside Git; earlier
+under `results/architecture_s2a_manuscript_20261101_r5` outside Git; earlier
 builds remain. Its generic layout is not an official submission template or
 a completed submission. The [review guide](../docs/SUBMISSION_REVIEW.md)
 identifies the arguments and evidence for PI-managed independent review;
