@@ -29,15 +29,17 @@ the single-route fraction from 44.55\% to 73.92\%, while its certification
 gain is 0.20 percentage points with an interval spanning zero. Both studies
 therefore stop under their registered rules. These results identify limits
 of active-capacity and route-stability arguments in this fixed setting.
-Secondary verification of the trained models remains in progress. Experimental
+The trained-model CROWN-IBP secondary endpoint also has fewer MoE positives
+than either dense match; complete verification remains in progress. Experimental
 positives use a numerical policy; the mathematical claims state their source
 and bound-validity assumptions explicitly.
 \end{abstract}
 
 \paragraph{Scope of this draft.}
 This is an empirical working draft for TMLR/workshop consideration following
-the registered S2a primary stop. The trained-model CROWN-IBP and complete
-verification queue is unfinished, so this is not a final submission package.
+the registered S2a primary stop. The trained-model CROWN-IBP endpoint is
+complete, but the complete-verification queue and final aggregate audit remain
+unfinished, so this is not a final submission package.
 The completed verifier study is preserved in
 \path{paper/review_main.tex}; its outcome tables and empirical limits are
 incorporated in Appendix~\ref{app:empirical}, not a separate simultaneous submission. This draft does not
@@ -527,11 +529,59 @@ not a causal explanation of S1's CROWN-IBP result or a localization of every
 unresolved proof.
 
 The primary decision is \texttt{STOP\_S2A\_WRITE\_RESULTS}. Training required
-14.282 hours of wall time and 50.846 summed task hours. The fixed 20,000
-CROWN-IBP and 4,000 complete requests continue for the secondary report with
-the same engine revision and branching settings for both families. Their
-costs and final audit are pending. No convolutional extension, new sample,
-new configuration or new verifier mechanism is launched after this stop.
+14.282 hours of wall time and 50.846 summed task hours. The fixed 4,000
+complete requests continue with the same engine revision and branching
+settings for both families; their results and final aggregate audit remain
+pending. No convolutional extension, new sample, new configuration or new
+verifier mechanism is launched after this stop.
+
+\subsection{S2a secondary CROWN-IBP results}
+All 20,000 registered incomplete-verification requests have settled: the first
+1,000 inputs for each of twenty models, including clean errors. The saved-record
+recount checks request/source bindings, online acceptance, complete history
+coverage, recorded full-model replays and all request costs. It retains one
+D-act cleanup error as an error; a saved positive candidate does not override
+its failed online acceptance. No missing request, timeout, clean-prediction
+disagreement or primary-positive/replay conflict was found in this portion.
+This is a record audit, not independent recomputation of CROWN bounds.
+
+\begin{table}[ht]
+\centering\small
+\begin{tabular}{lrrrrrr}
+\toprule
+Arm & Positive & Positive \% & Replayed & Unknown & Error & Median s\\
+\midrule
+D-act &1785&35.70&2435&779&1&7.758\\
+D-tot &1642&32.84&2487&871&0&8.126\\
+M &1530&30.60&2642&828&0&8.225\\
+M$-$reg &1391&27.82&2656&953&0&8.233\\
+\bottomrule
+\end{tabular}
+\caption{S2a CROWN-IBP, 5,000 requests per arm. Positives are numerical
+filters; replayed violations include clean errors. All-request cost includes
+loading, execution, reception and cleanup, including the retained error.
+There are no timeouts or unexecuted items in this completed portion.}
+\label{tab:s2incomplete}
+\end{table}
+
+M minus D-act is $-5.10$ percentage points, with 368 gains and 623 losses.
+The paired seed/input 95\% interval is $[-7.20,-3.06]$. Against D-tot,
+the difference is $-2.24$ points, interval $[-4.54,0.04]$, with 442 gains
+and 554 losses; that interval includes zero. M's all-request median is
+6.02\% higher than D-act's and 1.22\% higher than D-tot's, with ratio
+intervals $[1.0541,1.0658]$ and $[1.0097,1.0154]$. These results do not
+establish a coverage or cost advantage over dense certification training.
+
+The regularizer comparison is more favorable in this secondary endpoint:
+M minus M$-$reg is $+2.78$ points, interval $[0.92,4.74]$, with 486 gains
+and 347 losses. Their median-cost ratio is $0.9990$, interval
+$[0.9967,1.0012]$. This result differs from the small, uncertain full-test
+primary IBP difference; both the bound method and the evaluated input cohort
+differ, so this comparison alone cannot isolate their contributions.
+All intervals use the frozen 10,000 paired seed/input bootstrap draws and
+are unadjusted descriptive intervals. The incomplete requests account for
+44.873 summed request hours; this is not parallel wall time. They do not
+change the failed primary gate or establish source-complete certificates.
 
 \subsection{Earlier verifier experiments as motivation}
 The archived multilayer study obtains 108/180 numerical positives with pruned

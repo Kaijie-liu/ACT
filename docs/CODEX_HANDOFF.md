@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## S2a CROWN-IBP portion complete and reported, 2026-11-01
+
+Real increment:20000/20000 incomplete requests settled;56/4000 complete at snapshot; [record](architecture_s2a_records_20261031.json).
+[CROWN-IBP report](../paper/results/s2a_incomplete.json): M1530/5000,D-act1785,D-tot1642,M-reg1391; medians8.225/7.758/8.126/8.233s. One old error retained,no new incomplete errors/timeouts.
+M−D-act−5.10pp CI[−7.20,−3.06];M−D-tot−2.24pp[−4.54,0.04];M−M-reg+2.78pp[0.92,4.74]. Secondary regularizer signal does not rescue primarySTOP; backend/cohort attribution remains unresolved.
+Existing frozen functions recount allmode identities/online acceptance/coverage/cost and paired statistics in34.048s,0new model/solver calls;no clean-precision or primary-positive/replay conflicts. Given-record audit,not numerical reproof.
+Paper table and19pagePDF updated; source/data/layout checks pass. First1.64pt prose-overflow build preserved separately. All new report bytes charged to same128MiB account.
+Continue immutable8087806b6 PID283507/start1232841114 complete queue; verify identity,no restart. Final aggregate audit/manuscript pending,noS2b/new direction.
+At final audit compare the completed incomplete-mode statistics with this archived report; report active queue wall separately from the inter-segment repair gap.
+
 ## S2a review entry points corrected, 2026-11-01
 
 Real increment:0new model/solver calls from this correction; fixed continuation remains live; [record](architecture_s2a_records_20261031.json).

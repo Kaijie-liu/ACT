@@ -22,14 +22,18 @@ versus **33.554% D-act** and **31.972% D-tot**. Its single-route fraction is
 [training and evaluation record](../docs/architecture_s2a_records_20261031.json)
 and manuscript include paired seed/input intervals, the routing-regularizer
 ablation, and the limitations of descriptive layer-width measurements.
-The fixed 20,000 CROWN-IBP and 4,000 complete-verification requests are still
-running; their final comparisons and audit are pending. Secondary results
-cannot change the failed primary gate.
+The [completed CROWN-IBP portion](results/s2a_incomplete.json) covers 20,000
+requests: M 30.60%, D-act 35.70%, D-tot 32.84%, and M-reg 27.82% numerical
+positives. M minus M-reg is +2.78pp, interval [0.92,4.74], but M has fewer
+positives and higher median cost than either dense match. The fixed 4,000
+complete-verification requests are still running; their comparisons and the
+final aggregate audit are pending. Secondary results cannot change the failed
+primary gate.
 
-The current 18-page working PDF includes the S1 and S2a primary figures,
+The current working PDF includes the S1 and S2a primary figures,
 the seven historical verifier-study tables, seed-level results and the
 source-proof boundary. Build/data/visual checks are bound in the S2a record,
-under `results/architecture_s2a_manuscript_20261101_r2` outside Git; earlier
+under `results/architecture_s2a_manuscript_20261101_r4` outside Git; earlier
 builds remain. Its generic layout is not an official submission template or
 a completed submission. The [review guide](../docs/SUBMISSION_REVIEW.md)
 identifies the arguments and evidence for PI-managed independent review;
