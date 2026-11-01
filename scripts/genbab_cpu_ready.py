@@ -137,6 +137,24 @@ COMPAT_EDITS = {
 SOURCES = {str(TOOL): 'e5c7e17bf0488843acb77b7519f59876717a49f4',
            str(TOOL/'auto_LiRPA'): '5a098e8f9fb5786a428a024981d833d303921f2d'}
 OLD = Path('/data1/Kane/MOE/results/genbab_cpu_deployment_20261021_r1')
+# Opt-in relocation for the fixed final reproduction; numerical code/configuration
+# is unchanged. Both the worker manifest and this import bind the location file.
+RELOCATION_SHA256 = os.environ.get('ACT_REPRODUCTION_LOCATIONS_SHA256')
+if os.environ.get('ACT_REPRODUCTION_LOCATIONS'):
+    relocation = load(os.environ['ACT_REPRODUCTION_LOCATIONS'], RELOCATION_SHA256)
+    if not RELOCATION_SHA256 or relocation.get('schema') != 'S2A_RELOCATION_V1':
+        raise ValueError('bound reproduction locations required')
+    for key in ('primary_python', 'engine_environment', 'author_source', 'compat_source', 'install_receipts'):
+        if not Path(relocation[key]).is_absolute():
+            raise ValueError('absolute reproduction location: '+key)
+    ACT = relocation['primary_python']
+    ENVIRONMENT = Path(relocation['engine_environment'])
+    TOOL = Path(relocation['author_source'])
+    COMPAT = Path(relocation['compat_source'])
+    LIRPA = COMPAT/'auto_LiRPA'
+    OLD = Path(relocation['install_receipts'])
+    SOURCES = {str(TOOL): 'e5c7e17bf0488843acb77b7519f59876717a49f4',
+               str(TOOL/'auto_LiRPA'): '5a098e8f9fb5786a428a024981d833d303921f2d'}
 POLICY = 'DEV_MARGIN_20261021_V1'
 CAP = 128*2**20
 C = [[1, 0, 0, 0], [0, -1, 0, 1], [0, 0, -1, 1]]

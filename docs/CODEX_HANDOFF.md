@@ -1,5 +1,15 @@
 # MoE project handoff — current entry point
 
+## Final closeout authorized; fresh-environment preparation, 2026-11-01
+
+Real increment:0 new model calls; original24020/24020 and S2a STOP retained; [finite contract](architecture_closeout_20261101.md).
+PI authorizes two selected seed0 models,first50,IBP+complete once,≤200calls/4h;new isolated envs only,noS2b/new direction.
+Same numerical files from8087806b6;optional relocation/subset/aggregate-clock additions use existing supervisor;three transport controls pass.
+Two fresh wheel-based environments are being locked;original act-py312/engine remain untouched;CPU only.
+Internal Claude review is AI/non-independent;clean/conditional decomposition and learned-scale widths cannot support its strongest causal wording.
+Next freeze executable/locations/locks,run ten-call prefix then unexecuted suffix,compare all outcomes,rewrite TMLR draft and artifact.
+Nine external textual compatibility edits across eight files are retained/disclosed;old five-edit list was incomplete.
+
 ## S2a fixed queue complete; final audit and empirical draft, 2026-11-01
 
 Real final increment:4000/4000complete;20000/20000incomplete+20primary retained;24020/24020total,24/24training; [record](architecture_s2a_records_20261031.json).

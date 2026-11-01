@@ -248,6 +248,9 @@ def worker(folder):
         backend.limits(deadline)
         spec = load(query['manifest'], query['manifest_sha256'])
         require(all(sha(ROOT/p) == h for p, h in spec['source_files'].items()), 'frozen worker source')
+        if spec.get('reproduction'):
+            require(backend.RELOCATION_SHA256 == spec['reproduction']['locations_sha256'],
+                    'reproduction environment locations')
         synthetic = spec.get('synthetic_control', False)
         if synthetic and query.get('case') in ('exception', 'deadline'):
             store.write(folder/'progress.json.gz', dict(phase='synthetic_fault', clock=time.monotonic()), replace=True)
@@ -482,13 +485,19 @@ def finite_queue(root, requests, manifest, *, workers, seconds=300, timing_reser
         require(workers == spec['workers'] and spec['request_catalog_sha256'] == digest(requests),
             'frozen worker count and complete queue')
     store = Artifacts(root); started = time.monotonic(); rows = []; next_index = 0; stopped = False
+    batch_deadline = started + spec.get('queue_budget_seconds', float('inf'))
     with ThreadPoolExecutor(max_workers=workers) as pool:
         pending = {}
         while pending or (not stopped and next_index < len(requests)):
             while not stopped and len(pending) < workers and next_index < len(requests):
+                if time.monotonic()+seconds >= batch_deadline:
+                    stopped = True
+                    break
                 query = requests[next_index]; next_index += 1
                 task = pool.submit(measured_invoke, root, query, manifest, seconds=seconds, timing_reserve=timing_reserve)
                 pending[task] = query
+            if not pending:
+                break
             done, _ = wait(pending, return_when=FIRST_COMPLETED)
             for task in sorted(done, key=lambda f: pending[f]['id']):
                 query = pending.pop(task)

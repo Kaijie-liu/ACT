@@ -30,6 +30,9 @@ def worker(folder,query,spec,store):
     else:
         item=next(m for m in spec['models'] if m['id']==query['model'])
         family=item['family'];count=10000
+        if spec.get('reproduction'):
+            require(spec['reproduction']['indices']==list(range(50)), 'fixed reproduction prefix')
+            count=50
         require(sha(item['checkpoint'])==item['checkpoint_sha256'],'selected S2 weights')
         if family=='dense':from act.pipeline.moe.architecture_dense import load_checkpoint
         else:from act.pipeline.moe.multilayer_training import load_checkpoint
@@ -83,6 +86,9 @@ def receive(folder,query,spec,value,deadline):
             'primary measurement, not a request certificate')
     require(value['result']['evaluation']['mode']=='primary' and value['properties']==9,'all primary properties')
     count=8 if spec.get('synthetic_control',False) else 10000
+    if spec.get('reproduction'):
+        require(spec['reproduction']['indices']==list(range(50)), 'received fixed reproduction prefix')
+        count=50
     require(value['count']==count,'all primary inputs')
     if not spec.get('synthetic_control',False):
         item=next(m for m in spec['models'] if m['id']==query['model'])
