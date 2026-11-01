@@ -49,10 +49,45 @@ No clean-conditional population is substituted for the registered endpoint.
 gates and the90%single-route gate;C3 is not supported by this fixed MLP study.
 No S2b,retuning,sample expansion or new research direction follows. This does
 not establish an impossibility result for all MoE architectures or recipes.
-The already frozen20000CROWN-IBP and4000complete calls continue for the full
-registered report;their results and final audit remain pending. Primary
+The frozen20000CROWN-IBP and4000complete calls have now all settled, with
+final saved-record/statistical audit complete (below). Primary
 record/statistics checking took8.582s and added no model call. The reported
 positives remain numerical-policy results,not source-complete formal proofs.
+
+## Final secondary evaluation and disposition (2026-11-01)
+
+Real final increment: all4,000 complete requests settled, with20,000 incomplete
+requests and20 primary batches retained;24,020/24,020 evaluation items,0missing.
+[Final export](../paper/results/s2a_final.json) binds both execution segments,
+all gain/loss lists, terminal denominators, paired statistics and full costs.
+A separate saved-evidence recount reproduces the automatic report and earlier
+primary/incomplete/same-input analyses;0new model/solver/replay calls.
+
+| Arm | Complete positive / 1000 | Replayed | Unknown | Timeout | Median / mean seconds |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| D-act |369|492|136|3|10.061 / 48.843|
+| D-tot |336|512|150|2|10.138 / 52.618|
+| M |310|541|86|63|10.417 / 52.503|
+| M-reg |301|540|83|76|10.425 / 55.184|
+
+M−D-act −5.9pp CI[−10.4,−1.2],gain/loss78/137;M−D-tot −2.6pp
+CI[−7.7,2.5],92/118;M−M-reg +0.9pp CI[−3.3,5.0],91/82. These are
+unadjusted descriptive crossed paired seed/input intervals, not new gates.
+Complete mode has0ERROR;the original incomplete cleanup ERROR stays ERROR
+and was not retried. No missing executed cost or recorded positive/replay
+conflict. Recount does not independently prove bounds or replay witnesses.
+
+Evaluation sums103.075request-hours;two active queue walls sum12.956hours,
+excluding approximately561.6seconds between segments. Training, preparation,
+copy/admission and offline checks remain separately recorded. Original40hour
+estimate did not truncate the queue;300seconds/request remained unchanged.
+
+**STOP_S2A_WRITE_RESULTS remains final.** No S2b,retuning,new samples or new
+mechanism follows. The combined empirical draft now includes all registered
+results, the failed gates and scope limits. It does not establish C2/C3,
+source-complete real certificates or external-tool superiority. PI-managed
+human technical review and clean-environment empirical reproduction remain
+external requirements; no submission or author contact has occurred.
 
 ## Bounded literature check (2026-10-31)
 

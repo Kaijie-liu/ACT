@@ -25,10 +25,14 @@ ablation, and the limitations of descriptive layer-width measurements.
 The [completed CROWN-IBP portion](results/s2a_incomplete.json) covers 20,000
 requests: M 30.60%, D-act 35.70%, D-tot 32.84%, and M-reg 27.82% numerical
 positives. M minus M-reg is +2.78pp, interval [0.92,4.74], but M has fewer
-positives and higher median cost than either dense match. The fixed 4,000
-complete-verification requests are still running; their comparisons and the
-final aggregate audit are pending. Secondary results cannot change the failed
-primary gate.
+positives and higher median cost than either dense match. The [final complete
+comparison and aggregate audit](results/s2a_final.json) now cover all 4,000 complete
+requests: M 310/1000, D-act 369/1000, D-tot 336/1000, M-reg 301/1000.
+M minus D-act is -5.9pp, interval [-10.4,-1.2]; M minus D-tot is -2.6pp,
+[-7.7,2.5]; M minus M-reg is +0.9pp, [-3.3,5.0]. Complete-mode medians are
+10.417/10.061/10.138/10.425 seconds in that order. All 24,020 evaluation items
+are settled; the old cleanup error is retained, and no request was rerun.
+Secondary results do not change the failed primary gate.
 
 A [post hoc same-input recount](results/s2a_same_input_posthoc.json) separates
 the input-subset point estimate from the evaluation-pipeline difference:
@@ -38,9 +42,9 @@ inputs and +2.78pp for CROWN-IBP. The 2.50pp contrast difference has interval
 arithmetic precision also differ. It uses saved records only and changes no gate.
 
 The current working PDF includes the S1 and S2a primary figures,
-the seven historical verifier-study tables, seed-level results and the
+the completed secondary comparisons, seven historical verifier-study tables, seed-level results and the
 source-proof boundary. Build/data/visual checks are bound in the S2a record,
-under `results/architecture_s2a_manuscript_20261101_r5` outside Git; earlier
+under `results/architecture_s2a_manuscript_20261101_r7` outside Git; earlier
 builds remain. Its generic layout is not an official submission template or
 a completed submission. The [review guide](../docs/SUBMISSION_REVIEW.md)
 identifies the arguments and evidence for PI-managed independent review;

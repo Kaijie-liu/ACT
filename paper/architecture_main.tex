@@ -9,7 +9,7 @@
 \title{When Is a Mixture of Experts Easier to Certify?\\
 Route-Aware Reductions and a Capacity-Matched Study}
 \author{Author details omitted for technical review}
-\date{Working manuscript, 1 November 2026; secondary S2a evaluation pending}
+\date{Working manuscript, 1 November 2026; S1 and S2a evaluation complete}
 \begin{document}
 \maketitle
 \begin{abstract}
@@ -29,17 +29,19 @@ the single-route fraction from 44.55\% to 73.92\%, while its certification
 gain is 0.20 percentage points with an interval spanning zero. Both studies
 therefore stop under their registered rules. These results identify limits
 of active-capacity and route-stability arguments in this fixed setting.
-The trained-model CROWN-IBP secondary endpoint also has fewer MoE positives
-than either dense match; complete verification remains in progress. Experimental
+The trained-model secondary endpoints also favor neither MoE coverage nor
+median cost: complete verification gives 310/1000 positives against 369/1000
+and 336/1000 for the dense matches. Experimental
 positives use a numerical policy; the mathematical claims state their source
 and bound-validity assumptions explicitly.
 \end{abstract}
 
 \paragraph{Scope of this draft.}
 This is an empirical working draft for TMLR/workshop consideration following
-the registered S2a primary stop. The trained-model CROWN-IBP endpoint is
-complete, but the complete-verification queue and final aggregate audit remain
-unfinished, so this is not a final submission package.
+the registered S2a primary stop. All frozen training and evaluation queues,
+including the final saved-record/statistical audit, are complete. Independent
+human review and clean-environment empirical reproduction remain outstanding;
+this is not a final submission package.
 The completed verifier study is preserved in
 \path{paper/review_main.tex}; its outcome tables and empirical limits are
 incorporated in Appendix~\ref{app:empirical}, not a separate simultaneous submission. This draft does not
@@ -496,7 +498,7 @@ predictions and is descriptive; it does not define a common population.}
 small dots are seed observations. Panel (b) uses 10,000 crossed paired
 seed/input bootstrap draws and unadjusted percentile 95\% intervals. Route
 stability improves with the penalty, but neither dense-comparison gate nor
-M's 90\% single-route gate passes. Secondary verification is still running.}
+M's 90\% single-route gate passes. Secondary results do not revise these gates.}
 \label{fig:s2primary}
 \end{figure}
 
@@ -529,10 +531,9 @@ not a causal explanation of S1's CROWN-IBP result or a localization of every
 unresolved proof.
 
 The primary decision is \texttt{STOP\_S2A\_WRITE\_RESULTS}. Training required
-14.282 hours of wall time and 50.846 summed task hours. The fixed 4,000
-complete requests continue with the same engine revision and branching
-settings for both families; their results and final aggregate audit remain
-pending. No convolutional extension, new sample, new configuration or new
+14.282 hours of wall time and 50.846 summed task hours. The fixed secondary
+queues have also completed with the same engine revision and branching
+settings for both families. No convolutional extension, new sample, new configuration or new
 verifier mechanism is launched after this stop.
 
 \subsection{S2a secondary CROWN-IBP results}
@@ -593,6 +594,56 @@ are unadjusted descriptive intervals. The incomplete requests account for
 44.873 summed request hours; this is not parallel wall time. They do not
 change the failed primary gate or establish source-complete certificates.
 
+\subsection{S2a secondary complete verification}
+All 4,000 complete requests have settled on the first 200 inputs per model,
+using the same R7 engine revision and \texttt{bbps} branching configuration
+for both families. Every input remains in the denominator, including clean
+errors. Table~\ref{tab:s2complete} reports all terminal states and all-request
+costs. There are no errors or unexecuted requests in this mode.
+
+\begin{table}[ht]
+\centering\small
+\begin{tabular}{lrrrrrrr}
+\toprule
+Arm & Positive & Positive \% & Replayed & Unknown & Timeout & Median s & Mean s\\
+\midrule
+D-act &369&36.9&492&136&3&10.061&48.843\\
+D-tot &336&33.6&512&150&2&10.138&52.618\\
+M &310&31.0&541&86&63&10.417&52.503\\
+M$-$reg &301&30.1&540&83&76&10.425&55.184\\
+\bottomrule
+\end{tabular}
+\caption{S2a complete verification, 1,000 requests per arm (five seeds on
+200 common inputs). Positives use the numerical policy; replayed violations
+include clean errors. Unknown is a returned unresolved result, while timeout
+is an outer deadline terminal. Neither establishes safety or unsafety.}
+\label{tab:s2complete}
+\end{table}
+
+M minus D-act is $-5.9$ percentage points, interval $[-10.4,-1.2]$, with
+78 gains, 137 losses and 232 shared positives. Against D-tot, the difference
+is $-2.6$ points, interval $[-7.7,2.5]$, with 92 gains, 118 losses and 218
+shared positives. M minus M$-$reg is $+0.9$ points, interval $[-3.3,5.0]$,
+with 91 gains, 82 losses and 219 shared positives. These are descriptive
+crossed paired seed/input intervals using the frozen 10,000 resamples;
+the 1,000 cells per arm are not 1,000 independent inputs.
+
+M's median cost is 3.53\% above D-act's and 2.75\% above D-tot's.
+The corresponding ratio intervals are $[1.0177,1.0603]$ and
+$[1.0052,1.0520]$. Its ratio to M$-$reg is $0.9992$, interval
+$[0.9747,1.0255]$.
+The mean-cost differences against the dense arms have intervals spanning
+zero. Thus the median results do not establish a general slowdown on every
+request. Conversely, the mean difference against D-tot is not evidence of
+useful speedup. All-request medians include inexpensive clean-error replays
+and the long unresolved tail. More MoE timeouts and more dense returned
+unknowns do not, by themselves, isolate routing or relaxation as the cause.
+Shared-host load varied during execution; the recorded costs are retained
+without rerunning slow cases. The complete requests account for 58.097
+summed request hours. Together with the primary and incomplete endpoints,
+they provide no registered certification advantage for M in this setting.
+Final evidence and cost closure are reported in Appendix~\ref{app:s2final}.
+
 \subsection{Earlier verifier experiments as motivation}
 The archived multilayer study obtains 108/180 numerical positives with pruned
 GenBaB and none with ACT v1. A subsequent gate-decoupling cascade obtains 122/300
@@ -648,8 +699,8 @@ mean interval widths yields the required trained certification advantage.
 C2 and C3 are unsupported in these registered settings. C1 supplies a
 conditional semantic basis for comparing full-output verification, while the
 experiments delimit what follows from sparsity and routing statistics.
-The remaining frozen secondary evaluation will complete the empirical record;
-it will not revise either primary stop. Independent human technical review
+The completed secondary evaluation is consistent with this limited conclusion;
+it does not revise either primary stop. Independent human technical review
 and clean-environment empirical reproduction remain required before submission.
 
 \begin{thebibliography}{99}

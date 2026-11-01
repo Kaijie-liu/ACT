@@ -1,6 +1,6 @@
 {
-  "stage": "S2A_PRIMARY_STOP_INCOMPLETE_MODE_DONE_COMPLETE_MODE_RUNNING",
-  "real_verification_calls": 20076,
+  "stage": "S2A_COMPLETE_PRIMARY_STOP_EMPIRICAL_MANUSCRIPT",
+  "real_verification_calls": 24020,
   "internal_review": {
     "path": "/data1/Kane/MOE/survey/drafts/act_icml_review_20261031.md",
     "sha256": "dcf917092bc1fb4a54642bdd49c183ea42b263c07dd91c1af20633ad0313ee0e",
@@ -42,8 +42,8 @@
   "initial_head": "bb2f23e49c2d21f22f4c623fb529ad53654a446b",
   "old_decision": "STOP_S1_RETURN_TO_REDUCTION_PAPER",
   "literature": "bounded primary-source search; no equivalent full design found; not novelty proof",
-  "scientific_status": "S2A_PRIMARY_STOP_SECONDARY_RUNNING",
-  "next": "Continue immutable8087806b6 PID283507/start1232841114 complete-mode queue; do not restart or retry. Finish4000 complete calls, aggregate audit and final empirical manuscript. No S2b.",
+  "scientific_status": "C3_NOT_SUPPORTED_IN_REGISTERED_MLP_STUDY_NO_S2B",
+  "next": "Authorized S2a execution and empirical draft finished. Preserve STOP; no retuning, extra samples, S2b or new direction. PI-managed independent human technical review and clean-environment empirical reproduction remain external, not performed by this audit.",
   "real_training_runs_started": 24,
   "real_training_runs_completed": 24,
   "launch": {
@@ -101,7 +101,7 @@
     }
   },
   "time_clarification": {
-    "user_quote": "\u6211\u4eec\u4e0d\u6015\u65f6\u95f4\u957f\uff0c\u8981\u505a\u6700\u5b8c\u5584\uff01",
+    "user_quote": "我们不怕时间长，要做最完善！",
     "interpretation": "finish fixed <=4000 complete calls without 40h truncation; 300s per request and <=8 workers unchanged; report wall and summed cost",
     "date": "2026-10-31"
   },
@@ -630,25 +630,30 @@
     }
   },
   "latest_evaluation_observation": {
-    "clock": 1793475013.5719414,
-    "pid": 320490,
-    "start_ticks": "1232308927",
-    "live": true,
-    "settled": 216,
+    "clock": 1793522562.8462882,
+    "pid": 283507,
+    "start_ticks": "1232841114",
+    "live": false,
+    "settled": 24020,
     "by_mode": {
-      "incomplete": 196,
-      "primary": 20
+      "primary": 20,
+      "incomplete": 20000,
+      "complete": 4000
     },
     "states": {
-      "POSITIVE": 67,
-      "UNKNOWN": 45,
-      "UNSAFE_REPLAYED": 84,
-      "AUXILIARY_COMPLETE": 20
+      "AUXILIARY_COMPLETE": 20,
+      "ERROR": 1,
+      "POSITIVE": 7664,
+      "TIMEOUT": 144,
+      "UNKNOWN": 3886,
+      "UNSAFE_REPLAYED": 12305
     },
-    "errors": [],
-    "queue_complete": false
+    "errors": [
+      "incomplete_D-act_seed0_0235"
+    ],
+    "queue_complete": true
   },
-  "real_complete_calls": 56,
+  "real_complete_calls": 4000,
   "real_incomplete_calls": 20000,
   "primary_model_evaluations": 20,
   "primary_result": {
@@ -989,7 +994,7 @@
     "original_charged_bytes": 63683960,
     "artifact_cap": 134217728,
     "scope": "same models/inputs/methods/numerical engine/deadlines; failed and all other settled requests are spent; only unexecuted remainder; shared account carries all prior charges",
-    "status": "RUNNING",
+    "status": "COMPLETE_REMAINDER_WITH_ORIGINAL_ERROR_PRESERVED",
     "launch": {
       "path": "/data1/Kane/MOE/results/architecture_s2a_20261031_r1/evaluation_launch_20261101_r2.json",
       "sha256": "25be241121f2e7645a9ccce86201b268154b7c46f5ab4f80186d93f5a555077b",
@@ -1039,7 +1044,7 @@
     },
     "secondary_status": "Fixed original/continuation queue still running; no final secondary claim"
   },
-  "real_verification_calls_scope": "Settled frozen evaluation requests in incomplete_mode_report live snapshot, including20 primary batches; controls are recorded separately.",
+  "real_verification_calls_scope": "All settled frozen evaluation items:20 all-test primary batches+20000 incomplete+4000 complete. Not24020 independent inputs; no new model/solver calls in final recount.",
   "incomplete_mode_report": {
     "date": "2026-11-01",
     "status": "COMPLETED_INCOMPLETE_MODE_RECORD_RECOUNT",
@@ -1419,5 +1424,189 @@
       "pages": 19
     },
     "full_evaluation_complete": false
+  },
+  "evaluation_observation_history": [
+    {
+      "clock": 1793475013.5719414,
+      "pid": 320490,
+      "start_ticks": "1232308927",
+      "live": true,
+      "settled": 216,
+      "by_mode": {
+        "incomplete": 196,
+        "primary": 20
+      },
+      "states": {
+        "POSITIVE": 67,
+        "UNKNOWN": 45,
+        "UNSAFE_REPLAYED": 84,
+        "AUXILIARY_COMPLETE": 20
+      },
+      "errors": [],
+      "queue_complete": false
+    }
+  ],
+  "final_evaluation": {
+    "date": "2026-11-01",
+    "status": "COMPLETE_AUDIT",
+    "source": {
+      "path": "/data1/Kane/MOE/results/architecture_s2a_evaluation_20261101_r2/evaluation_summary.json.gz",
+      "sha256": "2595a3477e757898ba9c9aa7add8e71f93d7eb41f0e7fdd6296bed0cce18e933",
+      "bytes": 23327
+    },
+    "compact": {
+      "path": "/data1/Kane/MOE/ACT/paper/results/s2a_final.json",
+      "sha256": "dd1b15142f00ec3deaa7e88fc038766039dd6ccf1f1e0230b9d4a054245b789d",
+      "bytes": 272518
+    },
+    "independent_record_audit": {
+      "path": "/data1/Kane/MOE/results/architecture_s2a_evaluation_20261101_r2/final_independent_record_audit.json.gz",
+      "sha256": "d320c9b47f89f568f15660e7a9af4211a0f51756ba451fbf214158a490151898",
+      "bytes": 2274
+    },
+    "record_identity_sha256": "491275a1dc08a3a5b8b3908005ac8e35a6f314fbfae296d02eb0d0173e4febcd",
+    "execution_commit": "8087806b695ed55cb5a8b4b300181648ba91ebdb",
+    "original_execution_commit": "954b8934a4a4ce6ff750fbd9a0760c25d60f89cb",
+    "controller_exited": true,
+    "counts": {
+      "AUXILIARY_COMPLETE": 20,
+      "ERROR": 1,
+      "POSITIVE": 7664,
+      "TIMEOUT": 144,
+      "UNKNOWN": 3886,
+      "UNSAFE_REPLAYED": 12305
+    },
+    "by_mode": {
+      "complete": {
+        "seconds": 209148.56873857044,
+        "states": {
+          "POSITIVE": 1316,
+          "TIMEOUT": 144,
+          "UNKNOWN": 455,
+          "UNSAFE_REPLAYED": 2085
+        }
+      },
+      "incomplete": {
+        "seconds": 161541.73114220053,
+        "states": {
+          "ERROR": 1,
+          "POSITIVE": 6348,
+          "UNKNOWN": 3431,
+          "UNSAFE_REPLAYED": 10220
+        }
+      },
+      "primary": {
+        "seconds": 380.8448711410165,
+        "states": {
+          "AUXILIARY_COMPLETE": 20
+        }
+      }
+    },
+    "planned_requests": 24020,
+    "missing_executed_cost": 0,
+    "primary_decision": "STOP_S2A_WRITE_RESULTS",
+    "clean_precision_disagreements": [],
+    "numerical_conflicts": [],
+    "summed_request_seconds": 371071.144751912,
+    "active_queue_wall_seconds": 46639.79667306878,
+    "approximate_between_segment_gap_seconds": 561.5952429771423,
+    "gap_scope": "Difference of recorded startup clocks minus original active queue duration; approximate intersegment repair/admission gap, not request cost.",
+    "preparation_seconds": 6.6717088129371405,
+    "controller_startup_and_admission_seconds": 3.2609750237315893,
+    "original_copy_seconds": 0.8133466262370348,
+    "final_automatic_audit_seconds": 44.23486350290477,
+    "separate_record_recount_seconds": 30.546158017590642,
+    "same_input_differential": {
+      "analysis_seconds": 7.405552243813872,
+      "elapsed_seconds": 7.981854589655995,
+      "model_or_solver_calls": 0,
+      "status": "PASS_SAME_INPUT_DIFFERENTIAL"
+    },
+    "audit_publication_seconds": 0.002944784238934517,
+    "model_or_solver_calls_for_analysis": 0,
+    "account": {
+      "accounting": "stored bytes plus outstanding reservations; account/lock reserve4096",
+      "cap": 134217728,
+      "initial_bytes": 63683960,
+      "terminal_reserve": 524288,
+      "used": 122545198
+    },
+    "scope": "Full frozen queue and saved-record/statistical audit complete; no independent numerical reproof or human review. Same128MiB account, oldERROR and both segments retained.",
+    "continuation_copy_receipt": {
+      "commit": "8087806b695ed55cb5a8b4b300181648ba91ebdb",
+      "copy_seconds": 0.48310675099492073,
+      "execution": "/data1/Kane/MOE/executions/architecture_s2a_evaluation_20261101_r2",
+      "resources": {
+        "action": "read only; no signal or modification of another task",
+        "allowed_cpus": 20,
+        "clock": 1793480069.7791226,
+        "gpu_used": false,
+        "load": [
+          5.4873046875,
+          6.39208984375,
+          9.2158203125
+        ],
+        "memory": {
+          "MemAvailable": 109136756736,
+          "MemTotal": 134491185152
+        },
+        "ordinary_available_disk_bytes": 245678116864,
+        "workers": 8
+      }
+    }
+  },
+  "final_manuscript": {
+    "date": "2026-11-01",
+    "source": {
+      "path": "/data1/Kane/MOE/ACT/paper/architecture_main.tex",
+      "sha256": "41c1e74aa6445873f2bd24d7beec46209a029692018e284945717141bd38639f",
+      "bytes": 40829
+    },
+    "appendix": {
+      "path": "/data1/Kane/MOE/ACT/paper/appendices/architecture_s2_primary_diagnostics.tex",
+      "sha256": "03fae39dcdf96fc8cfa39af8eb6885bc49d35761a3b9a724de7705015ae0693e",
+      "bytes": 5609
+    },
+    "pdf": {
+      "path": "/data1/Kane/MOE/results/architecture_s2a_manuscript_20261101_r7/architecture_main.pdf",
+      "sha256": "14f1edeadd53e744e3a1a22a7bafacc34e36cbf2257e6dbba7d23dd43de9e95e",
+      "bytes": 328790
+    },
+    "pages": 21,
+    "build_directory": "/data1/Kane/MOE/results/architecture_s2a_manuscript_20261101_r7",
+    "prior_layout_attempt": {
+      "path": "/data1/Kane/MOE/results/architecture_s2a_manuscript_20261101_r6/architecture_main.pdf",
+      "sha256": "a0d93aacb4223e06a1f030376b7571427b94a2354431f8df568bbdd208dccc4a",
+      "bytes": 328704
+    },
+    "prior_layout_issue": "15.723pt prose overflow; retained; rephrased sentence, no numerical change",
+    "checks": [
+      "final export matches immutable automatic report",
+      "earlier primary/incomplete/same-input hashes unchanged and statistics reproduced",
+      "all24020 unique identities/online acceptance/coverage/cost checked by frozen audit",
+      "complete table/per-seed counts/gain-loss identities match source",
+      "two LaTeX passes;no overfull boxes or undefined references",
+      "pages10,11,14,15 visually inspected;tables/prose/appendix legible"
+    ],
+    "reviewer": "AI;not independent human review",
+    "submission_or_author_contact": false,
+    "scientific_conclusion": "C2/C3 unsupported in registered settings; no S2b, no new mechanism; no full-source/native-floating proof",
+    "build_storage_bytes": 1339842,
+    "storage_scope": "Manuscript PDF/logs/raster previews outside raw evaluation evidence account, recorded separately; no new inference artifacts."
+  },
+  "internal_review_response_final": {
+    "W1": "Direct certified-training test completed and failed; no positive contribution or acceptance verdict claimed.",
+    "W2": "All-input and clean-correct descriptive fractions reported; different conditional cohorts not causal.",
+    "W3": "Saved all-layer widths and same-input pipeline decomposition added; neither identifies a unique cause. No causal width ablation.",
+    "W4": "Five-seed crossed paired bootstrap with fixed validation-selected configurations; finite-seed/model scope retained.",
+    "W5": "S2a complete comparison uses identical R7 revision and bbps configuration; graph families still differ. All terminal/cost counts retained.",
+    "W6": "CIFAR10 MLP limitation remains; convolutional extension not authorized after gate failure.",
+    "W7": "Figures, primary/secondary tables and research conclusions lead; execution details moved to appendix/record.",
+    "W8": "Route semantics underlie all-route IBP training; ordinary-training S1 motivates direct S2a test; old verifier negatives remain appendix.",
+    "pending_external": [
+      "independent human certified-training technical review",
+      "clean-environment empirical reproduction",
+      "venue/novelty assessment and submission by PI"
+    ]
   }
 }

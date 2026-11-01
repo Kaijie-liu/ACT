@@ -1,5 +1,16 @@
 # MoE project handoff — current entry point
 
+## S2a fixed queue complete; final audit and empirical draft, 2026-11-01
+
+Real final increment:4000/4000complete;20000/20000incomplete+20primary retained;24020/24020total,24/24training; [record](architecture_s2a_records_20261031.json).
+[Final export](../paper/results/s2a_final.json):complete M310/1000,D-act369,D-tot336,M-reg301;M−D-act−5.9pp CI[−10.4,−1.2],M−D-tot−2.6pp[−7.7,2.5].
+M−M-reg+0.9pp[−3.3,5.0];medians10.417/10.061/10.138/10.425s in same order.No registered MoE advantage;secondary findings do not rescue primarySTOP.
+All24020 identities/acceptance/coverage/cost reconcile;original1ERROR retained,no retry;0missing/recorded numerical conflicts.Controller283507 exited,no remaining queue.
+Final audit44.235s,separate saved-record/statistics recount30.546s,same-input differential7.982s;0new model/solver/replay calls.Not independent bound reproof or human review.
+Evaluation103.075summed hours,12.956active queue hours,approx561.6sintersegment gap separately;128MiB shared evidence cap retained.
+Combined21page empiricalPDF r7 includes final tables/seeds/cost;source/data/two-pass build and pages10/11/14/15 visual checks pass;prior layout attempt retained.
+STOP_S2A_WRITE_RESULTS:authorized finite execution/draft finished,C3 not established.NoS2b/retuning/new samples/new direction;PI human review and clean empirical reproduction remain external.
+
 ## S2a saved-record same-input decomposition, 2026-11-01
 
 Real increment:0new model/solver calls for this analysis; fixed complete queue still live; [record](architecture_s2a_records_20261031.json).
