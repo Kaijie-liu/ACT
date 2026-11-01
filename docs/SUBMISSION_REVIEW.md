@@ -1,3 +1,41 @@
+# Final closeout review status, 2026-11-01
+
+The supplied [Claude review](/data1/Kane/MOE/survey/drafts/act_final_review_20261101.md)
+is an internal AI review, not independent: Claude participated in directions
+and gates. Codex revised code/analysis/manuscript. No human review is signed.
+The finite closeout is authorized by [the current contract](architecture_closeout_20261101.md).
+
+| Item | Revision and scope |
+|---|---|
+| M1 | Requested negative-result title; abstract gives question, scoped negative answer, diagnostic interpretation, and reusable method. |
+| M2 | Exact clean/conditional arithmetic and two new figures. Corrected “entire deficit” to two components; learned-scale widths and exposure remain hypotheses, not identified causes. |
+| M3 | Route-envelope IBP standalone section, tie-inclusive cover and enclosure proof, explicit E=1/top-1 dense degeneration; MetaMoE/Dual RS semantic distinctions; no priority claim. |
+| M4 | One main-text section gives108/180vs0/180,2/52,+2pp[0,4]; full historical tables moved to appendix. Supplemental timing and178TIMEOUT+ERROR+UNSUPPORTED retained. |
+| M5 | Training scope E8/top2/MLP/2/255; historical E16 and8/255 evaluation do not extend it. No CNN/SABR/TAPS/new experiment. |
+| M6 | Removed storage, worker and audit-time narration from paper; retained experimental settings and one appendix registration timeline. |
+| M7 | Four main tables generated from summaries; three figures; numerical-policy terminology and denominators retained. |
+| Reproduction | Fixed two seed0 models/first50/IBP+complete; fresh environments on samehost. Complete: 100/100 discrete IBP flags agree; 97/100 complete terminals agree, three UNKNOWN/TIMEOUT exchanges, no positive or replayed-negative changes. [Result](../paper/results/s2a_reproduction.json). |
+| Artifact | Locks, selected weight hashes, input list, engine snapshots/full9-edit8-file diff, smoke prefix and table rebuild. No publication performed. |
+
+**Still external/unestablished:** independent human technical review; reproduction
+on a separate host/OS; causal capacity/exposure explanation; source-complete
+floating execution proof; priority or acceptance judgment. The finite closeout
+need not pretend to complete these, and does not revive a scientific gate.
+
+TMLR's official author guide requires its template; the draft uses preprint
+mode to avoid a false under-review header. The AI contribution is disclosed
+on page1. The official editorial policy retains human authors' responsibility;
+PI must determine authorship and submission suitability. Sources checked
+2026-11-01: https://jmlr.org/tmlr/author-guide.html and
+https://jmlr.org/tmlr/editorial-policies.html (LLM-use/authorship sections).
+The FAQ also expects human-sourced ideas/claims/results; this project must
+not misrepresent AI research-direction assistance as mere grammar editing.
+
+The older detailed review questions below remain available for a future human
+reader; their blank sign-off is not replaced by the supplied AI review.
+
+---
+
 # Independent technical review: reductions and empirical limits
 
 Updated 2026-11-01. This is a PI-managed review template, not a completed human
@@ -8,7 +46,7 @@ is retained as a historical companion, not a separate submission. Consult the lo
 [method](../paper/sections/03_path_conditioned_method.md),
 [evaluation](../paper/sections/08_evaluation.md) and
 [source contract](../paper/sections/05_soundness_engineering.md).
-The generic article layout is not an official submission template.
+The current closeout uses the official TMLR preprint template; older builds retain their historical layout.
 
 S1 has finished and its registered decision is **STOP_S1_RETURN_TO_REDUCTION_PAPER**.
 The subsequent PI-authorized S2a has completed 24 training runs and its primary

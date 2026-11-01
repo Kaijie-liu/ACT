@@ -1,79 +1,73 @@
-\documentclass[11pt]{article}
-\usepackage[margin=1in]{geometry}
+\documentclass[10pt]{article}
+\usepackage[preprint]{tmlr}
 \usepackage{amsmath,amssymb,amsthm,booktabs}
 \usepackage{graphicx}
 \usepackage[hidelinks]{hyperref}
 \newtheorem{proposition}{Proposition}
 \newtheorem{lemma}{Lemma}
 \newcommand{\R}{\mathbb{R}}
-\title{When Is a Mixture of Experts Easier to Certify?\\
-Route-Aware Reductions and a Capacity-Matched Study}
-\author{Author details omitted for technical review}
-\date{Working manuscript, 1 November 2026; S1 and S2a evaluation complete}
+\title{Is a Mixture of Experts Easier to Certify?\\ A Pre-Registered Negative Result}
+\author{\name Internal working manuscript; authorship to be determined by the PI}
 \begin{document}
 \maketitle
+\footnotetext[1]{AI assistance: Codex contributed implementation, analysis, and drafting;
+Claude contributed research directions, decision rules, and an internal technical
+review. That review is AI-generated and non-independent. No independent human
+technical review is claimed. This is an unsubmitted working manuscript.}
 \begin{abstract}
-Conditional computation reduces the number of expert parameters used by a
-single MoE execution. Certification must cover every legal execution on a
-perturbation domain. We give a guarded reduction for selected-softmax top-2
-networks and an interval training objective covering all tie-legal routes.
-We evaluate the architecture question under total- and active-parameter
-matching on CIFAR-10 MLPs. An ordinary-training study finds 114/600 complete
-numerical positives for MoE against 115/600 and 116/600 for the dense matches;
-its registered screen fails. CROWN-IBP provides a smaller coverage advantage,
-23/3000 versus 2/3000, with higher median cost. A subsequent certification-training
-study uses five seeds and the full 10,000-image test set. Regularized MoE
-attains 30.12\% IBP certified accuracy, below active-matched dense training
-at 33.55\% and total-matched training at 31.97\%. The routing penalty raises
-the single-route fraction from 44.55\% to 73.92\%, while its certification
-gain is 0.20 percentage points with an interval spanning zero. Both studies
-therefore stop under their registered rules. These results identify limits
-of active-capacity and route-stability arguments in this fixed setting.
-The trained-model secondary endpoints also favor neither MoE coverage nor
-median cost: complete verification gives 310/1000 positives against 369/1000
-and 336/1000 for the dense matches. Experimental
-positives use a numerical policy; the mathematical claims state their source
-and bound-validity assumptions explicitly.
+Does conditional computation make a mixture of experts (MoE) easier to certify
+than a dense network of matched capacity? In two pre-registered CIFAR-10 MLP
+studies, we find no advantage meeting the stated accuracy--cost criteria.
+Under ordinary training, complete verification obtains 114/600 numerical
+positives for MoE versus 115/600 and 116/600 for total- and active-parameter
+matched dense networks. Under certification training with five seeds and all
+10,000 test images, MoE attains 30.12\% interval-bound-propagation (IBP)
+certified accuracy, below 33.55\% and 31.97\% for the dense matches.
+The deficit combines lower clean accuracy with a lower conditional
+certification fraction against the active match. Smaller mean property-interval
+widths do not reverse that deficit. A routing regularizer raises the sufficient
+single-route fraction from 44.55\% to 73.92\%, but its primary certification
+gain is only 0.20 percentage points, with a 95\% interval spanning zero.
+To test the architecture question without assuming fixed routes, we give a
+complete-output guarded reduction and a route-envelope IBP training objective
+covering every tie-legal top-2 pair. The enclosure statements assume valid
+constituent bounds; empirical positives follow a floating numerical policy.
+These results delimit the benefits of sparsity and routing stability in the
+registered setting, rather than ruling out advantages for other MoE families.
 \end{abstract}
 
-\paragraph{Scope of this draft.}
-This is an empirical working draft for TMLR/workshop consideration following
-the registered S2a primary stop. All frozen training and evaluation queues,
-including the final saved-record/statistical audit, are complete. Independent
-human review and clean-environment empirical reproduction remain outstanding;
-this is not a final submission package.
-The completed verifier study is preserved in
-\path{paper/review_main.tex}; its outcome tables and empirical limits are
-incorporated in Appendix~\ref{app:empirical}, not a separate simultaneous submission. This draft does not
-record human review, a clean empirical reproduction, or a submission.
+\section{Introduction}
+Sparse mixtures of experts activate a small part of their parameters at each
+input. It is tempting to expect that the same narrow computation also makes
+robustness cheaper to certify. This expectation overlooks two costs: the
+verifier must cover every legal route in the perturbation domain, and each
+selected expert must have enough predictive margin to withstand its bound
+uncertainty. A small executed graph need not make a good certifiable classifier.
 
-\section{Question and hypotheses}
-A sparse MoE can represent many expert functions while activating only a few
-at an input. Certification asks a different question: can every legal execution
-on a neighborhood be shown to preserve the output property? The routers,
-alternative histories, and their construction costs cannot be ignored.
-We distinguish three claims and their required evidence.
-\begin{itemize}
-\item C1: guarded static verification obligations cover the route-variable
-network. The reduction below establishes this statement under explicit source
-and bound-validity assumptions. Small routing overhead is an empirical
-condition, not part of the theorem.
-\item C2: at matched capacity, MoE obtains at least as much certification with
-lower complete-request cost. Total and active parameter matching answer
-different questions; both must be reported.
-\item C3: a routing-aware training objective improves the joint tradeoff among
-clean accuracy, certified accuracy, and verification cost relative to dense
-certification training. This is a gated research hypothesis, not a consequence
-of a routing-margin penalty alone.
-\end{itemize}
-The contribution combines explicit routing semantics, a full-route training
-bound, and tests that separate capacity, accuracy, routing and cost. Hybrid
-zonotopes, case splitting, interval training, weak duality and endpoint
-minimization are established components.
-Precedents already study sparse-MoE robustness~\cite{robmoe}, compositional
-MoE verification~\cite{metamoe}, and certification with routed smoothed
-experts~\cite{dualrs}. The new empirical question needs a shared deterministic
-function, threat model, capacity convention, and full cost denominator.
+We test that expectation using total-parameter and active-parameter matching.
+The first convention holds stored capacity approximately fixed; the second
+holds the parameters used by one selected path approximately fixed, including
+the router. Neither convention alone equates training objectives or optimization
+difficulty. We retain ordinary and certification-trained models, all registered
+seeds, and clean errors in the primary certification denominators.
+
+Three claims organize the study. C1 is semantic: all legal executions can be
+covered by guarded static verification obligations. C2 is empirical: ordinary
+MoE training gives at least as much certification with lower complete-request
+cost under either capacity convention. C3 is empirical: routing-aware
+certification training improves the clean-accuracy, certified-accuracy, and
+verification-cost tradeoff. We establish a conditional reduction for C1, but
+neither C2 nor C3 meets its registered empirical criterion.
+
+The reusable method is a route-envelope training bound: it projects each
+output property into the experts, encloses all interval-compatible pairs, and
+minimizes over the two endpoints of each retained gate range. It does not
+assume that the clean route remains fixed. Its components---IBP, property
+projection, case splitting, and endpoint minimization---are established ideas;
+we do not claim a new abstract domain or priority over all MoE certification.
+The empirical contribution is the paired test and its diagnostic limits.
+Earlier attempts to improve the verifier are retained as a scoped negative
+result, rather than omitted after changing the research direction.
 
 \section{Route-aware complete-output verification}
 At layer $\ell$, let $S_\ell=\{a,b\}$ be an unordered selected pair and let
@@ -178,7 +172,7 @@ weights; that cost is charged even for weights absent from a specialized graph.
 The S2a follow-up uses the complete-output semantics above to construct a
 training bound for a single output MoE layer. It encloses every compatible
 pair, including alternatives to the clean route. This section specifies the
-implemented method; Section 4 reports its failed primary improvement criterion.
+implemented method; Section~\ref{sec:experiments} reports its failed primary improvement criterion.
 The following statements concern real arithmetic and valid constituent
 intervals. The implementation uses the numerical policy described in
 Section~\ref{sec:numericalscope}.
@@ -240,9 +234,15 @@ over all retained pairs completes the argument.
 \end{proof}
 Endpoint minimization is exact for this independent interval relaxation,
 not for the original joint router--expert graph. This rule reuses the
-last-gate principle; it is not a new abstract domain. A singleton expert set
-has the explicit top-1, weight-one degeneration to dense IBP, rather than
-an invalid top-2 selection from one expert.
+last-gate principle; it is not a new abstract domain. \begin{proposition}[Dense degeneration]
+For $E=1$ with the explicit top-1, weight-one convention, the route-envelope
+bound equals property-projected dense IBP on that expert.
+\end{proposition}
+\begin{proof}
+The cover contains the sole expert, its weight is one, and both gate
+endpoints equal one. The envelope is precisely $[A_1,B_1]$.
+Top-2 selection is not defined on a singleton set.
+\end{proof}
 
 \paragraph{Training objective and stability diagnostic.}
 For label $y$, apply the bound to all $K-1$ rows $q_j=e_y-e_j$, $c_j=0$,
@@ -275,469 +275,300 @@ Large candidate covers and loose expert intervals can make the training
 bound ineffective; neither the penalty nor this enclosure theorem guarantees
 the accuracy or cost advantage in C3.
 
-\section{Experiments}
-\subsection{S1: frozen architecture screen}
-CIFAR-10 uses a shared seed-0 45k/5k training/validation split, ToTensor only,
-50 epochs, AdamW at 0.001 with weight decay 0.0001 and batch 256. Three seeds are
-retained for each model. Earliest maximal validation accuracy selects the
-checkpoint; test accuracy does not select it. Existing L1E8/L2E8 models use
-cross-entropy plus their original 0.1 routing-balance term; dense controls use
-cross-entropy. This architecture-specific objective difference is disclosed,
-not presented as a pure architecture intervention with identical losses.
 
-L1E8 has a 3072--128--8 router and eight 3072--256--128--10 experts. Router
-parameters count in both capacity conventions. The dense width ratio 2:1 and
-nearest integer parameter count are fixed before outcomes, without dummy
-weights.
-\begin{center}
-\begin{tabular}{lrrr}
-\toprule
-Matching convention&MoE target&Dense parameters&Dense hidden widths\\
-\midrule
-Total&6,961,368&6,957,295&1758,879\\
-Active&2,036,124&2,034,469&602,301\\
-\bottomrule
-\end{tabular}
-\end{center}
-Both mismatches are below 0.1\%. L2E8 is a secondary depth extension, not a
-capacity match to these L1 controls. Logical active capacity is distinct from
-training FLOPs: the old training code evaluates all experts before selection.
+\section{Capacity-matched experiments}
+\label{sec:experiments}
+\subsection{Models, data, and evaluation}
+CIFAR-10 uses a fixed seed-0 45k/5k training/validation split and ToTensor only.
+L1E8 has a 3072--128--8 router and eight 3072--256--128--10 experts, with top-2
+selected softmax and no batch normalization. Its total and logical active
+parameter counts are 6,961,368 and 2,036,124. Dense total matching uses widths
+1758/879 and 6,957,295 parameters; dense active matching uses widths 602/301
+and 2,034,469 parameters. Both mismatches are below 0.1\%. The router is
+included in the MoE counts. Active parameters do not equal training FLOPs:
+the implementation evaluates all experts before selection.
 
-Evaluation uses the first 1000 test inputs for incomplete CROWN-IBP and first 200
-for complete verification, at 2/255 and 8/255. Clean-wrong inputs remain in every
-denominator. These deterministic prefixes have historical exposure; they are
-development data, not a fresh independent holdout. Each complete request gets
-300 seconds for startup, loading, all routing/graph/bound work, replay,
-serialization, reception, and cleanup. The six MoE and six dense models give
-4800 complete calls and 24000 incomplete items. At most eight single-thread CPU
-workers run concurrently; each has an 8 GiB address-space limit. Both families
-use the pinned numerical engine and common physical input boxes/properties;
-dense uses native ReLU branching and MoE the coupled nonlinear configuration.
+S1 uses three seeds, 50 epochs of ordinary training, AdamW at 0.001,
+weight decay 0.0001, and batch size 256. MoE retains its original 0.1 balance
+term; dense training uses cross-entropy. Earliest maximum validation accuracy
+selects the checkpoint. L2E8 is a secondary depth extension, not another
+capacity match. S2a uses five seeds and the same split, batch size, and weight
+decay, with the route-envelope objective or dense IBP. Its 100 epochs comprise
+five natural warmup epochs, a 40-epoch linear ramp to $2/255$ and
+$\kappa=0.5$, then 55 epochs at those endpoints. Two seed-0 configurations
+per arm are selected by validation IBP accuracy, then clean accuracy and
+fixed tie breaks: learning rates $\{10^{-3},5\cdot10^{-4}\}$ for D-act,
+D-tot, and M$-$reg; routing weights $\{0.1,1\}$ at learning rate $10^{-3}$
+for M. Seed 0 is reused and the selected configuration trains seeds 1--4.
+The selected D-act learning rate is $5\cdot10^{-4}$; the other arms use
+$10^{-3}$ and M selects $\lambda_m=0.1$. No test result selects a model.
 
-Public PGD uses 20 steps, two random starts and step size $\epsilon/4$, with
-original-model replay. Its separately metered outcomes are not free answers
-for either verifier. Numerical positives, replayed violations, unresolved
-queries, timeouts and errors remain separate. No-witness attacks and negative
-relaxation bounds do not prove safety and unsafety, respectively.
+S2a's primary endpoint is IBP certified accuracy on all 10,000 test images
+at $2/255$. Secondary CROWN-IBP uses the first 1,000 and complete verification
+the first 200 inputs per model. S1 uses the same secondary prefix sizes at
+$2/255$ and $8/255$. These deterministic prefixes have historical exposure;
+they are not fresh holdouts. Complete verification uses the route reduction
+and pruned GenBaB for MoE, and the corresponding dense graph for dense models.
+S2a uses identical engine versions and nonlinear branching configuration for
+both; S1 used native ReLU branching for dense models. Each full request has a
+300-second budget including loading, routing, all property queries and result
+acceptance. All-request cost includes every terminal state. Public PGD results
+are separately computed and do not supply free answers to a verifier arm.
+Numerical positives, full-model-replayed violations, returned unknowns,
+timeouts, and errors are kept separate.
 
-The primary endpoint is the 2/255 complete positive rate and all-request median
-time for each L1 match. The frozen screen proceeds if either match has MoE rate
-at least dense and a lower median time. Input-block bootstrap uses 10000
-resamples with all three seed pairs retained. Intervals are descriptive here,
-not an additional gate. A literal zero/zero rate comparison can pass this
-screen on time; such a pass authorizes S2 but does not establish C2. All states,
-missing costs and shared-clean-correct explanatory strata are reported.
-Neither L2 nor 8/255 rescues a failed primary comparison.
+S1 resamples common input blocks with its three fixed seeds retained. S2a
+uses 10,000 crossed paired seed/input bootstrap draws, resampling the five
+seed IDs and common input IDs while keeping validation-selected configurations
+fixed. Reported 95\% percentile intervals are unadjusted and do not quantify
+uncertainty over architecture search. Model--input cells are not independent
+images. The numerical interpretation is specified in Section~\ref{sec:numericalscope}.
 
-\paragraph{Completion and empirical robustness.}
-All six dense controls completed the fixed training schedule and all 4,800
-complete and 24,000 incomplete verification calls settled. At $8/255$, public
-PGD leaves only $0.93\%$--$2.63\%$ of model--input pairs without a replayed
-counterexample. This is an empirical attack result, not a certification rate.
-Appendix~\ref{app:s1protocol} gives full-test training accuracies, attack counts,
-the eight retained auxiliary errors and the complete execution-cost record.
+\subsection{S1: the ordinary-training screen stops}
+The registered screen requires MoE to have at least the dense positive rate
+and a lower all-request median under at least one capacity match at $2/255$.
+Neither passes (Table~\ref{tab:s1primary}). This is a failed prespecified
+screen, not a proof of universal architectural inferiority.
+\input{results/closeout_s1_primary.tex}
+The unmatched L2 extension has 17/600 positives. At $8/255$, all arms have
+zero positives. Incomplete CROWN-IBP at $2/255$ gives L1E8 23/3000 positives
+against 2/3000 for each dense match: $+0.700$ percentage points, input-block
+interval $[0.400,1.067]$, but higher medians (7.588s versus 7.251/7.140s).
+This is a small secondary coverage advantage with a cost penalty; it does not
+pass the primary complete-verification criterion.
 
-\subsection{S1 complete results: the registered screen stops}
-Table~\ref{tab:s1primary} reports the primary endpoint. Neither capacity match
-passes: total matching has one fewer MoE positive despite a slightly shorter
-median, and active matching has two fewer with a slightly longer median.
-The corresponding rate intervals include zero. This is a failed prespecified
-screen, not a finding that MoE is universally inferior. The denominator is
-200 shared inputs times three fixed seeds, not 600 independent images.
+Among each model's own clean-correct inputs, complete positive fractions are
+39.6\% for MoE and 35.4\% for the dense matches. These different conditional
+populations do not isolate a causal architecture effect. At $8/255$, all-input
+medians also mislead: MoE's 312 clean errors exceed half of 600, while dense
+clean errors do not. Shared-clean-correct medians are near 290s for all three,
+so the short MoE all-input median is not useful certification speedup.
+Full states and conditional diagnostics are in Appendix~\ref{app:s1seeds}.
 
-\begin{table}[ht]
-\centering\small
-\begin{tabular}{lrrrr}
-\toprule
-Dense match & Positives M/D & Gain/loss & $\Delta$ pp [95\% interval] & Median s M/D\\
-\midrule
-Total & 114/115 & 55/56 & $-0.167$ [$-3.833$,3.500] & 10.847/10.945\\
-Active & 114/116 & 52/54 & $-0.333$ [$-3.833$,3.167] & 10.847/10.716\\
-\bottomrule
-\end{tabular}
-\caption{Complete numerical positives at $2/255$, each arm out of 600.
-M/D denotes MoE/dense; intersections are 59 and 62. All-request costs and
-descriptive input-block intervals retain every seed and outcome.}
-\label{tab:s1primary}
-\end{table}
-
-Seed-wise positive counts are $(46,34,34)$ for L1, $(26,47,42)$ for total
-matching, and $(40,35,41)$ for active matching. The unmatched L2 extension has
-$(4,7,6)$, or 17/600. Table~\ref{tab:s1states} retains all complete-verification
-states. A timeout or unknown is never relabeled unsafe.
-
-\begin{table}[ht]
-\centering\small
-\begin{tabular}{llrrrrr}
-\toprule
-Radius & Group & Positive & Replayed & Unknown & Timeout & Mean s\\
-\midrule
-$2/255$ & L1 &114&312&28&146&92.759\\
- & Dense total &115&275&133&77&105.015\\
- & Dense active &116&272&191&21&87.520\\
- & L2 &17&346&3&234&121.939\\
-$8/255$ & L1 &0&312&3&285&144.455\\
- & Dense total &0&275&177&148&161.590\\
- & Dense active &0&272&282&46&162.896\\
- & L2 &0&346&0&254&128.579\\
-\bottomrule
-\end{tabular}
-\caption{All complete requests, 600 per row; no verification errors or missing
-calls. Replayed includes clean misclassification. The eight retained errors
-belong to auxiliary PGD. Means include every request.}
-\label{tab:s1states}
-\end{table}
-
-Cost medians need care. At $2/255$, the shared-clean-correct explanatory strata
-contain 207 pairs for total matching, with medians 289.060/242.424s (MoE/dense),
-and 217 for active matching, with 289.451/84.162s. These are separately recorded
-strata, not replacements for the primary all-input denominator. The all-request
-median-difference intervals are [$-1.576$,0.428]s and [$-2.539$,0.499]s.
-
-At $8/255$, all positive counts are zero, including incomplete verification.
-The complete all-request median is 11.735s for L1 and 289.485/289.375s for dense.
-MoE has 312 clean-wrong replays, over half the denominator, while dense has
-275/272, below half. The median therefore switches from cheap rejection to
-difficult verification. On shared-clean-correct pairs all three medians are
-approximately 290s. This is not a 25-fold useful certification speedup, and the
-secondary radius cannot rescue the failed primary gate.
-
-\subsection{Incomplete bounds: a coverage--cost tradeoff}
-At $2/255$, incomplete CROWN-IBP~\cite{crownibp} produces 23/3000 L1 positives
-against 2/3000 for each dense match: 22 gains, one loss, and one common positive.
-The rate difference is 0.700 percentage points, descriptive 95\% interval
-[0.400,1.067]. L1 median cost is 7.588s, versus 7.251s (total) and 7.140s (active):
-4.64\% and 6.27\% higher. L2 has no incomplete positive. This is evidence of a
-limited incomplete-bound advantage with a cost penalty, not of the primary
-complete-verification hypothesis. The 1000 input blocks retain all three seeds;
-these results neither replace the primary endpoint nor authorize S2.
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=\linewidth]{figures/s1_clean_decomposition.pdf}
-\caption{S1 at $2/255$: unconditional positive fractions and descriptive
-fractions among each model's clean-correct inputs. Bars pool three fixed seeds;
-dots show each seed, not confidence limits. The panels use different vertical
-scales. The underlying populations differ between models, so conditioning does
-not identify an architectural effect or revise the primary endpoint.}
-\label{fig:s1clean}
-\end{figure}
-
-Figure~\ref{fig:s1clean} separates prediction accuracy from the fraction of
-correct predictions that verification can establish. For complete verification,
-the latter is 39.6\% for MoE and 35.4\% for both dense matches, while clean
-accuracy is 48.0\%, 54.7\% (active) and 54.2\% (total). For incomplete bounds,
-the conditional fractions are 1.54\%, 0.12\% and 0.12\%. These are post-hoc
-descriptive decompositions: clean-correct cohorts differ, and the seed dots
-show substantial variation. They do not explain whether path width, training
-losses, or another factor caused the difference. In particular, the recorded
-S1 results do not identify a layer responsible for the bound gap.
-
-Complete verification costs 167.459 summed request hours, incomplete 51.329,
-and public PGD 5.863: 224.651 hours total. The eight-worker parallel queue wall
-time is 28.094 hours across two segments, excluding the approval gap, training
-and audits. Training costs 2.222 hours separately. Parallel throughput is not
-per-request speed. Full states, paired gain/loss identities, cost intervals
-and source hashes are archived. Route counts are conservative numerical
-candidate upper counts, not exact legal-history counts or route-flip witnesses.
-
-\subsection{S2a: certification training on the full test set}
+\subsection{S2a: certification training does not recover an advantage}
 \label{sec:s2primary}
-S1 stops under its registered rule. Evaluating ordinary-trained networks using
-CROWN-IBP does not test certification training or the C3 tradeoff claim.
-The PI subsequently authorized a separate S2a study to test C3 directly;
-this decision does not convert S1 into a passed screen.
-The frozen follow-up compares route-envelope IBP training, its routing-regularizer
-ablation, and two capacity-matched dense IBP baselines across five seeds.
-All 10,000 test inputs form its primary IBP endpoint; complete verification is
-secondary and uses a common engine version and branching configuration.
-It resamples paired seeds and inputs, while keeping validation-selected
-configurations fixed. The bound and loss are given in
-Section~\ref{sec:routeibp}. Training uses five natural warmup epochs, a
-40-epoch linear ramp to $\epsilon=2/255$ and $\kappa=0.5$, then 55 epochs
-at those endpoints. All arms use the same split, batch size and AdamW weight
-decay as S1, with constant learning rate. Each arm has two seed-0 configurations:
-learning rate $\{10^{-3},5\cdot10^{-4}\}$ for both dense arms and the
-unregularized MoE; $\lambda_m\in\{0.1,1\}$ at learning rate $10^{-3}$
-for the regularized MoE. Validation IBP accuracy selects the configuration and
-checkpoint, with clean accuracy and fixed tie-breaks; the selected seed-0
-model is reused and its configuration trains seeds 1--4. This gives 24 runs
-and 20 evaluation models without test-driven selection.
-The registered gate requires MoE minus active-matched dense IBP accuracy of
-at least two percentage points with a strictly positive 95\% lower limit,
-a nonnegative point difference against total matching, and a single-route
-fraction of at least 90\%. All three must hold on the full 10,000-input
-denominator; neither clean-correct filtering nor a secondary verifier result
-rescues a failed gate. All 24 training runs completed, and all 20 primary
-evaluations were accepted within their online budgets. The selected learning
-rate is $5\cdot10^{-4}$ for D-act and $10^{-3}$ for the other arms; M selects
-$\lambda_m=0.1$. These choices use validation data only.
-
-\begin{table}[ht]
-\centering\small
-\begin{tabular}{lrrrr}
-\toprule
-Arm & Clean \% & IBP certified \% & Positive/clean \% & Single route \%\\
-\midrule
-D-act &50.598&33.554&66.31&---\\
-D-tot &50.096&31.972&63.82&---\\
-M &47.106&30.124&63.95&73.920\\
-M$-$reg &46.914&29.924&63.78&44.550\\
-\bottomrule
-\end{tabular}
-\caption{S2a at $2/255$: five seeds, each on all 10,000 test images. Primary
-rates include clean errors. Positive/clean uses each model's own correct
-predictions and is descriptive; it does not define a common population.}
-\label{tab:s2primary}
-\end{table}
+Ordinary-training evaluation is not a direct test of certification training.
+After S1 stopped, the PI separately authorized S2a; this does not turn S1 into
+a passed screen. The registered S2a gate requires M minus D-act IBP accuracy
+of at least two percentage points with a strictly positive 95\% lower limit,
+a nonnegative point difference against D-tot, and M's sufficient single-route
+fraction of at least 90\%. All three must hold on the whole-test denominator.
+\input{results/closeout_s2_primary.tex}
+All three gates fail. M minus D-act is $-3.430$ percentage points,
+95\% interval $[-4.108,-2.762]$; M minus D-tot is $-1.848$,
+$[-2.632,-1.130]$. Each seed has fewer M positives than either dense match.
+The routing penalty raises the sufficient single-route fraction by 29.370
+points, but changes IBP accuracy by only $+0.200$ points,
+$[-0.430,0.790]$. Figure~\ref{fig:s2primary} retains the seed variation and
+paired comparisons. No secondary endpoint overrides the primary stop.
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=\linewidth]{figures/s2a_primary.pdf}
-\caption{S2a's completed primary endpoint. Diamonds/bars are five-seed means;
-small dots are seed observations. Panel (b) uses 10,000 crossed paired
-seed/input bootstrap draws and unadjusted percentile 95\% intervals. Route
-stability improves with the penalty, but neither dense-comparison gate nor
-M's 90\% single-route gate passes. Secondary results do not revise these gates.}
+\caption{Full-test S2a results. Small dots are seeds; panel (b) reports the
+crossed paired seed/input 95\% intervals. Neither dense-comparison criterion
+nor M's 90\% single-route criterion passes.}
 \label{fig:s2primary}
 \end{figure}
 
-Table~\ref{tab:s2primary} and Figure~\ref{fig:s2primary} reject the registered
-S2a improvement criterion. M minus D-act is $-3.430$ percentage points,
-95\% interval $[-4.108,-2.762]$; M minus D-tot is $-1.848$ points,
-interval $[-2.632,-1.130]$. Each seed also has fewer M positives than either
-dense match. The 50,000 model--input cells per arm are not 50,000 independent
-images. The bootstrap resamples five seed IDs and 10,000 common input IDs,
-keeping the selected configuration fixed; it does not quantify uncertainty
-over architecture or hyperparameter search.
+\subsection{Secondary verification agrees with the main limitation}
+\input{results/closeout_s2_incomplete.tex}
+CROWN-IBP yields M minus D-act $-5.10$ points, $[-7.20,-3.06]$, and M minus
+D-tot $-2.24$, $[-4.54,0.04]$. M's median request cost is 6.02\% and 1.22\%
+higher. Its contrast against M$-$reg is more favorable: $+2.78$ points,
+$[0.92,4.74]$. A saved-record recount on the same first 1,000 inputs gives
+an IBP regularizer contrast of $+0.28$ points, compared with $+0.20$ on the
+full test set. The same-input difference between the pipelines' regularizer
+contrasts is $+2.50$ points, $[1.50,3.54]$. This includes route reduction
+and float32/float64 differences, so it is not a bound-method-only effect.
+CROWN-IBP also loses some primary IBP positives; neither pipeline dominates.
+\input{results/closeout_s2_complete.tex}
+Complete verification gives M minus D-act $-5.9$ points, $[-10.4,-1.2]$
+(78 gains, 137 losses), M minus D-tot $-2.6$, $[-7.7,2.5]$
+(92 gains, 118 losses), and M minus M$-$reg $+0.9$, $[-3.3,5.0]$
+(91 gains, 82 losses). M's median cost is 3.53\% above D-act and 2.75\%
+above D-tot. Mean-cost difference intervals against both dense arms include
+zero. More MoE timeouts and more dense returned unknowns do not uniquely
+localize the cause. Every clean error and unresolved request remains in the
+rate and cost denominators.
 
-The regularizer changes routing more clearly than certification. M minus
-M$-$reg raises the mean single-route fraction by 29.370 points, but the
-IBP accuracy difference is only $+0.200$ points, interval $[-0.430,0.790]$.
-The regularizer's zero loss permits ties, and the reported single-route
-condition is the sufficient candidate-cover test from Section~\ref{sec:routeibp}.
-Improving that condition does not ensure a favorable accuracy--certification
-tradeoff. Conditioning on clean correctness does not rescue the comparison:
-M's descriptive positive fraction is 63.95\%, versus 66.31\% for D-act and
-63.82\% for D-tot, on different clean-correct cohorts.
+\section{Mechanism diagnostics: accuracy, interval scale, and routing}
+\label{sec:diagnostics}
+\paragraph{An exact descriptive decomposition.}
+Let $C$ be the clean-correct fraction, $R$ the positive fraction among those
+correct predictions, and $A$ certified accuracy. By construction $A=CR$.
+For M and D-act, the symmetric decomposition is
+\[
+ \Delta A=\Delta C\,\frac{R_M+R_D}{2}
+          +\Delta R\,\frac{C_M+C_D}{2}.
+\]
+M's clean accuracy is 3.492 points lower, and its conditional positive fraction
+is 2.365 points lower. The two arithmetic contributions to the $-3.430$-point
+certification gap are $-2.274$ and $-1.156$ points, respectively.
+Consequently the gap cannot be attributed entirely to clean accuracy.
+Across four arms the conditional fractions range from 63.78\% to 66.31\%
+(Figure~\ref{fig:decomposition}). These are descriptive ratios on each arm's
+own correct inputs; the decomposition is neither an intervention nor an
+estimate of a causal training mechanism.
 
-Saved layer measurements provide a limited check of the narrow-path explanation.
-Mean final-property interval widths are 2.777 for D-act, 3.865 for D-tot,
-2.024 for M and 2.385 for M$-$reg. A smaller width alone does not determine
-whether a true-minus-other margin is positive; the learned centers and output
-scales also differ. Appendix~\ref{app:s2widths} reports hidden-layer widths
-and unstable fractions. These are descriptive observations of the S2a models,
-not a causal explanation of S1's CROWN-IBP result or a localization of every
-unresolved proof.
+\begin{figure}[ht]
+\centering\includegraphics[width=\linewidth]{figures/s2a_accuracy_decomposition.pdf}
+\caption{S2a accuracy decomposition. Dark/light segments are certified and
+clean-correct but uncertified inputs. Black dots in (b) are seed observations;
+the pooled ratios use different clean-correct populations. Zero is retained
+on both axes.}
+\label{fig:decomposition}
+\end{figure}
 
-The primary decision is \texttt{STOP\_S2A\_WRITE\_RESULTS}. Training required
-14.282 hours of wall time and 50.846 summed task hours. The fixed secondary
-queues have also completed with the same engine revision and branching
-settings for both families. No convolutional extension, new sample, new configuration or new
-verifier mechanism is launched after this stop.
+\paragraph{Narrower intervals are insufficient.}
+The mean projected-property interval widths are 2.777 for D-act, 3.865 for
+D-tot, 2.024 for M, and 2.385 for M$-$reg. Yet the narrower MoE intervals
+coexist with lower certified accuracy (Figure~\ref{fig:width}). Certification
+requires every lower endpoint to be positive, which depends on interval
+location as well as width. The learned logit scales also differ. Therefore
+these numbers do not establish that one architecture has a tighter abstraction
+of the same function, nor that its true clean logit margins are smaller.
+The saved records contain interval bounds rather than all clean logit margins;
+we do not substitute interval midpoints for those margins.
 
-\subsection{S2a secondary CROWN-IBP results}
-All 20,000 registered incomplete-verification requests have settled: the first
-1,000 inputs for each of twenty models, including clean errors. The saved-record
-recount checks request/source bindings, online acceptance, complete history
-coverage, recorded full-model replays and all request costs. It retains one
-D-act cleanup error as an error; a saved positive candidate does not override
-its failed online acceptance. No missing request, timeout, clean-prediction
-disagreement or primary-positive/replay conflict was found in this portion.
-This is a record audit, not independent recomputation of CROWN bounds.
+\begin{figure}[ht]
+\centering\includegraphics[width=.80\linewidth]{figures/s2a_width_certification.pdf}
+\caption{Each circle is one of twenty S2a models; diamonds are arm means.
+Widths are on each model's learned output scale. This cross-model association
+is descriptive, not a matched-function precision or causal comparison.}
+\label{fig:width}
+\end{figure}
 
-\begin{table}[ht]
-\centering\small
-\begin{tabular}{lrrrrrr}
-\toprule
-Arm & Positive & Positive \% & Replayed & Unknown & Error & Median s\\
-\midrule
-D-act &1785&35.70&2435&779&1&7.758\\
-D-tot &1642&32.84&2487&871&0&8.126\\
-M &1530&30.60&2642&828&0&8.225\\
-M$-$reg &1391&27.82&2656&953&0&8.233\\
-\bottomrule
-\end{tabular}
-\caption{S2a CROWN-IBP, 5,000 requests per arm. Positives are numerical
-filters; replayed violations include clean errors. All-request cost includes
-loading, execution, reception and cleanup, including the retained error.
-There are no timeouts or unexecuted items in this completed portion.}
-\label{tab:s2incomplete}
-\end{table}
+\paragraph{Path capacity and training exposure are plausible, unisolated factors.}
+Each MoE expert has hidden widths 256/128, versus 602/301 for the active-matched
+dense network. That difference may matter during certified training, but it
+was not separately manipulated. Eight experts with top-2 routing implies an
+average of two clean selections per input, not equal expert utilization or
+exactly one quarter of the training data per expert. In particular the robust
+loss computes intervals for all experts and envelopes all retained pairs;
+its gradient exposure is not determined solely by the clean selected pair.
+The balance term, optimization, and learned margins also differ. We therefore
+report these as candidate explanations, not a uniquely established capacity
+or data-allocation mechanism.
 
-M minus D-act is $-5.10$ percentage points, with 368 gains and 623 losses.
-The paired seed/input 95\% interval is $[-7.20,-3.06]$. Against D-tot,
-the difference is $-2.24$ points, interval $[-4.54,0.04]$, with 442 gains
-and 554 losses; that interval includes zero. M's all-request median is
-6.02\% higher than D-act's and 1.22\% higher than D-tot's, with ratio
-intervals $[1.0541,1.0658]$ and $[1.0097,1.0154]$. These results do not
-establish a coverage or cost advantage over dense certification training.
+\paragraph{Routing regularization changes a diagnostic more than the primary outcome.}
+The sufficient single-route rate rises from 44.55\% to 73.92\%, while the
+primary certification contrast spans zero. Secondary CROWN-IBP shows a
+larger positive regularizer effect. Thus the penalty affects more than
+routing alone, but its routing improvement is insufficient for the registered
+advantage. Likewise S1's 23-versus-2 incomplete result is a real, scoped
+ordinary-training observation. Its disappearance as a dense-comparison
+advantage under S2a does not retrospectively identify why the S1 bounds failed.
 
-The regularizer comparison is more favorable in this secondary endpoint:
-M minus M$-$reg is $+2.78$ points, interval $[0.92,4.74]$, with 486 gains
-and 347 losses. Their median-cost ratio is $0.9990$, interval
-$[0.9967,1.0012]$. To separate the input-subset effect from the change of
-evaluation pipeline, we performed a post hoc recount of saved primary
-IBP results on these same first 1,000 inputs. M minus M$-$reg is then
-$+0.28$ points, interval $[-1.74,2.32]$, versus $+0.20$ on the full test set.
-Thus the point-estimate change attributable to the input subset is only
-$0.08$ points. On the same inputs, the difference between the pipelines'
-regularizer contrasts is $+2.50$ points, interval $[1.50,3.54]$.
-This is a descriptive pipeline comparison, not an isolation of the bound
-method: route reduction and float32 versus float64 computation also differ.
-For M, CROWN-IBP has 98 gains and 56 losses relative to primary IBP;
-for M$-$reg it has 50 gains and 133 losses. It therefore does not dominate
-primary IBP on these stored outcomes. No inference was rerun for this analysis,
-and these post hoc intervals introduce no new acceptance gate.
-All intervals use the frozen 10,000 paired seed/input bootstrap draws and
-are unadjusted descriptive intervals. The incomplete requests account for
-44.873 summed request hours; this is not parallel wall time. They do not
-change the failed primary gate or establish source-complete certificates.
+\section{Verifier evidence: routing was not the dominant measured bottleneck}
+The earlier multilayer study obtains 108/180 numerical positives with pruned
+GenBaB and 0/180 with ACT v1. The latter comprises 178 timeouts, one error,
+and one unsupported case, not 180 solver timeouts. A supplemental attribution
+rule finds many-history dominance in 2/52 non-replayed-unsafe L3E8 cases and
+0/58 L2E16 cases. That rule was registered after a 189-call prefix; its timing
+must not be described as fully pre-registered.
 
-\subsection{S2a secondary complete verification}
-All 4,000 complete requests have settled on the first 200 inputs per model,
-using the same R7 engine revision and \texttt{bbps} branching configuration
-for both families. Every input remains in the denominator, including clean
-errors. Table~\ref{tab:s2complete} reports all terminal states and all-request
-costs. There are no errors or unexecuted requests in this mode.
+A gate-decoupling cascade gives 122/300 versus 116/300: nine gains, three
+losses, net $+2$ points with input-block interval $[0,4]$. It misses the
+registered five-point threshold. Its gains use decoupling, but its request
+losses remain. Revised guard dualization adds only one local closure among
+eleven histories, below its five-closure gate. The proposed last-layer
+margin diagnostic was not executed after that stop. These records support
+a limited bottleneck finding for the studied models and engine; they do not
+prove that routing is always cheap or that expert ReLUs uniquely explain
+all unresolved queries. Full cohort and outcome tables are in
+Appendix~\ref{app:empirical}.
 
-\begin{table}[ht]
-\centering\small
-\begin{tabular}{lrrrrrrr}
-\toprule
-Arm & Positive & Positive \% & Replayed & Unknown & Timeout & Median s & Mean s\\
-\midrule
-D-act &369&36.9&492&136&3&10.061&48.843\\
-D-tot &336&33.6&512&150&2&10.138&52.618\\
-M &310&31.0&541&86&63&10.417&52.503\\
-M$-$reg &301&30.1&540&83&76&10.425&55.184\\
-\bottomrule
-\end{tabular}
-\caption{S2a complete verification, 1,000 requests per arm (five seeds on
-200 common inputs). Positives use the numerical policy; replayed violations
-include clean errors. Unknown is a returned unresolved result, while timeout
-is an outer deadline terminal. Neither establishes safety or unsafety.}
-\label{tab:s2complete}
-\end{table}
-
-M minus D-act is $-5.9$ percentage points, interval $[-10.4,-1.2]$, with
-78 gains, 137 losses and 232 shared positives. Against D-tot, the difference
-is $-2.6$ points, interval $[-7.7,2.5]$, with 92 gains, 118 losses and 218
-shared positives. M minus M$-$reg is $+0.9$ points, interval $[-3.3,5.0]$,
-with 91 gains, 82 losses and 219 shared positives. These are descriptive
-crossed paired seed/input intervals using the frozen 10,000 resamples;
-the 1,000 cells per arm are not 1,000 independent inputs.
-
-M's median cost is 3.53\% above D-act's and 2.75\% above D-tot's.
-The corresponding ratio intervals are $[1.0177,1.0603]$ and
-$[1.0052,1.0520]$. Its ratio to M$-$reg is $0.9992$, interval
-$[0.9747,1.0255]$.
-The mean-cost differences against the dense arms have intervals spanning
-zero. Thus the median results do not establish a general slowdown on every
-request. Conversely, the mean difference against D-tot is not evidence of
-useful speedup. All-request medians include inexpensive clean-error replays
-and the long unresolved tail. More MoE timeouts and more dense returned
-unknowns do not, by themselves, isolate routing or relaxation as the cause.
-Shared-host load varied during execution; the recorded costs are retained
-without rerunning slow cases. The complete requests account for 58.097
-summed request hours. Together with the primary and incomplete endpoints,
-they provide no registered certification advantage for M in this setting.
-Final evidence and cost closure are reported in Appendix~\ref{app:s2final}.
-
-\subsection{Earlier verifier experiments as motivation}
-The archived multilayer study obtains 108/180 numerical positives with pruned
-GenBaB and none with ACT v1. A subsequent gate-decoupling cascade obtains 122/300
-against 116/300: nine gains, three losses, net 2 percentage points, input-block
-interval [0,4]. It fails its five-point threshold. The corrected guard diagnostic
-closes one of eleven histories and fails admission. These are retained negative
-results, not evidence that dense architectures are harder to certify or that
-expert ReLUs uniquely explain every unresolved query. The cohorts were selected
-differently from S1 and cannot be pooled into its accuracy denominator.
-Appendix~\ref{app:empirical} incorporates the archived model and outcome tables,
-their selection boundaries, and the stopped mechanisms; these are not new runs.
-
-\section{Related work and limits}
+\section{Related work, guarantee scope, and limitations}
 \label{sec:numericalscope}
-Sparse-MoE robustness and dense compute comparisons precede this study~\cite{robmoe}.
-MetaMoE uses class-separated hard top-1 compositional verification~\cite{metamoe}.
-Dual randomized smoothing certifies a different, statistical $L_2$ function
-with routed experts~\cite{dualrs}. RT-ER/JTDMoE already motivates expert-focused
-robust training~\cite{rter}. CertMoE is recent route-aware text certification
-work~\cite{certmoe}. None of these differences warrants a blanket ``first MoE
-certification'' claim, and attack accuracies or smoothed-function guarantees
-cannot substitute for our deterministic $L_\infty$ endpoint. The five-work source
-review is available in the project record; author claims are not independent
-proofs by this study.
+Sparse-MoE robustness predates this study~\cite{robmoe,rter}.
+MetaMoE composes guarantees for class-separated hard top-1 routing~\cite{metamoe};
+our enclosure covers every tie-legal weighted top-2 output on an input box.
+Dual randomized smoothing certifies a different smoothed classifier with
+statistical $L_2$ guarantees~\cite{dualrs}; our task is deterministic
+$L_\infty$ robustness. CertMoE studies route-aware smoothing for text~\cite{certmoe}.
+These are semantic distinctions, not comparable certified-accuracy scores,
+and they do not justify a blanket first-MoE-certification claim.
 
-Certified training already offers richer loss and training-region choices.
-SABR uses small selected boxes to approximate the worst-case loss~\cite{sabr};
-TAPS combines IBP and PGD loss approximations~\cite{taps}; expressive loss
-combinations study the tradeoff between such objectives~\cite{mtlibp}.
-CTBench provides implementations and benchmarking conventions~\cite{ctbench}.
-We use a fixed common IBP schedule to test the proposed route-envelope method,
-without claiming to reproduce or outperform these authors' CNN recipes.
+IBP and CROWN-IBP are established certified-training methods~\cite{ibp,crownibp}.
+SABR uses selected small boxes~\cite{sabr}, TAPS combines IBP and adversarial
+loss approximations~\cite{taps}, and expressive loss combinations further
+study this tradeoff~\cite{mtlibp}. CTBench supplies implementation and benchmark
+conventions~\cite{ctbench}. Our fixed IBP study neither reproduces nor
+outperforms their stronger CNN training recipes.
 
-The experiments cover small MLPs: three ordinary-training seeds in S1 and
-five certification-training seeds in S2a. Parameter counts are approximately
-matched, S1 and secondary S2a prefixes have historical exposure, and MoE
-retains its architecture-specific balance term. S2a's primary endpoint covers
-the entire test set, but its finite tuning space and one fixed training schedule
-limit generalization. Convolutional models and stronger certified-training
-recipes were conditional on a gate that failed and have not been evaluated.
-All experimental backend positives use a floating numerical policy. Exact
-arithmetic on a supplied LP cannot repair an unverified input enclosure or
-network conversion. Historical source gaps remain, and the new study does
-not claim a source-complete proof of native PyTorch execution. The mathematical
-reductions assume valid sources and bounds. A successful record audit checks
-identity and coverage, not every numerical bound. Human technical review and
-clean-environment reproduction remain outstanding.
+The architecture-training conclusion is restricted to CIFAR-10 MLPs with
+eight experts, top-2 routing, the registered tuning space, and $2/255$
+certification training. S1 additionally evaluates $8/255$, and the historical
+verifier appendix includes other depths and E=16, but neither extends the
+S2a training claim. Convolutional training, larger training radii, smaller
+expert counts, and SABR/TAPS comparisons remain untested future work. We do
+not add such experiments after the failed gate. S1 has three seeds, S2a five;
+only S2a primary certification covers the full test set. Loss differences and
+historically exposed secondary prefixes limit causal and external conclusions.
 
-\section{Disposition}
-S1 fails its architecture screen under both capacity conventions. S2a's
-completed primary endpoint also fails: neither more stable routing nor smaller
-mean interval widths yields the required trained certification advantage.
-C2 and C3 are unsupported in these registered settings. C1 supplies a
-conditional semantic basis for comparing full-output verification, while the
-experiments delimit what follows from sparsity and routing statistics.
-The completed secondary evaluation is consistent with this limited conclusion;
-it does not revise either primary stop. Independent human technical review
-and clean-environment empirical reproduction remain required before submission.
+The theorems assume valid real-valued source graphs and constituent bounds.
+Experiments use floating IBP/CROWN/GenBaB numerical policies, without a proof
+of outward-rounded network arithmetic or native PyTorch execution. Exact
+checks of supplied LPs and structural record audits do not repair historical
+input-enclosure or network-lowering gaps. We consistently use numerical
+positive or numerical-policy certified accuracy for these results. The
+new-environment subset reproduction is described in Appendix~\ref{app:reproduction};
+it does not establish a stronger guarantee or independent human review.
+
+\section{Conclusion}
+Under both capacity conventions the ordinary-training screen fails, and
+certification training does not recover the proposed advantage. More stable
+routing and smaller mean property intervals are insufficient for better
+whole-test certified accuracy in this setting. The guarded reduction and
+route-envelope objective remain reusable ways to evaluate variable-route
+MoE without dropping legal executions. The negative findings delimit these
+specific architecture and training arguments; they are not a theorem that
+MoE can never be easier to certify.
+
+\paragraph{Potential impact.}
+Complete-route accounting can prevent optimistic robustness claims based on
+one clean route. Conversely, numerical positives can be mistaken for
+machine-checked deployment guarantees; this manuscript separates those
+levels and does not recommend safety-critical deployment from these results.
 
 \begin{thebibliography}{99}
-\bibitem{robmoe} J. Puigcerver et al. On the Adversarial Robustness of Mixture
+\bibitem[Puigcerver et al.(2022)]{robmoe} J. Puigcerver et al. On the Adversarial Robustness of Mixture
 of Experts. NeurIPS 2022. \url{https://doi.org/10.52202/068431-0702}.
-\bibitem{metamoe} Q. Pham et al. MetaMoE: Formal Verification of Compositional
+\bibitem[Pham et al.(2026)]{metamoe} Q. Pham et al. MetaMoE: Formal Verification of Compositional
 Robustness and Scalability of Mixture-of-Experts Architecture. SAIV 2026.
 \url{https://doi.org/10.1007/978-3-032-32357-6_8}.
-\bibitem{dualrs} C. Sun, Y. Mao, and M. Vechev. Dual Randomized Smoothing:
+\bibitem[Sun et al.(2026)]{dualrs} C. Sun, Y. Mao, and M. Vechev. Dual Randomized Smoothing:
 Beyond Global Noise Variance. ICLR 2026.
 \url{https://arxiv.org/abs/2512.01782v4}.
-\bibitem{genbab} Z. Shi et al. Neural Network Verification with Branch-and-Bound
+\bibitem[Shi et al.(2025)]{genbab} Z. Shi et al. Neural Network Verification with Branch-and-Bound
 for General Nonlinearities. TACAS 2025. \url{https://arxiv.org/abs/2405.21063}.
-\bibitem{ibp} S. Gowal et al. On the Effectiveness of Interval Bound Propagation
+\bibitem[Gowal et al.(2018)]{ibp} S. Gowal et al. On the Effectiveness of Interval Bound Propagation
 for Training Verifiably Robust Models. \url{https://arxiv.org/abs/1810.12715}.
-\bibitem{crownibp} H. Zhang et al. Towards Stable and Efficient Training of
+\bibitem[Zhang et al.(2020)]{crownibp} H. Zhang et al. Towards Stable and Efficient Training of
 Verifiably Robust Neural Networks. ICLR 2020. \url{https://arxiv.org/abs/1906.06316}.
-\bibitem{sabr} M. N. M\"uller, F. Eckert, M. Fischer, and M. Vechev.
+\bibitem[M\"uller et al.(2023)]{sabr} M. N. M\"uller, F. Eckert, M. Fischer, and M. Vechev.
 Certified Training: Small Boxes are All You Need. ICLR 2023.
 \url{https://arxiv.org/abs/2210.04871}.
-\bibitem{taps} Y. Mao, M. N. M\"uller, M. Fischer, and M. Vechev.
+\bibitem[Mao et al.(2023)]{taps} Y. Mao, M. N. M\"uller, M. Fischer, and M. Vechev.
 TAPS: Connecting Certified and Adversarial Training. NeurIPS 2023.
 \url{https://arxiv.org/abs/2305.04574}.
-\bibitem{mtlibp} A. De Palma et al. Expressive Losses for Verified Robustness
+\bibitem[De Palma et al.(2024)]{mtlibp} A. De Palma et al. Expressive Losses for Verified Robustness
 via Convex Combinations. ICLR 2024.
 \url{https://proceedings.iclr.cc/paper_files/paper/2024/hash/0b7dd2703eca7f58bae0bf455811b27e-Abstract-Conference.html}.
-\bibitem{ctbench} ETH SRI. CTBench: A Library and Benchmark for Certified Training.
+\bibitem[ETH SRI(2026)]{ctbench} ETH SRI. CTBench: A Library and Benchmark for Certified Training.
 \url{https://github.com/eth-sri/CTBench}.
-\bibitem{rter} X. Zhang, K. Xu, Z. Hu, and R. Wang. Optimizing Robustness and
+\bibitem[Zhang et al.(2025)]{rter} X. Zhang, K. Xu, Z. Hu, and R. Wang. Optimizing Robustness and
 Accuracy in Mixture of Experts: A Dual-Model Approach. ICML 2025.
 \url{https://proceedings.mlr.press/v267/zhang25cj.html}.
-\bibitem{certmoe} Q. Wang et al. CertMoE: Robustness Certification for
+\bibitem[Wang et al.(2026)]{certmoe} Q. Wang et al. CertMoE: Robustness Certification for
 Mixture-of-Experts LLMs via Routing-Aware Smoothing. arXiv preprint 2610.29395, 2026.
 \url{https://arxiv.org/abs/2610.29395}.
 \end{thebibliography}
+
 \clearpage
 \appendix
+\input{appendices/architecture_closeout.tex}
 \input{appendices/architecture_s2_primary_diagnostics.tex}
 \input{appendices/architecture_empirical_limits.tex}
 \end{document}

@@ -1,0 +1,79 @@
+\section{Registration timeline and internal review}
+\label{app:timeline}
+The title refers to the registered architecture comparisons S1 and S2a.
+The project changed direction after earlier results; this sequence was not
+one prospectively registered global test. Table~\ref{tab:timeline} separates
+prespecified decisions, later authorizations, and supplemental analyses.
+Local failures do not falsify every mechanism in their broader family.
+
+\begin{table}[ht]
+\centering\small
+\begin{tabular}{p{.12\linewidth}p{.24\linewidth}p{.53\linewidth}}
+\toprule
+Date (2026)&Stage&Disposition and timing qualification\\
+\midrule
+Oct 21&Finite margin tilts&A2 adds no bound gain over the registered comparator; stopped. Synthetic mechanism test, not a universal negative.\\
+Oct 22--25&Multilayer routing&Full request queue completed. Many-history attribution rule added after 189 calls; routing-merger direction stopped under that supplemental rule.\\
+Oct 26--27&Gate diagnostics&Partial diagnostic cohort judged gray; PI separately authorized the complete-request cascade test. Gray was not relabeled pass.\\
+Oct 27--29&Cascade and local refinements&Main cascade +2 pp [0,4] misses 5 pp. Revised guard test adds one closure, misses five; conditional last-margin test not run.\\
+Oct 29--31&S1&Ordinary-training capacity screen fails under both conventions. Secondary incomplete advantage does not rescue it.\\
+Oct 31--Nov 1&S2a&Separately authorized direct certification-training test; three primary gates fail. No S2b.\\
+Nov 1&Closeout&Fixed two-model reproduction and descriptive analysis authorized after STOP; no new scientific acceptance gate.\\
+\bottomrule
+\end{tabular}
+\caption{Development history. Immutable configurations and decision records
+are included in the local artifact. Prior exposure and supplemental timing
+prevent treating the entire history as independent confirmation.}
+\label{tab:timeline}
+\end{table}
+
+The supplied final technical review was written by Claude, an AI also involved
+in proposing research directions and gates. It is internal and non-independent.
+Codex performed implementation, analysis, and manuscript revisions. Neither
+that review nor the environment recreation below is an independent human
+review. In revising the manuscript we retained the numerical findings but
+removed unsupported priority and causal claims: clean accuracy does not
+explain the entire M--D-act deficit, interval width is scale dependent, and
+clean top-2 selection does not determine robust-training data exposure.
+Submission and human authorship decisions remain with the PI.
+
+\section{Fixed-subset environment reproduction}
+\label{app:reproduction}
+The PI authorized a final reproduction on D-act seed0 and M seed0, indices
+0--49 at $2/255$, with IBP and complete verification once each. It uses fresh,
+separately installed environments on the original host, with frozen weights,
+materialized input bytes, source identities, and dependencies. Original Python
+3.12.12 / torch 2.9.1+cu128 is retained for CPU IBP and Python 3.11.16 /
+torch 2.11.0+cpu for CPU verification. Base interpreters and the host are
+shared; this is environment reconstruction, not a new-machine or independent
+human replication. The numerical implementation and complete-verifier settings
+are unchanged. IBP evaluates the requested 50-input subset in one batch per
+model rather than the original batch of 256; all resulting numerical
+array differences are reported, without changing positive acceptance.
+
+All 200 model--input--mode measurements completed: two 50-input IBP batches
+and 100 complete requests. All 100 IBP predictions, labels, clean/certified
+flags, and route selections agree with the original records. Primary positives
+remain 19/50 for D-act and 12/50 for M. Bounds are not bitwise identical:
+maximum absolute lower/upper differences are $9.54\times10^{-6}$ for D-act
+and $1.24\times10^{-5}$/$1.43\times10^{-5}$ for M. The changed batch size
+is a possible contributor, not an isolated explanation.
+
+Complete terminals agree on 97/100 inputs. D-act agrees on all 50
+(21 positive, 22 replayed unsafe, 7 unknown). M retains all 15 positives and
+27 replayed unsafe outcomes; its unknown/timeout counts change from 5/3 to
+6/2. Specifically, indices 13 and 39 change from TIMEOUT to UNKNOWN, and
+index 21 from UNKNOWN to TIMEOUT. These are differences between two unfinished
+outcomes, not new certificates or counterexamples. No tolerance was used to
+relabel them and no differing input was rerun. The two queue segments took
+26.50 minutes of active wall time (85.25 summed request minutes); setup and
+saved-record comparison are separate. No execution error or missing request
+was recorded. A source-bound record audit and a standalone comparator agree.
+These checks do not independently prove the floating-point bounds.
+
+The source snapshot includes nine disclosed textual compatibility edits
+across eight files: five original GenBaB edits, a root-input branching-score
+edit, and three LiRPA edits. The archive provides their complete diffs and
+upstream commits, dependency wheel hashes, weight hashes, fixed input indices,
+a ten-call prefix smoke path, and source-based table reconstruction. The
+original scientific outcomes are not overwritten by reproduced outcomes.

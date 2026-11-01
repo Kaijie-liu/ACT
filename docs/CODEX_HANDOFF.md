@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## Final fixed reproduction and TMLR working manuscript complete, 2026-11-01
+
+Real increment:102/102calls=200model-input-mode measurements;100/100IBP flags and97/100complete terminals match; [result](architecture_closeout_result_20261101.json).
+M seed0 indices13/39TIMEOUT→UNKNOWN,21UNKNOWN→TIMEOUT; allpositive/replayed outcomes unchanged; no extra rerun.
+Same-host fresh envs, frozen0edc17acf sources/weights/inputs; bound array maxdiff1.43e-5; no independent human/newOS/strict-bound proof.
+M1–M7 revised with causal/priority qualifications; TMLR17pageworkingPDF r3,4maintables/3figures; data/build/visual checks pass.
+Private artifact sealing is the remaining closeout task; locks,2weights,indices,9edits/8files,reference/comparison,smoke andtable rebuild included.
+S1/S2a STOP unchanged; noS2b,newresearch orpublication. After sealing and finalsync,complete finite goal andstopautomaticwork.
+
 ## Final closeout authorized; fresh-environment preparation, 2026-11-01
 
 Real increment:0 new model calls; original24020/24020 and S2a STOP retained; [finite contract](architecture_closeout_20261101.md).

@@ -35,15 +35,7 @@ raw width ratios as architecture-invariant precision ratios. An unstable-ReLU
 fraction is a bound diagnostic, not a count of necessary branch-and-bound
 queries. There is no causal layer ablation in this study.
 
-The complete primary request, including loading, batch evaluation, diagnostic
-capture, serialization and acceptance, takes a mean of 14.543 seconds per
-D-act model, 19.512 for D-tot, 21.099 for M and 21.014 for M$-$reg. Each request
-contains all 10,000 images. These batched measurement costs must not be compared
-as if they were the single-input complete-verifier costs in S1. Input
-materialization and the later record/statistics analysis are charged separately;
-the secondary tables report full single-input requests instead.
-
-\section{S2a final evidence, seed counts and cost closure}
+\section{S2a seed counts and retained outcomes}
 \label{app:s2final}
 The final source-bound export \path{paper/results/s2a_final.json} retains all
 complete/incomplete comparisons, paired gain/loss identities, per-model
@@ -77,30 +69,7 @@ and common inputs are retained in each paired bootstrap draw.}
 One original incomplete D-act request failed cleanup and remains ERROR despite
 a saved positive candidate. The dead-process parser was repaired without
 changing numerical execution, and only previously unexecuted requests
-continued in a separately bound executable. The final audit accounts for both
-segments and verifies that the old failure was neither rerun nor upgraded.
-All costs and terminal denominators reconcile. No clean-prediction difference
+continued in a separately bound executable. The old failure was neither rerun nor upgraded in the scientific queue. No clean-prediction difference
 between the recorded float32 primary and float64 secondary executions, or
 positive/replayed-violation conflict, was found on their common inputs. Absence
 of such conflicts is not an independent proof of numerical soundness.
-
-The request-time sums are 380.845 seconds for primary batches, 161,541.731
-seconds for incomplete verification, and 209,148.569 seconds for complete
-verification: 103.075 summed hours. The two active queue durations sum to
-12.956 hours with at most eight single-thread CPU workers. This excludes an
-approximately 561.6-second gap between segments, which contains the tool
-repair and continuation preparation; it is not the start-to-finish elapsed
-duration. Materialization, executable copying, admission, training, analysis
-and manuscript preparation are recorded separately in the stage record.
-The automatic final audit takes 44.235 seconds; a separate saved-record and
-statistics recount takes 30.546 seconds, and repeating the earlier same-input
-analysis takes 7.982 seconds including its subprocess wrapper. These checks
-add no model, solver or witness-replay calls. They reproduce the primary,
-incomplete and same-input reports without changing an online terminal.
-
-The shared evaluation evidence account remains below its 128 MiB cap and
-carries the original segment's bytes forward. Training weights are separate
-from this evidence quota; the 24 training runs occupy 2,751,268,248 bytes of
-model storage. No raw checkpoint or training data is included in the Git
-exports. Record-level reproducibility is provided; a distributable empirical
-artifact and independent human review still require PI-managed work.

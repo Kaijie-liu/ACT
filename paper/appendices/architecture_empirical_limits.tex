@@ -26,11 +26,10 @@ including clean errors and disclosed historical exposure. Neither model nor
 input selection may be transferred between these cohorts after outcomes.
 
 Within the historical paired comparison both arms use the same disclosed R7
-compatibility snapshot, CPU/double precision, one numerical thread, 8GiB
-address-space limit, and 300-second full-request budget. GenBaB uses optimized
+compatibility snapshot, CPU/double precision and 300-second full-request budget. GenBaB uses optimized
 alpha bounds and nonlinear branching, with separately charged prefix bounds.
 The results describe this configured engine, not every possible configuration.
-All 1080 registered B4 calls were audited, with 56.319 charged execution hours;
+All 1080 registered B4 calls are retained;
 the 240 unadmitted M-B/M-C ablation slots remain unused. Errors and timeout
 costs stay in the denominator. Shared-host variation limits fine timing claims.
 
@@ -82,16 +81,11 @@ test accuracies for seeds 0, 1, and 2 are respectively
 $52.66\%,53.29\%,53.73\%$ for total matching and
 $52.78\%,53.57\%,53.47\%$ for active matching. These are full-test clean
 accuracies, not certification rates; all checkpoints remain in the comparison.
-Training took 7998.453 seconds with one CPU worker. We do not compare that
-training time to the earlier MoE runs, which used a different thread count.
 
 The public attack queue settled all 2400 ten-input batches. Of these, 2392
-were accepted; eight original storage-limit-period errors remain errors.
+were accepted; eight original auxiliary errors remain errors.
 The complete domain denominator is 24000, including 80 domains without an
 accepted batch result. Their partial saved records are not promoted offline.
-The storage-only continuation increased the aggregate artifact cap from
-128 to 512 MiB and retained all previous charges; neither the attack nor the
-verifier configuration, input set, or request deadline changed.
 
 \begin{center}
 \begin{tabular}{lrrrr}
@@ -110,20 +104,33 @@ not 3000 independent images. CE denotes an online full-model-replayed
 counterexample record, including a clean misclassification. Clean counts use
 the complete $8/255$ records; there are no missing domains or attack timeouts
 at that radius. At $2/255$, the remaining $3000-\mathrm{CE}-20$ cases completed
-the fixed search without a witness. The record audit checks bindings and online
-acceptance, rather than rerunning every attack. Its summed request cost is
-21107.093 seconds, not parallel wall time.
-
+the fixed search without a witness.
 At $8/255$, only $0.93\%$--$2.63\%$ of these ordinarily trained model--input
 pairs lack a replayed counterexample. This describes the difficulty of the
 larger-radius task, not certified accuracy or an architecture advantage.
 No-witness results remain unproved. All verification requests have now settled.
-The final frozen-source record audit passed in 51.809 seconds (54.298 seconds
-including process setup and publication), without new model or solver queries.
-It retains all eight earlier PGD errors and reports zero new errors, unexecuted
-verification requests, or missing request costs. Sources and audit identities
-are recorded in \path{docs/architecture_s1_result_20261031.json}.
 
+\begin{table}[ht]
+\centering\small
+\begin{tabular}{llrrrrr}
+\toprule
+Radius & Group & Positive & Replayed & Unknown & Timeout & Mean s\\
+\midrule
+$2/255$ & L1 &114&312&28&146&92.759\\
+ & Dense total &115&275&133&77&105.015\\
+ & Dense active &116&272&191&21&87.520\\
+ & L2 &17&346&3&234&121.939\\
+$8/255$ & L1 &0&312&3&285&144.455\\
+ & Dense total &0&275&177&148&161.590\\
+ & Dense active &0&272&282&46&162.896\\
+ & L2 &0&346&0&254&128.579\\
+\bottomrule
+\end{tabular}
+\caption{All complete requests, 600 per row; no verification errors or missing
+calls. Replayed includes clean misclassification. The eight retained errors
+belong to auxiliary PGD. Means include every request.}
+\label{tab:s1states}
+\end{table}
 \section{S1 seed-level counts and evidence reconstruction}
 \label{app:s1seeds}
 Table~\ref{tab:s1seeds} preserves all twelve fixed models, including the unmatched
@@ -170,7 +177,7 @@ complete and 24000 incomplete verification requests are settled without missing
 costs. Shared-clean-correct strata explain all-request timing but do not alter
 the registered primary denominator. S1 did not authorize S2; the later PI
 decision separately registered S2a. Its completed primary endpoint also fails
-(Section~\ref{sec:s2primary}); its secondary evaluations remain pending.
+(Section~\ref{sec:s2primary}); its fixed secondary evaluations are also complete.
 
 The existing table script is
 \begin{quote}\small
@@ -206,8 +213,10 @@ network-to-HZ conversion, guard lowering, omitted-history infeasibility or
 native floating-point execution. A positive bound from an old matrix cannot
 be attached to a new checked source construction.
 
-Human technical review, a clean empirical reproduction, authorship and any
-distribution and submission decisions remain external tasks. The manuscript and
-record audits do not fill them or certify that the contribution meets a
-particular venue's novelty standard. All unsuccessful gates, original errors,
-and source limitations remain visible alongside local positive results.
+Independent human technical review, reproduction on a separate host or OS,
+authorship, and any distribution and submission decisions remain external.
+Appendix~\ref{app:reproduction} reports the authorized same-host environment
+reconstruction; it does not fill those separate tasks or certify that the
+contribution meets a venue's novelty standard. All unsuccessful gates,
+original errors, and source limitations remain visible alongside local
+positive results.

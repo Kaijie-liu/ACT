@@ -61,3 +61,31 @@ input indices, smoke-prefix invocation and table rebuild are included.
 Completion means this finite reproduction, manuscript and artifact are done;
 it does not reverse S1/S2a STOP or close unachieved scientific guarantees.
 After the final report the finite goal is completed and automatic work stops.
+
+## Final empirical and manuscript result
+
+All 102 fixed worker calls (200 model-input-mode measurements) completed.
+The 100 IBP discrete outcomes agree; 97/100 complete terminals agree. M seed0
+indices13/39 TIMEOUT→UNKNOWN and21 UNKNOWN→TIMEOUT are retained; no positive
+or full-model replay changes. Bound coefficients differ by up to1.43e-5.
+Active queue wall1590.155s; summed request5114.725s; no errors/missing calls.
+The standalone reference comparator agrees with the source-bound record audit;
+this is not independent numerical reproof. Original sources/weights/input hash
+identities remain unchanged. [Full result](architecture_closeout_result_20261101.json).
+
+The final17-page TMLR preprint working PDF is
+`/data1/Kane/MOE/results/architecture_closeout_manuscript_20261101_r3/architecture_main.pdf`.
+M1–M7 are addressed with necessary qualifications documented in
+[review status](SUBMISSION_REVIEW.md). Four main tables/three figures, generated
+tables and visual/build checks pass. Exact descriptive decomposition replaces
+the unsupported claim that all of the3.43pp deficit comes from clean accuracy.
+No human review, first-in-literature claim, universal negative, source-complete
+certificate, acceptance, or submission is asserted. No S2b.
+
+The private artifact directory is
+`/data1/Kane/MOE/artifacts/s2a_tmlr_closeout_20261101_r1`; its final archive
+identity is recorded separately after sealing. It contains the two fixed model
+assets, environments' locks, frozen execution, all9compatibility edits, original
+and reproduced records, table reconstruction, and final paper. Environments and
+locked wheel downloads are retained; only1,522,423,060bytes of reproducible pip
+HTTP/download cache were removed. No failed evidence or model was deleted.
