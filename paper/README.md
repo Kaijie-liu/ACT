@@ -32,7 +32,13 @@ changes only). It is a same-host fresh-environment rerun by AI; independent huma
 [Review status and remaining items](../docs/SUBMISSION_REVIEW.md) distinguish
 these from PI authorship/submission responsibilities.
 
-Final working PDF: `/data1/Kane/MOE/results/architecture_closeout_manuscript_20261101_r3/architecture_main.pdf`.
+Current editorial r4 PDF: `/data1/Kane/MOE/results/architecture_closeout_manuscript_20261102_r4/architecture_main.pdf`.
+Build and preservation checks: `/data1/Kane/MOE/results/architecture_closeout_manuscript_20261102_r4/build.json`.
+The 2026-11-02 edit preserves all results, propositions1–3 and the route-envelope
+section. It shortens repeated qualifications, moves same-input details to the
+appendix, demotes the cost lemma to a remark, cites the CTBench paper, and
+updates the PI-led AI disclosure (final PI wording confirmation pending).
+The frozen r1 reproduction archive below still contains r3; it was not rewritten.
 Private artifact: `/data1/Kane/MOE/artifacts/s2a_tmlr_closeout_20261101_r1.tar.gz`.
 Archive hashes and all remaining boundaries are in the
 [final closeout record](../docs/architecture_closeout_result_20261101.json).

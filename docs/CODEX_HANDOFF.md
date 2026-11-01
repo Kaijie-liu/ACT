@@ -1,5 +1,14 @@
 # MoE project handoff — current entry point
 
+## Final editorial r4 complete, 2026-11-02
+
+Real increment:0model/solver calls; editorial only; S1/S2a STOP and finite closeout COMPLETE unchanged.
+r4 PDF/build.json: `/data1/Kane/MOE/results/architecture_closeout_manuscript_20261102_r4/`;17pages,4maintables/3figures,no overfull/undefined.
+Repeated qualifications consolidated in section6;4.4same-input detail moved to appendix;cost lemma→remark;CTBench paper citation corrected.
+Propositions1–3/proofs and route-envelope section byte-identical;implementation/results/tables/figures unchanged;reconstruction/layout checks pass.
+PI-led AI disclosure retains AI assistance and non-independent review;final wording/authorship/submission await PI.
+Old r3/private artifact retained;goal service had no active goal,no new goal created. This editorial pass ends automatic work.
+
 ## Final fixed reproduction and TMLR working manuscript complete, 2026-11-01
 
 Real increment:102/102calls=200model-input-mode measurements;100/100IBP flags and97/100complete terminals match; [result](architecture_closeout_result_20261101.json).

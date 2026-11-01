@@ -1,3 +1,22 @@
+# Final editorial pass, 2026-11-02
+
+Zero model/solver calls; scientific data and conclusions unchanged. The finite
+closeout remains complete; no research goal or experimental queue reopened.
+[r4 PDF](/data1/Kane/MOE/results/architecture_closeout_manuscript_20261102_r4/architecture_main.pdf)
+and [build.json](/data1/Kane/MOE/results/architecture_closeout_manuscript_20261102_r4/build.json).
+Repeated qualifications are consolidated in section6; section4.4 points to the
+same-input appendix. Cost is a remark; propositions1–3/proofs and the entire
+route-envelope section are byte-identical. CTBench now cites Mao, Balauca and
+Vechev (2024), [arXiv:2406.04848](https://arxiv.org/abs/2406.04848), checked on
+2026-11-02. Disclosure records PI-set/approved decisions with AI assistance,
+PI-directed implementation/analysis/drafting/review, non-independent AI review,
+and human responsibility; final wording awaits PI confirmation.
+Seventeen pages,4main tables/3figures; table rebuilding, source-preservation,
+build and layout checks pass. Original r3 and private archive remain intact.
+Submission and authorship remain PI tasks. Stop after this editorial report.
+
+---
+
 # Final closeout review status, 2026-11-01
 
 The supplied [Claude review](/data1/Kane/MOE/survey/drafts/act_final_review_20261101.md)

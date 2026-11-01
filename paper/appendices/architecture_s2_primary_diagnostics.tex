@@ -73,3 +73,15 @@ continued in a separately bound executable. The old failure was neither rerun no
 between the recorded float32 primary and float64 secondary executions, or
 positive/replayed-violation conflict, was found on their common inputs. Absence
 of such conflicts is not an independent proof of numerical soundness.
+
+\subsection{Same-input regularizer contrasts across pipelines}
+\label{app:sameinput}
+A saved-record recount on the same first 1,000 inputs gives an IBP
+regularizer contrast of $+0.28$ points, compared with $+0.20$ on the full
+test set. CROWN-IBP gives $+2.78$ points on those first 1,000 inputs. The
+same-input difference between the pipelines' regularizer contrasts is
+$+2.50$ points, $[1.50,3.54]$. The pipelines differ in route reduction and
+float32/float64 execution as well as bound computation, so this comparison
+does not isolate a bound-method effect. CROWN-IBP gains and loses primary
+IBP positives; neither pipeline dominates. The values and common-input
+identities are retained in \path{paper/results/s2a_same_input_posthoc.json}.
