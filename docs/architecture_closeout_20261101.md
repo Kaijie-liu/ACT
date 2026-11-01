@@ -83,9 +83,16 @@ No human review, first-in-literature claim, universal negative, source-complete
 certificate, acceptance, or submission is asserted. No S2b.
 
 The private artifact directory is
-`/data1/Kane/MOE/artifacts/s2a_tmlr_closeout_20261101_r1`; its final archive
-identity is recorded separately after sealing. It contains the two fixed model
+`/data1/Kane/MOE/artifacts/s2a_tmlr_closeout_20261101_r1`; its sealed archive identity is recorded in
+[the final result](architecture_closeout_result_20261101.json). It contains the two fixed model
 assets, environments' locks, frozen execution, all9compatibility edits, original
 and reproduced records, table reconstruction, and final paper. Environments and
 locked wheel downloads are retained; only1,522,423,060bytes of reproducible pip
 HTTP/download cache were removed. No failed evidence or model was deleted.
+
+Final private archive:425,352,992bytes (about406MiB),
+SHA-256 `fa255efa67b2f73da783efc2067aec2bf7599f1274d04d683341d8a112e38f28`.
+All9,481file hashes and4relative symlink targets verified; table reconstruction
+passes from the included analysis snapshot a4d55b35a. This complete local bundle
+is not a journal upload; PI manages release/licensing and submission packaging.
+The finite closeout is complete. Automatic research/checking stops.

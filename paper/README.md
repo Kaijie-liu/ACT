@@ -32,6 +32,12 @@ changes only). It is a same-host fresh-environment rerun by AI; independent huma
 [Review status and remaining items](../docs/SUBMISSION_REVIEW.md) distinguish
 these from PI authorship/submission responsibilities.
 
+Final working PDF: `/data1/Kane/MOE/results/architecture_closeout_manuscript_20261101_r3/architecture_main.pdf`.
+Private artifact: `/data1/Kane/MOE/artifacts/s2a_tmlr_closeout_20261101_r1.tar.gz`.
+Archive hashes and all remaining boundaries are in the
+[final closeout record](../docs/architecture_closeout_result_20261101.json).
+The finite closeout is complete; no further automatic work or submission.
+
 ## Detailed companion
 
 1. [Abstract](abstract.md)

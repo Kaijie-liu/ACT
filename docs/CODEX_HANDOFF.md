@@ -6,8 +6,8 @@ Real increment:102/102calls=200model-input-mode measurements;100/100IBP flags an
 M seed0 indices13/39TIMEOUT→UNKNOWN,21UNKNOWN→TIMEOUT; allpositive/replayed outcomes unchanged; no extra rerun.
 Same-host fresh envs, frozen0edc17acf sources/weights/inputs; bound array maxdiff1.43e-5; no independent human/newOS/strict-bound proof.
 M1–M7 revised with causal/priority qualifications; TMLR17pageworkingPDF r3,4maintables/3figures; data/build/visual checks pass.
-Private artifact sealing is the remaining closeout task; locks,2weights,indices,9edits/8files,reference/comparison,smoke andtable rebuild included.
-S1/S2a STOP unchanged; noS2b,newresearch orpublication. After sealing and finalsync,complete finite goal andstopautomaticwork.
+Private artifact sealed:425,352,992bytes,9,481files checked; locks,2weights,indices,9edits/8files,reference/comparison,smoke andtable rebuild included.
+Finite closeout COMPLETE;S1/S2a STOP unchanged,noS2b,newresearch orpublication. Stopautomaticwork after finalsync/report; PI handles humanreview/authorship/submission.
 
 ## Final closeout authorized; fresh-environment preparation, 2026-11-01
 
